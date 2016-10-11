@@ -1,0 +1,77 @@
+﻿<Window x:Class="CellReport.Studio.PropertiesWindows.PagerProperties"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:wf="clr-namespace:CellReport.Presenters.WinForms;assembly=CellReport.WinForms"  
+        Title="Колонтитул" Height="400" Width="600" WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow" Name="pagerProps">
+	<Window.Resources>
+		<Style TargetType="{x:Type TextBox}">
+			<Setter Property="Width" Value="40" />
+			<Setter Property="Margin" Value="5" />
+		</Style>
+		<Style TargetType="{x:Type Button}">
+			<Setter Property="Width" Value="75" />
+			<Setter Property="Margin" Value="2" />
+		</Style>
+		<Style TargetType="{x:Type ListBox}">
+			<Setter Property="Margin" Value="5" />
+			<Setter Property="ItemTemplate">
+				<Setter.Value>
+					<DataTemplate>
+						<TextBlock Text="{Binding Content}" />
+					</DataTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+	</Window.Resources>
+    <Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition />
+			<ColumnDefinition Width="Auto"  />
+			<ColumnDefinition />
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition MinHeight="100" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		
+		<TextBlock Grid.Row="0" Margin="5,5,5,0">Шаблоны:</TextBlock>
+		<TextBlock Grid.Row="0" Grid.Column="3" Margin="5,5,5,0">Выбранные:</TextBlock>
+
+		<ListBox Grid.Row="1" Name="lstTemplates" ItemsSource="{Binding Templates, ElementName=pagerProps}"
+				 MouseDoubleClick="Add_Click"></ListBox>
+		
+		<StackPanel Grid.Row="1" Grid.Column="1" Margin="5">
+			<Button Click="Add_Click">Добавить</Button>
+			<Button Click="Delete_Click">Удалить</Button>
+			<Button Click="Up_Click">Вверх</Button>
+			<Button Click="Down_Click">Вниз</Button>
+		</StackPanel>
+
+		<ListBox Grid.Row="1" Grid.Column="2" Name="lstPagers" ItemsSource="{Binding Pagers, ElementName=pagerProps}"
+				 MouseDoubleClick="Delete_Click" SelectionChanged="lstPagers_SelectionChanged"></ListBox>
+		
+		<StackPanel Grid.Row="2" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right">
+			<TextBlock VerticalAlignment="Center">Диапазон страниц: с</TextBlock>
+			<TextBox Width="40" Text="{Binding SelectedItem.FromPage, ElementName=lstPagers}" />
+			<TextBlock VerticalAlignment="Center">по</TextBlock>
+			<TextBox Width="40" Text="{Binding SelectedItem.ToPage, ElementName=lstPagers}" />
+		</StackPanel>
+
+		<StackPanel Grid.Row="3" Grid.ColumnSpan="3">
+			<TextBlock HorizontalAlignment="Center" Margin="5">Предварительный просмотр:</TextBlock>
+			<Border Height="50" Margin="5,0,5,5" BorderThickness="1" BorderBrush="Black">
+				<WindowsFormsHost>
+					<wf:DoubleBufferedControl x:Name="_viewer" Paint="Viewer_Paint" />
+				</WindowsFormsHost>
+			</Border>
+		</StackPanel>
+
+		<StackPanel Grid.Row="4" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button IsDefault="True" x:Name="_ok" Click="OkClick">OK</Button>
+			<Button IsCancel="True" x:Name="_cancel">Отмена</Button>
+		</StackPanel>
+	</Grid>
+</Window>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<CellReportTemplate>
+  <Properties>
+    <DocumentName></DocumentName>
+  </Properties>
+  <DisplaySettings FrozenColumns="0" FrozenRows="0" ShowGridLines="true" ShowResizers="false" Scale="1" />
+  <PrintSettings Landscape="false" AutoFitWidthPages="1" Scale="1">
+    <Margins Top="0" Left="0" Right="0" Bottom="0" />
+    <Headers />
+    <Footers />
+  </PrintSettings>
+  <Sections />
+  <Table DefaultRowHeight="45" DefaultColumnWidth="25" RowsCount="15" ColumnsCount="15">
+    <Column Index="0" Width="2" />
+    <Column Index="1" Width="50" />
+    <Column Index="2" Width="50" />
+    <Column Index="3" Width="5" />
+    <Column Index="5" Width="5.15625" />
+    <Column Index="6" Width="54.36875" />
+    <Column Index="7" Width="53.83958" />
+    <Column Index="8" Width="5.420834" />
+    <Row Height="10">
+      <Cell Index="2">
+        <TextContent>
+          <Text>Horizontal</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="4">
+        <TextContent>
+          <Text>Vertical</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="7">
+        <TextContent>
+          <Text>Horizontal</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="9">
+        <TextContent>
+          <Text>Vertical</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row>
+      <Cell Index="1">
+        <TextContent>
+          <Text>EAN13 4606369064163</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="2" Style="cspd">
+        <BarCodeContent Type="EAN13" Orientation="Horizontal">
+          <Code>4606369064163</Code>
+        </BarCodeContent>
+      </Cell>
+      <Cell Index="4" Style="cspd">
+        <BarCodeContent Type="EAN13" Orientation="Vertical">
+          <Code>4606369064163</Code>
+        </BarCodeContent>
+      </Cell>
+      <Cell Index="6">
+        <TextContent>
+          <Text>UPC-A 026102975282</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="7" Style="cspd">
+        <BarCodeContent Type="UCC12" Orientation="Horizontal">
+          <Code>026102975282</Code>
+        </BarCodeContent>
+      </Cell>
+      <Cell Index="9" Style="cspd">
+        <BarCodeContent Type="UCC12" Orientation="Vertical">
+          <Code>026102975282</Code>
+        </BarCodeContent>
+      </Cell>
+    </Row>
+    <Row Height="5" />
+    <Row>
+      <Cell Index="1">
+        <TextContent>
+          <Text>EAN8 59021322</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="2" Style="cspd">
+        <BarCodeContent Type="EAN8" Orientation="Horizontal">
+          <Code>59021322</Code>
+        </BarCodeContent>
+      </Cell>
+      <Cell Index="4" Style="cspd">
+        <BarCodeContent Type="EAN8" Orientation="Vertical">
+          <Code>59021322</Code>
+        </BarCodeContent>
+      </Cell>
+      <Cell Index="6">
+        <TextContent>
+          <Text>UPC-E 02109183</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="7" Style="cspd">
+        <BarCodeContent Type="EAN8" Orientation="Horizontal">
+          <Code>02349036</Code>
+        </BarCodeContent>
+      </Cell>
+      <Cell Index="9" Style="cspd">
+        <BarCodeContent Type="EAN8" Orientation="Vertical">
+          <Code>02109183</Code>
+        </BarCodeContent>
+      </Cell>
+    </Row>
+    <Row Height="5" />
+    <Row>
+      <Cell Index="1">
+        <TextContent>
+          <Text>UPC-E 03008010</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="2" Style="cspd">
+        <BarCodeContent Type="EAN8" Orientation="Horizontal">
+          <Code>03008010</Code>
+        </BarCodeContent>
+      </Cell>
+      <Cell Index="4" Style="cspd">
+        <BarCodeContent Type="EAN8" Orientation="Vertical">
+          <Code>03008010</Code>
+        </BarCodeContent>
+      </Cell>
+      <Cell Index="6">
+        <TextContent>
+          <Text>Code39 2942000003412330000</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="7" ColSpan="3" Style="cspd">
+        <BarCodeContent Type="Code39" Orientation="Horizontal">
+          <Code>2942000003412330000</Code>
+        </BarCodeContent>
+      </Cell>
+    </Row>
+  </Table>
+  <Styles>
+    <CellStyle ID="cspd" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0.7055556</Padding>
+      </Paddings>
+      <Borders />
+    </CellStyle>
+  </Styles>
+  <Expressions />
+</CellReportTemplate>

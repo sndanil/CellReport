@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <numFmts count="1">
+    <numFmt numFmtId="1" formatCode="0.00" />
+  </numFmts>
+  <fonts count="5">
+    <font>
+      <sz val="11" />
+      <name val="Calibri" />
+    </font>
+    <font>
+      <sz val="11" />
+      <name val="Arial" />
+      <b />
+      <color rgb="FF000000" />
+    </font>
+    <font>
+      <sz val="8" />
+      <name val="Arial" />
+      <color rgb="FF000000" />
+    </font>
+    <font>
+      <sz val="8" />
+      <name val="Arial" />
+      <i />
+      <color rgb="FF000000" />
+    </font>
+    <font>
+      <sz val="8" />
+      <name val="Arial" />
+      <b />
+      <color rgb="FF000000" />
+    </font>
+  </fonts>
+  <fills count="1">
+    <fill>
+      <patternFill patternType="none" />
+    </fill>
+    <fill>
+      <patternFill patternType="gray125" />
+    </fill>
+    <fill>
+      <patternFill patternType="solid">
+        <fgColor rgb="FFC0C0C0" />
+        <bgColor indexed="64" />
+      </patternFill>
+    </fill>
+  </fills>
+  <borders count="6">
+    <border>
+      <left />
+      <right />
+      <top />
+      <bottom />
+      <diagonal />
+    </border>
+    <border>
+      <left />
+      <right />
+      <top />
+      <bottom style="thin">
+        <color rgb="FF000000" />
+      </bottom>
+      <diagonal />
+    </border>
+    <border>
+      <left style="thin">
+        <color rgb="FF000000" />
+      </left>
+      <right style="thin">
+        <color rgb="FF000000" />
+      </right>
+      <top style="thin">
+        <color rgb="FF000000" />
+      </top>
+      <bottom style="thin">
+        <color rgb="FF000000" />
+      </bottom>
+      <diagonal />
+    </border>
+    <border>
+      <left style="thin">
+        <color rgb="FF000000" />
+      </left>
+      <right />
+      <top style="thin">
+        <color rgb="FF000000" />
+      </top>
+      <bottom style="thin">
+        <color rgb="FF000000" />
+      </bottom>
+      <diagonal />
+    </border>
+    <border>
+      <left />
+      <right />
+      <top />
+      <bottom style="medium">
+        <color rgb="FF000000" />
+      </bottom>
+      <diagonal />
+    </border>
+    <border>
+      <left />
+      <right />
+      <top style="thin">
+        <color rgb="FF000000" />
+      </top>
+      <bottom style="medium">
+        <color rgb="FF000000" />
+      </bottom>
+      <diagonal />
+    </border>
+  </borders>
+  <cellStyleXfs count="1">
+    <xf fontId="0" fillId="0" borderId="0" numFmtId="0" applyNumberFormat="0" applyBorder="0" applyAlignment="0" applyProtection="0" />
+  </cellStyleXfs>
+  <cellXfs count="15">
+    <xf xfId="0" fontId="1" applyFont="1" />
+    <xf xfId="0" />
+    <xf xfId="0" fontId="2" applyFont="1" />
+    <xf xfId="0" fontId="3" applyFont="1" />
+    <xf xfId="0" borderId="1" fillId="0" />
+    <xf xfId="0" borderId="2" fillId="2" applyFill="1" fontId="4" applyFont="1" applyAlignment="1">
+      <alignment horizontal="center" />
+    </xf>
+    <xf xfId="0" borderId="2" fillId="2" applyFill="1" />
+    <xf xfId="0" borderId="3" fillId="0" fontId="2" applyFont="1" />
+    <xf xfId="0" borderId="3" fillId="0" />
+    <xf xfId="0" borderId="2" fillId="0" />
+    <xf xfId="0" borderId="2" fillId="0" fontId="2" applyFont="1" applyAlignment="1" numFmtId="1" applyNumberFormat="1">
+      <alignment horizontal="right" />
+    </xf>
+    <xf xfId="0" borderId="4" fillId="0" />
+    <xf xfId="0" borderId="5" fillId="0" />
+    <xf xfId="0" fontId="2" applyFont="1" applyAlignment="1">
+      <alignment horizontal="right" />
+    </xf>
+    <xf xfId="0" fontId="2" applyFont="1" applyAlignment="1" numFmtId="1" applyNumberFormat="1">
+      <alignment horizontal="right" />
+    </xf>
+  </cellXfs>
+  <cellStyles count="1">
+    <cellStyle name="CellReportStyle" xfId="0" />
+  </cellStyles>
+  <dxfs count="0" />
+  <tableStyles count="0" defaultTableStyle="TableStyleMedium9" defaultPivotStyle="PivotStyleLight16" />
+</styleSheet>

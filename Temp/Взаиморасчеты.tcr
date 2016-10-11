@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<CellReportTemplate>
+  <Properties>
+    <DocumentName>Взаиморасчеты с контрагентами</DocumentName>
+  </Properties>
+  <DisplaySettings FrozenColumns="6" FrozenRows="9" ShowGridLines="true" ShowBookMarks="false" ShowResizers="false" Scale="1" />
+  <PrintSettings Landscape="false" AutoFitWidthPages="1" Scale="1">
+    <Margins Top="5.08" Left="5.08" Right="5.08" Bottom="5.08" />
+    <Headers>
+      <Pager Height="5" FromPage="0" ToPage="0">
+        <Left>
+          <CollectionContent>
+            <TextContent Style="sysText">
+              <Text>Дата печати: </Text>
+            </TextContent>
+            <DateTimeContent Style="sysDate">
+              <Param Name="NowParam" Target="Value" Expression="Now" />
+            </DateTimeContent>
+          </CollectionContent>
+        </Left>
+        <Center />
+        <Right>
+          <CollectionContent>
+            <TextContent Style="sysText">
+              <Text>Страница: </Text>
+            </TextContent>
+            <DecimalContent Style="sysDecimal">
+              <Param Name="Counter" Target="Value" Expression="PageCounter" />
+            </DecimalContent>
+            <TextContent Style="sysText">
+              <Text> из </Text>
+            </TextContent>
+            <DecimalContent Style="sysDecimal">
+              <Param Name="Counter" Target="Value" Expression="PagesCounter" />
+            </DecimalContent>
+          </CollectionContent>
+        </Right>
+      </Pager>
+    </Headers>
+    <Footers />
+  </PrintSettings>
+  <Sections />
+  <BookMarks />
+  <Table DefaultRowHeight="3.96875" DefaultColumnWidth="3.96875" RowsCount="23" ColumnsCount="15">
+    <Column Index="5" Width="60.58958" />
+    <Column Index="6" Width="20.6375" />
+    <Column Index="7" Width="20.6375" />
+    <Column Index="8" Width="19.05" />
+    <Column Index="9" Width="20.6375" />
+    <Column Index="10" Width="20.6375" />
+    <Column Index="11" Width="20.6375" />
+    <Column Index="12" Width="29.10417" />
+    <Column Index="13" Width="29.10417" />
+    <Column Index="14" Width="19.05" />
+    <Row>
+      <Cell Index="0" RowSpan="1" ColSpan="14">
+        <TextContent Style="bigHeadText">
+          <Text>Взаиморасчеты с контрагентами</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="4.7625" />
+    <Row>
+      <Cell Index="0" ColSpan="14">
+        <TextContent Style="normalText">
+          <Param Name="Период" Target="Text" Value="Период" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row>
+      <Cell Index="0" ColSpan="14">
+        <TextContent Style="normalItalicText">
+          <Param Name="По всем фирмам" Target="Text" Value="По всем фирмам" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row>
+      <Cell Index="0" ColSpan="14">
+        <TextContent Style="normalItalicText">
+          <Param Name="По всем контрагентам" Target="Text" Value="По всем контрагентам" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Index="6">
+      <Cell Index="0" RowSpan="2" ColSpan="5" Style="tableHeaderCell">
+        <TextContent Style="tableHeaderText">
+          <Param Name="ИмяКолонки" Target="Text" Value="ИмяКолонки" />
+        </TextContent>
+      </Cell>
+      <Cell Index="6" RowSpan="2" Style="tableHeaderCell">
+        <TextContent Style="tableHeaderText">
+          <Param Name="Номер документа поставщика" Target="Text" Value="Номер документа поставщика" />
+        </TextContent>
+      </Cell>
+      <Cell Index="7" RowSpan="2" Style="tableHeaderCell">
+        <TextContent Style="tableHeaderText">
+          <Param Name="НачДолг" Target="Text" Value="НачДолг" />
+        </TextContent>
+      </Cell>
+      <Cell Index="8" RowSpan="1" ColSpan="1" Style="tableHeaderCell">
+        <TextContent Style="tableHeaderText">
+          <Param Name="Долг" Target="Text" Value="Долг" />
+        </TextContent>
+      </Cell>
+      <Cell Index="10" RowSpan="1" ColSpan="1" Style="tableHeaderCell">
+        <TextContent Style="tableHeaderText">
+          <Param Name="КонДолг" Target="Text" Value="КонДолг" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" RowSpan="2" Style="tableHeaderCell">
+        <TextContent Style="tableHeaderText">
+          <Text>Комментарий</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="13" RowSpan="2" Style="tableHeaderCell">
+        <TextContent Style="tableHeaderText">
+          <Text>Магазин</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="14" RowSpan="2" Style="tableHeaderCell">
+        <TextContent Style="tableHeaderText">
+          <Text>Дата платежа</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Index="8">
+      <Cell Index="8" Style="tableHeaderCell">
+        <TextContent Style="tableHeaderText">
+          <Text>Приход</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="9" Style="tableHeaderCell">
+        <TextContent Style="tableHeaderText">
+          <Text>Расход</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="10" Style="tableHeaderCell">
+        <TextContent Style="tableHeaderText">
+          <Text>Наш</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="11" Style="tableHeaderCell">
+        <TextContent Style="tableHeaderText">
+          <Text>Контрагент</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row>
+      <Cell Index="0" ColSpan="5" Style="normalCell">
+        <TextContent Style="normalText">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="6" Style="normalCell" />
+      <Cell Index="7" Style="normalCell">
+        <DecimalContent Style="currStyle">
+          <Param Name="Нач" Target="Value" />
+        </DecimalContent>
+      </Cell>
+      <Cell Index="8" Style="normalCell">
+        <DecimalContent Style="currStyle">
+          <Param Name="Приход" Target="Value" />
+        </DecimalContent>
+      </Cell>
+      <Cell Index="9" Style="normalCell">
+        <DecimalContent Style="currStyle">
+          <Param Name="Расход" Target="Value" />
+        </DecimalContent>
+      </Cell>
+      <Cell Index="10" Style="normalCell">
+        <DecimalContent Style="currStyle">
+          <Param Name="НашДолг" Target="Value" />
+        </DecimalContent>
+      </Cell>
+      <Cell Index="11" Style="normalCell">
+        <DecimalContent Style="currStyle">
+          <Param Name="КонтрДолг" Target="Value" />
+        </DecimalContent>
+      </Cell>
+      <Cell Index="12" Style="normalCell" />
+      <Cell Index="13" Style="normalCell" />
+      <Cell Index="14" Style="normalCell" />
+    </Row>
+    <Row>
+      <Cell Index="1" ColSpan="4" Style="normalCell">
+        <TextContent Style="normalText">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="6" Style="normalCell" />
+    </Row>
+    <Row>
+      <Cell Index="2" ColSpan="3" Style="normalCell">
+        <TextContent Style="normalText">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="6" Style="normalCell" />
+    </Row>
+    <Row>
+      <Cell Index="3" ColSpan="2" Style="normalCell">
+        <TextContent Style="normalText">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="6" Style="normalCell" />
+    </Row>
+    <Row>
+      <Cell Index="4" ColSpan="1" Style="normalCell">
+        <TextContent Style="normalText">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="6" Style="normalCell" />
+    </Row>
+    <Row>
+      <Cell Index="5" Style="normalCell">
+        <TextContent Style="normalText">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="6" Style="normalCell" />
+    </Row>
+    <Row>
+      <Cell Index="0" ColSpan="5" Style="normalCell">
+        <TextContent Style="normalItalicText">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="6" Style="normalCell">
+        <TextContent Style="normalItalicText">
+          <Param Name="ВхНомер" Target="Text" Value="ВхНомер" />
+        </TextContent>
+      </Cell>
+      <Cell Index="7" Style="normalCell">
+        <DecimalContent Style="currStyleItalic">
+          <Param Name="Нач" Target="Value" />
+        </DecimalContent>
+      </Cell>
+      <Cell Index="8" Style="normalCell">
+        <DecimalContent Style="currStyleItalic">
+          <Param Name="Приход" Target="Value" />
+        </DecimalContent>
+      </Cell>
+      <Cell Index="9" Style="normalCell">
+        <DecimalContent Style="currStyleItalic">
+          <Param Name="Расход" Target="Value" />
+        </DecimalContent>
+      </Cell>
+      <Cell Index="10" Style="normalCell">
+        <DecimalContent Style="currStyleItalic">
+          <Param Name="НашДолг" Target="Value" />
+        </DecimalContent>
+      </Cell>
+      <Cell Index="11" Style="normalCell">
+        <DecimalContent Style="currStyleItalic">
+          <Param Name="КонтрДолг" Target="Value" />
+        </DecimalContent>
+      </Cell>
+      <Cell Index="12" Style="normalCell">
+        <TextContent Style="normalItalicText">
+          <Param Name="Коммент" Target="Text" Value="Коммент" />
+        </TextContent>
+      </Cell>
+      <Cell Index="13" Style="normalCell">
+        <TextContent Style="normalItalicText">
+          <Param Name="Маг" Target="Text" Value="Маг" />
+        </TextContent>
+      </Cell>
+      <Cell Index="14" Style="normalCell" />
+    </Row>
+    <Row>
+      <Cell Index="1" ColSpan="4" Style="normalCell">
+        <TextContent Style="normalItalicText">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="6" Style="normalCell">
+        <TextContent Style="normalItalicText">
+          <Param Name="ВхНомер" Target="Text" Value="ВхНомер" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row>
+      <Cell Index="2" ColSpan="3" Style="normalCell">
+        <TextContent Style="normalItalicText">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="6" Style="normalCell">
+        <TextContent Style="normalItalicText">
+          <Param Name="ВхНомер" Target="Text" Value="ВхНомер" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row>
+      <Cell Index="3" ColSpan="2" Style="normalCell">
+        <TextContent Style="normalItalicText">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="6" Style="normalCell">
+        <TextContent Style="normalItalicText">
+          <Param Name="ВхНомер" Target="Text" Value="ВхНомер" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row>
+      <Cell Index="4" ColSpan="1" Style="normalCell">
+        <TextContent Style="normalItalicText">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="6" Style="normalCell">
+        <TextContent Style="normalItalicText">
+          <Param Name="ВхНомер" Target="Text" Value="ВхНомер" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row>
+      <Cell Index="5" Style="normalCell">
+        <TextContent Style="normalItalicText">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="6" Style="normalCell">
+        <TextContent Style="normalItalicText">
+          <Param Name="ВхНомер" Target="Text" Value="ВхНомер" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="2.116667">
+      <Cell Index="0" ColSpan="14" Style="bottomLineCell" />
+    </Row>
+    <Row>
+      <Cell Index="0" ColSpan="5">
+        <TextContent Style="normalText">
+          <Param Name="Param" Target="Style.HAlignment" Value="Right" />
+          <Param Name="Param" Target="Style.VAlignment" Value="Bottom" />
+          <Text>Итого:</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="7">
+        <DecimalContent Style="currStyle">
+          <Param Name="Нач" Target="Value" />
+        </DecimalContent>
+      </Cell>
+      <Cell Index="8">
+        <DecimalContent Style="currStyle">
+          <Param Name="Приход" Target="Value" />
+        </DecimalContent>
+      </Cell>
+      <Cell Index="9">
+        <DecimalContent Style="currStyle">
+          <Param Name="Расход" Target="Value" />
+        </DecimalContent>
+      </Cell>
+      <Cell Index="10">
+        <DecimalContent Style="currStyle">
+          <Param Name="НашДолг" Target="Value" />
+        </DecimalContent>
+      </Cell>
+      <Cell Index="11">
+        <DecimalContent Style="currStyle">
+          <Param Name="КонтрДолг" Target="Value" />
+        </DecimalContent>
+      </Cell>
+      <Cell Index="12">
+        <DecimalContent Style="currStyle">
+          <Param Name="Долг" Target="Value" />
+        </DecimalContent>
+      </Cell>
+    </Row>
+  </Table>
+  <Styles>
+    <TextContentStyle ID="sysText" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Left" Vertical="Top" />
+      <Font Family="Calibri" Size="8" Style="Regular" />
+    </TextContentStyle>
+    <DateTimeContentStyle ID="sysDate" Color="Black" Direction="LeftToRight" Angle="0" Format="dd MMMM yyyy" Culture="ru-RU">
+      <Alignment Horizontal="Left" Vertical="Top" />
+      <Font Family="Calibri" Size="8" Style="Regular" />
+    </DateTimeContentStyle>
+    <DecimalContentStyle ID="sysDecimal" Color="Black" Direction="LeftToRight" Angle="0" Format="" Culture="ru-RU" NegativeColor="Black">
+      <Alignment Horizontal="Right" Vertical="Top" />
+      <Font Family="Calibri" Size="8" Style="Regular" />
+    </DecimalContentStyle>
+    <TextContentStyle ID="bigHeadText" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Left" Vertical="Middle" />
+      <Font Family="Calibri" Size="16" Style="Regular" />
+    </TextContentStyle>
+    <TextContentStyle ID="normalText" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Left" Vertical="Middle" />
+      <Font Family="Calibri" Size="8" Style="Regular" />
+    </TextContentStyle>
+    <TextContentStyle ID="normalItalicText" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Left" Vertical="Middle" />
+      <Font Family="Calibri" Size="8" Style="Italic" />
+    </TextContentStyle>
+    <TextContentStyle ID="tableHeaderText" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Center" Vertical="Middle" />
+      <Font Family="Tahoma" Size="8" Style="Bold" />
+    </TextContentStyle>
+    <CellStyle ID="tableHeaderCell" Color="#E0EEF0">
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="#438086" Weight="1" />
+        <Border Position="Left" Style="Solid" Color="#438086" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="#438086" Weight="0.3527778" />
+        <Border Position="Bottom" Style="Solid" Color="#438086" Weight="1" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="normalCell">
+      <Borders>
+        <Border Position="All" Style="Solid" Color="#438086" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <DecimalContentStyle ID="currStyle" Color="Black" Direction="LeftToRight" Angle="0" Format="0.00;0.00;-" Culture="ru-RU" NegativeColor="Red">
+      <Alignment Horizontal="Right" Vertical="Top" />
+      <Font Family="Calibri" Size="8" Style="Regular" />
+    </DecimalContentStyle>
+    <DecimalContentStyle ID="currStyleItalic" Color="Black" Direction="LeftToRight" Angle="0" Format="0.00;0.00;-" Culture="ru-RU" NegativeColor="Red">
+      <Alignment Horizontal="Right" Vertical="Top" />
+      <Font Family="Calibri" Size="8" Style="Italic" />
+    </DecimalContentStyle>
+    <CellStyle ID="bottomLineCell">
+      <Borders>
+        <Border Position="Bottom" Style="Solid" Color="#438086" Weight="0.7055556" />
+      </Borders>
+    </CellStyle>
+  </Styles>
+  <Expressions>
+    <NowExpression ID="Now" />
+    <CountExpression ID="PageCounter" Start="1" Increment="1" />
+    <PagesCountExpression ID="PagesCounter" />
+  </Expressions>
+</CellReportTemplate>

@@ -1,0 +1,146 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using CellReport.Core;
+using CellReport;
+using CellReport.Presenters.WinForms;
+
+namespace Demo
+{
+    public partial class MainForm : Form
+    {
+        public MainForm()
+        {
+            InitializeComponent();
+        }
+
+        private void _groupButton_Click(object sender, EventArgs e)
+        {
+            var doc = new ReportDocument(@"Templates\GroupedReport.tcrp");
+            doc.AddSection("header");
+            for (int i = 0; i < 16; i++)
+            {
+                doc.AddSection("level1");
+                doc.SetParameter("Наим", "Название" + i);
+                doc.JoinSection("digits");
+                for (int i1 = 0; i1 < 2; i1++)
+                {
+                    doc.AddSection("level2");
+                    doc.SetParameter("Наим", "Название" + i + "_" + i1);
+                    doc.JoinSection("digits");
+                    for (int i2 = 0; i2 < 2; i2++)
+                    {
+                        doc.AddSection("level3");
+                        doc.SetParameter("Наим", "Название" + i + "_" + i1 + "_" + i2);
+                        doc.JoinSection("digits");
+                    }
+                }
+            }
+            doc.Show();            
+        }
+
+        private void _tableAndChartButton_Click(object sender, EventArgs e)
+        {
+            var doc = new ReportDocument(@"Templates\ПродажиПоМагазинам.tcrp");
+            doc.AddSection("header");
+            
+            doc.AddSection("line");
+            doc.SetParameter("Name", "Магазин 1");
+            doc.SetParameter("Sum", 25000);
+
+            doc.AddSection("line");
+            doc.SetParameter("Name", "Магазин 2");
+            doc.SetParameter("Sum", 2500);
+
+            doc.AddSection("line");
+            doc.SetParameter("Name", "Магазин 3");
+            doc.SetParameter("Sum", 5000);
+
+            doc.AddSection("line");
+            doc.SetParameter("Name", "Магазин 4");
+            doc.SetParameter("Sum", 20000);
+            
+            doc.AddSection("chart");
+            doc.SetParameter("xdata", new string[] { "Магазин 1", "Магазин 2", "Магазин 3", "Магазин 4" });
+            doc.SetParameter("ydata", new decimal[] { 25000, 2500, 5000, 20000 });
+
+            doc.Show();
+        }
+
+        private void _barCodesButton_Click(object sender, EventArgs e)
+        {
+            var template = new CellReport.Core.CellTemplate();
+            template.Load(@"Templates\barcodes.tcr");
+            template.Show(null);
+        }
+
+        private void _chartsButton_Click(object sender, EventArgs e)
+        {
+            var template = new CellReport.Core.CellTemplate();
+            template.Load(@"Templates\charts.tcrp");
+            template.Show(null);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            var template = new CellReport.Core.CellTemplate();
+            template.Load(@"Templates\images.tcrp");
+            template.Show(null);
+        }
+
+        private void _ttnButton_Click(object sender, EventArgs e)
+        {
+            var template = new CellReport.Core.CellTemplate();
+            template.Load(@"Templates\torg12.tcrp");
+            template.Show(null);
+        }
+
+        private void _op5Button_Click(object sender, EventArgs e)
+        {
+            var template = new CellReport.Core.CellTemplate();
+            template.Load(@"Templates\op05.tcr");
+            template.Show(null);
+        }
+
+        private void _kalcButton_Click(object sender, EventArgs e)
+        {
+            var template = new CellReport.Core.CellTemplate();
+            template.Load(@"Templates\calc.tcrp");
+            template.Show(null);
+        }
+
+        private void _pageBreakButton_Click(object sender, EventArgs e)
+        {
+            var doc = new ReportDocument(@"Templates\ПродажиПоМагазинам.tcrp");
+            doc.AddSection("header");
+            doc.AddPageBreak();
+
+            doc.AddSection("line");
+            doc.SetParameter("Name", "Магазин 1");
+            doc.SetParameter("Sum", 25000);
+            doc.AddPageBreak();
+
+            doc.AddSection("line");
+            doc.SetParameter("Name", "Магазин 2");
+            doc.SetParameter("Sum", 2500);
+            doc.AddPageBreak();
+
+            doc.AddSection("line");
+            doc.SetParameter("Name", "Магазин 3");
+            doc.SetParameter("Sum", 5000);
+            doc.AddPageBreak();
+
+            doc.AddSection("line");
+            doc.SetParameter("Name", "Магазин 4");
+            doc.SetParameter("Sum", 20000);
+            doc.AddPageBreak();
+
+            doc.Show();
+        }
+    }
+}

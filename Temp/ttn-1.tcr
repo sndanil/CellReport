@@ -1,0 +1,1840 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<CellReportTemplate>
+  <Properties>
+    <DocumentName>Товарно транспортная накладная</DocumentName>
+  </Properties>
+  <DisplaySettings FrozenColumns="0" FrozenRows="0" ShowGridLines="false" ShowResizers="false" Scale="1" />
+  <PrintSettings Landscape="true" AutoFitWidthPages="0" Scale="1">
+    <Margins Top="2.032" Left="14.986" Right="11.938" Bottom="2.032" />
+    <Headers />
+    <Footers />
+  </PrintSettings>
+  <Sections />
+  <Table DefaultRowHeight="5" DefaultColumnWidth="1.322917" RowsCount="45" ColumnsCount="187">
+    <Column Index="6" Width="7.408334" />
+    <Column Index="34" Width="3.704167" />
+    <Column Index="49" Width="2.910417" />
+    <Column Index="164" Width="4.7625" />
+    <Row Height="3.704167">
+      <Cell Index="137" ColSpan="49" Style="cs_s646">
+        <TextContent Style="tc_s646">
+          <Text>Типовая межотраслевая форма № 1-Т</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.704167">
+      <Cell Index="137" ColSpan="49" Style="cs_s646">
+        <TextContent Style="tc_s646">
+          <Text>Утверждена Постановлением Госкомстата России</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.704167">
+      <Cell Index="137" ColSpan="49" Style="cs_s646">
+        <TextContent Style="tc_s646">
+          <Text>от 28.11.97 № 78</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row>
+      <Cell Index="3" Style="cs_s646" />
+      <Cell Index="168" ColSpan="18" Style="cs_m47862492">
+        <TextContent Style="tc_m47862492">
+          <Text>Коды</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="4.7625">
+      <Cell Index="3" Style="cs_s646" />
+      <Cell Index="148" ColSpan="19" Style="cs_s646">
+        <TextContent Style="tc_s570">
+          <Text>Форма по ОКУД</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="168" ColSpan="18" Style="cs_m47862512">
+        <TextContent Style="tc_s570">
+          <Text>0345009</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="5.027083">
+      <Cell Index="50" ColSpan="69" Style="cs_s646">
+        <TextContent Style="tc_s938">
+          <Text>ТОВАРНО-ТРАНСПОРТНАЯ НАКЛАДНАЯ</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="121" ColSpan="41" Style="cs_s505" />
+      <Cell Index="164">
+        <TextContent>
+          <Text>№</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="168" ColSpan="18" Style="cs_m47862532" />
+    </Row>
+    <Row Height="2.645833">
+      <Cell Index="121" ColSpan="41" Style="cs_s641">
+        <TextContent Style="tc_s641">
+          <Text>(серия)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="168" RowSpan="1" ColSpan="5" Style="cs_m47864304" />
+      <Cell Index="174" RowSpan="1" ColSpan="6" Style="cs_m47864324" />
+      <Cell Index="181" RowSpan="1" ColSpan="5" Style="cs_m47862208" />
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="121" Style="cs_s646" />
+      <Cell Index="122" Style="cs_s646" />
+      <Cell Index="123" Style="cs_s646" />
+      <Cell Index="124" Style="cs_s646" />
+      <Cell Index="125" Style="cs_s646" />
+      <Cell Index="126" Style="cs_s646" />
+      <Cell Index="127" Style="cs_s646" />
+      <Cell Index="128" Style="cs_s646" />
+      <Cell Index="129" Style="cs_s646" />
+      <Cell Index="130" Style="cs_s646" />
+      <Cell Index="131" Style="cs_s646" />
+      <Cell Index="132" Style="cs_s646" />
+      <Cell Index="133" Style="cs_s646" />
+      <Cell Index="134" Style="cs_s646" />
+      <Cell Index="135" Style="cs_s646" />
+      <Cell Index="136" Style="cs_s646" />
+      <Cell Index="137" Style="cs_s646" />
+      <Cell Index="138" Style="cs_s646" />
+      <Cell Index="139" Style="cs_s646" />
+      <Cell Index="140" Style="cs_s646" />
+      <Cell Index="141" Style="cs_s646" />
+      <Cell Index="142" Style="cs_s646" />
+      <Cell Index="143" Style="cs_s646" />
+      <Cell Index="144" Style="cs_s646" />
+      <Cell Index="145" Style="cs_s646" />
+      <Cell Index="146" ColSpan="20" Style="cs_s646">
+        <TextContent Style="tc_s941">
+          <Text>Дата составления</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="6.35">
+      <Cell Index="0" ColSpan="20" Style="cs_s646">
+        <TextContent Style="tc_m47862492">
+          <Text>Грузоотправитель</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="21" ColSpan="134" Style="cs_s505" />
+      <Cell Index="156" ColSpan="11" Style="cs_s646">
+        <TextContent Style="tc_s570">
+          <Text>по ОКПО</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="168" ColSpan="18" Style="cs_m47862452" />
+    </Row>
+    <Row Height="2.645833">
+      <Cell Index="0" RowSpan="1" ColSpan="19">
+        <TextContent>
+          <Text>Грузополучатель</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="21" ColSpan="134" Style="cs_s641">
+        <TextContent Style="tc_s515">
+          <Text>(полное наименование организации, адрес, номер телефона)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="156" RowSpan="1" ColSpan="11" Style="cs_s646">
+        <TextContent Style="tc_s570">
+          <Text>по ОКПО</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="168" RowSpan="1" ColSpan="18" Style="cs_m47862532" />
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="21" ColSpan="134" Style="cs_s505" />
+    </Row>
+    <Row Height="2.645833">
+      <Cell Index="0" RowSpan="1" ColSpan="14">
+        <TextContent>
+          <Text>Плательщик</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="21" ColSpan="134" Style="cs_s641">
+        <TextContent Style="tc_s515">
+          <Text>(полное наименование организации, адрес, номер телефона)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="156" RowSpan="1" ColSpan="11" Style="cs_s646">
+        <TextContent Style="tc_s570">
+          <Text>по ОКПО</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="168" RowSpan="1" ColSpan="18" Style="cs_m47862308" />
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="21" ColSpan="134" Style="cs_s505" />
+    </Row>
+    <Row Height="3.439583">
+      <Cell Index="21" ColSpan="134" Style="cs_s641">
+        <TextContent Style="tc_s621">
+          <Text>(полное наименование организации, адрес, банковские реквизиты)</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="5.291667">
+      <Cell Index="0" ColSpan="186" Style="cs_s596">
+        <TextContent Style="tc_s570">
+          <Text>1. ТОВАРНЫЙ РАЗДЕЛ (заполняется грузоотправителем)</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="19.31458">
+      <Cell Index="0" ColSpan="10" Style="cs_s565">
+        <TextContent Style="tc_s565">
+          <Text>Код
+продукции
+(номенкла-
+турный
+номер)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="11" ColSpan="19" Style="cs_m47862144">
+        <TextContent Style="tc_s565">
+          <Text>Номер
+прейскуранта и
+дополнения к нему</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="31" ColSpan="12" Style="cs_m47862164">
+        <TextContent Style="tc_s565">
+          <Text>Артикул или
+номер по
+прейскуранту</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="44" ColSpan="11" Style="cs_m47862144">
+        <TextContent Style="tc_s565">
+          <Text>Количество</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="56" ColSpan="15" Style="cs_m47862064">
+        <TextContent Style="tc_s565">
+          <Text>Цена,
+руб. коп.</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="72" ColSpan="38" Style="cs_m47862084">
+        <TextContent Style="tc_s565">
+          <Text>Наименование
+продукции, товара (груза),
+ТУ, марка, размер, сорт</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="111" ColSpan="10" Style="cs_m47862084">
+        <TextContent Style="tc_s565">
+          <Text>Единица измерения</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="122" ColSpan="10" Style="cs_m47862084">
+        <TextContent Style="tc_s565">
+          <Text>Вид упаковки</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="133" ColSpan="10" Style="cs_m47862004">
+        <TextContent Style="tc_s565">
+          <Text>Количест- во мест</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="144" ColSpan="13" Style="cs_m47862064">
+        <TextContent Style="tc_s565">
+          <Text>Масса,
+т</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="158" ColSpan="10" Style="cs_m47862084">
+        <TextContent Style="tc_s565">
+          <Text>Сумма,
+руб. коп.</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="169" ColSpan="17" Style="cs_m47862004">
+        <TextContent Style="tc_s565">
+          <Text>Порядковый номер
+записи по склад-
+ской картотеке
+(грузоотправителю,
+грузополучателю)</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="4.7625">
+      <Cell Index="0" ColSpan="10" Style="cs_s559">
+        <DecimalContent Style="dc_s559">
+          <Value>1</Value>
+        </DecimalContent>
+      </Cell>
+      <Cell Index="11" ColSpan="19" Style="cs_m47861780">
+        <DecimalContent Style="dc_s559">
+          <Value>2</Value>
+        </DecimalContent>
+      </Cell>
+      <Cell Index="31" ColSpan="12" Style="cs_m47861800">
+        <DecimalContent Style="dc_s559">
+          <Value>3</Value>
+        </DecimalContent>
+      </Cell>
+      <Cell Index="44" ColSpan="11" Style="cs_m47861820">
+        <DecimalContent Style="dc_s559">
+          <Value>4</Value>
+        </DecimalContent>
+      </Cell>
+      <Cell Index="56" ColSpan="15" Style="cs_m47861840">
+        <DecimalContent Style="dc_s559">
+          <Value>5</Value>
+        </DecimalContent>
+      </Cell>
+      <Cell Index="72" ColSpan="38" Style="cs_m47861860">
+        <DecimalContent Style="dc_s559">
+          <Value>6</Value>
+        </DecimalContent>
+      </Cell>
+      <Cell Index="111" ColSpan="10" Style="cs_m47861860">
+        <DecimalContent Style="dc_s559">
+          <Value>7</Value>
+        </DecimalContent>
+      </Cell>
+      <Cell Index="122" ColSpan="10" Style="cs_m47861860">
+        <DecimalContent Style="dc_s559">
+          <Value>8</Value>
+        </DecimalContent>
+      </Cell>
+      <Cell Index="133" ColSpan="10" Style="cs_m32734964">
+        <DecimalContent Style="dc_s559">
+          <Value>9</Value>
+        </DecimalContent>
+      </Cell>
+      <Cell Index="144" ColSpan="13" Style="cs_m47861840">
+        <DecimalContent Style="dc_s559">
+          <Value>10</Value>
+        </DecimalContent>
+      </Cell>
+      <Cell Index="158" ColSpan="10" Style="cs_m47862492">
+        <DecimalContent Style="dc_s559">
+          <Value>11</Value>
+        </DecimalContent>
+      </Cell>
+      <Cell Index="169" ColSpan="17" Style="cs_m32734720">
+        <DecimalContent Style="dc_s559">
+          <Value>12</Value>
+        </DecimalContent>
+      </Cell>
+    </Row>
+    <Row Height="4.233333">
+      <Cell Index="0" ColSpan="10" Style="cs_m47862512" />
+      <Cell Index="11" ColSpan="19" Style="cs_m32734760" />
+      <Cell Index="31" ColSpan="12" Style="cs_s505" />
+      <Cell Index="44" ColSpan="11" Style="cs_m32734800" />
+      <Cell Index="56" ColSpan="15" Style="cs_m32734820" />
+      <Cell Index="72" ColSpan="38" Style="cs_m32734840" />
+      <Cell Index="111" ColSpan="10" Style="cs_m47862084" />
+      <Cell Index="122" ColSpan="10" Style="cs_m32734880" />
+      <Cell Index="133" ColSpan="10" Style="cs_m32734800" />
+      <Cell Index="144" ColSpan="13" Style="cs_m32734352" />
+      <Cell Index="158" ColSpan="10" Style="cs_m32734372" />
+      <Cell Index="169" ColSpan="17" Style="cs_m32734496" />
+    </Row>
+    <Row Height="4.233333">
+      <Cell Index="0" ColSpan="10" Style="cs_m47862532" />
+      <Cell Index="11" ColSpan="19" Style="cs_m32734536" />
+      <Cell Index="31" ColSpan="12" Style="cs_s513" />
+      <Cell Index="44" ColSpan="11" Style="cs_m32734576" />
+      <Cell Index="56" ColSpan="15" Style="cs_m47862208" />
+      <Cell Index="72" ColSpan="38" Style="cs_m32734616" />
+      <Cell Index="111" ColSpan="10" Style="cs_m47864324" />
+      <Cell Index="122" ColSpan="10" Style="cs_m32734272" />
+      <Cell Index="133" ColSpan="10" Style="cs_m32734576" />
+      <Cell Index="144" ColSpan="13" Style="cs_m32734312" />
+      <Cell Index="158" ColSpan="10" Style="cs_m32734272" />
+      <Cell Index="169" ColSpan="17" Style="cs_m32734576" />
+    </Row>
+    <Row Height="4.233333">
+      <Cell Index="0" ColSpan="10" Style="cs_m47862532" />
+      <Cell Index="11" ColSpan="19" Style="cs_m32734536" />
+      <Cell Index="31" ColSpan="12" Style="cs_s513" />
+      <Cell Index="44" ColSpan="11" Style="cs_m32734576" />
+      <Cell Index="56" ColSpan="15" Style="cs_m47862208" />
+      <Cell Index="72" ColSpan="38" Style="cs_m32734616" />
+      <Cell Index="111" ColSpan="10" Style="cs_m47864324" />
+      <Cell Index="122" ColSpan="10" Style="cs_m32734272" />
+      <Cell Index="133" ColSpan="10" Style="cs_m32734576" />
+      <Cell Index="144" ColSpan="13" Style="cs_m32734312" />
+      <Cell Index="158" ColSpan="10" Style="cs_m32734272" />
+      <Cell Index="169" ColSpan="17" Style="cs_m32734576" />
+    </Row>
+    <Row Height="4.233333">
+      <Cell Index="0" ColSpan="10" Style="cs_m47862532" />
+      <Cell Index="11" ColSpan="19" Style="cs_m32734536" />
+      <Cell Index="31" ColSpan="12" Style="cs_s513" />
+      <Cell Index="44" ColSpan="11" Style="cs_m32734576" />
+      <Cell Index="56" ColSpan="15" Style="cs_m47862208" />
+      <Cell Index="72" ColSpan="38" Style="cs_m32734616" />
+      <Cell Index="111" ColSpan="10" Style="cs_m47864324" />
+      <Cell Index="122" ColSpan="10" Style="cs_m32734272" />
+      <Cell Index="133" ColSpan="10" Style="cs_m32734576" />
+      <Cell Index="144" ColSpan="13" Style="cs_m32734312" />
+      <Cell Index="158" ColSpan="10" Style="cs_m32734272" />
+      <Cell Index="169" ColSpan="17" Style="cs_m32734576" />
+    </Row>
+    <Row Height="4.233333">
+      <Cell Index="0" ColSpan="10" Style="cs_m47862532" />
+      <Cell Index="11" ColSpan="19" Style="cs_m32734536" />
+      <Cell Index="31" ColSpan="12" Style="cs_s513" />
+      <Cell Index="44" ColSpan="11" Style="cs_m32734576" />
+      <Cell Index="56" ColSpan="15" Style="cs_m47862208" />
+      <Cell Index="72" ColSpan="38" Style="cs_m32734616" />
+      <Cell Index="111" ColSpan="10" Style="cs_m47864324" />
+      <Cell Index="122" ColSpan="10" Style="cs_m32734272" />
+      <Cell Index="133" ColSpan="10" Style="cs_m32734576" />
+      <Cell Index="144" ColSpan="13" Style="cs_m32734312" />
+      <Cell Index="158" ColSpan="10" Style="cs_m32734272" />
+      <Cell Index="169" ColSpan="17" Style="cs_m32734576" />
+    </Row>
+    <Row Height="4.233333">
+      <Cell Index="0" ColSpan="10" Style="cs_m47862532" />
+      <Cell Index="11" ColSpan="19" Style="cs_m32734536" />
+      <Cell Index="31" ColSpan="12" Style="cs_s513" />
+      <Cell Index="44" ColSpan="11" Style="cs_m32734576" />
+      <Cell Index="56" ColSpan="15" Style="cs_m47862208" />
+      <Cell Index="72" ColSpan="38" Style="cs_m32734616" />
+      <Cell Index="111" ColSpan="10" Style="cs_m47864324" />
+      <Cell Index="122" ColSpan="10" Style="cs_m32734272" />
+      <Cell Index="133" ColSpan="10" Style="cs_m32734576" />
+      <Cell Index="144" ColSpan="13" Style="cs_m32734312" />
+      <Cell Index="158" ColSpan="10" Style="cs_m32734272" />
+      <Cell Index="169" ColSpan="17" Style="cs_m32734576" />
+    </Row>
+    <Row Height="4.233333">
+      <Cell Index="0" ColSpan="10" Style="cs_m47862532" />
+      <Cell Index="11" ColSpan="19" Style="cs_m32734536" />
+      <Cell Index="31" ColSpan="12" Style="cs_s513" />
+      <Cell Index="44" ColSpan="11" Style="cs_m32734576" />
+      <Cell Index="56" ColSpan="15" Style="cs_m47862208" />
+      <Cell Index="72" ColSpan="38" Style="cs_m32734616" />
+      <Cell Index="111" ColSpan="10" Style="cs_m47864324" />
+      <Cell Index="122" ColSpan="10" Style="cs_m32734272" />
+      <Cell Index="133" ColSpan="10" Style="cs_m32734576" />
+      <Cell Index="144" ColSpan="13" Style="cs_m32734312" />
+      <Cell Index="158" ColSpan="10" Style="cs_m32734272" />
+      <Cell Index="169" ColSpan="17" Style="cs_m32734576" />
+    </Row>
+    <Row Height="4.233333">
+      <Cell Index="0" ColSpan="10" Style="cs_m47862308" />
+      <Cell Index="11" ColSpan="19" Style="cs_m32732824" />
+      <Cell Index="31" ColSpan="12" Style="cs_m32732844" />
+      <Cell Index="44" ColSpan="11" Style="cs_m32732764" />
+      <Cell Index="56" ColSpan="15" Style="cs_m32732784" />
+      <Cell Index="72" ColSpan="38" Style="cs_m32732396" />
+      <Cell Index="111" ColSpan="10" Style="cs_m47861860" />
+      <Cell Index="122" ColSpan="10" Style="cs_m32732296" />
+      <Cell Index="133" ColSpan="10" Style="cs_m32732764" />
+      <Cell Index="144" ColSpan="13" Style="cs_m32732376" />
+      <Cell Index="158" ColSpan="10" Style="cs_m32732356" />
+      <Cell Index="169" ColSpan="17" Style="cs_m32732824" />
+    </Row>
+    <Row Height="4.960938">
+      <Cell Index="0" ColSpan="43" Style="cs_s646">
+        <TextContent Style="tc_s646">
+          <Text>Товарная накладная имеет продолжение на</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="44" ColSpan="28" Style="cs_s505" />
+      <Cell Index="74" ColSpan="23" Style="cs_s950">
+        <TextContent Style="tc_s646">
+          <Text>листах, на бланках за №</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="99" ColSpan="42" Style="cs_s505" />
+      <Cell Index="144" ColSpan="13" Style="cs_m32732256">
+        <TextContent Style="tc_s565">
+          <Text>Наценка, %</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="158" ColSpan="10" Style="cs_m32732276" />
+    </Row>
+    <Row Height="4.233333">
+      <Cell Index="0" ColSpan="11" Style="cs_s646">
+        <TextContent Style="tc_s646">
+          <Text>и содержит</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="13" ColSpan="59" Style="cs_s505" />
+      <Cell Index="74" ColSpan="30" Style="cs_s646">
+        <TextContent Style="tc_s646">
+          <Text>порядковых номеров записей</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="144" RowSpan="2" ColSpan="13" Style="cs_m47863956">
+        <TextContent Style="tc_m47863956">
+          <Text>Складские или транспортные расходы</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="158" RowSpan="2" ColSpan="10" Style="cs_m47862472" />
+    </Row>
+    <Row Height="2.645833">
+      <Cell Index="13" ColSpan="59" Style="cs_s641">
+        <TextContent Style="tc_s515">
+          <Text>(прописью)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="122" RowSpan="1" ColSpan="15" Style="cs_m47862512" />
+    </Row>
+    <Row Height="3.704167">
+      <Cell Index="0" ColSpan="21" Style="cs_s646">
+        <TextContent Style="tc_s646">
+          <Text>Всего наименований</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="22" ColSpan="50" Style="cs_s505" />
+      <Cell Index="74" ColSpan="20" Style="cs_s646">
+        <TextContent Style="tc_s646">
+          <Text>Масса груза (нетто)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="95" ColSpan="24" Style="cs_s505" />
+      <Cell Index="138" ColSpan="2" Style="cs_s646">
+        <TextContent Style="tc_m47862492">
+          <Text>т</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="2.645833">
+      <Cell Index="22" ColSpan="50" Style="cs_s641">
+        <TextContent Style="tc_s515">
+          <Text>(прописью)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="95" ColSpan="24" Style="cs_s641">
+        <TextContent Style="tc_s515">
+          <Text>(прописью)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="122" RowSpan="1" ColSpan="15" Style="cs_m47862308" />
+      <Cell Index="144" RowSpan="1" ColSpan="13" Style="cs_m47863956" />
+      <Cell Index="158" RowSpan="1" ColSpan="10" Style="cs_m47862472" />
+    </Row>
+    <Row Height="3.902604">
+      <Cell Index="0" ColSpan="11" Style="cs_s646">
+        <TextContent Style="tc_s944">
+          <Text>Всего мест</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="12" ColSpan="60" Style="cs_s505" />
+      <Cell Index="74" ColSpan="20" Style="cs_s646">
+        <TextContent Style="tc_s646">
+          <Text>Масса груза (брутто)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="95" ColSpan="24" Style="cs_s505" />
+      <Cell Index="138" ColSpan="2" Style="cs_s646">
+        <TextContent Style="tc_m47862492">
+          <Text>т</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="4.960938">
+      <Cell Index="12" ColSpan="60" Style="cs_s641">
+        <TextContent Style="tc_s621">
+          <Text>(прописью)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="73" Style="cs_s646" />
+      <Cell Index="74" Style="cs_s646" />
+      <Cell Index="75" Style="cs_s646" />
+      <Cell Index="76" Style="cs_s646" />
+      <Cell Index="77" Style="cs_s646" />
+      <Cell Index="78" Style="cs_s646" />
+      <Cell Index="79" Style="cs_s646" />
+      <Cell Index="80" Style="cs_s646" />
+      <Cell Index="81" Style="cs_s646" />
+      <Cell Index="82" Style="cs_s646" />
+      <Cell Index="83" Style="cs_s646" />
+      <Cell Index="84" Style="cs_s646" />
+      <Cell Index="85" Style="cs_s646" />
+      <Cell Index="86" Style="cs_s646" />
+      <Cell Index="87" Style="cs_s646" />
+      <Cell Index="88" Style="cs_s646" />
+      <Cell Index="89" Style="cs_s646" />
+      <Cell Index="90" Style="cs_s646" />
+      <Cell Index="91" Style="cs_s646" />
+      <Cell Index="92" Style="cs_s646" />
+      <Cell Index="93" Style="cs_s646" />
+      <Cell Index="94" Style="cs_s646" />
+      <Cell Index="95" ColSpan="24" Style="cs_s641">
+        <TextContent Style="tc_s621">
+          <Text>(прописью)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="144" ColSpan="13" Style="cs_m47862696">
+        <TextContent Style="tc_m47863956">
+          <Text>Всего к оплате</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="158" ColSpan="10" Style="cs_m32734720" />
+    </Row>
+    <Row Height="4.233333">
+      <Cell Index="0" ColSpan="46" Style="cs_s646">
+        <TextContent Style="tc_s646">
+          <Text>Приложение (паспорта, сертификаты и т.п.) на</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="47" ColSpan="25" Style="cs_s505" />
+      <Cell Index="74" Style="cs_s646">
+        <TextContent Style="tc_s25">
+          <Text>листах</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="82" ColSpan="16" Style="cs_s505" />
+      <Cell Index="99" Style="cs_s646" />
+      <Cell Index="100" Style="cs_s646" />
+      <Cell Index="101" Style="cs_s29" />
+      <Cell Index="102" RowSpan="1" ColSpan="20" Style="cs_s646">
+        <TextContent Style="tc_s646">
+          <Text>По доверенности №</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="123" RowSpan="1" ColSpan="15" Style="cs_s505" />
+      <Cell Index="139" Style="cs_s646" />
+      <Cell Index="140" RowSpan="1" ColSpan="4" Style="cs_s646">
+        <TextContent Style="tc_s25">
+          <Text>от  «</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="145" RowSpan="1" ColSpan="4" Style="cs_m47864020" />
+      <Cell Index="150" RowSpan="1" ColSpan="2" Style="cs_s950">
+        <TextContent Style="tc_s25">
+          <Text>»</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="153" RowSpan="1" ColSpan="18" Style="cs_s505" />
+      <Cell Index="172" Style="cs_s646" />
+      <Cell Index="173" Style="cs_s646" />
+      <Cell Index="174" RowSpan="1" ColSpan="7" Style="cs_s505" />
+      <Cell Index="182" RowSpan="1" ColSpan="3" Style="cs_s646">
+        <TextContent Style="tc_s25">
+          <Text> г.</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="2.844271">
+      <Cell Index="47" ColSpan="25" Style="cs_s641">
+        <TextContent Style="tc_s621">
+          <Text>(прописью)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="83" Style="cs_s646" />
+      <Cell Index="84" Style="cs_s646" />
+      <Cell Index="85" Style="cs_s646" />
+      <Cell Index="86" Style="cs_s646" />
+      <Cell Index="87" Style="cs_s646" />
+      <Cell Index="88" Style="cs_s646" />
+      <Cell Index="89" Style="cs_s646" />
+      <Cell Index="90" Style="cs_s646" />
+      <Cell Index="91" Style="cs_s646" />
+      <Cell Index="92" Style="cs_s646" />
+      <Cell Index="93" Style="cs_s646" />
+      <Cell Index="94" Style="cs_s646" />
+      <Cell Index="95" Style="cs_s646" />
+      <Cell Index="96" Style="cs_s646" />
+      <Cell Index="97" Style="cs_s646" />
+      <Cell Index="98" Style="cs_s646" />
+      <Cell Index="101" Style="cs_s29" />
+      <Cell Index="139" Style="cs_s646" />
+      <Cell Index="172" Style="cs_s646" />
+      <Cell Index="173" Style="cs_s646" />
+    </Row>
+    <Row Height="4.233333">
+      <Cell Index="0" ColSpan="26" Style="cs_s646">
+        <TextContent Style="tc_s646">
+          <Text>Всего отпущено на сумму</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="27" ColSpan="46" Style="cs_s505" />
+      <Cell Index="74" ColSpan="5" Style="cs_s646">
+        <TextContent Style="tc_s624">
+          <Text>руб.</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="80" ColSpan="8" Style="cs_s505" />
+      <Cell Index="90" Style="cs_s646">
+        <TextContent Style="tc_s25">
+          <Text>коп.</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="101" Style="cs_s29" />
+      <Cell Index="102" ColSpan="10" Style="cs_s646">
+        <TextContent Style="tc_s646">
+          <Text>выданной</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="113" ColSpan="73" Style="cs_s505" />
+    </Row>
+    <Row Height="2.645833">
+      <Cell Index="19" Style="cs_s646" />
+      <Cell Index="20" Style="cs_s646" />
+      <Cell Index="21" Style="cs_s646" />
+      <Cell Index="22" Style="cs_s646" />
+      <Cell Index="23" Style="cs_s646" />
+      <Cell Index="24" Style="cs_s646" />
+      <Cell Index="25" Style="cs_s646" />
+      <Cell Index="26" Style="cs_s646" />
+      <Cell Index="27" Style="cs_s646" />
+      <Cell Index="28" Style="cs_s646" />
+      <Cell Index="29" Style="cs_s646" />
+      <Cell Index="30" Style="cs_s646" />
+      <Cell Index="31" Style="cs_s646" />
+      <Cell Index="32" Style="cs_s646" />
+      <Cell Index="33" Style="cs_s646" />
+      <Cell Index="34" Style="cs_s646" />
+      <Cell Index="35" Style="cs_s646" />
+      <Cell Index="36" Style="cs_s646" />
+      <Cell Index="37" Style="cs_s646" />
+      <Cell Index="38" Style="cs_s646" />
+      <Cell Index="39" Style="cs_s646" />
+      <Cell Index="40" Style="cs_s646" />
+      <Cell Index="41" Style="cs_s646" />
+      <Cell Index="42" Style="cs_s646" />
+      <Cell Index="43" RowSpan="1" ColSpan="8" Style="cs_s641">
+        <TextContent Style="tc_s621">
+          <Text>(прописью)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="52" RowSpan="2" ColSpan="22" Style="cs_s646">
+        <TextContent Style="tc_s617">
+          <Text>Главный (старший)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="101" Style="cs_s29" />
+      <Cell Index="102" RowSpan="1" ColSpan="28" Style="cs_s646">
+        <TextContent Style="tc_s25">
+          <Text>Груз к перевозке принял</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="131" RowSpan="1" ColSpan="16" Style="cs_s513" />
+      <Cell Index="150" RowSpan="1" ColSpan="11" Style="cs_s513" />
+      <Cell Index="164" RowSpan="1" ColSpan="22" Style="cs_s513" />
+    </Row>
+    <Row Height="2.645833">
+      <Cell Index="0" RowSpan="1" ColSpan="20" Style="cs_s646">
+        <TextContent Style="tc_s617">
+          <Text>Отпуск разрешил</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="101" Style="cs_s29" />
+    </Row>
+    <Row Height="2.910417">
+      <Cell Index="101" Style="cs_s29" />
+      <Cell Index="131" ColSpan="16" Style="cs_s641">
+        <TextContent Style="tc_s515">
+          <Text>(должность)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="150" ColSpan="11" Style="cs_s641">
+        <TextContent Style="tc_s515">
+          <Text>(подпись)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="164" ColSpan="22" Style="cs_s641">
+        <TextContent Style="tc_s515">
+          <Text>(расшифровка подписи)</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.704167">
+      <Cell Index="0" ColSpan="22" Style="cs_s505" />
+      <Cell Index="23" Style="cs_s646" />
+      <Cell Index="24" ColSpan="6" Style="cs_s505" />
+      <Cell Index="31" Style="cs_s646" />
+      <Cell Index="32" ColSpan="17" Style="cs_s505" />
+      <Cell Index="52" ColSpan="15" Style="cs_s646">
+        <TextContent Style="tc_s65">
+          <Text>бухгалтер</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="68" ColSpan="9" Style="cs_s505" />
+      <Cell Index="80" ColSpan="18" Style="cs_s505" />
+      <Cell Index="101" Style="cs_s29" />
+      <Cell Index="102" Style="cs_s646" />
+      <Cell Index="103" Style="cs_s646" />
+      <Cell Index="104" Style="cs_s646" />
+      <Cell Index="105" Style="cs_s646" />
+      <Cell Index="106" Style="cs_s646" />
+      <Cell Index="107" Style="cs_s646" />
+      <Cell Index="108" Style="cs_s646" />
+      <Cell Index="109" Style="cs_s646" />
+      <Cell Index="110" Style="cs_s646" />
+      <Cell Index="111" Style="cs_s646" />
+      <Cell Index="112" Style="cs_s646" />
+      <Cell Index="113" Style="cs_s646" />
+      <Cell Index="114" Style="cs_s646" />
+      <Cell Index="115" Style="cs_s646" />
+      <Cell Index="116" Style="cs_s646" />
+      <Cell Index="117" Style="cs_s646" />
+      <Cell Index="118" Style="cs_s646" />
+      <Cell Index="119" Style="cs_s646" />
+      <Cell Index="120" Style="cs_s646" />
+      <Cell Index="121" Style="cs_s646" />
+      <Cell Index="122" Style="cs_s646" />
+      <Cell Index="123" Style="cs_s646" />
+      <Cell Index="124" Style="cs_s646" />
+      <Cell Index="125" Style="cs_s646" />
+      <Cell Index="126" Style="cs_s646" />
+      <Cell Index="127" Style="cs_s646" />
+      <Cell Index="128" Style="cs_s646" />
+      <Cell Index="129" Style="cs_s646" />
+      <Cell Index="130" Style="cs_s646" />
+      <Cell Index="131" Style="cs_s646" />
+      <Cell Index="132" Style="cs_s646" />
+      <Cell Index="133" Style="cs_s646" />
+      <Cell Index="134" Style="cs_s646" />
+      <Cell Index="135" Style="cs_s646" />
+      <Cell Index="136" Style="cs_s646" />
+      <Cell Index="137" Style="cs_s646" />
+      <Cell Index="138" Style="cs_s646" />
+      <Cell Index="139" Style="cs_s646" />
+      <Cell Index="140" Style="cs_s646" />
+      <Cell Index="141" Style="cs_s646" />
+      <Cell Index="142" Style="cs_s646" />
+      <Cell Index="143" Style="cs_s646" />
+      <Cell Index="144" Style="cs_s646" />
+      <Cell Index="145" Style="cs_s646" />
+      <Cell Index="146" Style="cs_s646" />
+      <Cell Index="147" Style="cs_s646" />
+      <Cell Index="148" Style="cs_s646" />
+      <Cell Index="149" Style="cs_s646" />
+      <Cell Index="150" Style="cs_s646" />
+      <Cell Index="151" Style="cs_s646" />
+      <Cell Index="152" Style="cs_s646" />
+      <Cell Index="153" Style="cs_s646" />
+      <Cell Index="154" Style="cs_s646" />
+      <Cell Index="155" Style="cs_s646" />
+      <Cell Index="156" Style="cs_s646" />
+      <Cell Index="157" Style="cs_s646" />
+      <Cell Index="158" Style="cs_s646" />
+      <Cell Index="159" Style="cs_s646" />
+      <Cell Index="160" Style="cs_s646" />
+      <Cell Index="161" Style="cs_s646" />
+      <Cell Index="162" Style="cs_s646" />
+      <Cell Index="163" Style="cs_s646" />
+      <Cell Index="164" Style="cs_s646" />
+      <Cell Index="165" Style="cs_s646" />
+      <Cell Index="166" Style="cs_s646" />
+      <Cell Index="167" Style="cs_s646" />
+      <Cell Index="168" Style="cs_s646" />
+      <Cell Index="169" Style="cs_s646" />
+      <Cell Index="170" Style="cs_s646" />
+      <Cell Index="171" Style="cs_s646" />
+      <Cell Index="172" Style="cs_s646" />
+      <Cell Index="173" Style="cs_s646" />
+      <Cell Index="174" Style="cs_s646" />
+      <Cell Index="175" Style="cs_s646" />
+      <Cell Index="176" Style="cs_s646" />
+      <Cell Index="177" Style="cs_s646" />
+      <Cell Index="178" Style="cs_s646" />
+      <Cell Index="179" Style="cs_s646" />
+      <Cell Index="180" Style="cs_s646" />
+      <Cell Index="181" Style="cs_s646" />
+      <Cell Index="182" Style="cs_s646" />
+      <Cell Index="183" Style="cs_s646" />
+      <Cell Index="184" Style="cs_s646" />
+    </Row>
+    <Row Height="2.844271">
+      <Cell Index="0" ColSpan="22" Style="cs_s641">
+        <TextContent Style="tc_s515">
+          <Text>(должность)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="23" Style="cs_s646" />
+      <Cell Index="24" ColSpan="6" Style="cs_s641">
+        <TextContent Style="tc_s515">
+          <Text>(подпись)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="31" Style="cs_s646" />
+      <Cell Index="32" ColSpan="17" Style="cs_s641">
+        <TextContent Style="tc_s515">
+          <Text>(расшифровка подписи)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="56" Style="cs_s646" />
+      <Cell Index="57" Style="cs_s646" />
+      <Cell Index="58" Style="cs_s646" />
+      <Cell Index="59" Style="cs_s646" />
+      <Cell Index="60" Style="cs_s646" />
+      <Cell Index="61" Style="cs_s646" />
+      <Cell Index="62" Style="cs_s646" />
+      <Cell Index="63" Style="cs_s646" />
+      <Cell Index="64" Style="cs_s646" />
+      <Cell Index="65" Style="cs_s646" />
+      <Cell Index="66" Style="cs_s646" />
+      <Cell Index="67" Style="cs_s646" />
+      <Cell Index="68" ColSpan="9" Style="cs_s641">
+        <TextContent Style="tc_s515">
+          <Text>(подпись)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="78" Style="cs_s646" />
+      <Cell Index="79" Style="cs_s646" />
+      <Cell Index="80" ColSpan="18" Style="cs_s641">
+        <TextContent Style="tc_s515">
+          <Text>(расшифровка подписи)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="101" Style="cs_s29" />
+      <Cell Index="102" RowSpan="1" ColSpan="61" Style="cs_s646">
+        <TextContent Style="tc_s25">
+          <Text>(При личном приеме товара по количеству и ассортименту)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="164" Style="cs_s646" />
+      <Cell Index="165" Style="cs_s646" />
+      <Cell Index="166" Style="cs_s646" />
+      <Cell Index="167" Style="cs_s646" />
+      <Cell Index="168" Style="cs_s646" />
+      <Cell Index="169" Style="cs_s646" />
+      <Cell Index="170" Style="cs_s646" />
+      <Cell Index="171" Style="cs_s646" />
+      <Cell Index="172" Style="cs_s646" />
+      <Cell Index="173" Style="cs_s646" />
+      <Cell Index="174" Style="cs_s646" />
+      <Cell Index="175" Style="cs_s646" />
+      <Cell Index="176" Style="cs_s646" />
+      <Cell Index="177" Style="cs_s646" />
+      <Cell Index="178" Style="cs_s646" />
+      <Cell Index="179" Style="cs_s646" />
+      <Cell Index="180" Style="cs_s646" />
+      <Cell Index="181" Style="cs_s646" />
+      <Cell Index="182" Style="cs_s646" />
+      <Cell Index="183" Style="cs_s646" />
+      <Cell Index="184" Style="cs_s646" />
+    </Row>
+    <Row Height="2.116667">
+      <Cell Index="0" Style="cs_s646" />
+      <Cell Index="1" Style="cs_s646" />
+      <Cell Index="2" Style="cs_s646" />
+      <Cell Index="3" Style="cs_s646" />
+      <Cell Index="4" Style="cs_s646" />
+      <Cell Index="5" Style="cs_s646" />
+      <Cell Index="6" Style="cs_s646" />
+      <Cell Index="7" Style="cs_s646" />
+      <Cell Index="8" Style="cs_s646" />
+      <Cell Index="9" Style="cs_s646" />
+      <Cell Index="10" Style="cs_s646" />
+      <Cell Index="11" Style="cs_s646" />
+      <Cell Index="12" Style="cs_s646" />
+      <Cell Index="13" Style="cs_s646" />
+      <Cell Index="14" Style="cs_s646" />
+      <Cell Index="15" Style="cs_s646" />
+      <Cell Index="16" Style="cs_s646" />
+      <Cell Index="17" Style="cs_s646" />
+      <Cell Index="101" Style="cs_s29" />
+      <Cell Index="164" Style="cs_s646" />
+      <Cell Index="165" Style="cs_s646" />
+      <Cell Index="166" Style="cs_s646" />
+      <Cell Index="167" Style="cs_s646" />
+      <Cell Index="168" Style="cs_s646" />
+      <Cell Index="169" Style="cs_s646" />
+      <Cell Index="170" Style="cs_s646" />
+      <Cell Index="171" Style="cs_s646" />
+      <Cell Index="172" Style="cs_s646" />
+      <Cell Index="173" Style="cs_s646" />
+      <Cell Index="174" Style="cs_s646" />
+      <Cell Index="175" Style="cs_s646" />
+      <Cell Index="176" Style="cs_s646" />
+      <Cell Index="177" Style="cs_s646" />
+      <Cell Index="178" Style="cs_s646" />
+      <Cell Index="179" Style="cs_s646" />
+      <Cell Index="180" Style="cs_s646" />
+      <Cell Index="181" Style="cs_s646" />
+      <Cell Index="182" Style="cs_s646" />
+      <Cell Index="183" Style="cs_s646" />
+      <Cell Index="184" Style="cs_s646" />
+    </Row>
+    <Row Height="4.034896">
+      <Cell Index="0" ColSpan="26" Style="cs_s646">
+        <TextContent Style="tc_s65">
+          <Text>Отпуск груза произвел</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="27" ColSpan="23" Style="cs_s505" />
+      <Cell Index="53" ColSpan="13" Style="cs_s505" />
+      <Cell Index="69" ColSpan="25" Style="cs_s505" />
+      <Cell Index="101" Style="cs_s29" />
+      <Cell Index="102" ColSpan="84" Style="cs_s505" />
+    </Row>
+    <Row Height="2.844271">
+      <Cell Index="27" ColSpan="23" Style="cs_s641">
+        <TextContent Style="tc_s515">
+          <Text>(должность)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="53" ColSpan="13" Style="cs_s641">
+        <TextContent Style="tc_s515">
+          <Text>(подпись)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="67" Style="cs_s646" />
+      <Cell Index="68" Style="cs_s646" />
+      <Cell Index="69" ColSpan="25" Style="cs_s641">
+        <TextContent Style="tc_s515">
+          <Text>(расшифровка подписи)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="101" Style="cs_s29" />
+      <Cell Index="102" Style="cs_s646" />
+      <Cell Index="103" Style="cs_s646" />
+      <Cell Index="104" Style="cs_s646" />
+      <Cell Index="105" Style="cs_s646" />
+      <Cell Index="106" Style="cs_s646" />
+      <Cell Index="107" Style="cs_s646" />
+      <Cell Index="108" Style="cs_s646" />
+      <Cell Index="109" Style="cs_s646" />
+      <Cell Index="110" Style="cs_s646" />
+      <Cell Index="111" Style="cs_s646" />
+      <Cell Index="112" Style="cs_s646" />
+      <Cell Index="113" Style="cs_s646" />
+      <Cell Index="114" Style="cs_s646" />
+      <Cell Index="115" Style="cs_s646" />
+      <Cell Index="116" Style="cs_s646" />
+      <Cell Index="117" Style="cs_s646" />
+      <Cell Index="118" Style="cs_s646" />
+      <Cell Index="119" Style="cs_s646" />
+      <Cell Index="120" Style="cs_s646" />
+      <Cell Index="121" Style="cs_s646" />
+      <Cell Index="122" Style="cs_s646" />
+      <Cell Index="123" Style="cs_s646" />
+      <Cell Index="124" Style="cs_s646" />
+      <Cell Index="125" Style="cs_s646" />
+      <Cell Index="126" Style="cs_s646" />
+      <Cell Index="127" Style="cs_s646" />
+      <Cell Index="128" Style="cs_s646" />
+      <Cell Index="129" Style="cs_s646" />
+      <Cell Index="130" Style="cs_s646" />
+      <Cell Index="131" Style="cs_s646" />
+      <Cell Index="132" Style="cs_s646" />
+      <Cell Index="133" Style="cs_s646" />
+      <Cell Index="134" Style="cs_s646" />
+      <Cell Index="135" Style="cs_s646" />
+      <Cell Index="136" Style="cs_s646" />
+      <Cell Index="137" Style="cs_s646" />
+      <Cell Index="138" Style="cs_s646" />
+      <Cell Index="139" Style="cs_s646" />
+      <Cell Index="140" Style="cs_s646" />
+      <Cell Index="141" Style="cs_s646" />
+      <Cell Index="142" Style="cs_s646" />
+      <Cell Index="143" Style="cs_s646" />
+      <Cell Index="144" Style="cs_s646" />
+      <Cell Index="145" Style="cs_s646" />
+      <Cell Index="146" Style="cs_s646" />
+      <Cell Index="147" Style="cs_s646" />
+      <Cell Index="148" Style="cs_s646" />
+      <Cell Index="149" Style="cs_s646" />
+      <Cell Index="150" Style="cs_s646" />
+      <Cell Index="151" Style="cs_s646" />
+      <Cell Index="152" Style="cs_s646" />
+      <Cell Index="153" Style="cs_s646" />
+      <Cell Index="154" Style="cs_s646" />
+      <Cell Index="155" Style="cs_s646" />
+      <Cell Index="156" Style="cs_s646" />
+      <Cell Index="157" Style="cs_s646" />
+      <Cell Index="158" Style="cs_s646" />
+      <Cell Index="159" Style="cs_s646" />
+      <Cell Index="160" Style="cs_s646" />
+      <Cell Index="161" Style="cs_s646" />
+      <Cell Index="162" Style="cs_s646" />
+      <Cell Index="163" Style="cs_s646" />
+      <Cell Index="164" Style="cs_s646" />
+      <Cell Index="165" Style="cs_s646" />
+      <Cell Index="166" Style="cs_s646" />
+      <Cell Index="167" Style="cs_s646" />
+      <Cell Index="168" Style="cs_s646" />
+      <Cell Index="169" Style="cs_s646" />
+      <Cell Index="170" Style="cs_s646" />
+      <Cell Index="171" Style="cs_s646" />
+      <Cell Index="172" Style="cs_s646" />
+      <Cell Index="173" Style="cs_s646" />
+      <Cell Index="174" Style="cs_s646" />
+      <Cell Index="175" Style="cs_s646" />
+      <Cell Index="176" Style="cs_s646" />
+      <Cell Index="177" Style="cs_s646" />
+      <Cell Index="178" Style="cs_s646" />
+      <Cell Index="179" Style="cs_s646" />
+      <Cell Index="180" Style="cs_s646" />
+      <Cell Index="181" Style="cs_s646" />
+      <Cell Index="182" Style="cs_s646" />
+      <Cell Index="183" Style="cs_s646" />
+      <Cell Index="184" Style="cs_s646" />
+    </Row>
+    <Row Height="4.233333">
+      <Cell Index="44" ColSpan="7" Style="cs_s646">
+        <TextContent Style="tc_s646">
+          <Text>М.П.</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="52" Style="cs_s646" />
+      <Cell Index="53" Style="cs_s646" />
+      <Cell Index="54" Style="cs_s646">
+        <TextContent Style="tc_s25">
+          <Text>«</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="55" Style="cs_s646" />
+      <Cell Index="56" ColSpan="4" Style="cs_s505" />
+      <Cell Index="61" Style="cs_s646">
+        <TextContent Style="tc_s25">
+          <Text>»</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="62" Style="cs_s646" />
+      <Cell Index="63" Style="cs_s646" />
+      <Cell Index="64" ColSpan="17" Style="cs_s505" />
+      <Cell Index="82" Style="cs_s646" />
+      <Cell Index="83" Style="cs_s646" />
+      <Cell Index="84" ColSpan="6" Style="cs_s505" />
+      <Cell Index="91" Style="cs_s646" />
+      <Cell Index="92" Style="cs_s646">
+        <TextContent Style="tc_s25">
+          <Text>г.</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="93" Style="cs_s646" />
+      <Cell Index="101" Style="cs_s29" />
+      <Cell Index="102" ColSpan="30" Style="cs_s646">
+        <TextContent Style="tc_s646">
+          <Text>Груз получил грузополучатель</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="133" ColSpan="15" Style="cs_s505" />
+      <Cell Index="151" ColSpan="10" Style="cs_s505" />
+      <Cell Index="164" ColSpan="22" Style="cs_s505" />
+    </Row>
+    <Row Height="2.645833">
+      <Cell Index="44" Style="cs_s646" />
+      <Cell Index="45" Style="cs_s646" />
+      <Cell Index="46" Style="cs_s646" />
+      <Cell Index="47" Style="cs_s646" />
+      <Cell Index="48" Style="cs_s646" />
+      <Cell Index="49" Style="cs_s646" />
+      <Cell Index="50" Style="cs_s646" />
+      <Cell Index="51" Style="cs_s646" />
+      <Cell Index="52" Style="cs_s646" />
+      <Cell Index="53" Style="cs_s646" />
+      <Cell Index="54" Style="cs_s646" />
+      <Cell Index="55" Style="cs_s646" />
+      <Cell Index="56" Style="cs_s646" />
+      <Cell Index="57" Style="cs_s646" />
+      <Cell Index="58" Style="cs_s646" />
+      <Cell Index="59" Style="cs_s646" />
+      <Cell Index="60" Style="cs_s646" />
+      <Cell Index="61" Style="cs_s646" />
+      <Cell Index="62" Style="cs_s646" />
+      <Cell Index="63" Style="cs_s646" />
+      <Cell Index="64" Style="cs_s646" />
+      <Cell Index="65" Style="cs_s646" />
+      <Cell Index="66" Style="cs_s646" />
+      <Cell Index="67" Style="cs_s646" />
+      <Cell Index="68" Style="cs_s646" />
+      <Cell Index="69" Style="cs_s646" />
+      <Cell Index="70" Style="cs_s646" />
+      <Cell Index="71" Style="cs_s646" />
+      <Cell Index="72" Style="cs_s646" />
+      <Cell Index="73" Style="cs_s646" />
+      <Cell Index="74" Style="cs_s646" />
+      <Cell Index="75" Style="cs_s646" />
+      <Cell Index="76" Style="cs_s646" />
+      <Cell Index="77" Style="cs_s646" />
+      <Cell Index="78" Style="cs_s646" />
+      <Cell Index="79" Style="cs_s646" />
+      <Cell Index="80" Style="cs_s646" />
+      <Cell Index="81" Style="cs_s646" />
+      <Cell Index="82" Style="cs_s646" />
+      <Cell Index="95" Style="cs_s646" />
+      <Cell Index="96" Style="cs_s646" />
+      <Cell Index="101" Style="cs_s29" />
+      <Cell Index="102" Style="cs_s646" />
+      <Cell Index="103" Style="cs_s646" />
+      <Cell Index="104" Style="cs_s646" />
+      <Cell Index="105" Style="cs_s646" />
+      <Cell Index="106" Style="cs_s646" />
+      <Cell Index="107" Style="cs_s646" />
+      <Cell Index="108" Style="cs_s646" />
+      <Cell Index="109" Style="cs_s646" />
+      <Cell Index="110" Style="cs_s646" />
+      <Cell Index="111" Style="cs_s646" />
+      <Cell Index="112" Style="cs_s646" />
+      <Cell Index="113" Style="cs_s646" />
+      <Cell Index="114" Style="cs_s646" />
+      <Cell Index="115" Style="cs_s646" />
+      <Cell Index="116" Style="cs_s646" />
+      <Cell Index="117" Style="cs_s646" />
+      <Cell Index="118" Style="cs_s646" />
+      <Cell Index="119" Style="cs_s646" />
+      <Cell Index="120" Style="cs_s646" />
+      <Cell Index="121" Style="cs_s646" />
+      <Cell Index="122" Style="cs_s646" />
+      <Cell Index="123" Style="cs_s646" />
+      <Cell Index="124" Style="cs_s646" />
+      <Cell Index="125" Style="cs_s646" />
+      <Cell Index="126" Style="cs_s646" />
+      <Cell Index="127" Style="cs_s646" />
+      <Cell Index="128" Style="cs_s646" />
+      <Cell Index="129" Style="cs_s646" />
+      <Cell Index="130" Style="cs_s646" />
+      <Cell Index="131" Style="cs_s646" />
+      <Cell Index="132" Style="cs_s646" />
+      <Cell Index="133" ColSpan="15" Style="cs_s641">
+        <TextContent Style="tc_s515">
+          <Text>(должность)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="151" ColSpan="10" Style="cs_s641">
+        <TextContent Style="tc_s515">
+          <Text>(подпись)</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="164" ColSpan="22" Style="cs_s641">
+        <TextContent Style="tc_s515">
+          <Text>(расшифровка подписи)</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+  </Table>
+  <Styles>
+    <TextContentStyle ID="tc_s646" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Left" Vertical="Bottom" />
+      <Font Family="Times New Roman" Size="9" Style="Regular" />
+    </TextContentStyle>
+    <CellStyle ID="cs_s646" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders />
+    </CellStyle>
+    <TextContentStyle ID="tc_m47862492" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Center" Vertical="Bottom" />
+      <Font Family="Arial" Size="10" Style="Regular" />
+    </TextContentStyle>
+    <CellStyle ID="cs_m47862492" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <TextContentStyle ID="tc_s570" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Center" Vertical="Middle" />
+      <Font Family="Arial" Size="10" Style="Regular" />
+    </TextContentStyle>
+    <CellStyle ID="cs_m47862512" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <TextContentStyle ID="tc_s938" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Left" Vertical="Bottom" />
+      <Font Family="Times New Roman" Size="12" Style="Bold" />
+    </TextContentStyle>
+    <CellStyle ID="cs_s505" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m47862532" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <TextContentStyle ID="tc_s641" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Center" Vertical="Middle" />
+      <Font Family="Times New Roman" Size="6" Style="Regular" />
+    </TextContentStyle>
+    <CellStyle ID="cs_s641" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m47864304" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m47864324" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="All" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m47862208" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <TextContentStyle ID="tc_s941" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Right" Vertical="Bottom" />
+      <Font Family="Arial" Size="10" Style="Regular" />
+    </TextContentStyle>
+    <CellStyle ID="cs_m47862452" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <TextContentStyle ID="tc_s515" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Center" Vertical="Bottom" />
+      <Font Family="Times New Roman" Size="6" Style="Regular" />
+    </TextContentStyle>
+    <CellStyle ID="cs_m47862308" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.7055556" />
+      </Borders>
+    </CellStyle>
+    <TextContentStyle ID="tc_s621" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Center" Vertical="Top" />
+      <Font Family="Times New Roman" Size="6" Style="Regular" />
+    </TextContentStyle>
+    <CellStyle ID="cs_s596" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="1.058333" />
+      </Borders>
+    </CellStyle>
+    <TextContentStyle ID="tc_s565" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Center" Vertical="Middle" />
+      <Font Family="Times New Roman" Size="8" Style="Regular" />
+    </TextContentStyle>
+    <CellStyle ID="cs_s565" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m47862144" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m47862164" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m47862064" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m47862084" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m47862004" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <DecimalContentStyle ID="dc_s559" Color="Black" Direction="LeftToRight" Angle="0" Format="" Culture="ru-RU" NegativeColor="Black">
+      <Alignment Horizontal="Center" Vertical="Middle" />
+      <Font Family="Times New Roman" Size="8" Style="Regular" />
+    </DecimalContentStyle>
+    <CellStyle ID="cs_s559" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="1.058333" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m47861780" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="1.058333" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m47861800" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="1.058333" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m47861820" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.7055556" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m47861840" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m47861860" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="1.058333" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32734964" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="1.058333" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32734720" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="1.058333" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32734760" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Right" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32734800" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32734820" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32734840" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32734880" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32734352" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32734372" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32734496" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32734536" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_s513" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32734576" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32734616" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32734272" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32734312" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32732824" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="1.058333" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32732844" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="1.058333" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32732764" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.7055556" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32732784" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.7055556" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32732396" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="1.058333" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32732296" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="1.058333" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32732376" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.7055556" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32732356" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.7055556" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_s950" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="1.058333" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32732256" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m32732276" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.7055556" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <TextContentStyle ID="tc_m47863956" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Center" Vertical="Middle" />
+      <Font Family="Times New Roman" Size="7" Style="Regular" />
+    </TextContentStyle>
+    <CellStyle ID="cs_m47863956" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m47862472" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <TextContentStyle ID="tc_s944" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Left" Vertical="Middle" />
+      <Font Family="Times New Roman" Size="9" Style="Regular" />
+    </TextContentStyle>
+    <CellStyle ID="cs_m47862696" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="1.058333" />
+      </Borders>
+    </CellStyle>
+    <TextContentStyle ID="tc_s25" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Left" Vertical="Top" />
+      <Font Family="Times New Roman" Size="9" Style="Regular" />
+    </TextContentStyle>
+    <CellStyle ID="cs_s29" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_m47864020" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="1.058333" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <TextContentStyle ID="tc_s624" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Center" Vertical="Bottom" />
+      <Font Family="Times New Roman" Size="9" Style="Regular" />
+    </TextContentStyle>
+    <TextContentStyle ID="tc_s617" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Left" Vertical="Top" />
+      <Font Family="Times New Roman" Size="9" Style="Bold" />
+    </TextContentStyle>
+    <TextContentStyle ID="tc_s65" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Left" Vertical="Bottom" />
+      <Font Family="Times New Roman" Size="9" Style="Bold" />
+    </TextContentStyle>
+  </Styles>
+  <Expressions />
+</CellReportTemplate>

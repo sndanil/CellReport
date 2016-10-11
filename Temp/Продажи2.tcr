@@ -1,0 +1,1663 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<CellReportTemplate>
+  <Properties>
+    <DocumentName></DocumentName>
+  </Properties>
+  <DisplaySettings FrozenColumns="0" FrozenRows="0" ShowGridLines="false" ShowResizers="false" Scale="1" />
+  <PrintSettings Landscape="true" AutoFitWidthPages="1" Scale="1">
+    <Margins Top="9.906" Left="9.906" Right="9.906" Bottom="9.906" />
+    <Headers>
+      <Pager Height="10" FromPage="0" ToPage="0">
+        <Left>
+          <CollectionContent>
+            <TextContent>
+              <Text>Дата печати: </Text>
+            </TextContent>
+            <DateTimeContent>
+              <Param Name="NowParam" Target="Value" Expression="Now" />
+              <Value>01/01/0001 00:00:00</Value>
+            </DateTimeContent>
+          </CollectionContent>
+        </Left>
+        <Center />
+        <Right>
+          <CollectionContent>
+            <TextContent>
+              <Text>Страница: </Text>
+            </TextContent>
+            <DecimalContent>
+              <Param Name="Counter" Target="Value" Expression="PageCounter" />
+              <Value>0</Value>
+            </DecimalContent>
+          </CollectionContent>
+        </Right>
+      </Pager>
+    </Headers>
+    <Footers />
+  </PrintSettings>
+  <Sections>
+    <Section ID="Шапка">
+      <LeftTop Row="0" Column="0" />
+      <RightBottom Row="9" Column="21" />
+    </Section>
+    <Section ID="ШапкаКолвоЕд">
+      <LeftTop Row="0" Column="22" />
+      <RightBottom Row="9" Column="22" />
+    </Section>
+    <Section ID="ШапкаМаржа">
+      <LeftTop Row="0" Column="23" />
+      <RightBottom Row="9" Column="23" />
+    </Section>
+    <Section ID="1">
+      <LeftTop Row="10" Column="0" />
+      <RightBottom Row="10" Column="21" />
+    </Section>
+    <Section ID="2">
+      <LeftTop Row="11" Column="0" />
+      <RightBottom Row="11" Column="21" />
+    </Section>
+    <Section ID="3">
+      <LeftTop Row="12" Column="0" />
+      <RightBottom Row="12" Column="21" />
+    </Section>
+    <Section ID="4">
+      <LeftTop Row="13" Column="0" />
+      <RightBottom Row="13" Column="21" />
+    </Section>
+    <Section ID="5">
+      <LeftTop Row="14" Column="0" />
+      <RightBottom Row="14" Column="21" />
+    </Section>
+    <Section ID="6">
+      <LeftTop Row="15" Column="0" />
+      <RightBottom Row="15" Column="21" />
+    </Section>
+    <Section ID="7">
+      <LeftTop Row="16" Column="0" />
+      <RightBottom Row="16" Column="21" />
+    </Section>
+    <Section ID="8">
+      <LeftTop Row="17" Column="0" />
+      <RightBottom Row="17" Column="21" />
+    </Section>
+    <Section ID="9">
+      <LeftTop Row="18" Column="0" />
+      <RightBottom Row="18" Column="21" />
+    </Section>
+    <Section ID="10">
+      <LeftTop Row="19" Column="0" />
+      <RightBottom Row="19" Column="21" />
+    </Section>
+    <Section ID="11">
+      <LeftTop Row="20" Column="0" />
+      <RightBottom Row="20" Column="21" />
+    </Section>
+    <Section ID="Подвал">
+      <LeftTop Row="33" Column="0" />
+      <RightBottom Row="34" Column="21" />
+    </Section>
+  </Sections>
+  <Table DefaultRowHeight="5.291667" DefaultColumnWidth="17" RowsCount="35" ColumnsCount="24">
+    <Column Index="0" Width="3.96875" />
+    <Column Index="1" Width="3.96875" />
+    <Column Index="2" Width="3.96875" />
+    <Column Index="3" Width="3.96875" />
+    <Column Index="4" Width="3.96875" />
+    <Column Index="5" Width="3.96875" />
+    <Column Index="6" Width="3.96875" />
+    <Column Index="7" Width="3.96875" />
+    <Column Index="8" Width="3.96875" />
+    <Column Index="9" Width="3.96875" />
+    <Column Index="10" Width="3.96875" />
+    <Column Index="11" Width="39.6875" />
+    <Column Index="12" Width="11.90625" />
+    <Column Index="13" Width="13.22917" />
+    <Column Index="14" Width="17.19792" />
+    <Column Index="15" Width="18.52083" />
+    <Column Index="16" Width="18.52083" />
+    <Column Index="17" Width="18.52083" />
+    <Column Index="18" Width="18.52083" />
+    <Column Index="19" Width="18.52083" />
+    <Column Index="20" Width="18.52083" />
+    <Column Index="21" Width="17.19792" />
+    <Column Index="22" Width="15.875" />
+    <Column Index="23" Width="15.875" />
+    <Row Height="3.96875">
+      <Cell Index="0" RowSpan="1" ColSpan="21" Style="cs_s63">
+        <TextContent Style="tc_s63">
+          <Text>Продажи</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="22" RowSpan="7" Style="cs_s63" />
+      <Cell Index="23" RowSpan="7" Style="cs_s63" />
+    </Row>
+    <Row Height="3.96875" />
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="21" Style="cs_s63">
+        <TextContent Style="tc_s67">
+          <Param Name="Период" Target="Text" />
+          <Text>Период</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="21" Style="cs_s63">
+        <TextContent Style="tc_s67">
+          <Param Name="По всем фирмам" Target="Text" />
+          <Text>По всем фирмам</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="21" Style="cs_s63">
+        <TextContent Style="tc_s67">
+          <Param Name="По всем ККМ" Target="Text" />
+          <Text>По всем ККМ</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="21" Style="cs_s63">
+        <TextContent Style="tc_s67">
+          <Param Name="По всем складам" Target="Text" />
+          <Text>По всем складам</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="21" Style="cs_s63">
+        <TextContent Style="tc_s67">
+          <Param Name="По всем торговым маркам" Target="Text" />
+          <Text>По всем торговым маркам</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="1.322917">
+      <Cell Index="0" ColSpan="21" Style="cs_s63" />
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" RowSpan="1" ColSpan="11" Style="cs_m45892480">
+        <TextContent Style="tc_m45892480">
+          <Param Name="Категория" Target="Text" Value="Категория" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" RowSpan="1" Style="cs_m45892480">
+        <TextContent Style="tc_m45892480">
+          <Text>Код</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="13" RowSpan="1" Style="cs_m45892480">
+        <TextContent Style="tc_m45892480">
+          <Text>Ед. изм.</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="14" RowSpan="1" Style="cs_m45892480">
+        <TextContent Style="tc_m45892480">
+          <Text>Кол-во</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="15" ColSpan="1" Style="cs_m45892480">
+        <TextContent Style="tc_m45892480">
+          <Text>Себестоимость</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="17" ColSpan="1" Style="cs_m45892480">
+        <TextContent Style="tc_m45892480">
+          <Text>Продажа</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_s82">
+        <TextContent Style="tc_m45892480">
+          <Text>% от общей</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="20" RowSpan="1" Style="cs_m45892480">
+        <TextContent Style="tc_m45892480">
+          <Text>% наценки</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="21" RowSpan="1" Style="cs_m45892480">
+        <TextContent Style="tc_m45892480">
+			<Text>Профит</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="22" RowSpan="1" Style="cs_m45892480">
+        <TextContent Style="tc_m45892744">
+          <Text>КолвоЕд</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="23" RowSpan="1" Style="cs_m45892480">
+        <TextContent Style="tc_m45892744">
+          <Text>Маржа</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_m45892480">
+          <Text>Цена</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_m45892480">
+          <Text>Сумма</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_m45892480">
+          <Text>Цена</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_m45892480">
+          <Text>Сумма</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_s89">
+        <TextContent Style="tc_m45892744">
+          <Text>суммы</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="11" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Код" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="13" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Единица" Target="Text" Value="Единица" />
+        </TextContent>
+      </Cell>
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="22" Style="cs_m45892480">
+        <TextContent Style="tc_s101">
+          <Text>КолвоЕд</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="23" Style="cs_m45892480">
+        <TextContent Style="tc_s101">
+          <Text>Маржа</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" Style="cs_s63" />
+      <Cell Index="1" ColSpan="10" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Код" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="13" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Единица" Target="Text" Value="Единица" />
+        </TextContent>
+      </Cell>
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="22" RowSpan="9" Style="cs_m45892480" />
+      <Cell Index="23" RowSpan="9" Style="cs_m45892480" />
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="1" Style="cs_s63" />
+      <Cell Index="2" ColSpan="9" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Код" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="13" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Единица" Target="Text" Value="Единица" />
+        </TextContent>
+      </Cell>
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="2" Style="cs_s63" />
+      <Cell Index="3" ColSpan="8" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Код" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="13" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Единица" Target="Text" Value="Единица" />
+        </TextContent>
+      </Cell>
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="3" Style="cs_s63" />
+      <Cell Index="4" ColSpan="7" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Код" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="13" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Единица" Target="Text" Value="Единица" />
+        </TextContent>
+      </Cell>
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="4" Style="cs_s63" />
+      <Cell Index="5" ColSpan="6" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Код" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="13" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Единица" Target="Text" Value="Единица" />
+        </TextContent>
+      </Cell>
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="5" Style="cs_s63" />
+      <Cell Index="6" ColSpan="5" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Код" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="13" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Единица" Target="Text" Value="Единица" />
+        </TextContent>
+      </Cell>
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="6" Style="cs_m45893192" />
+      <Cell Index="7" ColSpan="4" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Код" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="13" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Единица" Target="Text" Value="Единица" />
+        </TextContent>
+      </Cell>
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="7" Style="cs_m45893192" />
+      <Cell Index="8" ColSpan="3" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Код" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="13" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Единица" Target="Text" Value="Единица" />
+        </TextContent>
+      </Cell>
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="8" Style="cs_m45893192" />
+      <Cell Index="9" ColSpan="2" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Код" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="13" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Единица" Target="Text" Value="Единица" />
+        </TextContent>
+      </Cell>
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="9" Style="cs_m45893192" />
+      <Cell Index="10" ColSpan="1" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Код" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="13" Style="cs_m45892480">
+        <TextContent Style="tc_m45892784">
+          <Param Name="Единица" Target="Text" Value="Единица" />
+        </TextContent>
+      </Cell>
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s97">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="11" Style="cs_m45892480">
+        <TextContent Style="tc_s67">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480" />
+      <Cell Index="13" Style="cs_m45892480" />
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="22" Style="cs_m45892480" />
+      <Cell Index="23" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Text>Маржа</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" Style="cs_s63" />
+      <Cell Index="1" ColSpan="10" Style="cs_m45892480">
+        <TextContent Style="tc_s67">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480" />
+      <Cell Index="13" Style="cs_m45892480" />
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="22" RowSpan="10" Style="cs_m45892480" />
+      <Cell Index="23" RowSpan="10" Style="cs_m45892480" />
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="1" Style="cs_s63" />
+      <Cell Index="2" ColSpan="9" Style="cs_m45892480">
+        <TextContent Style="tc_s67">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480" />
+      <Cell Index="13" Style="cs_m45892480" />
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="2" Style="cs_s63" />
+      <Cell Index="3" ColSpan="8" Style="cs_m45892480">
+        <TextContent Style="tc_s67">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480" />
+      <Cell Index="13" Style="cs_m45892480" />
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="3" Style="cs_s63" />
+      <Cell Index="4" ColSpan="7" Style="cs_m45892480">
+        <TextContent Style="tc_s67">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480" />
+      <Cell Index="13" Style="cs_m45892480" />
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="4" Style="cs_s63" />
+      <Cell Index="5" ColSpan="6" Style="cs_m45892480">
+        <TextContent Style="tc_s67">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480" />
+      <Cell Index="13" Style="cs_m45892480" />
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="5" Style="cs_s63" />
+      <Cell Index="6" ColSpan="5" Style="cs_m45892480">
+        <TextContent Style="tc_s67">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480" />
+      <Cell Index="13" Style="cs_m45892480" />
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="6" Style="cs_s63" />
+      <Cell Index="7" ColSpan="4" Style="cs_m45892480">
+        <TextContent Style="tc_s67">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480" />
+      <Cell Index="13" Style="cs_m45892480" />
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="7" Style="cs_s63" />
+      <Cell Index="8" ColSpan="3" Style="cs_m45892480">
+        <TextContent Style="tc_s67">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480" />
+      <Cell Index="13" Style="cs_m45892480" />
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="8" Style="cs_s63" />
+      <Cell Index="9" ColSpan="2" Style="cs_m45892480">
+        <TextContent Style="tc_s67">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480" />
+      <Cell Index="13" Style="cs_m45892480" />
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="9" Style="cs_s63" />
+      <Cell Index="10" ColSpan="1" Style="cs_m45892480">
+        <TextContent Style="tc_s67">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480" />
+      <Cell Index="13" Style="cs_m45892480" />
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="10" Style="cs_s63" />
+      <Cell Index="11" Style="cs_m45892480">
+        <TextContent Style="tc_s67">
+          <Param Name="Наим" Target="Text" Value="Наим" />
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_m45892480" />
+      <Cell Index="13" Style="cs_m45892480" />
+      <Cell Index="14" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="16" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродЦена" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="18" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_m45892480">
+        <TextContent Style="tc_s123">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="1.5875">
+      <Cell Index="0" ColSpan="21" Style="cs_s138" />
+      <Cell Index="22" Style="cs_s138" />
+      <Cell Index="23" Style="cs_s138" />
+    </Row>
+    <Row Height="3.96875">
+      <Cell Index="0" ColSpan="11" Style="cs_s63">
+        <TextContent Style="tc_s101">
+          <Text>Итого:</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="12" Style="cs_s63" />
+      <Cell Index="13" Style="cs_s63" />
+      <Cell Index="14" Style="cs_s63">
+        <TextContent Style="tc_s101">
+          <Param Name="Колво" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="15" Style="cs_s63" />
+      <Cell Index="16" Style="cs_s63">
+        <TextContent Style="tc_s97">
+          <Param Name="ЗакСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="17" Style="cs_s63" />
+      <Cell Index="18" Style="cs_s63">
+        <TextContent Style="tc_s97">
+          <Param Name="ПродСумма" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="19" Style="cs_s63">
+        <TextContent Style="tc_s101">
+          <Param Name="ДоляПродажи" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="20" Style="cs_s63">
+        <TextContent Style="tc_s97">
+          <Param Name="ПроцНац" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="21" Style="cs_s63">
+        <TextContent Style="tc_s97">
+          <Param Name="Профит" Target="Value" Value="0" />
+        </TextContent>
+      </Cell>
+      <Cell Index="22" Style="cs_s63">
+        <TextContent Style="tc_s101">
+          <Text>КолвоЕд</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="23" Style="cs_s63">
+        <TextContent Style="tc_s101">
+          <Text>Маржа</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+  </Table>
+  <Styles>
+    <TextContentStyle ID="tc_s63" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Left" Vertical="Middle" />
+      <Font Family="Arial" Size="11" Style="Bold" />
+    </TextContentStyle>
+    <CellStyle ID="cs_s63" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders />
+    </CellStyle>
+    <TextContentStyle ID="tc_s67" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Left" Vertical="Middle" />
+      <Font Family="Arial" Size="8" Style="Italic" />
+    </TextContentStyle>
+    <TextContentStyle ID="tc_m45892480" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Center" Vertical="Middle" />
+      <Font Family="Arial" Size="8" Style="Bold" />
+    </TextContentStyle>
+    <CellStyle ID="cs_m45892480" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="All" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs_s82" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <TextContentStyle ID="tc_m45892744" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Center" Vertical="Middle" />
+      <Font Family="Microsoft Sans Serif" Size="8" Style="Bold" />
+    </TextContentStyle>
+    <CellStyle ID="cs_s89" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3527778" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <TextContentStyle ID="tc_m45892784" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Left" Vertical="Middle" />
+      <Font Family="Arial" Size="8" Style="Regular" />
+    </TextContentStyle>
+    <TextContentStyle ID="tc_s97" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Right" Vertical="Middle" />
+      <Font Family="Arial" Size="8" Style="Regular" />
+    </TextContentStyle>
+    <TextContentStyle ID="tc_s101" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Right" Vertical="Middle" />
+      <Font Family="Microsoft Sans Serif" Size="8" Style="Regular" />
+    </TextContentStyle>
+    <CellStyle ID="cs_m45893192" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <TextContentStyle ID="tc_s123" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Right" Vertical="Middle" />
+      <Font Family="Arial" Size="8" Style="Italic" />
+    </TextContentStyle>
+    <CellStyle ID="cs_s138" Color="Transparent">
+      <Paddings>
+        <Padding Position="All">0</Padding>
+      </Paddings>
+      <Borders>
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.7055556" />
+      </Borders>
+    </CellStyle>
+  </Styles>
+  <Expressions>
+    <NowExpression ID="Now" />
+    <CountExpression ID="PageCounter" Start="1" Increment="1" />
+  </Expressions>
+</CellReportTemplate>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<CellReportTemplate>
+  <Properties>
+    <DocumentName>Test Document</DocumentName>
+  </Properties>
+  <DisplaySettings FrozenColumns="0" FrozenRows="0" ShowGridLines="true" ShowBookMarks="false" ShowResizers="false" Scale="1" />
+  <PrintSettings Landscape="false" AutoFitWidthPages="1" Scale="1">
+    <Margins Top="15" Left="13" Right="14" Bottom="12" />
+  </PrintSettings>
+  <Sections />
+  <BookMarks />
+  <Table DefaultRowHeight="10" DefaultColumnWidth="10" RowsCount="100" ColumnsCount="100">
+    <Row>
+      <Cell Index="0" RowSpan="2" ColSpan="2">
+        <TextContent>
+          <Text>Image from local path</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="3" RowSpan="4" ColSpan="5" Style="cs1">
+        <ImageContent Uri="file://templates\graph.png" />
+      </Cell>
+    </Row>
+    <Row Index="5">
+      <Cell Index="0" RowSpan="2" ColSpan="2">
+        <TextContent>
+          <Text>Image from internet</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="3" RowSpan="4" ColSpan="5" Style="cs1">
+        <ImageContent Uri="http://chart.apis.google.com/chart?chof=jpg&amp;chs=250x100&amp;chd=t:60,40&amp;cht=p3&amp;chl=Cell|Report" />
+      </Cell>
+    </Row>
+    <Row Index="10">
+      <Cell Index="0" RowSpan="2" ColSpan="2">
+        <TextContent>
+          <Text>Image from report resource</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="3" RowSpan="5" ColSpan="5" Style="cs1">
+        <ImageContent Uri="resource://graph.png" />
+      </Cell>
+    </Row>
+  </Table>
+  <Styles>
+    <CellStyle ID="cs1" Color="Gray" />
+  </Styles>
+  <Expressions />
+</CellReportTemplate>

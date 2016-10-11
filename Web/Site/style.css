@@ -1,0 +1,24 @@
+h1 
+{
+    margin: 0;
+    font: 24px Arial, "Helvetica", Verdana, sans-serif;
+    color: #326ea1;
+    text-align:justify;
+}
+
+p
+{
+    color: #282828;
+    font: 12px Verdana, Arial, "Helvetica", sans-serif;
+    text-align:justify;
+}
+
+a
+{
+    font: 12px Verdana, Arial, "Helvetica", sans-serif;
+}
+
+table
+{
+    width: 100%;
+}

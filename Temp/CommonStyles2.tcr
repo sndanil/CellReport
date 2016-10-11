@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<CellReportTemplate>
+  <Properties>
+    <DocumentName></DocumentName>
+  </Properties>
+  <DisplaySettings FrozenColumns="0" FrozenRows="0" ShowGridLines="true" ShowResizers="false" Scale="1" />
+  <PrintSettings Landscape="false" AutoFitWidthPages="1" Scale="1">
+    <Margins Top="0" Left="0" Right="0" Bottom="0" />
+    <Headers />
+    <Footers />
+  </PrintSettings>
+  <Sections />
+  <Table DefaultRowHeight="20" DefaultColumnWidth="20" RowsCount="1" ColumnsCount="100">
+		<Row>
+  		<Cell>
+				<TextContent Style="tcHeader" />
+			</Cell>
+  	</Row>
+	</Table>
+  <Styles>
+    <TextContentStyle ID="tcHeader" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Left" Vertical="Middle" />
+      <Font Family="Arial" Size="11" Style="Bold" />
+    </TextContentStyle>
+	</Styles>
+  <Expressions />
+</CellReportTemplate>

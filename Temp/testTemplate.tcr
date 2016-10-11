@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CellReportTemplate>
+  <Properties>
+    <DocumentName>Test Document</DocumentName>
+  </Properties>
+  <DisplaySettings FrozenColumns="0" FrozenRows="0" Scale="1" ShowGridLines="False" ShowResizers="False" />
+  <PrintSettings Landscape="False" Scale="1" AutoFitWidthPages="0" >
+    <Margins Bottom="12" Left="13" Right="14" Top="15" />
+    <Headers>
+      <Pager Height="10">
+        <Left>
+          <TextContent>
+            <Text>Дата печати: </Text>
+          </TextContent>
+          <DateTimeContent Style="dtcs1">
+            <Param Target="Value" Name="NowParam" Expression="Now" />
+          </DateTimeContent>
+        </Left>
+        <Center></Center>
+        <Right>
+          <TextContent>
+            <Text>Страница: </Text>
+          </TextContent>
+          <DecimalContent>
+            <Param Name="Counter" Target="Value" Expression="PageCounter" />
+          </DecimalContent>
+        </Right>
+      </Pager>
+    </Headers>
+    <Footers>
+      
+    </Footers>
+  </PrintSettings>
+  <Styles>
+    <CellStyle ID="cs1" Color="Gray">
+      <Borders>
+        <Border Position="All" Style="Solid" Color="Blue" Weight="1pt" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs2">
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="1pt" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="1pt" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cspd">
+      <Paddings>
+        <Padding Position="All">2pt</Padding>
+      </Paddings>
+    </CellStyle>
+    <CellStyle ID="cs3">
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="1pt" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="1pt" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs4">
+      <Borders>
+        <Border Position="Right" Style="Solid" Color="Black" Weight="1pt" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="1pt" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="cs5">
+      <Borders>
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="1pt" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="1pt" />
+      </Borders>
+    </CellStyle>
+    <TextContentStyle ID="tcs1" Color="Black" Angle="30">
+      <Alignment Horizontal="Center" Vertical="Middle"/>
+      <Font Family="Arial" Size="11" />
+    </TextContentStyle>
+    <TextContentStyle ID="tcs10" Color="Red" Angle="0" Direction="TopToDown">
+      <Alignment Horizontal="Center" Vertical="Top"/>
+      <Font Family="Arial" Size="11" Style="Italic Bold" />
+    </TextContentStyle>
+    <TextContentStyle ID="tcs11" Color="Red" Angle="0">
+      <Alignment Horizontal="Center" Vertical="Top"/>
+      <Font Family="Arial" Size="11" Style="Italic Bold" />
+    </TextContentStyle>
+    <LineContentStyle ID="ls1" Color="Black" Width="0.25" />
+
+    <DecimalContentStyle ID="dcs1" Color="Black" Format="0.00" Culture="en-US" NegativeColor="Red">
+      <Font Family="Arial" Size="11" />
+    </DecimalContentStyle>
+    <DateTimeContentStyle ID="dtcs1" Color="Black" Format="dd MMMM yyyy">
+      <Font Family="Arial" Size="11" />
+    </DateTimeContentStyle>
+  </Styles>
+
+  <Sections>
+    <Section ID="test">
+      <LeftTop Row="0" Column="0" />
+      <RightBottom Row="5" Column="3" />
+    </Section>
+  </Sections>
+  <Table DefaultRowHeight="6" DefaultColumnWidth="25" RowsCount="100" ColumnsCount="10">
+    <Column Index="0" Width="150" />
+    <Column Index="1" Width="150" />
+    <Column Width="150" />
+    <Column Width="150" />
+    <Row Index="0" Height="60pt">
+      <Cell Index="0" ColSpan="2" RowSpan="2" Style="cs1">
+        <TextContent Style="tcs1">
+          <Param Name="Hello" Target="Text" Value="Значение по умолчанию" />
+          <Text>Hello World Hello World Hello World</Text>
+        </TextContent>
+        <ActionContent Type="MouseDblClick">
+          <Param Name="Hello2" Value="10" />
+        </ActionContent>
+      </Cell>
+    </Row>
+    <Row Index="3">
+      <Cell>
+        <DecimalContent>
+          <Param Name="TTT" Target="Value" Value="0" />
+        </DecimalContent>
+      </Cell>
+    </Row>
+    <Row Index="4" Height="15">
+      <Cell Index="2" Style="cs2">
+        <LineContent Style="ls1" StartX="0" StartY="0" EndX="25" EndY="15" />
+      </Cell>
+      <Cell Style="cs3">
+      </Cell>
+    </Row>
+    <Row Index="5" Height="15">
+      <Cell Index="2" Style="cs5">
+      </Cell>
+      <Cell Index="3" Style="cs4">
+        <LineContent Style="ls1" StartX="0" StartY="0" EndX="25" EndY="15" />
+      </Cell>
+    </Row>
+    <Row Index="4" Height="15">
+      <Cell Index="0">
+        <TextContent Style="tcs10">
+          <Text>Курсив жирый цветной</Text>
+        </TextContent>
+      </Cell>
+      <Cell>
+        <DecimalContent Style="dcs1">
+          <Param Target="Value" Name="Counter" Expression="Counter" />
+          <Value>10000.012</Value>
+        </DecimalContent>
+      </Cell>
+    </Row>
+    <Row>
+      <Cell>
+        <DateTimeContent Style="dtcs1">
+          <Value>12.01.2010</Value>
+        </DateTimeContent>
+      </Cell>
+      <Cell>
+        <DateTimeContent Style="dtcs1">
+          <Param Target="Value" Name="NowParam" Expression="Now" />
+        </DateTimeContent>
+      </Cell>
+    </Row>
+    <Row />
+    <Row Height="60pt">
+      <Cell/>
+      <Cell Style="cspd">
+        <BarCodeContent Type="EAN13">
+          <Code>4606369064163</Code>
+        </BarCodeContent>
+      </Cell>
+      <Cell />
+      <Cell>
+        <BarCodeContent Type="EAN13" Orientation="Vertical" >
+          <Code>4606369064163</Code>
+        </BarCodeContent>
+      </Cell>
+    </Row>
+    <Row AutoFitHeight="True" Height="1">
+      <Cell Index="0">
+        <TextContent Style="tcs11">
+          <Text>Курсив жирый цветнойКурсив жирый цветной</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="1">
+      <Cell Index="0">
+        <TextContent Style="tcs11">
+          <Text>Курсив жирый цветной Курсив жирый цветной</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Index="30">
+      <Cell Index="0" ColSpan="5">
+        <TextContent Style="tcs11">
+          <Text>Курсив жирый цветной Курсив жирый цветной</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+  </Table>
+  <Expressions>
+    <CountExpression ID="Counter" Start="1" Increment="1" />
+    <NowExpression ID="Now" />
+    <CountExpression ID="PageCounter" Start="1" Increment="1" />
+  </Expressions>
+</CellReportTemplate>

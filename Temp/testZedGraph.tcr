@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CellReportTemplate>
+  <Properties>
+    <DocumentName>Test Document</DocumentName>
+  </Properties>
+  <PrintSettings Landscape="False" Scale="1" AutoFitWidthPages="1" >
+    <Margins Bottom="12" Left="13" Right="14" Top="15" />
+  </PrintSettings>
+  <Styles>
+    <CellStyle ID="cs1" Color="Gray">
+      <Borders>
+        <!--<Border Position="All" Style="Solid" Color="Black" Weight="2pt" />-->
+      </Borders>
+    </CellStyle>
+  </Styles>
+
+  <Table DefaultRowHeight="10" DefaultColumnWidth="10" RowsCount="100" ColumnsCount="100">
+    <Row Index="1" >
+      <Cell Index="1" Style="cs1" ColSpan="14" RowSpan="14">
+        <ImageContent Uri="resource://graph" />
+      </Cell>
+      <Cell Index="17" Style="cs1" ColSpan="14" RowSpan="14">
+        <ImageContent Uri="resource://graph2" />
+      </Cell>
+      <Cell Index="33" Style="cs1" ColSpan="14" RowSpan="14">
+        <ImageContent Uri="resource://graph3" />
+      </Cell>
+    </Row>
+  </Table>
+</CellReportTemplate>
