@@ -300,7 +300,7 @@ namespace CellReport.Core
 			{
 				if (_rows.Length > value)
 				{
-					for (int i = value - 1; i < _rows.Length; i++)
+					for (int i = value; i < _rows.Length; i++)
 					{
 						if (_autoFitRows.ContainsKey(i))
 							_autoFitRows.Remove(i);

@@ -1,0 +1,200 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CellReportTemplate>
+  <Styles>
+    <CellStyle ID="ЗаголовокТаблицы" Color="#C0C0C0">
+      <Borders>
+        <Border Position="All" Style="Solid" Color="Black" Weight="0.3527778" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="ЛинияВокруг">
+      <Borders>
+        <Border Position="All" Style="Solid" Color="Black" Weight="0.3" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="ЛинияВверхуВнизу">
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="ЛинияВверху">
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="ЛинияВнизу">
+      <Borders>
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="ЛинияСлеваСправа">
+      <Borders>
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="ЛинияСлева">
+      <Borders>
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="ЛинияСправа">
+      <Borders>
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="ЛинияВверхуСправа">
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="ЛинияВверхуСлева">
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="ЛинияСправаВнизу">
+      <Borders>
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="ЛинияСлеваВнизу">
+      <Borders>
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="ЛинияСлеваВнизуСправа">
+      <Borders>
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="ЛинияСлеваВверхуСправа">
+      <Borders>
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3" />
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="ЛинияВверхуСправаВнизу">
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3" />
+        <Border Position="Right" Style="Solid" Color="Black" Weight="0.3" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="ЛинияВнизуСлеваВверху">
+      <Borders>
+        <Border Position="Top" Style="Solid" Color="Black" Weight="0.3" />
+        <Border Position="Left" Style="Solid" Color="Black" Weight="0.3" />
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.3" />
+      </Borders>
+    </CellStyle>
+    <CellStyle ID="ЖирнаяЛинияВнизу">
+      <Borders>
+        <Border Position="Bottom" Style="Solid" Color="Black" Weight="0.53" />
+      </Borders>
+    </CellStyle>
+
+    <TextContentStyle ID="ЗаголовокТаблицы" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Center" Vertical="Middle" />
+      <Font Family="Verdana" Size="10" Style="Bold" />
+    </TextContentStyle>
+    <TextContentStyle ID="Заголовок" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Left" Vertical="Middle" />
+      <Font Family="Verdana" Size="11.25" Style="Bold" />
+    </TextContentStyle>
+    <TextContentStyle ID="ЗаголовокЦентр" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Center" Vertical="Middle" />
+      <Font Family="Verdana" Size="11.25" Style="Bold" />
+    </TextContentStyle>
+    <TextContentStyle ID="Текст" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Left" Vertical="Middle" />
+      <Font Family="Verdana" Size="10" Style="Regular" />
+    </TextContentStyle>
+    <TextContentStyle ID="ТекстЖирный" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Left" Vertical="Middle" />
+      <Font Family="Verdana" Size="10" Style="Bold" />
+    </TextContentStyle>
+    <TextContentStyle ID="ТекстКурсив" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Left" Vertical="Middle" />
+      <Font Family="Verdana" Size="10" Style="Italic" />
+    </TextContentStyle>
+    <TextContentStyle ID="ТекстЦентр" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Center" Vertical="Middle" />
+      <Font Family="Verdana" Size="10" Style="Regular" />
+    </TextContentStyle>
+    <TextContentStyle ID="ТекстСправа" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Right" Vertical="Middle" />
+      <Font Family="Verdana" Size="10" Style="Regular" />
+    </TextContentStyle>
+    <TextContentStyle ID="Текст8" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Left" Vertical="Middle" />
+      <Font Family="Verdana" Size="8.25" Style="Regular" />
+    </TextContentStyle>
+    <TextContentStyle ID="Текст9" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Left" Vertical="Middle" />
+      <Font Family="Verdana" Size="9" Style="Regular" />
+    </TextContentStyle>
+    <TextContentStyle ID="Текст22ЦентрЖирный" Color="Black" Direction="LeftToRight" Angle="0">
+      <Alignment Horizontal="Center" Vertical="Middle" />
+      <Font Family="Verdana" Size="22" Style="Bold" />
+    </TextContentStyle>
+
+    <DecimalContentStyle ID="Деньги" Color="Black" Direction="LeftToRight" Angle="0" Format="#,##0.00;-#,##0.00;-" Culture="ru-RU" NegativeColor="Red">
+      <Alignment Horizontal="Right" Vertical="Middle" />
+      <Font Family="Verdana" Size="10" Style="Regular" />
+    </DecimalContentStyle>
+    <DecimalContentStyle ID="ДеньгиЖирным" Color="Black" Direction="LeftToRight" Angle="0" Format="#,##0.00;-#,##0.00;-" Culture="ru-RU" NegativeColor="Red">
+      <Alignment Horizontal="Right" Vertical="Middle" />
+      <Font Family="Verdana" Size="10" Style="Bold" />
+    </DecimalContentStyle>
+    <DecimalContentStyle ID="ЦелоеПусто" Color="Black" Direction="LeftToRight" Angle="0" Format="#,##0;-#,##0; " Culture="ru-RU" NegativeColor="Red">
+      <Alignment Horizontal="Right" Vertical="Middle" />
+      <Font Family="Verdana" Size="10" Style="Regular" />
+    </DecimalContentStyle>
+    <DecimalContentStyle ID="Целое" Color="Black" Direction="LeftToRight" Angle="0" Format="#,##0;-#,##0;-" Culture="ru-RU" NegativeColor="Red">
+      <Alignment Horizontal="Right" Vertical="Middle" />
+      <Font Family="Verdana" Size="10" Style="Regular" />
+    </DecimalContentStyle>
+    <DecimalContentStyle ID="ЦелоеЦентр" Color="Black" Direction="LeftToRight" Angle="0" Format="#,##0;-#,##0;-" Culture="ru-RU" NegativeColor="Red">
+      <Alignment Horizontal="Center" Vertical="Middle" />
+      <Font Family="Verdana" Size="10" Style="Regular" />
+    </DecimalContentStyle>
+    <DecimalContentStyle ID="Количество" Color="Black" Direction="LeftToRight" Angle="0" Format="#,##0.000;-#,##0.000;-" Culture="ru-RU" NegativeColor="Red">
+      <Alignment Horizontal="Right" Vertical="Middle" />
+      <Font Family="Verdana" Size="10" Style="Regular" />
+    </DecimalContentStyle>
+    <DecimalContentStyle ID="КоличествоЖирным" Color="Black" Direction="LeftToRight" Angle="0" Format="#,##0.000;-#,##0.000;-" Culture="ru-RU" NegativeColor="Red">
+      <Alignment Horizontal="Right" Vertical="Middle" />
+      <Font Family="Verdana" Size="10" Style="Bold" />
+    </DecimalContentStyle>
+	<DecimalContentStyle ID="Процент" Color="Black" Direction="LeftToRight" Angle="0" Format="#,##0.0;-#,##0.0;-" Culture="ru-RU" NegativeColor="Red">
+		<Alignment Horizontal="Right" Vertical="Middle" />
+		<Font Family="Verdana" Size="10" Style="Regular" />
+	</DecimalContentStyle>
+	<DecimalContentStyle ID="ПроцентЖирным" Color="Black" Direction="LeftToRight" Angle="0" Format="#,##0.0;-#,##0.0;-" Culture="ru-RU" NegativeColor="Red">
+		<Alignment Horizontal="Right" Vertical="Middle" />
+		<Font Family="Verdana" Size="10" Style="Bold" />
+	</DecimalContentStyle>
+
+	  <DateTimeContentStyle ID="ДатаВремя" Color="Black" Direction="LeftToRight" Angle="0" Format="dd.MM.yyyy HH:mm" Culture="ru-RU">
+      <Alignment Horizontal="Left" Vertical="Top" />
+      <Font Family="Verdana" Size="10" Style="Regular" />
+    </DateTimeContentStyle>
+    <DateTimeContentStyle ID="Дата" Color="Black" Direction="LeftToRight" Angle="0" Format="dd.MM.yyyy" Culture="ru-RU">
+      <Alignment Horizontal="Left" Vertical="Middle" />
+      <Font Family="Verdana" Size="10" Style="Regular" />
+    </DateTimeContentStyle>
+    <DateTimeContentStyle ID="ДатаЖирным" Color="Black" Direction="LeftToRight" Angle="0" Format="dd.MM.yyyy" Culture="ru-RU">
+      <Alignment Horizontal="Left" Vertical="Middle" />
+      <Font Family="Verdana" Size="10" Style="Bold" />
+    </DateTimeContentStyle>
+
+  </Styles>
+</CellReportTemplate>

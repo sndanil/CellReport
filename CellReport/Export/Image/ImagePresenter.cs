@@ -16,8 +16,8 @@ namespace CellReport.Export.Image
 		private int _imageHeight;
 
 		public ImagePresenter(CellManager manager, BaseRenderer renderer)
-            : base(manager)
-        {
+						: base(manager)
+		{
 			Renderer = renderer;
 			DeviceDpiX = ImageDpi;
 			DeviceDpiY = ImageDpi;
@@ -27,9 +27,9 @@ namespace CellReport.Export.Image
 			ShowGridLines = false;
 			ShowBookMarks = false;
 			GridColor = "#D0D7E5";
-        }
+		}
 
-		protected override Size GetTextSize(string text, string fontFamily, float fontSize, FontStyle fontStyle)
+		protected override Size GetTextSize(Rectangle rect, string text, string fontFamily, float fontSize, FontStyle fontStyle)
 		{
 			return Size.Empty;
 		}
@@ -45,14 +45,14 @@ namespace CellReport.Export.Image
 		public byte[] Render()
 		{
 			this.BeginRender();
-			
+
 			var width = 0f;
 			for (int i = 0; i < Manager.ColumnsCount; i++)
 				width += Manager.GetColumnWidth(i);
 			var height = 0f;
 			for (int i = 0; i < Manager.RowsCount; i++)
 				height += Manager.GetRowHeight(i);
-			
+
 			width = UnitsConverter.ConvertValue(width, DefaultUnit, CurrentUnit, DeviceDpiX);
 			height = UnitsConverter.ConvertValue(height, DefaultUnit, CurrentUnit, DeviceDpiY);
 			_imageWidth = (int)Math.Ceiling(width) + 1;

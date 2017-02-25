@@ -127,6 +127,9 @@
     <None Include="Templates\ПродажиПоМагазинам.tcrp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Templates\ПродажиТоваров.tcrp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\CellReport\CellReport.csproj">
@@ -156,6 +159,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DefaultStyles.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Templates\graph.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
