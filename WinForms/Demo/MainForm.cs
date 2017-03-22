@@ -145,27 +145,57 @@ namespace Demo
 
 		private void _autoHeightButton_Click(object sender, EventArgs e)
 		{
-			Text = this.CreateGraphics().DpiX.ToString();
-
 			var rep = new ReportDocument(@"Templates\ПродажиТоваров.tcrp");
 			rep.AddSection("Шапка");
 
-			rep.AddSection("1");
-			rep.SetParameter("Наим", "Вареники с картофелем 550гр. ООО \"НатурПродукт\" Вареники с картофелем 550гр. ООО \"НатурПродукт\"");
+			for (int i = 0; i < 100; i++)
+			{
+				rep.AddSection("1");
+				rep.SetParameter("Наим", "Вареники с картофелем 550гр. ООО \"НатурПродукт\" Вареники с картофелем 550гр. ООО \"НатурПродукт\"");
 
-			rep.AddSection("1");
+				rep.AddSection("1");
+				rep.SetParameter("Наим", "Лук Желтый репчатый 500г чулок Тульская нива");
+
+				rep.AddSection("1");
+				rep.SetParameter("Наим", "Мыльные пузыри 20мл УЛЫБКА");
+
+				rep.AddSection("1");
+				rep.SetParameter("Наим", "Служба спасения - полиция Игровой набор ВЕЛЛИ");
+
+				rep.AddSection("1");
+				rep.SetParameter("Наим", "Морковь");
+
+				rep.AddSection("1");
+				rep.SetParameter("Наим", "Вареники с картофелем 550гр. ООО \"НатурПродукт\" Вареники с картофелем 550гр. ООО \"НатурПродукт\"");
+			}
+
+			rep.Show();
+		}
+
+		private void _autoSizeFontButton_Click(object sender, EventArgs e)
+		{
+			var rep = new ReportDocument(@"Templates\AutoSizeFont.tcrp");
+			
+			rep.AddSection("Секция");
+			rep.SetParameter("Наим", 
+				"Вареники с картофелем 550гр. ООО \"НатурПродукт\" Вареники с картофелем 550гр. ООО \"НатурПродукт\""
+				+ "Вареники с картофелем 550гр. ООО \"НатурПродукт\" Вареники с картофелем 550гр. ООО \"НатурПродукт\""
+				+ "Вареники с картофелем 550гр. ООО \"НатурПродукт\" Вареники с картофелем 550гр. ООО \"НатурПродукт\""
+				);
+
+			rep.AddSection("Секция");
 			rep.SetParameter("Наим", "Лук Желтый репчатый 500г чулок Тульская нива");
 
-			rep.AddSection("1");
+			rep.AddSection("Секция");
 			rep.SetParameter("Наим", "Мыльные пузыри 20мл УЛЫБКА");
 
-			rep.AddSection("1");
+			rep.AddSection("Секция");
 			rep.SetParameter("Наим", "Служба спасения - полиция Игровой набор ВЕЛЛИ");
 
-			rep.AddSection("1");
+			rep.AddSection("Секция");
 			rep.SetParameter("Наим", "Морковь");
 
-			rep.AddSection("1");
+			rep.AddSection("Секция");
 			rep.SetParameter("Наим", "Вареники с картофелем 550гр. ООО \"НатурПродукт\" Вареники с картофелем 550гр. ООО \"НатурПродукт\"");
 
 			rep.Show();

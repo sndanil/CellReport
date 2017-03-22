@@ -195,6 +195,9 @@ namespace CellReport.Core
 
 		public TemplateSection GetSectionByName(string name)
 		{
+			if (!_sections.ContainsKey(name))
+				throw new ApplicationException("Section not found");
+
 			return _sections[name];
 		}
 

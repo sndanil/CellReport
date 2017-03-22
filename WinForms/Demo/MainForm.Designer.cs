@@ -38,6 +38,7 @@
 			this._kalcButton = new System.Windows.Forms.Button();
 			this._pageBreakButton = new System.Windows.Forms.Button();
 			this._autoHeightButton = new System.Windows.Forms.Button();
+			this._autoSizeFontButton = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// _groupButton
@@ -140,11 +141,22 @@
 			this._autoHeightButton.UseVisualStyleBackColor = true;
 			this._autoHeightButton.Click += new System.EventHandler(this._autoHeightButton_Click);
 			// 
+			// _autoSizeFontButton
+			// 
+			this._autoSizeFontButton.Location = new System.Drawing.Point(174, 220);
+			this._autoSizeFontButton.Name = "_autoSizeFontButton";
+			this._autoSizeFontButton.Size = new System.Drawing.Size(146, 52);
+			this._autoSizeFontButton.TabIndex = 10;
+			this._autoSizeFontButton.Text = "Автошрифт";
+			this._autoSizeFontButton.UseVisualStyleBackColor = true;
+			this._autoSizeFontButton.Click += new System.EventHandler(this._autoSizeFontButton_Click);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(520, 334);
+			this.Controls.Add(this._autoSizeFontButton);
 			this.Controls.Add(this._autoHeightButton);
 			this.Controls.Add(this._pageBreakButton);
 			this.Controls.Add(this._kalcButton);
@@ -173,6 +185,7 @@
         private System.Windows.Forms.Button _kalcButton;
         private System.Windows.Forms.Button _pageBreakButton;
 		private System.Windows.Forms.Button _autoHeightButton;
+		private System.Windows.Forms.Button _autoSizeFontButton;
 	}
 }
 

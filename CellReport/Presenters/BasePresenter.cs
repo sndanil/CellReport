@@ -62,15 +62,14 @@ namespace CellReport.Presenters
 		{
 			if (!_manager.AutoFitted)
 			{
-				var alreadyFit = new Dictionary<Cell, bool>();
+				var alreadyFit = new HashSet<Cell>();
 				foreach (var row in _manager.GetAutoFitRows())
 				{
 					for (int col = 0; col < _manager.ActualColumnsCount; col++)
 					{
-						if (_manager.GetCell(row, col) != null && _manager.GetCell(row, col).Content != null
-								&& !alreadyFit.ContainsKey(_manager.GetCell(row, col)))
+						if (_manager.GetCell(row, col) != null && _manager.GetCell(row, col).Content != null && !alreadyFit.Contains(_manager.GetCell(row, col)))
 						{
-							alreadyFit.Add(_manager.GetCell(row, col), true);
+							alreadyFit.Add(_manager.GetCell(row, col));
 							var content = _manager.GetCell(row, col).Content;
 							if (content is TextBasedContent)
 								FitCell(row, col, (TextBasedContent)content);
@@ -83,8 +82,54 @@ namespace CellReport.Presenters
 						}
 					}
 				}
+				alreadyFit.Clear();
+				for (int i = 0; i < _manager.RowsCount; i++)
+				{
+					for (int j = 0; j < _manager.ColumnsCount; j++)
+					{
+						var cell = _manager.GetCell(i, j);
+						if (cell != null && !alreadyFit.Contains(cell))
+						{
+							alreadyFit.Add(cell);
+							var content = cell.Content;
+							if (content is TextContent)
+								FitCellFontSize(i, j, (TextContent)content);
+							else if (content is CollectionContent)
+							{
+								foreach (var item in ((CollectionContent)content).GetContents())
+									if (item is TextContent)
+										FitCellFontSize(i, j, (TextContent)item);
+							}
+						}
+					}
+				}
 				_manager.AutoFitted = true;
 			}
+		}
+
+		private void FitCellFontSize(int row, int col, TextContent content)
+		{
+			if (!content.AutoSizeFont)
+				return;
+
+			BeginUpdate();
+			var text = content.GetTextForRender();
+			var style = (TextContentStyle)content.GetActualStyle();
+			if (Math.Abs(style.Font.Size - 1) <= float.Epsilon)
+				return;
+
+			var outerCellRect = GetCellRect(_manager.GetCell(row, col));
+			var cellRect = GetInnerCellRect(_manager.GetCell(row, col));
+			var size = GetTextSize(cellRect, text, style.Font.Family, style.Font.Size, style.Font.Style);
+			var delta = outerCellRect.Height - cellRect.Height;
+			if (cellRect.Height < size.Height)
+			{
+				if (content.GetParamValueByTarget("Style.Font.Size") == null)
+					content.AddParam(new Param(_manager, content) { Target = "Style.Font.Size", Name = "Style.Font.Size" });
+				content.SetContentParam("Style.Font.Size", style.Font.Size - 1);
+				FitCellFontSize(row, col, content);
+			}
+			EndUpdate();
 		}
 
 		private void FitCell(int row, int col, TextBasedContent content)
