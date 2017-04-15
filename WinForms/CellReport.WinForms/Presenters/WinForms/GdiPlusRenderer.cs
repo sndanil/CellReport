@@ -45,76 +45,87 @@ namespace CellReport.Presenters.WinForms
 
 		public static Core.Size GetTextSize(Core.Rectangle rect, string text, string fontFamily, float fontSize, Core.FontStyle fontStyle)
 		{
-			SizeF result;
-			using (var font = new Font(fontFamily, fontSize, (System.Drawing.FontStyle)fontStyle))
-			using (var g = Graphics.FromImage(TextSizeImage))
+			SizeF result = new SizeF(rect.Width, rect.Height);
+			if (rect.Width > 0)
 			{
-				g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-				result = g.MeasureString(text, font);
-			}
-
-			if (result.Width > rect.Width)
-			{
-				var imageRect = new RectangleF(0, 0, rect.Width, rect.Height*10);
-				Bitmap bmp = new Bitmap((int)imageRect.Width, (int)imageRect.Height);
-				using (var font = new Font(fontFamily, fontSize, (System.Drawing.FontStyle)fontStyle))
-				using (Graphics gfx = Graphics.FromImage(bmp))
+				var stringFormat = new StringFormat
 				{
-					gfx.DrawString(text, font, Brushes.Black, imageRect, StringFormat.GenericTypographic);
-				}
-				//bmp.Save("D:\\temp\\MeasureString\\" + Guid.NewGuid() + ".png", ImageFormat.Png);
+					FormatFlags = StringFormatFlags.MeasureTrailingSpaces,
+					Alignment = StringAlignment.Near,
+					LineAlignment = StringAlignment.Near
+				};
 
-				var lastHeight = GetTextHeight(bmp);
-				//var lastHeight = 0;
-				//for (int y = 0; y < bmp.Height; y++)
-				//{
-				//	for (int x = 0; x < bmp.Width; x++)
-				//	{
-				//		if (bmp.GetPixel(x, y).Name != "0")
-				//		{
-				//			lastHeight = y;
-				//			break;
-				//		}
-				//	}
-				//}
-				bmp.Dispose();
-				return new Core.Size(rect.Width, lastHeight > 0 ? lastHeight + 1 : 0);
+				using (var font = new Font(fontFamily, fontSize, (System.Drawing.FontStyle)fontStyle))
+				using (var g = Graphics.FromImage(TextSizeImage))
+				{
+					g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+					result = g.MeasureString(text, font, Convert.ToInt32(rect.Width), stringFormat);
+				}
+
+				if (result.Width > rect.Width)
+				{
+					var imageRect = new RectangleF(0, 0, rect.Width, Math.Max(rect.Height, 1) * 10);
+					Bitmap bmp = new Bitmap((int)imageRect.Width, (int)imageRect.Height);
+					using (var font = new Font(fontFamily, fontSize, (System.Drawing.FontStyle)fontStyle))
+					using (Graphics gfx = Graphics.FromImage(bmp))
+					{
+						gfx.DrawString(text, font, Brushes.Black, imageRect, stringFormat);
+					}
+					//bmp.Save("D:\\temp\\MeasureString\\" + Guid.NewGuid() + ".png", ImageFormat.Png);
+
+					//var lastHeight = GetTextHeight(bmp);
+					var lastHeight = 0;
+					for (int y = 0; y < bmp.Height; y++)
+					{
+						for (int x = 0; x < bmp.Width; x++)
+						{
+							if (bmp.GetPixel(x, y).Name != "0")
+							{
+								lastHeight = y;
+								break;
+							}
+						}
+					}
+					bmp.Dispose();
+					return new Core.Size(rect.Width, lastHeight > 0 ? lastHeight + 1 : 0);
+				}
 			}
 
 			return new Core.Size(result.Width, result.Height);
 		}
 
-		public static unsafe int GetTextHeight(Bitmap bmp)
-		{
-			BitmapData bData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
+		//public static unsafe int GetTextHeight(Bitmap bmp)
+		//{
+		//	BitmapData bData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
 
-			byte bitsPerPixel = 32;
+		//	byte bitsPerPixel = 32;
 
-			byte* scan0 = (byte*)bData.Scan0.ToPointer();
+		//	byte* scan0 = (byte*)bData.Scan0.ToPointer();
 
-			var lastHeight = 0;
-			for (int i = 0; i < bData.Height; ++i)
-			{
-				for (int j = 0; j < bData.Width; ++j)
-				{
-					byte* data1 = scan0 + i * bData.Stride + j * bitsPerPixel / 8;
-					byte* data2 = scan0 + i * bData.Stride + j * bitsPerPixel / 8 + 1;
-					byte* data3 = scan0 + i * bData.Stride + j * bitsPerPixel / 8 + 2;
-					byte* data4 = scan0 + i * bData.Stride + j * bitsPerPixel / 8 + 3;
+		//	var lastHeight = 0;
+		//	for (int i = 0; i < bData.Height; ++i)
+		//	{
+		//		for (int j = 0; j < bData.Width; ++j)
+		//		{
+		//			byte* data1 = scan0 + i * bData.Stride + j * bitsPerPixel / 8;
+		//			byte* data2 = scan0 + i * bData.Stride + j * bitsPerPixel / 8 + 1;
+		//			byte* data3 = scan0 + i * bData.Stride + j * bitsPerPixel / 8 + 2;
+		//			byte* data4 = scan0 + i * bData.Stride + j * bitsPerPixel / 8 + 3;
 
-					if (*data1 != 0 || *data2 != 0 || *data3 != 0 || *data4 != 0)
-					{
-						lastHeight = i;
-						break;
-					}
-					//data is a pointer to the first byte of the 3-byte color data
-				}
-			}
+		//			if (*data1 != 0 || *data2 != 0 || *data3 != 0 || *data4 != 0)
+		//			{
+		//				lastHeight = i;
+		//				break;
+		//			}
+		//			//data is a pointer to the first byte of the 3-byte color data
+		//		}
+		//	}
 
-			bmp.UnlockBits(bData);
+		//	bmp.UnlockBits(bData);
 
-			return lastHeight;
-		}
+		//	return lastHeight;
+		//}
+
 		public override void RenderFillRect(object context, Core.Rectangle rect, float angle, params string[] colors)
 		{
 			if (rect.Width < 1 || rect.Height < 1)

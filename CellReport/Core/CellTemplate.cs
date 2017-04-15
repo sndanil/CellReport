@@ -307,6 +307,8 @@ namespace CellReport.Core
 				var autoFit = false;
 				if (row.Attribute("AutoFitHeight") != null)
 					autoFit = bool.Parse(row.Attribute("AutoFitHeight").Value);
+				if (autoFit)
+					_manager.SetAutoFitRow(rowIndex, true);
 				var pageBreak = false;
 				if (row.Attribute("PageBreak") != null)
 					pageBreak = bool.Parse(row.Attribute("PageBreak").Value);
@@ -314,19 +316,8 @@ namespace CellReport.Core
 					_manager.AddPageBreakRow(rowIndex);
 				if (row.Attribute("Height") != null)
 				{
-					int heightIndex = rowIndex;
-					int span = 0;
-					if (row.Attribute("Span") != null)
-						span = Convert.ToInt32(row.Attribute("Span").Value);
 					var height = UnitsConverter.ParseUnit(row.Attribute("Height").Value, GraphicsUnit.Millimeter);
-					do
-					{
-						_manager.SetRowHeight(heightIndex, height);
-						if (autoFit)
-							_manager.SetAutoFitRow(heightIndex, true);
-						heightIndex++;
-						span--;
-					} while (span >= 0);
+					_manager.SetRowHeight(rowIndex, height);
 				}
 
 				var colIndex = 0;
@@ -360,22 +351,15 @@ namespace CellReport.Core
 			{
 				if (column.Attribute("Index") != null)
 					columnIndex = Convert.ToInt32(column.Attribute("Index").Value);
-				int span = 0;
-				if (column.Attribute("Span") != null)
-					span = Convert.ToInt32(column.Attribute("Span").Value);
 				var hasWidth = (column.Attribute("Width") != null);
 				var width = hasWidth ? UnitsConverter.ParseUnit(column.Attribute("Width").Value, GraphicsUnit.Millimeter) : 0;
 				var hasMarker = (column.Attribute("Marker") != null);
 				var marker = hasMarker ? column.Attribute("Marker").Value : null;
-				do
-				{
-					if (hasWidth)
-						_manager.SetColumnWidth(columnIndex, width);
-					if (hasMarker)
-						_manager.SetColumnMarker(columnIndex, string.IsNullOrEmpty(marker) ? null : marker);
-					columnIndex++;
-					span--;
-				} while (span >= 0);
+				if (hasWidth)
+					_manager.SetColumnWidth(columnIndex, width);
+				if (hasMarker)
+					_manager.SetColumnMarker(columnIndex, string.IsNullOrEmpty(marker) ? null : marker);
+				columnIndex++;
 			}
 		}
 
