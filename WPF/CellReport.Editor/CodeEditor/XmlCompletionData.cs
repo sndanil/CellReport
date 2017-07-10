@@ -5,13 +5,20 @@ using ICSharpCode.AvalonEdit.Editing;
 
 namespace CellReport.Editor.CodeEditor
 {
+	public enum XmlCompletionDataType
+	{
+		Element,
+		Attribute,
+		AttributeValue
+	}
+
 	public class XmlCompletionData : ICompletionData
 	{
-		private readonly bool _isAttribute;
+		private readonly XmlCompletionDataType _type;
 
-		public XmlCompletionData(string text, string description, bool isAttribute)
+		public XmlCompletionData(string text, string description, XmlCompletionDataType type)
 		{
-			_isAttribute = isAttribute;
+			_type = type;
 			Text = text;
 			Description = description;
 		}
@@ -20,25 +27,44 @@ namespace CellReport.Editor.CodeEditor
 
 		public string Text { get; }
 
-		public object Content => Text + " (" + Description + ")";
+		public object Content => string.IsNullOrEmpty(Description?.ToString()) ? Text : Text + " (" + Description + ")";
 
 		public object Description { get; }
 
 		public double Priority { get; }
 
-		public void Complete(TextArea textArea, ISegment completionSegment,
-				EventArgs insertionRequestEventArgs)
+		public void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs)
 		{
-			if (_isAttribute)
+			switch (_type)
 			{
-				textArea.Document.Replace(completionSegment, Text + "=\"\"");
-				textArea.Caret.Offset = textArea.Caret.Offset - 1;
-			}
-			else
-			{
-				string element = Text + "></" + Text + ">";
-				textArea.Document.Replace(completionSegment, element);
-				textArea.Caret.Offset = textArea.Caret.Offset - (1 + Text.Length + 2);
+				case XmlCompletionDataType.Element:
+					string element = Text + "></" + Text + ">";
+					textArea.Document.Replace(completionSegment, element);
+					textArea.Caret.Offset = textArea.Caret.Offset - (1 + Text.Length + 2);
+					break;
+				case XmlCompletionDataType.Attribute:
+					textArea.Document.Replace(completionSegment, Text + "=\"\"");
+					textArea.Caret.Offset = textArea.Caret.Offset - 1;
+					break;
+				case XmlCompletionDataType.AttributeValue:
+					var start = completionSegment.Offset;
+					var end = completionSegment.EndOffset;
+					if (textArea.Document.Text[start] == '"')
+					{
+						start--;
+						end--;
+					}
+					while (textArea.Document.Text[start] != '"')
+					{
+						start--;
+					}
+					start++;
+					while (textArea.Document.Text[end] != '"')
+					{
+						end++;
+					}
+					textArea.Document.Replace(new AnchorSegment(textArea.Document, start, end - start), Text);
+					break;
 			}
 		}
 	}

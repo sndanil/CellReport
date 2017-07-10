@@ -131,6 +131,43 @@ namespace CellReport.Editor.CodeEditor.XHelper
 			return new XmlElementInformation();
 		}
 
+		public static string GetActiveElementText(string xml, int index)
+		{
+			return GetActiveElementStartText(xml, index);
+		}
+
+		public static string GetActiveAttributeName(string xml, int index)
+		{
+			string result = null;
+			var wasQuote = false;
+			var wasEqv = false;
+
+			int currentIndex = index - 1;
+
+			while (currentIndex > -1)
+			{
+				char currentChar = xml[currentIndex];
+				if (currentChar == ' ')
+				{
+					return result;
+				}
+				if (currentChar == '"' && wasQuote || currentChar == '=' && wasEqv || currentChar == '<' || currentChar == '>')
+				{
+					return null;
+				}
+				if (wasEqv)
+				{
+					result = currentChar + (result ?? string.Empty);
+				}
+				wasQuote = currentChar == '"' || wasQuote;
+				wasEqv = currentChar == '=' || wasEqv;
+
+				--currentIndex;
+			}
+
+			return result;
+		}
+
 		/// <summary>
 		/// Source: Sharpdevelop
 		/// Gets the element name from the element start tag string.
