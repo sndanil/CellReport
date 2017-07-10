@@ -11,11 +11,11 @@ namespace CellReport.Core.Expressions
     public class NowExpression : BaseExpression
     {
         private DateTime _value = DateTime.Now;
-        private bool _freez = false;
+        private bool _freeze = false;
 
         public override object GetValue(CellManager manager)
         {
-            if (_freez)
+            if (_freeze)
                 return _value;
             else
                 return DateTime.Now;
@@ -28,17 +28,17 @@ namespace CellReport.Core.Expressions
 
         internal new static NowExpression Parse(XElement element)
         {
-            var freez = false;
-            if (element.Attribute("Freez") != null)
-                freez = bool.Parse(element.Attribute("Freez").Value);
+            var freeze = false;
+            if (element.Attribute("Freeze") != null)
+                freeze = bool.Parse(element.Attribute("Freeze").Value);
 
-            return new NowExpression() { _freez = freez };
+            return new NowExpression() { _freeze = freeze };
         }
 
         protected override XElement OnSerialize(string expressionName)
         {
             var result = base.OnSerialize("NowExpression");
-            if (_freez)
+            if (_freeze)
                 result.Add(new XAttribute("Freez", true));
 
             return result;

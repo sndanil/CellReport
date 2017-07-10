@@ -227,10 +227,17 @@ namespace CellReport.Core
 
 		public void Load(Stream stream)
 		{
-			Load(stream, null);
+			LoadFromStream(stream);
 		}
 
-		public void Load(Stream stream, string docXml)
+		public void LoadFromXml(string xml)
+		{
+			var xDoc = XDocument.Parse(xml);
+			LoadFromXDoc(xDoc, new Dictionary<string, byte[]>());
+		}
+
+
+		private void LoadFromStream(Stream stream)
 		{
 			var type = TemplateType.Xml;
 			var reader = new StreamReader(stream);
@@ -244,23 +251,14 @@ namespace CellReport.Core
 			XDocument xDoc = null;
 			if (type == TemplateType.Xml)
 			{
-				if (docXml == null)
-					xDoc = XDocument.Load(new StreamReader(stream));
-				else
-					xDoc = XDocument.Parse(docXml);
+				xDoc = XDocument.Load(new StreamReader(stream));
 			}
 			else
 			{
-				using (Package package = ZipPackage.Open(stream, FileMode.Open, FileAccess.Read))
+				using (Package package = Package.Open(stream, FileMode.Open, FileAccess.Read))
 				{
-					if (docXml == null)
-					{
-						Uri partUriDocument = PackUriHelper.CreatePartUri(new Uri("Content\\Document.xml",
-							UriKind.Relative));
-						xDoc = XDocument.Load(new StreamReader(package.GetPart(partUriDocument).GetStream()));
-					}
-					else
-						xDoc = XDocument.Parse(docXml);
+					Uri partUriDocument = PackUriHelper.CreatePartUri(new Uri("Content\\Document.xml", UriKind.Relative));
+					xDoc = XDocument.Load(new StreamReader(package.GetPart(partUriDocument).GetStream()));
 					foreach (var part in package.GetParts())
 					{
 						if (part.ContentType.ToUpper().StartsWith("IMAGE") && part.Uri.ToString().StartsWith("/Resources/"))
@@ -273,6 +271,11 @@ namespace CellReport.Core
 					}
 				}
 			}
+			LoadFromXDoc(xDoc, resources);
+		}
+
+		private void LoadFromXDoc(XDocument xDoc, Dictionary<string, byte[]> resources)
+		{
 			var templElement = xDoc.Element("CellReportTemplate");
 			var properties = Properties.Parse(templElement.Element("Properties"));
 			var tableElement = templElement.Element("Table");
@@ -295,6 +298,7 @@ namespace CellReport.Core
 			_manager.PrintSettings = PrintSettings.Parse(_manager, templElement.Element("PrintSettings"));
 			_manager.ExportSettings = ExportSettings.Parse(templElement.Element("ExportSettings"));
 			_manager.DisplaySettings = DisplaySettings.Parse(templElement.Element("DisplaySettings"));
+
 		}
 
 		private void ParseRows(XElement tableElement)

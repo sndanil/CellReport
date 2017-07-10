@@ -5,21 +5,21 @@
         xmlns:local="clr-namespace:CellReport.Studio.ViewModel"
         SnapsToDevicePixels="True"
         Title="Редактор отчетов CellReport" Height="600" Width="1000" WindowState="Maximized" Icon="/CellReport.Studio;component/Logo.ico">
-    <Window.Resources>
-        <local:DecimalStyleConverter x:Key="decStyleConverter" />
-        <local:DateTimeStyleConverter x:Key="dateTimeStyleConverter" />
-        <local:WPFUnitsConverter x:Key="wpfUnitsConverter" />
+	<Window.Resources>
+		<local:DecimalStyleConverter x:Key="decStyleConverter" />
+		<local:DateTimeStyleConverter x:Key="dateTimeStyleConverter" />
+		<local:WPFUnitsConverter x:Key="wpfUnitsConverter" />
 
-        <Style TargetType="ComboBox">
-            <Style.Setters>
-                <Setter Property="Margin" Value="5" />
-            </Style.Setters>
-        </Style>
-        <Style TargetType="TextBox">
-            <Style.Setters>
-                <Setter Property="Margin" Value="3" />
-            </Style.Setters>
-        </Style>
+		<Style TargetType="ComboBox">
+			<Style.Setters>
+				<Setter Property="Margin" Value="5" />
+			</Style.Setters>
+		</Style>
+		<Style TargetType="TextBox">
+			<Style.Setters>
+				<Setter Property="Margin" Value="3" />
+			</Style.Setters>
+		</Style>
 		<Style x:Key="cellLineStyle" TargetType="{x:Type Line}">
 			<Setter Property="SnapsToDevicePixels" Value="True" />
 			<Setter Property="RenderOptions.EdgeMode" Value="Aliased" />
@@ -30,13 +30,13 @@
 		</Style>
 
 		<DataTemplate x:Key="textStyleTemplate">
-            <Border BorderBrush="Gray" BorderThickness="1" Padding="2" Margin="2">
-                <Grid Width="150">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="20" />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <TextBlock 
+			<Border BorderBrush="Gray" BorderThickness="1" Padding="2" Margin="2">
+				<Grid Width="150">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="20" />
+						<RowDefinition />
+					</Grid.RowDefinitions>
+					<TextBlock 
                         Text="Текст"
                         Foreground="{Binding Color}" 
                         VerticalAlignment="{Binding Path=VAlignment, Converter={StaticResource wpfUnitsConverter},ConverterParameter=VAlign}"
@@ -46,20 +46,20 @@
                         FontWeight="{Binding Path=Font.Style, Converter={StaticResource wpfUnitsConverter},ConverterParameter=FontWeight}" 
                         FontSize="{Binding Path=Font.Size, Converter={StaticResource wpfUnitsConverter},ConverterParameter=PointToWPF}" 
                         />
-                    <TextBlock Grid.Row="1" Text="{Binding ID}"></TextBlock>
-                </Grid>
-            </Border>
-        </DataTemplate>
-        <DataTemplate x:Key="decimalStyleTemplate">
-            <Border BorderBrush="Gray" BorderThickness="1" Padding="2" Margin="2">
-                <Grid Width="150">
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <TextBlock 
+					<TextBlock Grid.Row="1" Text="{Binding ID}"></TextBlock>
+				</Grid>
+			</Border>
+		</DataTemplate>
+		<DataTemplate x:Key="decimalStyleTemplate">
+			<Border BorderBrush="Gray" BorderThickness="1" Padding="2" Margin="2">
+				<Grid Width="150">
+					<Grid.RowDefinitions>
+						<RowDefinition />
+						<RowDefinition />
+						<RowDefinition />
+						<RowDefinition />
+					</Grid.RowDefinitions>
+					<TextBlock 
                                Text="{Binding Converter={StaticResource decStyleConverter}, ConverterParameter=Positive}" 
                                Foreground="{Binding Color}" 
                                 VerticalAlignment="{Binding Path=VAlignment, Converter={StaticResource wpfUnitsConverter},ConverterParameter=VAlign}"
@@ -69,7 +69,7 @@
                                 FontWeight="{Binding Path=Font.Style, Converter={StaticResource wpfUnitsConverter},ConverterParameter=FontWeight}" 
                                 FontSize="{Binding Path=Font.Size, Converter={StaticResource wpfUnitsConverter},ConverterParameter=PointToWPF}" 
                                />
-                    <TextBlock Grid.Row="1"
+					<TextBlock Grid.Row="1"
                                Text="{Binding Converter={StaticResource decStyleConverter}, ConverterParameter=Negative}" 
                                Foreground="{Binding NegativeColor}" 
                                 VerticalAlignment="{Binding Path=VAlignment, Converter={StaticResource wpfUnitsConverter},ConverterParameter=VAlign}"
@@ -79,7 +79,7 @@
                                 FontWeight="{Binding Path=Font.Style, Converter={StaticResource wpfUnitsConverter},ConverterParameter=FontWeight}" 
                                 FontSize="{Binding Path=Font.Size, Converter={StaticResource wpfUnitsConverter},ConverterParameter=PointToWPF}" 
                                />
-                    <TextBlock Grid.Row="2" 
+					<TextBlock Grid.Row="2" 
                                Text="{Binding Converter={StaticResource decStyleConverter}, ConverterParameter=Zero}" 
                                Foreground="{Binding Color}" 
                                 VerticalAlignment="{Binding Path=VAlignment, Converter={StaticResource wpfUnitsConverter},ConverterParameter=VAlign}"
@@ -89,126 +89,126 @@
                                 FontWeight="{Binding Path=Font.Style, Converter={StaticResource wpfUnitsConverter},ConverterParameter=FontWeight}" 
                                 FontSize="{Binding Path=Font.Size, Converter={StaticResource wpfUnitsConverter},ConverterParameter=PointToWPF}" 
                                />
-                    <TextBlock Grid.Row="3" Text="{Binding ID}"></TextBlock>
-                </Grid>
-            </Border>
-        </DataTemplate>
-        <DataTemplate x:Key="dateTimeStyleTemplate">
-            <Border BorderBrush="Gray" BorderThickness="1" Padding="2" Margin="2">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <TextBlock HorizontalAlignment="Right" 
+					<TextBlock Grid.Row="3" Text="{Binding ID}"></TextBlock>
+				</Grid>
+			</Border>
+		</DataTemplate>
+		<DataTemplate x:Key="dateTimeStyleTemplate">
+			<Border BorderBrush="Gray" BorderThickness="1" Padding="2" Margin="2">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition />
+						<RowDefinition />
+					</Grid.RowDefinitions>
+					<TextBlock HorizontalAlignment="Right" 
                                Text="{Binding Converter={StaticResource dateTimeStyleConverter}, ConverterParameter=Positive}" 
                                Foreground="{Binding Color}" 
                                FontFamily="{Binding Path=Font.Family, Converter={StaticResource wpfUnitsConverter},ConverterParameter=FontFamily}" 
                                FontSize="{Binding Path=Font.Size, Converter={StaticResource wpfUnitsConverter},ConverterParameter=PointToWPF}" 
                                />
-                    <TextBlock Grid.Row="1" Text="{Binding ID}"></TextBlock>
-                </Grid>
-            </Border>
-        </DataTemplate>
-        <DataTemplate x:Key="allStyleTemplate">
-            <Border BorderBrush="Gray" BorderThickness="1" Padding="2" Margin="2">
-                <DockPanel HorizontalAlignment="Center">
-                    <TextBlock Text="{Binding ID}"></TextBlock>
-                </DockPanel>
-            </Border>
-        </DataTemplate>
-        <DataTemplate x:Key="cellStyleTemplate">
-            <Canvas Width="120" Height="35" Margin="3">
-                <Rectangle Canvas.Left="5" Canvas.Top="5" Width="110" Height="25" Fill="{Binding Color}" />
-                <TextBlock Canvas.Left="20" Canvas.Top="10" Text="{Binding ID}" />
-                <Line X1="5" X2="115" Y1="5" Y2="5" Style="{StaticResource cellLineStyle}" DataContext="{Binding Borders.Top}" />
+					<TextBlock Grid.Row="1" Text="{Binding ID}"></TextBlock>
+				</Grid>
+			</Border>
+		</DataTemplate>
+		<DataTemplate x:Key="allStyleTemplate">
+			<Border BorderBrush="Gray" BorderThickness="1" Padding="2" Margin="2">
+				<DockPanel HorizontalAlignment="Center">
+					<TextBlock Text="{Binding ID}"></TextBlock>
+				</DockPanel>
+			</Border>
+		</DataTemplate>
+		<DataTemplate x:Key="cellStyleTemplate">
+			<Canvas Width="120" Height="35" Margin="3">
+				<Rectangle Canvas.Left="5" Canvas.Top="5" Width="110" Height="25" Fill="{Binding Color}" />
+				<TextBlock Canvas.Left="20" Canvas.Top="10" Text="{Binding ID}" />
+				<Line X1="5" X2="115" Y1="5" Y2="5" Style="{StaticResource cellLineStyle}" DataContext="{Binding Borders.Top}" />
 				<Line X1="5" X2="115" Y1="30" Y2="30" Style="{StaticResource cellLineStyle}" DataContext="{Binding Borders.Bottom}" />
 				<Line X1="5" X2="5" Y1="5" Y2="30" Style="{StaticResource cellLineStyle}" DataContext="{Binding Borders.Left}" />
 				<Line X1="115" X2="115" Y1="5" Y2="30" Style="{StaticResource cellLineStyle}" DataContext="{Binding Borders.Right}" />
-            </Canvas>
-        </DataTemplate>
+			</Canvas>
+		</DataTemplate>
 
 		<local:StyleTemplateSelector x:Key="styleTemplateSelector" />
-    </Window.Resources>
-    <DockPanel>
+	</Window.Resources>
+	<DockPanel>
 		<ribbon:Ribbon x:Name="ribbon" DockPanel.Dock="Top" FocusManager.IsFocusScope="False">
-            <ribbon:Ribbon.QuickAccessToolBar>
-                <ribbon:RibbonQuickAccessToolBar>
-                    <ribbon:RibbonButton Command="local:StudioCommands.Save" SmallImageSource="Images\SaveSmall.png" />
+			<ribbon:Ribbon.QuickAccessToolBar>
+				<ribbon:RibbonQuickAccessToolBar>
+					<ribbon:RibbonButton Command="local:StudioCommands.Save" SmallImageSource="Images\SaveSmall.png" />
 					<ribbon:RibbonButton Command="local:StudioCommands.Undo" SmallImageSource="Images\UndoSmall.png" />
 					<ribbon:RibbonButton Command="local:StudioCommands.Redo" SmallImageSource="Images\RedoSmall.png" />
-                </ribbon:RibbonQuickAccessToolBar>
-            </ribbon:Ribbon.QuickAccessToolBar>
-            
-            <ribbon:Ribbon.ApplicationMenu>
-                <ribbon:RibbonApplicationMenu Label="Файл" KeyTip="F" SmallImageSource="Images\LogoSmall.png">
-                    <ribbon:RibbonApplicationMenuItem Header="Создать" Command="local:StudioCommands.Create" />
-                    <ribbon:RibbonApplicationMenuItem Header="Открыть" Command="local:StudioCommands.Open" ImageSource="Images\OpenBig.png" />
-                    <ribbon:RibbonApplicationMenuItem Header="Импортировать" Command="local:StudioCommands.ImportFromExcel" ImageSource="Images\ExcelBig.png" />
-                    <ribbon:RibbonApplicationMenuItem Header="Импортировать из форинта" Command="local:StudioCommands.ImportFromForint" />
+				</ribbon:RibbonQuickAccessToolBar>
+			</ribbon:Ribbon.QuickAccessToolBar>
+
+			<ribbon:Ribbon.ApplicationMenu>
+				<ribbon:RibbonApplicationMenu Label="Файл" KeyTip="F" SmallImageSource="Images\LogoSmall.png">
+					<ribbon:RibbonApplicationMenuItem Header="Создать" Command="local:StudioCommands.Create" />
+					<ribbon:RibbonApplicationMenuItem Header="Открыть" Command="local:StudioCommands.Open" ImageSource="Images\OpenBig.png" />
+					<ribbon:RibbonApplicationMenuItem Header="Импортировать" Command="local:StudioCommands.ImportFromExcel" ImageSource="Images\ExcelBig.png" />
+					<ribbon:RibbonApplicationMenuItem Header="Импортировать из форинта" Command="local:StudioCommands.ImportFromForint" />
 					<ribbon:RibbonApplicationMenuItem Header="Сохранить" Command="local:StudioCommands.Save" ImageSource="Images\SaveBig.png" />
 					<ribbon:RibbonApplicationMenuItem Header="Сохранить как" Command="local:StudioCommands.SaveAs" ImageSource="Images\SaveAsBig.png" />
 					<ribbon:RibbonApplicationMenuItem Header="Экспорт в Excel" Command="local:StudioCommands.ExportExcel" ImageSource="Images\ExportExcel.png" />
 					<ribbon:RibbonApplicationMenuItem Header="Экспорт в HTML" Command="local:StudioCommands.ExportHtml" ImageSource="Images\ExportHtml.png" />
 				</ribbon:RibbonApplicationMenu>
-            </ribbon:Ribbon.ApplicationMenu>
-            
-            <ribbon:RibbonTab Header="Главная">
-                <ribbon:RibbonGroup Header="Буфер обмена">
-                    <ribbon:RibbonButton Label="Вставить" Command="local:StudioCommands.Paste" LargeImageSource="Images\PasteBig.png" KeyTip="V" />
-                    <ribbon:RibbonSplitButton Label="Копировать" Command="local:StudioCommands.Copy" SmallImageSource="Images\CopySmall.png" >
-                        <ribbon:RibbonMenuItem Header="Копировать" Command="local:StudioCommands.Copy" ImageSource="Images\CopySmall.png" />
-                        <ribbon:RibbonMenuItem Header="Копировать содержимое" Command="local:StudioCommands.CopyContent" />
-                    </ribbon:RibbonSplitButton>
-                </ribbon:RibbonGroup>
-                
-                <ribbon:RibbonGroup Header="Ячейки" x:Name="_cells">
-                    <ribbon:RibbonButton Label="Объединить" SmallImageSource="Images\MergeSmall.png" Command="local:StudioCommands.MergeCells" />
-                    <ribbon:RibbonCheckBox Label="Автовысота строки" Command="local:StudioCommands.Default" IsChecked="{Binding CurrentRowAutoHeight, Mode=TwoWay}" />
-                    <ComboBox ClipToBounds="True" Height="21" Width="150" SelectedItem="{Binding CurrentCellStyle}" 
+			</ribbon:Ribbon.ApplicationMenu>
+
+			<ribbon:RibbonTab Header="Главная">
+				<ribbon:RibbonGroup Header="Буфер обмена">
+					<ribbon:RibbonButton Label="Вставить" Command="local:StudioCommands.Paste" LargeImageSource="Images\PasteBig.png" KeyTip="V" />
+					<ribbon:RibbonSplitButton Label="Копировать" Command="local:StudioCommands.Copy" SmallImageSource="Images\CopySmall.png" >
+						<ribbon:RibbonMenuItem Header="Копировать" Command="local:StudioCommands.Copy" ImageSource="Images\CopySmall.png" />
+						<ribbon:RibbonMenuItem Header="Копировать содержимое" Command="local:StudioCommands.CopyContent" />
+					</ribbon:RibbonSplitButton>
+				</ribbon:RibbonGroup>
+
+				<ribbon:RibbonGroup Header="Ячейки" x:Name="_cells">
+					<ribbon:RibbonButton Label="Объединить" SmallImageSource="Images\MergeSmall.png" Command="local:StudioCommands.MergeCells" />
+					<ribbon:RibbonCheckBox Label="Автовысота строки" Command="local:StudioCommands.Default" IsChecked="{Binding CurrentRowAutoHeight, Mode=TwoWay}" />
+					<ComboBox ClipToBounds="True" Height="21" Width="150" SelectedItem="{Binding CurrentCellStyle}" 
                             ItemsSource="{Binding CellStyles}" 
                                 Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
                             ItemTemplate="{StaticResource cellStyleTemplate}" 
                               IsEditable="True" IsReadOnly="True"
                             />
 
-                    <ribbon:RibbonSplitButton Label="Вставить" Command="local:StudioCommands.AddRows" LargeImageSource="Images\InsertRowsBig.png" KeyTip="4">
-                        <ribbon:RibbonMenuItem Header="Вставить строку" Command="local:StudioCommands.AddRows" ImageSource="Images\InsertRowsSmall.png" />
-                        <ribbon:RibbonMenuItem Header="Вставить строку после" Command="local:StudioCommands.AddRowsAfter" ImageSource="Images\InsertRowsSmall.png" />
-                        <ribbon:RibbonMenuItem Header="Вставить колонку" Command="local:StudioCommands.AddColumns" ImageSource="Images\InsertColumnsSmall.png"/>
-                        <ribbon:RibbonMenuItem Header="Вставить колонку после" Command="local:StudioCommands.AddColumnsAfter" ImageSource="Images\InsertColumnsSmall.png"/>
-                    </ribbon:RibbonSplitButton>
+					<ribbon:RibbonSplitButton Label="Вставить" Command="local:StudioCommands.AddRows" LargeImageSource="Images\InsertRowsBig.png" KeyTip="4">
+						<ribbon:RibbonMenuItem Header="Вставить строку" Command="local:StudioCommands.AddRows" ImageSource="Images\InsertRowsSmall.png" />
+						<ribbon:RibbonMenuItem Header="Вставить строку после" Command="local:StudioCommands.AddRowsAfter" ImageSource="Images\InsertRowsSmall.png" />
+						<ribbon:RibbonMenuItem Header="Вставить колонку" Command="local:StudioCommands.AddColumns" ImageSource="Images\InsertColumnsSmall.png"/>
+						<ribbon:RibbonMenuItem Header="Вставить колонку после" Command="local:StudioCommands.AddColumnsAfter" ImageSource="Images\InsertColumnsSmall.png"/>
+					</ribbon:RibbonSplitButton>
 
-                    <ribbon:RibbonSplitButton Label="Удалить" Command="local:StudioCommands.DeleteCell" LargeImageSource="Images\DeleteCellsBig.png" KeyTip="D">
-                        <ribbon:RibbonMenuItem Header="Удалить ячейку" Command="local:StudioCommands.DeleteCell" ImageSource="Images\DeleteCellsSmall.png" />
-                        <ribbon:RibbonSeparator />
-                        <ribbon:RibbonMenuItem Header="Удалить строку" Command="local:StudioCommands.DeleteRows" ImageSource="Images\DeleteRowsSmall.png" />
-                        <ribbon:RibbonMenuItem Header="Удалить колонку" Command="local:StudioCommands.DeleteColumns" ImageSource="Images\DeleteColumnsSmall.png"/>
-                    </ribbon:RibbonSplitButton>
+					<ribbon:RibbonSplitButton Label="Удалить" Command="local:StudioCommands.DeleteCell" LargeImageSource="Images\DeleteCellsBig.png" KeyTip="D">
+						<ribbon:RibbonMenuItem Header="Удалить ячейку" Command="local:StudioCommands.DeleteCell" ImageSource="Images\DeleteCellsSmall.png" />
+						<ribbon:RibbonSeparator />
+						<ribbon:RibbonMenuItem Header="Удалить строку" Command="local:StudioCommands.DeleteRows" ImageSource="Images\DeleteRowsSmall.png" />
+						<ribbon:RibbonMenuItem Header="Удалить колонку" Command="local:StudioCommands.DeleteColumns" ImageSource="Images\DeleteColumnsSmall.png"/>
+					</ribbon:RibbonSplitButton>
 
-                </ribbon:RibbonGroup>
+				</ribbon:RibbonGroup>
 
-                <ribbon:RibbonGroup Header="Содержимое" x:Name="_contents" HorizontalContentAlignment="Right">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
+				<ribbon:RibbonGroup Header="Содержимое" x:Name="_contents" HorizontalContentAlignment="Right">
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition />
+							<ColumnDefinition />
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition />
+							<RowDefinition />
+						</Grid.RowDefinitions>
 
-                        <TextBlock VerticalAlignment="Center" >Контент</TextBlock>
-                        <TextBlock VerticalAlignment="Center" Grid.Row="1">Стиль</TextBlock>
-                        <ComboBox Width="110" Height="21" Margin="2"
+						<TextBlock VerticalAlignment="Center" >Контент</TextBlock>
+						<TextBlock VerticalAlignment="Center" Grid.Row="1">Стиль</TextBlock>
+						<ComboBox Width="110" Height="21" Margin="2"
                             Grid.Column="1" 
                             SelectedItem="{Binding Content}" 
                             ItemsSource="{Binding CurrentContents}" 
                             Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
                             IsEditable="True" IsReadOnly="True"
                                   />
-                        <ComboBox Height="21" Width="110" Margin="2"
+						<ComboBox Height="21" Width="110" Margin="2"
                             IsEditable="True" IsReadOnly="True"
                             Grid.Row="1" 
                             Grid.Column="1" 
@@ -217,104 +217,104 @@
                             ItemsSource="{Binding CurrentStyles}" 
                             Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
                             />
-                    </Grid>
-                    <ribbon:RibbonSplitButton Label="Добавить" Command="local:StudioCommands.AddTextContent" LargeImageSource="Images\AddContentBig.png">
-                        <ribbon:RibbonMenuItem Header="Текст" Command="local:StudioCommands.AddTextContent" />
-                        <ribbon:RibbonMenuItem Header="Число" Command="local:StudioCommands.AddDecimalContent" />
-                        <ribbon:RibbonMenuItem Header="Дата и время" Command="local:StudioCommands.AddDateTimeContent" />
-                        <ribbon:RibbonMenuItem Header="Действие" Command="local:StudioCommands.AddActionContent" />
-                        <ribbon:RibbonMenuItem Header="Изображение" Command="local:StudioCommands.AddImageContent" />
-                        <ribbon:RibbonMenuItem Header="Штрихкод" Command="local:StudioCommands.AddBarCodeContent" />
-                        <ribbon:RibbonMenuItem Header="График" Command="local:StudioCommands.Inactive" />
-                        <ribbon:RibbonMenuItem Header="Линия" Command="local:StudioCommands.Inactive" />
-                    </ribbon:RibbonSplitButton>
-                    <ribbon:RibbonButton Label="Свойства" Command="local:StudioCommands.ShowContentProperties" />
-                    <ribbon:RibbonButton Label="Параметры" Command="local:StudioCommands.ShowContentParams" />
-                    <ribbon:RibbonButton Label="Удалить" Command="local:StudioCommands.DeleteContent" />
+					</Grid>
+					<ribbon:RibbonSplitButton Label="Добавить" Command="local:StudioCommands.AddTextContent" LargeImageSource="Images\AddContentBig.png">
+						<ribbon:RibbonMenuItem Header="Текст" Command="local:StudioCommands.AddTextContent" />
+						<ribbon:RibbonMenuItem Header="Число" Command="local:StudioCommands.AddDecimalContent" />
+						<ribbon:RibbonMenuItem Header="Дата и время" Command="local:StudioCommands.AddDateTimeContent" />
+						<ribbon:RibbonMenuItem Header="Действие" Command="local:StudioCommands.AddActionContent" />
+						<ribbon:RibbonMenuItem Header="Изображение" Command="local:StudioCommands.AddImageContent" />
+						<ribbon:RibbonMenuItem Header="Штрихкод" Command="local:StudioCommands.AddBarCodeContent" />
+						<ribbon:RibbonMenuItem Header="График" Command="local:StudioCommands.Inactive" />
+						<ribbon:RibbonMenuItem Header="Линия" Command="local:StudioCommands.Inactive" />
+					</ribbon:RibbonSplitButton>
+					<ribbon:RibbonButton Label="Свойства" Command="local:StudioCommands.ShowContentProperties" />
+					<ribbon:RibbonButton Label="Параметры" Command="local:StudioCommands.ShowContentParams" />
+					<ribbon:RibbonButton Label="Удалить" Command="local:StudioCommands.DeleteContent" />
 
-                    <ribbon:RibbonButton Label="Выражения" Command="local:StudioCommands.ShowExpressions" LargeImageSource="Images\ExpressionsBig.png" /> 
-                </ribbon:RibbonGroup>
-                
-                <ribbon:RibbonGroup Header="Текущая ячейка" x:Name="_currentCell">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <TextBlock VerticalAlignment="Center">Высота</TextBlock>
-                        <TextBlock VerticalAlignment="Center" Grid.Row="1">Ширина</TextBlock>
-                        <TextBox Grid.Column="1" Text="{Binding CurrentCellHeight, UpdateSourceTrigger=PropertyChanged}" Width="50" />
-                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding CurrentCellWidth, UpdateSourceTrigger=PropertyChanged}" Width="50" />
-                    </Grid>
-                </ribbon:RibbonGroup>
-            </ribbon:RibbonTab>
+					<ribbon:RibbonButton Label="Выражения" Command="local:StudioCommands.ShowExpressions" LargeImageSource="Images\ExpressionsBig.png" />
+				</ribbon:RibbonGroup>
 
-            <ribbon:RibbonTab Header="Вид" x:Name="_view">
-                <ribbon:RibbonGroup Header="Отчет">
-                    <ribbon:RibbonCheckBox Label="Сетка" Command="local:StudioCommands.Default" IsChecked="{Binding ShowGridLines, Mode=TwoWay}" />
-                    <ribbon:RibbonCheckBox Label="Заголовки" Command="local:StudioCommands.Default" IsChecked="{Binding ShowResizers, Mode=TwoWay}" />
-                </ribbon:RibbonGroup>
-                <ribbon:RibbonGroup Header="Редактор">
-                    <ribbon:RibbonCheckBox Label="Сетка" Command="local:StudioCommands.Default" IsChecked="{Binding ShowDesignerGridLines, Mode=TwoWay}" />
-                    <ribbon:RibbonCheckBox Label="Заголовки" Command="local:StudioCommands.Default" IsChecked="{Binding ShowDesignerResizers, Mode=TwoWay}" />
-                </ribbon:RibbonGroup>
-                <ribbon:RibbonGroup Header="Фиксация">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <TextBlock Margin="3" Grid.Column="0" Grid.Row="0">Строки (количество)</TextBlock>
-                        <TextBlock Margin="3" Grid.Column="0" Grid.Row="1">Столбцы (количество)</TextBlock>
-                        <ribbon:RibbonTextBox Grid.Column="1" Grid.Row="0" Command="local:StudioCommands.Default" Text="{Binding FrozenRows, Mode=TwoWay}" />
-                        <ribbon:RibbonTextBox Grid.Column="1" Grid.Row="1" Command="local:StudioCommands.Default" Text="{Binding FrozenColumns, Mode=TwoWay}" />
-                    </Grid>
-                </ribbon:RibbonGroup>
+				<ribbon:RibbonGroup Header="Текущая ячейка" x:Name="_currentCell">
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition />
+							<ColumnDefinition />
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition />
+							<RowDefinition />
+						</Grid.RowDefinitions>
+						<TextBlock VerticalAlignment="Center">Высота</TextBlock>
+						<TextBlock VerticalAlignment="Center" Grid.Row="1">Ширина</TextBlock>
+						<TextBox Grid.Column="1" Text="{Binding CurrentCellHeight, UpdateSourceTrigger=PropertyChanged}" Width="50" />
+						<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding CurrentCellWidth, UpdateSourceTrigger=PropertyChanged}" Width="50" />
+					</Grid>
+				</ribbon:RibbonGroup>
+			</ribbon:RibbonTab>
 
-                <ribbon:RibbonGroup Header="Масштаб" Name="_scale">
+			<ribbon:RibbonTab Header="Вид" x:Name="_view">
+				<ribbon:RibbonGroup Header="Отчет">
+					<ribbon:RibbonCheckBox Label="Сетка" Command="local:StudioCommands.Default" IsChecked="{Binding ShowGridLines, Mode=TwoWay}" />
+					<ribbon:RibbonCheckBox Label="Заголовки" Command="local:StudioCommands.Default" IsChecked="{Binding ShowResizers, Mode=TwoWay}" />
+				</ribbon:RibbonGroup>
+				<ribbon:RibbonGroup Header="Редактор">
+					<ribbon:RibbonCheckBox Label="Сетка" Command="local:StudioCommands.Default" IsChecked="{Binding ShowDesignerGridLines, Mode=TwoWay}" />
+					<ribbon:RibbonCheckBox Label="Заголовки" Command="local:StudioCommands.Default" IsChecked="{Binding ShowDesignerResizers, Mode=TwoWay}" />
+				</ribbon:RibbonGroup>
+				<ribbon:RibbonGroup Header="Фиксация">
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition />
+							<RowDefinition />
+						</Grid.RowDefinitions>
+						<TextBlock Margin="3" Grid.Column="0" Grid.Row="0">Строки (количество)</TextBlock>
+						<TextBlock Margin="3" Grid.Column="0" Grid.Row="1">Столбцы (количество)</TextBlock>
+						<ribbon:RibbonTextBox Grid.Column="1" Grid.Row="0" Command="local:StudioCommands.Default" Text="{Binding FrozenRows, Mode=TwoWay}" />
+						<ribbon:RibbonTextBox Grid.Column="1" Grid.Row="1" Command="local:StudioCommands.Default" Text="{Binding FrozenColumns, Mode=TwoWay}" />
+					</Grid>
+				</ribbon:RibbonGroup>
+
+				<ribbon:RibbonGroup Header="Масштаб" Name="_scale">
 					<ComboBox Height="21" Width="70" Margin="2"
                         IsEditable="True" IsReadOnly="True"
                         SelectedItem="{Binding CurrentScale}" 
                         ItemsSource="{Binding Scales}" 
                         Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}" />
 				</ribbon:RibbonGroup>
-            </ribbon:RibbonTab>
+			</ribbon:RibbonTab>
 
-            <ribbon:RibbonTab Header="Параметры">
-                <ribbon:RibbonGroup Header="Название отчета" x:Name="_properties">
-                    <TextBox Width="200" Height="100" Text="{Binding DocumentName, Mode=TwoWay}" />
-                </ribbon:RibbonGroup>
-                <ribbon:RibbonGroup Header="Параметры по умолчанию" x:Name="_defaultProperties">
-                    <Grid Width="250">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <TextBlock Margin="3" Grid.Column="0" Grid.Row="0" >Высота</TextBlock>
-                        <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding DefaultRowHeight, Mode=TwoWay}" />
-                        <TextBlock Margin="3" Grid.Column="2" Grid.Row="0" >Ширина</TextBlock>
-                        <TextBox Grid.Column="3" Grid.Row="0" Text="{Binding DefaultColumnWidth, Mode=TwoWay}" />
-                        <TextBlock Margin="3" Grid.Column="0" Grid.Row="1" >Строк</TextBlock>
-                        <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding DefaultRowsCount, Mode=TwoWay}" />
-                        <TextBlock Margin="3" Grid.Column="2" Grid.Row="1" >Столбцов</TextBlock>
-                        <TextBox Grid.Column="3" Grid.Row="1" Text="{Binding DefaultColumnsCount, Mode=TwoWay}" />
-                    </Grid>
-                </ribbon:RibbonGroup>
-                <ribbon:RibbonGroup Header="Дополнительно" x:Name="_advanced">
+			<ribbon:RibbonTab Header="Параметры">
+				<ribbon:RibbonGroup Header="Название отчета" x:Name="_properties">
+					<TextBox Width="200" Height="100" Text="{Binding DocumentName, Mode=TwoWay}" />
+				</ribbon:RibbonGroup>
+				<ribbon:RibbonGroup Header="Параметры по умолчанию" x:Name="_defaultProperties">
+					<Grid Width="250">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition />
+							<ColumnDefinition />
+							<ColumnDefinition />
+							<ColumnDefinition />
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition />
+							<RowDefinition />
+						</Grid.RowDefinitions>
+						<TextBlock Margin="3" Grid.Column="0" Grid.Row="0" >Высота</TextBlock>
+						<TextBox Grid.Column="1" Grid.Row="0" Text="{Binding DefaultRowHeight, Mode=TwoWay}" />
+						<TextBlock Margin="3" Grid.Column="2" Grid.Row="0" >Ширина</TextBlock>
+						<TextBox Grid.Column="3" Grid.Row="0" Text="{Binding DefaultColumnWidth, Mode=TwoWay}" />
+						<TextBlock Margin="3" Grid.Column="0" Grid.Row="1" >Строк</TextBlock>
+						<TextBox Grid.Column="1" Grid.Row="1" Text="{Binding DefaultRowsCount, Mode=TwoWay}" />
+						<TextBlock Margin="3" Grid.Column="2" Grid.Row="1" >Столбцов</TextBlock>
+						<TextBox Grid.Column="3" Grid.Row="1" Text="{Binding DefaultColumnsCount, Mode=TwoWay}" />
+					</Grid>
+				</ribbon:RibbonGroup>
+				<ribbon:RibbonGroup Header="Дополнительно" x:Name="_advanced">
 					<Grid>
 						<Grid.RowDefinitions>
 							<RowDefinition />
@@ -334,163 +334,163 @@
 								 Text="{Binding CurrentColumnMarker, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 					</Grid>
 				</ribbon:RibbonGroup>
-            </ribbon:RibbonTab>
-            
-            <ribbon:RibbonTab Header="Печать" x:Name="_print">
+			</ribbon:RibbonTab>
+
+			<ribbon:RibbonTab Header="Печать" x:Name="_print">
 				<ribbon:RibbonGroup Header="Печать">
 					<ribbon:RibbonButton Label="Печать" Command="local:StudioCommands.Print" LargeImageSource="Images\PrintBig.png" />
 					<ribbon:RibbonButton Label="Просмотр" Command="local:StudioCommands.PrintPreview" LargeImageSource="Images\PrintPreviewBig.png" />
 				</ribbon:RibbonGroup>
 				<ribbon:RibbonGroup Header="Отступы" x:Name="_margins">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <TextBlock Margin="3" Grid.Column="0" Grid.Row="0" >Верх</TextBlock>
-                        <TextBlock Margin="3" Grid.Column="0" Grid.Row="1">Низ</TextBlock>
-                        <ribbon:RibbonTextBox Grid.Column="1" Grid.Row="0" Command="local:StudioCommands.Default" Text="{Binding Top, Mode=TwoWay}" />
-                        <ribbon:RibbonTextBox Grid.Column="1" Grid.Row="1" Command="local:StudioCommands.Default" Text="{Binding Bottom, Mode=TwoWay}" />
-                    </Grid>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <TextBlock Margin="3" Grid.Column="0" Grid.Row="0">Лево</TextBlock>
-                        <TextBlock Margin="3" Grid.Column="0" Grid.Row="1">Право</TextBlock>
-                        <ribbon:RibbonTextBox Grid.Column="1" Grid.Row="0" Command="local:StudioCommands.Default" Text="{Binding Left, Mode=TwoWay}" />
-                        <ribbon:RibbonTextBox Grid.Column="1" Grid.Row="1" Command="local:StudioCommands.Default" Text="{Binding Right, Mode=TwoWay}" />
-                    </Grid>
-                </ribbon:RibbonGroup>
-                <ribbon:RibbonGroup Header="Параметры">
-                    <ribbon:RibbonCheckBox Label="Альбомная ориентация" Command="local:StudioCommands.Default" IsChecked="{Binding Landscape}" />
-                    <TextBlock Margin="1">Вписать по ширине на (листов)</TextBlock>
-                    <ribbon:RibbonTextBox Command="local:StudioCommands.Default" Text="{Binding AutoFitWidthPages}" />
-                </ribbon:RibbonGroup>
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition />
+							<RowDefinition />
+						</Grid.RowDefinitions>
+						<TextBlock Margin="3" Grid.Column="0" Grid.Row="0" >Верх</TextBlock>
+						<TextBlock Margin="3" Grid.Column="0" Grid.Row="1">Низ</TextBlock>
+						<ribbon:RibbonTextBox Grid.Column="1" Grid.Row="0" Command="local:StudioCommands.Default" Text="{Binding Top, Mode=TwoWay}" />
+						<ribbon:RibbonTextBox Grid.Column="1" Grid.Row="1" Command="local:StudioCommands.Default" Text="{Binding Bottom, Mode=TwoWay}" />
+					</Grid>
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition />
+							<RowDefinition />
+						</Grid.RowDefinitions>
+						<TextBlock Margin="3" Grid.Column="0" Grid.Row="0">Лево</TextBlock>
+						<TextBlock Margin="3" Grid.Column="0" Grid.Row="1">Право</TextBlock>
+						<ribbon:RibbonTextBox Grid.Column="1" Grid.Row="0" Command="local:StudioCommands.Default" Text="{Binding Left, Mode=TwoWay}" />
+						<ribbon:RibbonTextBox Grid.Column="1" Grid.Row="1" Command="local:StudioCommands.Default" Text="{Binding Right, Mode=TwoWay}" />
+					</Grid>
+				</ribbon:RibbonGroup>
+				<ribbon:RibbonGroup Header="Параметры">
+					<ribbon:RibbonCheckBox Label="Альбомная ориентация" Command="local:StudioCommands.Default" IsChecked="{Binding Landscape}" />
+					<TextBlock Margin="1">Вписать по ширине на (листов)</TextBlock>
+					<ribbon:RibbonTextBox Command="local:StudioCommands.Default" Text="{Binding AutoFitWidthPages}" />
+				</ribbon:RibbonGroup>
 
-                <ribbon:RibbonGroup Header="Колонтитулы">
+				<ribbon:RibbonGroup Header="Колонтитулы">
 					<ribbon:RibbonButton Label="Верхний" Command="local:StudioCommands.Header" />
 					<ribbon:RibbonButton Label="Нижний" Command="local:StudioCommands.Footer" />
-                </ribbon:RibbonGroup>
-            </ribbon:RibbonTab>
+				</ribbon:RibbonGroup>
+			</ribbon:RibbonTab>
 
-            <ribbon:RibbonTab Header="Стили" x:Name="_styles">
-                <ribbon:RibbonGroup Header="Ячейки">
-                    <ComboBox Width="150" Height="60" ClipToBounds="True"
+			<ribbon:RibbonTab Header="Стили" x:Name="_styles">
+				<ribbon:RibbonGroup Header="Ячейки">
+					<ComboBox Width="150" Height="60" ClipToBounds="True"
                         Margin="2"
                         SelectedItem="{Binding CurrCellEditStyle}"
                         ItemTemplate="{StaticResource cellStyleTemplate}" 
                         ItemsSource="{Binding CellStyles}"
                         Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
                         />
-                    <ribbon:RibbonButton SmallImageSource="Images\plus.png" Command="local:StudioCommands.AddCellStyle" />
+					<ribbon:RibbonButton SmallImageSource="Images\plus.png" Command="local:StudioCommands.AddCellStyle" />
 					<ribbon:RibbonButton SmallImageSource="Images\pencil.png" Command="local:StudioCommands.EditCellStyle" />
 					<ribbon:RibbonButton SmallImageSource="Images\minus.png" Command="local:StudioCommands.DelCellStyle" />
-                </ribbon:RibbonGroup>
+				</ribbon:RibbonGroup>
 
-                <ribbon:RibbonGroup Header="Текст">
-                    <ComboBox Width="120" Height="60"
+				<ribbon:RibbonGroup Header="Текст">
+					<ComboBox Width="120" Height="60"
                         Margin="2"
                         SelectedItem="{Binding CurrTextStyle}"
                         ItemTemplate="{StaticResource textStyleTemplate}" 
                         ItemsSource="{Binding TextStyles}"
                         Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
                         />
-                    <ribbon:RibbonButton SmallImageSource="Images\plus.png" Command="local:StudioCommands.AddTextStyle" />
-                    <ribbon:RibbonButton SmallImageSource="Images\pencil.png" Command="local:StudioCommands.EditTextStyle" />
-                    <ribbon:RibbonButton SmallImageSource="Images\minus.png" Command="local:StudioCommands.DelTextStyle" />
-                </ribbon:RibbonGroup>
+					<ribbon:RibbonButton SmallImageSource="Images\plus.png" Command="local:StudioCommands.AddTextStyle" />
+					<ribbon:RibbonButton SmallImageSource="Images\pencil.png" Command="local:StudioCommands.EditTextStyle" />
+					<ribbon:RibbonButton SmallImageSource="Images\minus.png" Command="local:StudioCommands.DelTextStyle" />
+				</ribbon:RibbonGroup>
 
-                <ribbon:RibbonGroup Header="Число">
-                    <ComboBox Width="120" Height="60"
+				<ribbon:RibbonGroup Header="Число">
+					<ComboBox Width="120" Height="60"
                         Margin="2"
                         SelectedItem="{Binding CurrDecimalStyle}"
                         ItemTemplate="{StaticResource decimalStyleTemplate}" 
                         ItemsSource="{Binding DecimalStyles}"
                         Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
                         />
-                    <ribbon:RibbonButton SmallImageSource="Images\plus.png" Command="local:StudioCommands.AddDecimalStyle" />
-                    <ribbon:RibbonButton SmallImageSource="Images\pencil.png" Command="local:StudioCommands.EditDecimalStyle" />
-                    <ribbon:RibbonButton SmallImageSource="Images\minus.png" Command="local:StudioCommands.DelDecimalStyle" />
-                </ribbon:RibbonGroup>
+					<ribbon:RibbonButton SmallImageSource="Images\plus.png" Command="local:StudioCommands.AddDecimalStyle" />
+					<ribbon:RibbonButton SmallImageSource="Images\pencil.png" Command="local:StudioCommands.EditDecimalStyle" />
+					<ribbon:RibbonButton SmallImageSource="Images\minus.png" Command="local:StudioCommands.DelDecimalStyle" />
+				</ribbon:RibbonGroup>
 
-                <ribbon:RibbonGroup Header="Дата">
-                    <ComboBox Width="120" Height="60"
+				<ribbon:RibbonGroup Header="Дата">
+					<ComboBox Width="120" Height="60"
                         Margin="2"
                         SelectedItem="{Binding CurrDateTimeStyle}"
                         ItemTemplate="{StaticResource dateTimeStyleTemplate}" 
                         ItemsSource="{Binding DateTimeStyles}"
                         Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
                         />
-                    <ribbon:RibbonButton SmallImageSource="Images\plus.png" Command="local:StudioCommands.AddDateTimeStyle" />
-                    <ribbon:RibbonButton SmallImageSource="Images\pencil.png" Command="local:StudioCommands.EditDateTimeStyle" />
-                    <ribbon:RibbonButton SmallImageSource="Images\minus.png" Command="local:StudioCommands.DelDateTimeStyle" />
-                </ribbon:RibbonGroup>
+					<ribbon:RibbonButton SmallImageSource="Images\plus.png" Command="local:StudioCommands.AddDateTimeStyle" />
+					<ribbon:RibbonButton SmallImageSource="Images\pencil.png" Command="local:StudioCommands.EditDateTimeStyle" />
+					<ribbon:RibbonButton SmallImageSource="Images\minus.png" Command="local:StudioCommands.DelDateTimeStyle" />
+				</ribbon:RibbonGroup>
 
 				<ribbon:RibbonGroup Header="Дополнительно">
 					<ribbon:RibbonButton Label="Удалить неиспользуемые" SmallImageSource="Images\RemoveStylesSmall.png" Command="local:StudioCommands.RemoveUnusedStyles" />
 				</ribbon:RibbonGroup>
 			</ribbon:RibbonTab>
 
-            <ribbon:RibbonTab Header="Секции" x:Name="_sections">
-                <ribbon:RibbonGroup Header="Секции">
-                    <ComboBox x:Name="_sectionSelect" Width="200" 
+			<ribbon:RibbonTab Header="Секции" x:Name="_sections">
+				<ribbon:RibbonGroup Header="Секции">
+					<ComboBox x:Name="_sectionSelect" Width="200" 
                               SelectedItem="{Binding CurrentSection}" 
                               ItemsSource="{Binding Sections}" 
                               Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
                               />
-                    <ribbon:RibbonButton Label="Добавить" Command="local:StudioCommands.AddSection" />
-                    <ribbon:RibbonButton Label="Удалить" Command="local:StudioCommands.DeleteSection" />
-                </ribbon:RibbonGroup>
-                <ribbon:RibbonGroup Header="Параметры секции" DataContext="{Binding ElementName=_sectionSelect, Path=SelectedItem}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <TextBlock Margin="3" Grid.Column="0" Grid.Row="0">Верх</TextBlock>
-                        <TextBlock Margin="3" Grid.Column="0" Grid.Row="1">Низ</TextBlock>
-                        <ribbon:RibbonTextBox Grid.Column="1" Grid.Row="0" Command="local:StudioCommands.Default" Text="{Binding Top, Mode=TwoWay}" />
-                        <ribbon:RibbonTextBox Grid.Column="1" Grid.Row="1" Command="local:StudioCommands.Default" Text="{Binding Bottom, Mode=TwoWay}" />
-                    </Grid>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <TextBlock Margin="3" Grid.Column="0" Grid.Row="0">Лево</TextBlock>
-                        <TextBlock Margin="3" Grid.Column="0" Grid.Row="1">Право</TextBlock>
-                        <ribbon:RibbonTextBox Grid.Column="1" Grid.Row="0" Command="local:StudioCommands.Default" Text="{Binding Left, Mode=TwoWay}" />
-                        <ribbon:RibbonTextBox Grid.Column="1" Grid.Row="1" Command="local:StudioCommands.Default" Text="{Binding Right, Mode=TwoWay}" />
-                    </Grid>
-                    <ribbon:RibbonCheckBox Label="Фиксировать вверху" IsChecked="{Binding IsHeaderFixed}" />
-                    <ribbon:RibbonCheckBox Label="Фиксировать внизу" IsChecked="{Binding IsFooterFixed}" />
-                    <ribbon:RibbonTextBox Label="Идентификатор" Text="{Binding Name}" />
-                </ribbon:RibbonGroup>
-            </ribbon:RibbonTab>
+					<ribbon:RibbonButton Label="Добавить" Command="local:StudioCommands.AddSection" />
+					<ribbon:RibbonButton Label="Удалить" Command="local:StudioCommands.DeleteSection" />
+				</ribbon:RibbonGroup>
+				<ribbon:RibbonGroup Header="Параметры секции" DataContext="{Binding ElementName=_sectionSelect, Path=SelectedItem}">
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition />
+							<RowDefinition />
+						</Grid.RowDefinitions>
+						<TextBlock Margin="3" Grid.Column="0" Grid.Row="0">Верх</TextBlock>
+						<TextBlock Margin="3" Grid.Column="0" Grid.Row="1">Низ</TextBlock>
+						<ribbon:RibbonTextBox Grid.Column="1" Grid.Row="0" Command="local:StudioCommands.Default" Text="{Binding Top, Mode=TwoWay}" />
+						<ribbon:RibbonTextBox Grid.Column="1" Grid.Row="1" Command="local:StudioCommands.Default" Text="{Binding Bottom, Mode=TwoWay}" />
+					</Grid>
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition />
+							<RowDefinition />
+						</Grid.RowDefinitions>
+						<TextBlock Margin="3" Grid.Column="0" Grid.Row="0">Лево</TextBlock>
+						<TextBlock Margin="3" Grid.Column="0" Grid.Row="1">Право</TextBlock>
+						<ribbon:RibbonTextBox Grid.Column="1" Grid.Row="0" Command="local:StudioCommands.Default" Text="{Binding Left, Mode=TwoWay}" />
+						<ribbon:RibbonTextBox Grid.Column="1" Grid.Row="1" Command="local:StudioCommands.Default" Text="{Binding Right, Mode=TwoWay}" />
+					</Grid>
+					<ribbon:RibbonCheckBox Label="Фиксировать вверху" IsChecked="{Binding IsHeaderFixed}" />
+					<ribbon:RibbonCheckBox Label="Фиксировать внизу" IsChecked="{Binding IsFooterFixed}" />
+					<ribbon:RibbonTextBox Label="Идентификатор" Text="{Binding Name}" />
+				</ribbon:RibbonGroup>
+			</ribbon:RibbonTab>
 
-            <!--<ribbon:RibbonTab Header="Закладки">
+			<!--<ribbon:RibbonTab Header="Закладки">
 
             </ribbon:RibbonTab>-->
-        </ribbon:Ribbon>
-        
-        <Grid x:Name="_root"></Grid>
-    </DockPanel>
+		</ribbon:Ribbon>
+
+		<Grid x:Name="_root"></Grid>
+	</DockPanel>
 </ribbon:RibbonWindow>

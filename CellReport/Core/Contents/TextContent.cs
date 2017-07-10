@@ -323,7 +323,7 @@ namespace CellReport.Core.Contents
 					var paramName = match.ToString().Replace("]", string.Empty).Replace("[", string.Empty);
 					var value = GetFormattedParamValueByName(paramName);
 					if (value != null)
-						template = template.Replace(match.ToString(), value.ToString());
+						template = template.Replace(match.ToString(), value);
 				}
 				result = template;
 			}

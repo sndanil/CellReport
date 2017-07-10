@@ -1,0 +1,90 @@
+﻿<fluent:RibbonWindow x:Class="CellReport.Editor.MainWindow"
+                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:fluent="clr-namespace:Fluent;assembly=Fluent"
+										 xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+										 xmlns:local="clr-namespace:CellReport.Editor.ViewModel"
+                     Title="Редактор отчетов" 
+                     Width="525" 
+                     Height="350"
+										 WindowState="Maximized">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<fluent:Ribbon Grid.Row="0">
+			
+			<fluent:Ribbon.QuickAccessItems>
+				<fluent:QuickAccessMenuItem IsChecked="True" Target="{Binding ElementName=SaveButton}">
+				</fluent:QuickAccessMenuItem>
+			</fluent:Ribbon.QuickAccessItems>
+
+			<fluent:Ribbon.Menu>
+				<fluent:Backstage>
+					<fluent:BackstageTabControl>
+						<fluent:Button Header="Создать" Command="local:EditorCommands.Create" KeyTip="N" />
+						<fluent:Button Header="Открыть" Command="local:EditorCommands.Open" KeyTip="O" />
+						<fluent:Button Header="Сохранить" x:Name="SaveButton" Command="local:EditorCommands.Save" KeyTip="S" />
+						<fluent:Button Header="Сохранить как" Command="local:EditorCommands.SaveAs" KeyTip="A" />
+					    <fluent:SeparatorTabItem Header="" />
+						<fluent:Button Header="Предварительный просмотр" Command="local:EditorCommands.PrintPreview" KeyTip="P" />
+						<fluent:Button Header="Печать" Command="local:EditorCommands.Print" />
+					    <fluent:SeparatorTabItem Header="" />
+					    <fluent:Button Header="Выход"
+					                   Icon="pack://application:,,,/Fluent.Ribbon.Showcase;component/Images/Exit.png"
+					                   KeyTip="X"
+					                   Command="local:EditorCommands.Exit" />
+					</fluent:BackstageTabControl>
+				</fluent:Backstage>
+			</fluent:Ribbon.Menu>
+
+			<fluent:RibbonTabItem Header="Главная">
+				<fluent:RibbonGroupBox Header="Буфер обмена">
+					<fluent:Button Header="Копировать"
+					               Icon="Images\32\clipboard_copy.png"
+					               LargeIcon="Images\32\clipboard_copy.png" IsEnabled="False" />
+					<fluent:Button Header="Вставить" 
+					               Icon="Images\32\clipboard_paste.png"
+					               LargeIcon="Images\32\clipboard_paste.png" IsEnabled="False" />
+				</fluent:RibbonGroupBox>
+			    <fluent:RibbonGroupBox Header="Ячейки">
+			        <fluent:Button Header="Объединить ячейки"
+			                       Icon="Images\16\merge.png" 
+                                   KeyTip="M"
+			                       Size="Middle"
+			                       Command="local:EditorCommands.MergeCells"
+                                   />
+			    </fluent:RibbonGroupBox>
+			</fluent:RibbonTabItem>
+		</fluent:Ribbon>
+		<TabControl Grid.Row="1" SelectionChanged="TabsSwitched">
+			<TabItem Header="Дизайнер" x:Name="DesignerTab">
+				<Grid x:Name="ReportContainer">
+				</Grid>
+			</TabItem>
+			<TabItem Header="Код" x:Name="CodeTab">
+				<avalonEdit:TextEditor FontFamily="Consolas" SyntaxHighlighting="XML" x:Name="Editor">
+					
+				</avalonEdit:TextEditor>
+			</TabItem>
+		</TabControl>
+		<fluent:StatusBar Grid.Row="2">
+			<fluent:StatusBarItem Title="Zoom Slider"
+			                      HorizontalAlignment="Right">
+				<Slider x:Name="zoomSlider"
+				        Minimum="0"
+				        Maximum="100"
+				        IsDirectionReversed="False"
+				        Style="{DynamicResource ZoomSliderStyle}"
+				        Value="{Binding Zoom}"
+				        IsSnapToTickEnabled="True"
+				        TickFrequency="0.1"
+				        SmallChange="25"
+				        LargeChange="25"
+				        />
+			</fluent:StatusBarItem>
+		</fluent:StatusBar>
+	</Grid>
+</fluent:RibbonWindow>

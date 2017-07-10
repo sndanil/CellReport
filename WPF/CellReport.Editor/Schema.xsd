@@ -1,0 +1,365 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'>
+	<xs:element name='CellReportTemplate'>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name='Properties' type='PropertiesType' minOccurs='1' maxOccurs='1'/>
+				<xs:element name='ExportSettings' type='ExportSettingsType' minOccurs='1' maxOccurs='1'/>
+				<xs:element name='DisplaySettings' type='DisplaySettingsType' minOccurs='1' maxOccurs='1'/>
+				<xs:element name='PrintSettings' type='PrintSettingsType' minOccurs='1' maxOccurs='1'/>
+				<xs:element name='Sections' type='SectionsType' minOccurs='1' maxOccurs='1'/>
+				<xs:element name='Table' type='TableType' minOccurs='1' maxOccurs='1'/>
+				<xs:element name='Styles' type='StylesType' minOccurs='1' maxOccurs='1'/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:complexType name='PropertiesType'>
+		<xs:sequence>
+			<xs:element name='DocumentName' type='xs:string' minOccurs='1' maxOccurs='1'/>
+		</xs:sequence>
+		<xs:attribute name='DefaultColumnsCount' type='xs:int' default='0'/>
+		<xs:attribute name='DefaultRowsCount' type='xs:int' default='0'/>
+		<xs:attribute name='DefaultColumnWidth' type='xs:int' default='0'/>
+		<xs:attribute name='DefaultRowHeight' type='xs:int' default='0'/>
+		<xs:attribute name='DefaultColumnMarker' type='xs:string' />
+	</xs:complexType>
+
+	<xs:complexType name='ExportSettingsType'>
+		<xs:attribute name='RunExcelAfterExport' type='xs:boolean' default='true'/>
+	</xs:complexType>
+
+	<xs:complexType name='SectionsType'>
+		<xs:sequence>
+			<xs:element name='Section' type='SectionType'/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name='SectionType'>
+		<xs:sequence>
+			<xs:element name='LeftTop' type='CellLocationType' minOccurs='1' maxOccurs='1'/>
+			<xs:element name='RightBottom' type='CellLocationType' minOccurs='1' maxOccurs='1'/>
+		</xs:sequence>
+		<xs:attribute name='ID' type='xs:string' />
+	</xs:complexType>
+
+	<xs:complexType name='CellLocationType'>
+		<xs:attribute name='Row' type='xs:int' default='0'/>
+		<xs:attribute name='Column' type='xs:int' default='0'/>
+	</xs:complexType>
+
+	<xs:complexType name='DisplaySettingsType'>
+		<xs:attribute name='FrozenColumns' type='xs:int' default='0'/>
+		<xs:attribute name='FrozenRows' type='xs:int' default='0'/>
+		<xs:attribute name='ShowGridLines' type='xs:boolean' default='false'/>
+		<xs:attribute name='ShowResizers' type='xs:boolean' default='false'/>
+		<xs:attribute name='Scale' type='xs:double' default='1'/>
+	</xs:complexType>
+
+	<xs:complexType name='PrintSettingsType'>
+		<xs:sequence>
+			<xs:element name='Margins' type='MarginTypes' minOccurs='1' maxOccurs='1' />
+		</xs:sequence>
+		<xs:attribute name='Landscape' type='xs:boolean' default='false'/>
+		<xs:attribute name='AutoFitWidthPages' type='xs:int' default='1'/>
+		<xs:attribute name='Scale' type='xs:double' default='1'/>
+	</xs:complexType>
+
+	<xs:complexType name='MarginTypes'>
+		<xs:attribute name='Top' type='xs:double' default='0'/>
+		<xs:attribute name='Left' type='xs:double' default='0'/>
+		<xs:attribute name='Right' type='xs:double' default='0'/>
+		<xs:attribute name='Bottom' type='xs:double' default='0'/>
+	</xs:complexType>
+
+	<xs:complexType name='TableType'>
+		<xs:sequence>
+			<xs:element name='Column' type='ColumnType' />
+			<xs:element name='Row' type='RowType' />
+		</xs:sequence>
+		<xs:attribute name='RowsCount' type='xs:int' default='0'/>
+		<xs:attribute name='ColumnsCount' type='xs:int' default='0'/>
+	</xs:complexType>
+
+	<xs:complexType name='ColumnType'>
+		<xs:attribute name='Width' type='xs:double' default='0'/>
+		<xs:attribute name='Index' type='xs:int' default='0'/>
+		<xs:attribute name='Marker' type='xs:string' />
+	</xs:complexType>
+
+	<xs:complexType name='RowType'>
+		<xs:sequence>
+			<xs:element name='Cell' type='CellType' />
+		</xs:sequence>
+		<xs:attribute name='Height' type='xs:double' default='0'/>
+		<xs:attribute name='Index' type='xs:int' default='0'/>
+		<xs:attribute name='AutoFitHeight' type='xs:boolean' />
+		<xs:attribute name='PageBreak' type='xs:boolean' />
+	</xs:complexType>
+
+	<xs:complexType name='CellType'>
+		<xs:sequence>
+			<xs:element name='TextContent' type='TextContentType' />
+			<xs:element name='DecimalContent' type='DecimalContentType' />
+			<xs:element name='DateTimeContent' type='DateTimeContentType' />
+			<xs:element name='LineContent' type='LineContentType' />
+			<xs:element name='BarCodeContent' type='BarCodeContentType' />
+			<xs:element name='ActionContent' type='ActionContentType' />
+			<xs:element name='ImageContent' type='ImageContentType' />
+			<xs:element name='ChartContent' type='ChartContentType' />
+			<xs:element name='CollectionContent' type='CollectionContentType' />
+		</xs:sequence>
+		<xs:attribute name='Style' type='xs:string' />
+		<xs:attribute name='Index' type='xs:int' default='0'/>
+		<xs:attribute name='ColSpan' type='xs:int' />
+		<xs:attribute name='RowSpan' type='xs:int' />
+	</xs:complexType>
+
+	<xs:complexType name='CollectionContentType'>
+		<xs:sequence>
+			<xs:element name='TextContent' type='TextContentType' />
+			<xs:element name='DecimalContent' type='DecimalContentType' />
+			<xs:element name='DateTimeContent' type='DateTimeContentType' />
+			<xs:element name='LineContent' type='LineContentType' />
+			<xs:element name='BarCodeContent' type='BarCodeContentType' />
+			<xs:element name='ActionContent' type='ActionContentType' />
+			<xs:element name='ImageContent' type='ImageContentType' />
+			<xs:element name='ChartContent' type='ChartContentType' />
+		</xs:sequence>
+		<xs:attribute name='Layout' type='xs:string'/>
+		<xs:attribute name='ActualContentIndex' type='xs:int' default='0'/>
+	</xs:complexType>
+
+	<xs:complexType name='TextContentType'>
+		<xs:sequence>
+			<xs:element name='Param' type='ParamType' />
+			<xs:element name='Text' type='xs:string' minOccurs='1' maxOccurs='1' />
+			<xs:element name='Template' type='xs:string' minOccurs='1' maxOccurs='1' />
+		</xs:sequence>
+		<xs:attribute name='AutoSizeFont' type='xs:boolean'/>
+		<xs:attribute name='Style' type='xs:string'/>
+	</xs:complexType>
+
+	<xs:complexType name='DecimalContentType'>
+		<xs:sequence>
+			<xs:element name='Param' type='ParamType' />
+			<xs:element name='Value' type='xs:string' minOccurs='1' maxOccurs='1' />
+		</xs:sequence>
+		<xs:attribute name='Style' type='xs:string'/>
+	</xs:complexType>
+
+	<xs:complexType name='DateTimeContentType'>
+		<xs:sequence>
+			<xs:element name='Param' type='ParamType' />
+			<xs:element name='Value' type='xs:string' minOccurs='1' maxOccurs='1' />
+		</xs:sequence>
+		<xs:attribute name='Style' type='xs:string'/>
+	</xs:complexType>
+
+	<xs:complexType name='LineContentType'>
+		<xs:sequence>
+			<xs:element name='Param' type='ParamType' />
+		</xs:sequence>
+		<xs:attribute name='StartX' type='xs:double' default='0'/>
+		<xs:attribute name='StartY' type='xs:double' default='0'/>
+		<xs:attribute name='EndX' type='xs:double' default='0'/>
+		<xs:attribute name='EndY' type='xs:double' default='0'/>
+		<xs:attribute name='Style' type='xs:string'/>
+	</xs:complexType>
+
+	<xs:complexType name='BarCodeContentType'>
+		<xs:sequence>
+			<xs:element name='Param' type='ParamType' />
+			<xs:element name='Code' type='xs:string' minOccurs='1' maxOccurs='1' />
+		</xs:sequence>
+		<xs:attribute name='Type' type='xs:string'/>
+		<xs:attribute name='Orientation' type='xs:string'/>
+	</xs:complexType>
+
+	<xs:complexType name='ActionContentType'>
+		<xs:sequence>
+			<xs:element name='Param' type='ParamType' />
+		</xs:sequence>
+		<xs:attribute name='Type' type='xs:string'/>
+	</xs:complexType>
+
+	<xs:complexType name='ImageContentType'>
+		<xs:sequence>
+			<xs:element name='Param' type='ParamType' />
+		</xs:sequence>
+		<xs:attribute name='Uri' type='xs:string'/>
+	</xs:complexType>
+
+	<xs:complexType name='ChartContentType'>
+		<xs:sequence>
+			<xs:element name='Param' type='ParamType' />
+			<xs:element name='Series' type='SeriesType' />
+		</xs:sequence>
+		<xs:attribute name='Use3D' type='xs:boolean'/>
+		<xs:attribute name='ShowLegend' type='xs:boolean'/>
+	</xs:complexType>
+
+	<xs:complexType name='ParamType'>
+		<xs:attribute name='Name' type='xs:string'/>
+		<xs:attribute name='Target' type='xs:string'/>
+		<xs:attribute name='Value' type='xs:string' />
+		<xs:attribute name='Expression' type='xs:string' />
+		<xs:attribute name='Culture' type='xs:string' />
+		<xs:attribute name='Format' type='xs:string' />
+		<xs:attribute name='Type' type='xs:string' />
+	</xs:complexType>
+
+	<xs:complexType name='SeriesType'>
+		<xs:sequence>
+			<xs:element name='Data' type='ChartDataType' />
+		</xs:sequence>
+		<xs:attribute name='Name' type='xs:string'/>
+		<xs:attribute name='Type' type='xs:string'/>
+		<xs:attribute name='XDataType' type='xs:string' />
+		<xs:attribute name='YDataType' type='xs:string' />
+	</xs:complexType>
+
+	<xs:complexType name='ChartDataType'>
+		<xs:sequence>
+			<xs:element name='X' type='xs:string' />
+			<xs:element name='Y' type='xs:string' />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name='StylesType'>
+		<xs:sequence>
+			<xs:element name='ExternalStyle' type='ExternalStyleType' />
+			<xs:element name='CellStyle' type='CellStyleType' />
+			<xs:element name='TextContentStyle' type='TextContentStyleType' />
+			<xs:element name='DecimalContentStyle' type='DecimalContentStyleType' />
+			<xs:element name='DateTimeContentStyle' type='DateTimeContentStyleType' />
+			<xs:element name='LineContentStyle' type='LineContentStyleType' />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name='CellStyleType'>
+		<xs:sequence>
+			<xs:element name='Paddings' type='xs:string' />
+			<xs:element name='Borders' type='BordersType' />
+		</xs:sequence>
+		<xs:attribute name='ID' type='xs:string'/>
+		<xs:attribute name='Color' type='xs:string'/>
+	</xs:complexType>
+
+	<xs:complexType name='PaddingsType'>
+		<xs:sequence>
+			<xs:element name='Padding' type='PaddingType' />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name='PaddingType'>
+		<xs:attribute name='Position' type='xs:string'/>
+	</xs:complexType>
+
+	<xs:complexType name='BordersType'>
+		<xs:sequence>
+			<xs:element name='Border' type='BorderType' />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name='BorderType'>
+		<xs:attribute name='Position' type='xs:string'/>
+		<xs:attribute name='Style' type='xs:string'/>
+		<xs:attribute name='Color' type='xs:string'/>
+		<xs:attribute name='Weight' type='xs:double'/>
+	</xs:complexType>
+
+	<xs:complexType name='TextContentStyleType'>
+		<xs:sequence>
+			<xs:element name='Alignment' type='AlignmentType' />
+			<xs:element name='Font' type='FontType' />
+		</xs:sequence>
+		<xs:attribute name='ID' type='xs:string'/>
+		<xs:attribute name='Direction' type='xs:string'/>
+		<xs:attribute name='Angle' type='xs:string'/>
+		<xs:attribute name='Color' type='xs:string'/>
+	</xs:complexType>
+
+	<xs:complexType name='AlignmentType'>
+		<xs:attribute name='Horizontal' type='xs:string'/>
+		<xs:attribute name='Vertical' type='xs:string'/>
+	</xs:complexType>
+
+	<xs:complexType name='FontType'>
+		<xs:attribute name='Family' type='xs:string'/>
+		<xs:attribute name='Size' type='xs:double'/>
+		<xs:attribute name='Style' type='xs:string'/>
+	</xs:complexType>
+
+	<xs:complexType name='DecimalContentStyleType'>
+		<xs:sequence>
+			<xs:element name='Alignment' type='AlignmentType' />
+			<xs:element name='Font' type='FontType' />
+		</xs:sequence>
+		<xs:attribute name='ID' type='xs:string'/>
+		<xs:attribute name='Direction' type='xs:string'/>
+		<xs:attribute name='Angle' type='xs:string'/>
+		<xs:attribute name='Color' type='xs:string'/>
+		<xs:attribute name='NegativeColor' type='xs:string'/>
+		<xs:attribute name='Format' type='xs:string'/>
+		<xs:attribute name='Culture' type='xs:string'/>
+	</xs:complexType>
+
+	<xs:complexType name='DateTimeContentStyleType'>
+		<xs:sequence>
+			<xs:element name='Alignment' type='AlignmentType' />
+			<xs:element name='Font' type='FontType' />
+		</xs:sequence>
+		<xs:attribute name='ID' type='xs:string'/>
+		<xs:attribute name='Direction' type='xs:string'/>
+		<xs:attribute name='Angle' type='xs:string'/>
+		<xs:attribute name='Color' type='xs:string'/>
+		<xs:attribute name='Format' type='xs:string'/>
+		<xs:attribute name='Culture' type='xs:string'/>
+	</xs:complexType>
+
+	<xs:complexType name='LineContentStyleType'>
+		<xs:attribute name='ID' type='xs:string'/>
+		<xs:attribute name='Color' type='xs:string'/>
+		<xs:attribute name='Width' type='xs:double'/>
+	</xs:complexType>
+
+	<xs:complexType name='ExternalStyleType'>
+		<xs:attribute name='Uri' type='xs:string'/>
+	</xs:complexType>
+
+	<xs:complexType name='ExpressionsType'>
+		<xs:sequence>
+			<xs:element name='CountExpression' type='CountExpressionType' />
+			<xs:element name='NowExpression' type='NowExpressionType' />
+			<xs:element name='PagesCountExpression' type='PagesCountExpressionType' />
+			<xs:element name='DocumentNameExpression' type='DocumentNameExpressionType' />
+			<xs:element name='SumExpression' type='SumExpressionType' />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name='CountExpressionType'>
+		<xs:attribute name='ID' type='xs:string'/>
+		<xs:attribute name='Start' type='xs:double'/>
+		<xs:attribute name='Increment' type='xs:double'/>
+	</xs:complexType>
+
+	<xs:complexType name='NowExpressionType'>		
+		<xs:attribute name='ID' type='xs:string'/>
+		<xs:attribute name='Freeze' type='xs:boolean'/>
+	</xs:complexType>
+
+	<xs:complexType name='PagesCountExpressionType'>
+		<xs:attribute name='ID' type='xs:string'/>
+	</xs:complexType>
+
+	<xs:complexType name='DocumentNameExpressionType'>
+		<xs:attribute name='ID' type='xs:string'/>
+	</xs:complexType>
+
+	<xs:complexType name='SumExpressionType'>
+		<xs:attribute name='ID' type='xs:string'/>
+		<xs:attribute name='ParamName' type='xs:string'/>
+		<xs:attribute name='PerPage' type='xs:boolean'/>
+	</xs:complexType>
+</xs:schema>

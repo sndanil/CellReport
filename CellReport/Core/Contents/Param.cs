@@ -9,33 +9,33 @@ namespace CellReport.Core.Contents
 	public class Param : NotifyPropertyChanged
 	{
 		private object _value = null;
-        [NonSerialized]
+		[NonSerialized]
 		private BaseExpression _expression = null;
-        [NonSerialized]
+		[NonSerialized]
 		private CellManager _manager = null;
-        [NonSerialized]
-        private BaseContent _owner = null;
-        private string _name;
-        private string _target;
+		[NonSerialized]
+		private BaseContent _owner = null;
+		private string _name;
+		private string _target;
 		private string _expressionId;
 		private string _culture;
 		private string _format;
 		private string _type;
 
-        internal void SetManager(CellManager manager)
-        {
-            _manager = manager;
-        }
-
-        internal void SetOwner(BaseContent content)
-        {
-            _owner = content;
-        }
-
-        public Param(CellManager manager, BaseContent owner)
+		internal void SetManager(CellManager manager)
 		{
 			_manager = manager;
-            _owner = owner;
+		}
+
+		internal void SetOwner(BaseContent content)
+		{
+			_owner = content;
+		}
+
+		public Param(CellManager manager, BaseContent owner)
+		{
+			_manager = manager;
+			_owner = owner;
 		}
 
 		public string Name
@@ -238,10 +238,10 @@ namespace CellReport.Core.Contents
 			return Name ?? "Without name";
 		}
 
-        protected override void OnPropertyChanged(string name)
-        {
-            base.OnPropertyChanged(name);
-            _owner.RaisePropertyChanged(name);
-        }
+		protected override void OnPropertyChanged(string name)
+		{
+			base.OnPropertyChanged(name);
+			_owner.RaisePropertyChanged(name);
+		}
 	}
 }
