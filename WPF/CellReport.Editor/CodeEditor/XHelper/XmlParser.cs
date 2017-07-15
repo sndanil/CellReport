@@ -147,7 +147,7 @@ namespace CellReport.Editor.CodeEditor.XHelper
 			while (currentIndex > -1)
 			{
 				char currentChar = xml[currentIndex];
-				if (currentChar == ' ')
+				if (currentChar == ' ' && wasQuote && wasEqv)
 				{
 					return result;
 				}

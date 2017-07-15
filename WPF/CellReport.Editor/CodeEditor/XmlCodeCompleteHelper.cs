@@ -67,6 +67,18 @@ namespace CellReport.Editor.CodeEditor
 					var attribute = XmlParser.GetActiveAttributeName(TextEditor.Text, TextEditor.CaretOffset);
 					if (attribute != null)
 					{
+						var attributeXsd = GetAttributesByPath(currentElement)?.FirstOrDefault(a => a.Name == attribute);
+						if (attributeXsd != null)
+						{
+							switch (attributeXsd.DataType.ToLower())
+							{
+								case "boolean":
+									InvokeCompletionWindow(
+										new List<Tuple<string, string>> { new Tuple<string, string>("true", string.Empty), new Tuple<string, string>("false", string.Empty) }, 
+										XmlCompletionDataType.AttributeValue);
+									return;
+							}
+						}
 						var elementName = currentElement.Elements.Last().Name;
 						switch (attribute)
 						{
@@ -171,9 +183,13 @@ namespace CellReport.Editor.CodeEditor
 						break;
 					case " ":
 						{
-							var currentElement = XmlParser.GetActiveElementStartPath(TextEditor.Text, TextEditor.CaretOffset);
-							var attributeautocompletelist = ProvidePossibleAttributesAutocomplete(currentElement);
-							InvokeCompletionWindow(attributeautocompletelist, XmlCompletionDataType.Attribute);
+							var activeAttribute = XmlParser.GetActiveAttributeName(TextEditor.Text, TextEditor.CaretOffset);
+							if (activeAttribute == null)
+							{
+								var currentElement = XmlParser.GetActiveElementStartPath(TextEditor.Text, TextEditor.CaretOffset);
+								var attributeautocompletelist = ProvidePossibleAttributesAutocomplete(currentElement);
+								InvokeCompletionWindow(attributeautocompletelist, XmlCompletionDataType.Attribute);
+							}
 							break;
 						}
 
@@ -194,17 +210,15 @@ namespace CellReport.Editor.CodeEditor
 			}
 		}
 
-		public static List<Tuple<string, string>> ProvidePossibleElementsAutocomplete(XmlElementInformation path)
+		public static List<XsdElementInformation> GetElementsByPath(XmlElementInformation path)
 		{
-			List<Tuple<string, string>> result = new List<Tuple<string, string>>();
-
 			if (path.IsEmpty)
 			{
 				var xsdResultForGivenElementPath = XsdInformation.FirstOrDefault(x => x.IsRoot);
 
 				if (xsdResultForGivenElementPath != null)
 				{
-					result.Add(new Tuple<string, string>(xsdResultForGivenElementPath.Name, xsdResultForGivenElementPath.DataType));
+					return new List<XsdElementInformation>() { xsdResultForGivenElementPath };
 				}
 			}
 			else
@@ -217,18 +231,36 @@ namespace CellReport.Editor.CodeEditor
 				}
 
 				var xsdResultForGivenElementPath = XsdInformation.FirstOrDefault(x => x.XPathLikeKey.ToLowerInvariant() == xpath.ToString().ToLowerInvariant());
-
-				if (xsdResultForGivenElementPath != null)
-				{
-					foreach (var xsdInformationElement in xsdResultForGivenElementPath.Elements)
-					{
-						result.Add(new Tuple<string, string>(xsdInformationElement.Name, xsdInformationElement.DataType));
-					}
-				}
+				return xsdResultForGivenElementPath?.Elements;
 			}
 
+			return null;
+		}
 
-			return result;
+		public static List<Tuple<string, string>> ProvidePossibleElementsAutocomplete(XmlElementInformation path)
+		{
+			return GetElementsByPath(path)?.Select(e => new Tuple<string, string>(e.Name, e.DataType)).ToList() ?? new List<Tuple<string, string>>();
+		}
+
+		public static List<XsdAttributeInformation> GetAttributesByPath(XmlElementInformation path)
+		{
+			if (path.IsEmpty)
+			{
+				var xsdResultForGivenElementPath = XsdInformation.FirstOrDefault(x => x.IsRoot);
+				return xsdResultForGivenElementPath?.Attributes;
+			}
+			else
+			{
+				StringBuilder xpath = new StringBuilder();
+				xpath.Append("/");
+				foreach (var element in path.Elements)
+				{
+					xpath.Append("/" + element.Name);
+				}
+
+				var xsdResultForGivenElementPath = XsdInformation.FirstOrDefault(x => x.XPathLikeKey.ToLowerInvariant() == xpath.ToString().ToLowerInvariant());
+				return xsdResultForGivenElementPath?.Attributes;
+			}
 		}
 
 		public static List<Tuple<string, string>> ProvidePossibleAttributesAutocomplete(XmlElementInformation path)
@@ -246,26 +278,10 @@ namespace CellReport.Editor.CodeEditor
 				currentElement = XElement.Parse(currentElementText);
 			}
 
-			XsdElementInformation xsdResultForGivenElementPath = null;
-			if (path.IsEmpty)
+			var attributes = GetAttributesByPath(path);
+			if (attributes != null)
 			{
-				xsdResultForGivenElementPath = XsdInformation.FirstOrDefault(x => x.IsRoot);
-			}
-			else
-			{
-				StringBuilder xpath = new StringBuilder();
-				xpath.Append("/");
-				foreach (var element in path.Elements)
-				{
-					xpath.Append("/" + element.Name);
-				}
-
-				xsdResultForGivenElementPath = XsdInformation.FirstOrDefault(x => x.XPathLikeKey.ToLowerInvariant() == xpath.ToString().ToLowerInvariant());
-			}
-
-			if (xsdResultForGivenElementPath != null)
-			{
-				foreach (var xsdInformationAttribute in xsdResultForGivenElementPath.Attributes)
+				foreach (var xsdInformationAttribute in attributes)
 				{
 					if (currentElement == null || currentElement.Attributes().All(a => a.Name != xsdInformationAttribute.Name))
 						result.Add(new Tuple<string, string>(xsdInformationAttribute.Name, xsdInformationAttribute.DataType));
