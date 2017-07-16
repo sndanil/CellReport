@@ -1,4 +1,7 @@
 using System;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
@@ -15,19 +18,42 @@ namespace CellReport.Editor.CodeEditor
 	public class XmlCompletionData : ICompletionData
 	{
 		private readonly XmlCompletionDataType _type;
+		private readonly Func<XmlCompletionData, object> _getContentFunc;
 
-		public XmlCompletionData(string text, string description, XmlCompletionDataType type)
+		public XmlCompletionData(string text, string description, XmlCompletionDataType type, Func<XmlCompletionData, object> getContent)
 		{
 			_type = type;
 			Text = text;
 			Description = description;
+			_getContentFunc = getContent;
 		}
 
 		public System.Windows.Media.ImageSource Image => null;
 
 		public string Text { get; }
 
-		public object Content => string.IsNullOrEmpty(Description?.ToString()) ? Text : Text + " (" + Description + ")";
+		//public object Content => string.IsNullOrEmpty(Description?.ToString()) ? Text : Text + " (" + Description + ")";
+		public object Content
+		{
+			get
+			{
+				if (_getContentFunc == null)
+				{
+					var panel = new StackPanel {Orientation = Orientation.Horizontal};
+					panel.Children.Add(new TextBlock {Text = Text});
+					panel.Children.Add(new TextBlock
+					{
+						Text = Description?.ToString(),
+						Foreground = Brushes.Gray,
+						Margin = new Thickness(10, 0, 0, 0)
+					});
+
+					return panel;
+				}
+
+				return _getContentFunc(this);
+			}
+		}
 
 		public object Description { get; }
 

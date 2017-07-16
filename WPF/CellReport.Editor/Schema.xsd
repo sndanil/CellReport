@@ -2,15 +2,17 @@
 <xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'>
 	<xs:element name='CellReportTemplate'>
 		<xs:complexType>
-			<xs:sequence>
-				<xs:element name='Properties' type='PropertiesType' minOccurs='1' maxOccurs='1'/>
-				<xs:element name='ExportSettings' type='ExportSettingsType' minOccurs='1' maxOccurs='1'/>
-				<xs:element name='DisplaySettings' type='DisplaySettingsType' minOccurs='1' maxOccurs='1'/>
-				<xs:element name='PrintSettings' type='PrintSettingsType' minOccurs='1' maxOccurs='1'/>
-				<xs:element name='Sections' type='SectionsType' minOccurs='1' maxOccurs='1'/>
-				<xs:element name='Table' type='TableType' minOccurs='1' maxOccurs='1'/>
+			<xs:all>
+				<xs:element name='Properties' type='PropertiesType' minOccurs='0' maxOccurs='1'/>
+				<xs:element name='ExportSettings' type='ExportSettingsType' minOccurs='0' maxOccurs='1'/>
+				<xs:element name='DisplaySettings' type='DisplaySettingsType' minOccurs='0' maxOccurs='1'/>
+				<xs:element name='PrintSettings' type='PrintSettingsType' minOccurs='0' maxOccurs='1'/>
+				<xs:element name='Sections' type='SectionsType' minOccurs='0' maxOccurs='1'/>
+				<xs:element name='BookMarks' type='BookMarksType' minOccurs='0' maxOccurs='1'/>
+				<xs:element name='Table' type='TableType' minOccurs='0' maxOccurs='1'/>
 				<xs:element name='Styles' type='StylesType' minOccurs='1' maxOccurs='1'/>
-			</xs:sequence>
+				<xs:element name='Expressions' type='ExpressionsType' minOccurs='0' maxOccurs='1'/>
+			</xs:all>
 		</xs:complexType>
 	</xs:element>
 	
@@ -31,7 +33,7 @@
 
 	<xs:complexType name='SectionsType'>
 		<xs:sequence>
-			<xs:element name='Section' type='SectionType'/>
+			<xs:element name='Section' type='SectionType' minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
 
@@ -41,6 +43,9 @@
 			<xs:element name='RightBottom' type='CellLocationType' minOccurs='1' maxOccurs='1'/>
 		</xs:sequence>
 		<xs:attribute name='ID' type='xs:string' />
+	</xs:complexType>
+
+	<xs:complexType name='BookMarksType'>
 	</xs:complexType>
 
 	<xs:complexType name='CellLocationType'>
@@ -53,6 +58,11 @@
 		<xs:attribute name='FrozenRows' type='xs:int' default='0'/>
 		<xs:attribute name='ShowGridLines' type='xs:boolean' default='false'/>
 		<xs:attribute name='ShowResizers' type='xs:boolean' default='false'/>
+		<xs:attribute name='ShowDesignerGridLines' type='xs:boolean' default='false'/>
+		<xs:attribute name='ShowDesignerResizers' type='xs:boolean' default='false'/>
+		<xs:attribute name='ShowBookMarks' type='xs:boolean' default='false'/>
+		<xs:attribute name='GridColor' type='xs:string' />
+		<xs:attribute name='ShowCurrentRows' type='xs:boolean' default='false'/>
 		<xs:attribute name='Scale' type='xs:double' default='1'/>
 	</xs:complexType>
 
@@ -74,8 +84,8 @@
 
 	<xs:complexType name='TableType'>
 		<xs:sequence>
-			<xs:element name='Column' type='ColumnType' />
-			<xs:element name='Row' type='RowType' />
+			<xs:element name='Column' type='ColumnType' minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name='Row' type='RowType' minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name='RowsCount' type='xs:int' default='0'/>
 		<xs:attribute name='ColumnsCount' type='xs:int' default='0'/>
@@ -89,7 +99,7 @@
 
 	<xs:complexType name='RowType'>
 		<xs:sequence>
-			<xs:element name='Cell' type='CellType' />
+			<xs:element name='Cell' type='CellType' minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name='Height' type='xs:double' default='0'/>
 		<xs:attribute name='Index' type='xs:int' default='0'/>
@@ -98,7 +108,7 @@
 	</xs:complexType>
 
 	<xs:complexType name='CellType'>
-		<xs:sequence>
+		<xs:choice>
 			<xs:element name='TextContent' type='TextContentType' />
 			<xs:element name='DecimalContent' type='DecimalContentType' />
 			<xs:element name='DateTimeContent' type='DateTimeContentType' />
@@ -108,7 +118,7 @@
 			<xs:element name='ImageContent' type='ImageContentType' />
 			<xs:element name='ChartContent' type='ChartContentType' />
 			<xs:element name='CollectionContent' type='CollectionContentType' />
-		</xs:sequence>
+		</xs:choice>
 		<xs:attribute name='Style' type='xs:string' />
 		<xs:attribute name='Index' type='xs:int' default='0'/>
 		<xs:attribute name='ColSpan' type='xs:int' />
@@ -132,9 +142,9 @@
 
 	<xs:complexType name='TextContentType'>
 		<xs:sequence>
-			<xs:element name='Param' type='ParamType' />
-			<xs:element name='Text' type='xs:string' minOccurs='1' maxOccurs='1' />
-			<xs:element name='Template' type='xs:string' minOccurs='1' maxOccurs='1' />
+			<xs:element name='Param' type='ParamType' minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name='Text' type='xs:string' minOccurs='0' maxOccurs='1' />
+			<xs:element name='Template' type='xs:string' minOccurs='0' maxOccurs='1' />
 		</xs:sequence>
 		<xs:attribute name='AutoSizeFont' type='xs:boolean'/>
 		<xs:attribute name='Style' type='xs:string'/>
@@ -142,23 +152,23 @@
 
 	<xs:complexType name='DecimalContentType'>
 		<xs:sequence>
-			<xs:element name='Param' type='ParamType' />
-			<xs:element name='Value' type='xs:string' minOccurs='1' maxOccurs='1' />
+			<xs:element name='Param' type='ParamType' minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name='Value' type='xs:string' minOccurs='0' maxOccurs='1' />
 		</xs:sequence>
 		<xs:attribute name='Style' type='xs:string'/>
 	</xs:complexType>
 
 	<xs:complexType name='DateTimeContentType'>
 		<xs:sequence>
-			<xs:element name='Param' type='ParamType' />
-			<xs:element name='Value' type='xs:string' minOccurs='1' maxOccurs='1' />
+			<xs:element name='Param' type='ParamType' minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name='Value' type='xs:string' minOccurs='0' maxOccurs='1' />
 		</xs:sequence>
 		<xs:attribute name='Style' type='xs:string'/>
 	</xs:complexType>
 
 	<xs:complexType name='LineContentType'>
 		<xs:sequence>
-			<xs:element name='Param' type='ParamType' />
+			<xs:element name='Param' type='ParamType' minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name='StartX' type='xs:double' default='0'/>
 		<xs:attribute name='StartY' type='xs:double' default='0'/>
@@ -169,8 +179,8 @@
 
 	<xs:complexType name='BarCodeContentType'>
 		<xs:sequence>
-			<xs:element name='Param' type='ParamType' />
-			<xs:element name='Code' type='xs:string' minOccurs='1' maxOccurs='1' />
+			<xs:element name='Param' type='ParamType' minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name='Code' type='xs:string' minOccurs='0' maxOccurs='1' />
 		</xs:sequence>
 		<xs:attribute name='Type' type='xs:string'/>
 		<xs:attribute name='Orientation' type='xs:string'/>
@@ -178,22 +188,22 @@
 
 	<xs:complexType name='ActionContentType'>
 		<xs:sequence>
-			<xs:element name='Param' type='ParamType' />
+			<xs:element name='Param' type='ParamType' minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name='Type' type='xs:string'/>
 	</xs:complexType>
 
 	<xs:complexType name='ImageContentType'>
 		<xs:sequence>
-			<xs:element name='Param' type='ParamType' />
+			<xs:element name='Param' type='ParamType' minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name='Uri' type='xs:string'/>
 	</xs:complexType>
 
 	<xs:complexType name='ChartContentType'>
 		<xs:sequence>
-			<xs:element name='Param' type='ParamType' />
-			<xs:element name='Series' type='SeriesType' />
+			<xs:element name='Param' type='ParamType' minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name='Series' type='SeriesType' minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name='Use3D' type='xs:boolean'/>
 		<xs:attribute name='ShowLegend' type='xs:boolean'/>
@@ -227,14 +237,14 @@
 	</xs:complexType>
 
 	<xs:complexType name='StylesType'>
-		<xs:sequence>
-			<xs:element name='ExternalStyle' type='ExternalStyleType' />
-			<xs:element name='CellStyle' type='CellStyleType' />
-			<xs:element name='TextContentStyle' type='TextContentStyleType' />
-			<xs:element name='DecimalContentStyle' type='DecimalContentStyleType' />
-			<xs:element name='DateTimeContentStyle' type='DateTimeContentStyleType' />
-			<xs:element name='LineContentStyle' type='LineContentStyleType' />
-		</xs:sequence>
+		<xs:choice>
+			<xs:element name='ExternalStyle' type='ExternalStyleType' minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name='CellStyle' type='CellStyleType' minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name='TextContentStyle' type='TextContentStyleType' minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name='DecimalContentStyle' type='DecimalContentStyleType' minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name='DateTimeContentStyle' type='DateTimeContentStyleType' minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name='LineContentStyle' type='LineContentStyleType' minOccurs="0" maxOccurs="unbounded" />
+		</xs:choice>
 	</xs:complexType>
 
 	<xs:complexType name='CellStyleType'>
@@ -329,13 +339,13 @@
 	</xs:complexType>
 
 	<xs:complexType name='ExpressionsType'>
-		<xs:sequence>
-			<xs:element name='CountExpression' type='CountExpressionType' />
-			<xs:element name='NowExpression' type='NowExpressionType' />
-			<xs:element name='PagesCountExpression' type='PagesCountExpressionType' />
-			<xs:element name='DocumentNameExpression' type='DocumentNameExpressionType' />
-			<xs:element name='SumExpression' type='SumExpressionType' />
-		</xs:sequence>
+		<xs:choice>
+			<xs:element name='CountExpression' type='CountExpressionType' minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name='NowExpression' type='NowExpressionType' minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name='PagesCountExpression' type='PagesCountExpressionType' minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name='DocumentNameExpression' type='DocumentNameExpressionType' minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name='SumExpression' type='SumExpressionType' minOccurs="0" maxOccurs="unbounded" />
+		</xs:choice>
 	</xs:complexType>
 
 	<xs:complexType name='CountExpressionType'>

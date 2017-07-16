@@ -36,21 +36,14 @@ namespace CellReport.Core.Contents
 	[Serializable]
 	public class TextContentStyle : BaseStyle
 	{
-		public TextContentStyle(HorizontalAlignment h,
-				VerticalAlignment v,
-				FontInfo font, string color, float angle, Direction direction)
+		public TextContentStyle(HorizontalAlignment h, VerticalAlignment v, FontInfo font, string color, float angle, Direction direction)
 		{
-			if (font == null)
-				throw new ArgumentNullException("font");
-			if (color == null)
-				throw new ArgumentNullException("color");
-
 			Direction = direction;
 			HAlignment = h;
 			VAlignment = v;
 
-			Font = font;
-			Color = color;
+			Font = font ?? throw new ArgumentNullException(nameof(font));
+			Color = color ?? throw new ArgumentNullException(nameof(color));
 			Angle = angle;
 		}
 
@@ -62,37 +55,31 @@ namespace CellReport.Core.Contents
 		public HorizontalAlignment HAlignment
 		{
 			get;
-			private set;
 		}
 
 		public VerticalAlignment VAlignment
 		{
 			get;
-			private set;
 		}
 
 		public Direction Direction
 		{
 			get;
-			private set;
 		}
 
 		public FontInfo Font
 		{
 			get;
-			private set;
 		}
 
 		public string Color
 		{
 			get;
-			private set;
 		}
 
 		public float Angle
 		{
 			get;
-			private set;
 		}
 
 		public override bool Equals(object obj)
@@ -103,13 +90,13 @@ namespace CellReport.Core.Contents
 			var other = obj as TextContentStyle;
 			if (other != null)
 			{
-				return this.Color == other.Color
-						&& this.Direction == other.Direction
-						&& this.HAlignment == other.HAlignment
-						&& this.VAlignment == other.VAlignment
-						&& this.Angle == other.Angle
-						&& this.Font.Equals(other.Font)
-						&& this.GetType() == other.GetType();
+				return Color == other.Color
+						&& Direction == other.Direction
+						&& HAlignment == other.HAlignment
+						&& VAlignment == other.VAlignment
+						&& Angle == other.Angle
+						&& Font.Equals(other.Font)
+						&& GetType() == other.GetType();
 			}
 			else
 				return false;
@@ -117,8 +104,8 @@ namespace CellReport.Core.Contents
 
 		public override int GetHashCode()
 		{
-			return this.Color.GetHashCode() + this.HAlignment.GetHashCode() + this.VAlignment.GetHashCode()
-					+ this.Font.GetHashCode() + this.Direction.GetHashCode() + this.Angle.GetHashCode();
+			return Color.GetHashCode() + HAlignment.GetHashCode() + VAlignment.GetHashCode()
+					+ Font.GetHashCode() + Direction.GetHashCode() + Angle.GetHashCode();
 		}
 
 		internal new static TextContentStyle Parse(XElement element)

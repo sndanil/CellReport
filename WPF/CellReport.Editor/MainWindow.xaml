@@ -59,7 +59,7 @@
 			    </fluent:RibbonGroupBox>
 			</fluent:RibbonTabItem>
 		</fluent:Ribbon>
-		<TabControl Grid.Row="1" SelectionChanged="TabsSwitched">
+		<TabControl Grid.Row="1" SelectionChanged="TabsSwitched" x:Name="MainTab">
 			<TabItem Header="Дизайнер" x:Name="DesignerTab">
 				<Grid x:Name="ReportContainer">
 				</Grid>

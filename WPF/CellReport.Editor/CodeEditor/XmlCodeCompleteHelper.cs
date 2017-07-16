@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Xml;
 using System.Xml.Linq;
@@ -14,9 +18,12 @@ using System.Xml.Schema;
 using CellReport.Core;
 using CellReport.Core.Contents;
 using CellReport.Editor.CodeEditor.XHelper;
+using CellReport.Editor.ViewModel;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Folding;
+using Orientation = CellReport.Core.Contents.Orientation;
+using Path = System.IO.Path;
 
 namespace CellReport.Editor.CodeEditor
 {
@@ -24,6 +31,7 @@ namespace CellReport.Editor.CodeEditor
 	{
 		public static List<XsdElementInformation> XsdInformation { get; set; }
 		public static TextEditor TextEditor;
+		public static DispatcherTimer ErrorsFoundTimer;
 
 		public static void ApplyTo(TextEditor textEditor)
 		{
@@ -49,6 +57,27 @@ namespace CellReport.Editor.CodeEditor
 				foldingStrategy.UpdateFoldings(foldingManager, textEditor.Document);
 			};
 			foldingUpdateTimer.Start();
+
+			ErrorsFoundTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
+			ErrorsFoundTimer.Tick += (sender, args) =>
+			{
+				if (EditorModel.IsCodeMode)
+				{
+					try
+					{
+						var doc = XDocument.Parse(TextEditor.Text);
+						doc.Validate(schemas, (o, eventArgs) =>
+						{
+							Console.WriteLine("{0}", eventArgs.Message);
+						});
+					}
+					catch (Exception e)
+					{
+						Console.WriteLine(e);
+					}
+				}
+			};
+			ErrorsFoundTimer.Start();
 
 			textEditor.TextChanged += TextEditorOnTextChanged;
 			textEditor.TextArea.TextEntered += TextAreaOnTextEntered;
@@ -105,13 +134,119 @@ namespace CellReport.Editor.CodeEditor
 											ViewModel.EditorModel.ReportManager.GetStyles().OfType<DateTimeContentStyle>()
 												.Select(s => new Tuple<string, string>(s.ID, s.Font.Family)).ToList(), XmlCompletionDataType.AttributeValue);
 										break;
+									case "Border":
+										InvokeCompletionWindow(
+											new List<Tuple<string, string>>
+											{
+												new Tuple<string, string>("None", string.Empty),
+												new Tuple<string, string>("Solid", string.Empty),
+												new Tuple<string, string>("Dash", string.Empty),
+												new Tuple<string, string>("Dot", string.Empty),
+												new Tuple<string, string>("DashDot", string.Empty),
+												new Tuple<string, string>("DashDotDot", string.Empty),
+											},
+											XmlCompletionDataType.AttributeValue);
+										break;
+								}
+								break;
+							case "Position":
+								switch (elementName)
+								{
+									case "Padding":
+									case "Border":
+										InvokeCompletionWindow(
+											new List<Tuple<string, string>>
+											{
+												new Tuple<string, string>("All", string.Empty),
+												new Tuple<string, string>("Top", string.Empty),
+												new Tuple<string, string>("Left", string.Empty),
+												new Tuple<string, string>("Right", string.Empty),
+												new Tuple<string, string>("Bottom", string.Empty),
+											},
+											XmlCompletionDataType.AttributeValue);
+										break;
 								}
 								break;
 							case "Family":
 								if (elementName == "Font")
 								{
 									InvokeCompletionWindow(
-										Fonts.SystemFontFamilies.Select(f => new Tuple<string, string>(f.ToString(), string.Empty)).ToList(), XmlCompletionDataType.AttributeValue);
+										Fonts.SystemFontFamilies.Select(f => new Tuple<string, string>(f.ToString(), string.Empty)).ToList(), 
+										XmlCompletionDataType.AttributeValue,
+										data =>
+										{
+											var panel = new StackPanel { Orientation = System.Windows.Controls.Orientation.Horizontal };
+											panel.Children.Add(new TextBlock
+											{
+												Text = data.Text,
+												FontFamily = new FontFamily(data.Text)
+											});
+
+											return panel;
+										});
+								}
+								break;
+							case "Horizontal":
+								if (elementName == "Alignment")
+								{
+									InvokeCompletionWindow(
+										new List<Tuple<string, string>> { new Tuple<string, string>("Left", string.Empty), new Tuple<string, string>("Center", string.Empty),
+										new Tuple<string, string>("Right", string.Empty), new Tuple<string, string>("Justify", string.Empty) },
+										XmlCompletionDataType.AttributeValue);
+								}
+								break;
+							case "Vertical":
+								if (elementName == "Alignment")
+								{
+									InvokeCompletionWindow(
+										new List<Tuple<string, string>> { new Tuple<string, string>("Top", string.Empty), new Tuple<string, string>("Middle", string.Empty),
+											new Tuple<string, string>("Center", string.Empty), new Tuple<string, string>("Bottom", string.Empty) },
+										XmlCompletionDataType.AttributeValue);
+								}
+								break;
+							case "Direction":
+								switch (elementName)
+								{
+									case "TextContentStyle":
+									case "DecimalContentStyle":
+									case "DateTimeContentStyle":
+										InvokeCompletionWindow(
+											new List<Tuple<string, string>> { new Tuple<string, string>("LeftToRight", string.Empty), new Tuple<string, string>("TopToDown", string.Empty) },
+											XmlCompletionDataType.AttributeValue);
+										break;
+								}
+								break;
+							case "Color":
+								switch (elementName)
+								{
+									case "CellStyle":
+									case "Border":
+									case "TextContentStyle":
+									case "DecimalContentStyle":
+									case "DateTimeContentStyle":
+									case "LineContentStyle":
+										InvokeCompletionWindow(
+											typeof(Colors).GetProperties(BindingFlags.Static| BindingFlags.Public)
+											.Select(p => new Tuple<string, string>(p.Name, string.Empty)).ToList(), 
+											XmlCompletionDataType.AttributeValue,
+											data =>
+											{
+												var panel = new StackPanel { Orientation = System.Windows.Controls.Orientation.Horizontal };
+												panel.Children.Add(new System.Windows.Shapes.Rectangle
+												{
+													Width = 10,
+													Height = 10,
+													Fill = (SolidColorBrush)new BrushConverter().ConvertFromString(data.Text)
+												});
+												panel.Children.Add(new TextBlock
+												{
+													Text = data.Text,
+													Margin = new Thickness(10, 0, 0, 0)
+												});
+
+												return panel;
+											});
+										break;
 								}
 								break;
 						}
@@ -291,7 +426,7 @@ namespace CellReport.Editor.CodeEditor
 			return result;
 		}
 
-		private static void InvokeCompletionWindow(List<Tuple<string, string>> elementAutocompleteList, XmlCompletionDataType type)
+		private static void InvokeCompletionWindow(List<Tuple<string, string>> elementAutocompleteList, XmlCompletionDataType type, Func<XmlCompletionData, object> getContent = null)
 		{
 			var completionWindow = new CompletionWindow(TextEditor.TextArea) { Width = 300 };
 			IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
@@ -299,7 +434,7 @@ namespace CellReport.Editor.CodeEditor
 			{
 				foreach (var autocompleteelement in elementAutocompleteList)
 				{
-					data.Add(new XmlCompletionData(autocompleteelement.Item1, autocompleteelement.Item2, type));
+					data.Add(new XmlCompletionData(autocompleteelement.Item1, autocompleteelement.Item2, type, getContent));
 				}
 				completionWindow.Show();
 				completionWindow.Closed += delegate { completionWindow = null; };

@@ -21,6 +21,8 @@ namespace CellReport.Editor
 			Export.BaseExporter.RendererFactory = new Presenters.WinForms.RendererFactory();
 
 			XmlCodeCompleteHelper.ApplyTo(Editor);
+			EditorModel.MainTabControl = MainTab;
+			EditorModel.CodeTab = CodeTab;
 			EditorModel.ReportContainer = ReportContainer;
 			EditorModel.Editor = Editor;
 

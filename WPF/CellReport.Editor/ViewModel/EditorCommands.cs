@@ -274,6 +274,7 @@ namespace CellReport.Editor.ViewModel
 				{
 					template.Manager.AddResource(resourceName, EditorModel.ReportManager.GetResource(resourceName));
 				}
+				EditorModel.ReportManager = template.Manager;
 			}
 			catch (Exception e)
 			{
