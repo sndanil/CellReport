@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Xml;
 using System.Xml.Linq;
@@ -22,8 +19,9 @@ using CellReport.Editor.ViewModel;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Folding;
-using Orientation = CellReport.Core.Contents.Orientation;
-using Path = System.IO.Path;
+using ICSharpCode.AvalonEdit.Indentation;
+using Orientation = System.Windows.Controls.Orientation;
+using Rectangle = System.Windows.Shapes.Rectangle;
 
 namespace CellReport.Editor.CodeEditor
 {
@@ -32,9 +30,11 @@ namespace CellReport.Editor.CodeEditor
 		public static List<XsdElementInformation> XsdInformation { get; set; }
 		public static TextEditor TextEditor;
 		public static DispatcherTimer ErrorsFoundTimer;
+		public static CellManager TempManager;
 
 		public static void ApplyTo(TextEditor textEditor)
 		{
+			TempManager = null;
 			TextEditor = textEditor;
 			TextEditor.ShowLineNumbers = true;
 			TextEditor.Options.HighlightCurrentLine = true;
@@ -48,7 +48,7 @@ namespace CellReport.Editor.CodeEditor
 			XsdInformation = XsdParser.AnalyseSchema(schemas);
 
 			var foldingStrategy = new XmlFoldingStrategy();
-			textEditor.TextArea.IndentationStrategy = new ICSharpCode.AvalonEdit.Indentation.DefaultIndentationStrategy();
+			textEditor.TextArea.IndentationStrategy = new DefaultIndentationStrategy();
 			var foldingManager = FoldingManager.Install(textEditor.TextArea);
 
 			DispatcherTimer foldingUpdateTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
@@ -66,10 +66,17 @@ namespace CellReport.Editor.CodeEditor
 					try
 					{
 						var doc = XDocument.Parse(TextEditor.Text);
+						var wasErrorrs = false;
 						doc.Validate(schemas, (o, eventArgs) =>
 						{
 							Console.WriteLine("{0}", eventArgs.Message);
 						});
+						if (!wasErrorrs)
+						{
+							var celltemplate = new CellTemplate();
+							celltemplate.LoadFromXml(TextEditor.Text);
+							TempManager = celltemplate.Manager;
+						}
 					}
 					catch (Exception e)
 					{
@@ -87,6 +94,7 @@ namespace CellReport.Editor.CodeEditor
 
 		static void TextAreaOnKeyDown(object sender, KeyEventArgs e)
 		{
+			var manager = TempManager ?? EditorModel.ReportManager;
 			if (e.Key == Key.Space && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
 			{
 				e.Handled = true;
@@ -116,22 +124,22 @@ namespace CellReport.Editor.CodeEditor
 								{
 									case "Cell":
 										InvokeCompletionWindow(
-											ViewModel.EditorModel.ReportManager.GetStyles().OfType<CellStyle>()
+											manager.GetStyles().OfType<CellStyle>()
 												.Select(s => new Tuple<string, string>(s.ID, string.Empty)).ToList(), XmlCompletionDataType.AttributeValue);
 										break;
 									case "TextContent":
 										InvokeCompletionWindow(
-											ViewModel.EditorModel.ReportManager.GetStyles().OfType<TextContentStyle>().Where(s => s.GetType() == typeof(TextContentStyle))
+											manager.GetStyles().OfType<TextContentStyle>().Where(s => s.GetType() == typeof(TextContentStyle))
 												.Select(s => new Tuple<string, string>(s.ID, s.Font.Family)).ToList(), XmlCompletionDataType.AttributeValue);
 										break;
 									case "DecimalContent":
 										InvokeCompletionWindow(
-											ViewModel.EditorModel.ReportManager.GetStyles().OfType<DecimalContentStyle>()
+											manager.GetStyles().OfType<DecimalContentStyle>()
 												.Select(s => new Tuple<string, string>(s.ID, s.Font.Family)).ToList(), XmlCompletionDataType.AttributeValue);
 										break;
 									case "DateTimeContent":
 										InvokeCompletionWindow(
-											ViewModel.EditorModel.ReportManager.GetStyles().OfType<DateTimeContentStyle>()
+											manager.GetStyles().OfType<DateTimeContentStyle>()
 												.Select(s => new Tuple<string, string>(s.ID, s.Font.Family)).ToList(), XmlCompletionDataType.AttributeValue);
 										break;
 									case "Border":
@@ -143,7 +151,7 @@ namespace CellReport.Editor.CodeEditor
 												new Tuple<string, string>("Dash", string.Empty),
 												new Tuple<string, string>("Dot", string.Empty),
 												new Tuple<string, string>("DashDot", string.Empty),
-												new Tuple<string, string>("DashDotDot", string.Empty),
+												new Tuple<string, string>("DashDotDot", string.Empty)
 											},
 											XmlCompletionDataType.AttributeValue);
 										break;
@@ -161,7 +169,7 @@ namespace CellReport.Editor.CodeEditor
 												new Tuple<string, string>("Top", string.Empty),
 												new Tuple<string, string>("Left", string.Empty),
 												new Tuple<string, string>("Right", string.Empty),
-												new Tuple<string, string>("Bottom", string.Empty),
+												new Tuple<string, string>("Bottom", string.Empty)
 											},
 											XmlCompletionDataType.AttributeValue);
 										break;
@@ -175,7 +183,7 @@ namespace CellReport.Editor.CodeEditor
 										XmlCompletionDataType.AttributeValue,
 										data =>
 										{
-											var panel = new StackPanel { Orientation = System.Windows.Controls.Orientation.Horizontal };
+											var panel = new StackPanel { Orientation = Orientation.Horizontal };
 											panel.Children.Add(new TextBlock
 											{
 												Text = data.Text,
@@ -231,8 +239,8 @@ namespace CellReport.Editor.CodeEditor
 											XmlCompletionDataType.AttributeValue,
 											data =>
 											{
-												var panel = new StackPanel { Orientation = System.Windows.Controls.Orientation.Horizontal };
-												panel.Children.Add(new System.Windows.Shapes.Rectangle
+												var panel = new StackPanel { Orientation = Orientation.Horizontal };
+												panel.Children.Add(new Rectangle
 												{
 													Width = 10,
 													Height = 10,
@@ -353,7 +361,7 @@ namespace CellReport.Editor.CodeEditor
 
 				if (xsdResultForGivenElementPath != null)
 				{
-					return new List<XsdElementInformation>() { xsdResultForGivenElementPath };
+					return new List<XsdElementInformation> { xsdResultForGivenElementPath };
 				}
 			}
 			else

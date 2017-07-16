@@ -51,57 +51,55 @@ namespace CellReport.Editor.CodeEditor.XHelper
 				// and write each attribute name to the console.
 				if (complexType.AttributeUses.Count > 0)
 				{
-					IDictionaryEnumerator enumerator =
-							complexType.AttributeUses.GetEnumerator();
+					IDictionaryEnumerator enumerator = complexType.AttributeUses.GetEnumerator();
 
 					while (enumerator.MoveNext())
 					{
-						XmlSchemaAttribute attribute =
-								(XmlSchemaAttribute)enumerator.Value;
-
+						XmlSchemaAttribute attribute = (XmlSchemaAttribute)enumerator.Value;
 						string attrDataType = attribute.AttributeSchemaType.TypeCode.ToString();
-
-						xsdElementInformation.Attributes.Add(new XsdAttributeInformation() { Name = attribute.Name, DataType = attrDataType });
+						xsdElementInformation.Attributes.Add(new XsdAttributeInformation { Name = attribute.Name, DataType = attrDataType });
 					}
 				}
 
+				XmlSchemaObjectCollection items;
 				// Get the sequence particle of the complex type.
-				XmlSchemaSequence sequence = complexType.ContentTypeParticle as XmlSchemaSequence;
+				var sequence = complexType.ContentTypeParticle as XmlSchemaSequence;
+				items = sequence?.Items;
+				var all = complexType.ContentTypeParticle as XmlSchemaAll;
+				items = items ?? all?.Items;
+				var choice = complexType.ContentTypeParticle as XmlSchemaChoice;
+				items = items ?? choice?.Items;
 
-				if (sequence != null)
+				if (items != null)
 				{
 					// Iterate over each XmlSchemaElement in the Items collection.
-					foreach (var childElement in sequence.Items)
+					foreach (var childElement in items)
 					{
 						var xmlSchemaElement = childElement as XmlSchemaElement;
 						if (xmlSchemaElement != null)
 						{
-							var result = RecursiveElementAnalyser(xsdElementInformation.XPathLikeKey + "/",
-									xmlSchemaElement, flatList);
+							var result = RecursiveElementAnalyser(xsdElementInformation.XPathLikeKey + "/", xmlSchemaElement, flatList);
 							xsdElementInformation.Elements.Add(result);
 						}
 						else
 						{
 							// support for XmlSchemaChoise element list
-							var choice = childElement as XmlSchemaChoice;
-							if (choice != null)
-							{
-								foreach (var choiceElement in choice.Items)
-								{
-									var xmlChoiceSchemaElement = choiceElement as XmlSchemaElement;
-									if (xmlChoiceSchemaElement != null)
-									{
-										var result = RecursiveElementAnalyser(xsdElementInformation.XPathLikeKey + "/",
-												xmlChoiceSchemaElement, flatList);
-										xsdElementInformation.Elements.Add(result);
-									}
-								}
-							}
+							//var choice = childElement as XmlSchemaChoice;
+							//if (choice != null)
+							//{
+							//	foreach (var choiceElement in choice.Items)
+							//	{
+							//		var xmlChoiceSchemaElement = choiceElement as XmlSchemaElement;
+							//		if (xmlChoiceSchemaElement != null)
+							//		{
+							//			var result = RecursiveElementAnalyser(xsdElementInformation.XPathLikeKey + "/", xmlChoiceSchemaElement, flatList);
+							//			xsdElementInformation.Elements.Add(result);
+							//		}
+							//	}
+							//}
 						}
 					}
 				}
-
-
 			}
 
 			flatList.Add(xsdElementInformation);
