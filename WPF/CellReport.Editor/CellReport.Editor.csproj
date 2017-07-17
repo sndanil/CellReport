@@ -155,5 +155,11 @@
   <ItemGroup>
     <Resource Include="Images\16\merge.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\32\column_add.png" />
+    <Resource Include="Images\32\column_delete.png" />
+    <Resource Include="Images\32\row_add.png" />
+    <Resource Include="Images\32\row_delete.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

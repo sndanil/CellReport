@@ -13,7 +13,7 @@ namespace CellReport.Editor.ViewModel
 
 		private static bool IsDefaultEnabled()
 		{
-			return EditorModel.ReportManager != null;
+			return EditorModel.ReportManager != null && !EditorModel.IsCodeMode;
 		}
 
 		public static DelegateCommand Create
@@ -199,6 +199,158 @@ namespace CellReport.Editor.ViewModel
 
 					command = new DelegateCommand(Action);
 					Commands.Add("Exit", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand DeleteRows
+		{
+			get
+			{
+				DelegateCommand command = null;
+				if (!Commands.TryGetValue("DeleteRows", out command))
+				{
+					void Action()
+					{
+						EditorModel.Presenter.BeginUpdate();
+						if (EditorModel.Presenter.HaveSelection())
+						{
+							var start = EditorModel.Presenter.GetStartSelection();
+							var end = EditorModel.Presenter.GetEndSelection();
+							EditorModel.Presenter.ClearSelection();
+							EditorModel.Presenter.Manager.DeleteRows(start.Row, end.Row - start.Row + 1);
+						}
+						else
+							EditorModel.Presenter.Manager.DeleteRows(EditorModel.Presenter.CurrentCell.Row, 1);
+						if (EditorModel.Presenter.CurrentCell.Row >= EditorModel.Presenter.Manager.RowsCount)
+							EditorModel.Presenter.CurrentCell = new CellLocation() {Row = EditorModel.Presenter.CurrentCell.Row - 1, Column = EditorModel.Presenter.CurrentCell.Column};
+						EditorModel.Presenter.EndUpdate();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add("DeleteRows", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand DeleteColumns
+		{
+			get
+			{
+				DelegateCommand command = null;
+				if (!Commands.TryGetValue("DeleteColumns", out command))
+				{
+					void Action()
+					{
+						EditorModel.Presenter.BeginUpdate();
+						if (EditorModel.Presenter.HaveSelection())
+						{
+							var start = EditorModel.Presenter.GetStartSelection();
+							var end = EditorModel.Presenter.GetEndSelection();
+							EditorModel.Presenter.ClearSelection();
+							EditorModel.Presenter.Manager.DeleteColumns(start.Column, end.Column - start.Column + 1);
+						}
+						else
+							EditorModel.Presenter.Manager.DeleteColumns(EditorModel.Presenter.CurrentCell.Column, 1);
+						if (EditorModel.Presenter.CurrentCell.Column >= EditorModel.Presenter.Manager.ColumnsCount)
+							EditorModel.Presenter.CurrentCell = new CellLocation() {Row = EditorModel.Presenter.CurrentCell.Row, Column = EditorModel.Presenter.CurrentCell.Column - 1};
+						EditorModel.Presenter.EndUpdate();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add("DeleteColumns", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand AddRows
+		{
+			get
+			{
+				DelegateCommand command = null;
+				if (!Commands.TryGetValue("addRows", out command))
+				{
+					void Action()
+					{
+						EditorModel.Presenter.BeginUpdate();
+						EditorModel.Presenter.Manager.InsertRows(EditorModel.Presenter.CurrentCell.Row, 1);
+						EditorModel.Presenter.EndUpdate();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add("addRows", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand AddRowsAfter
+		{
+			get
+			{
+				DelegateCommand command = null;
+				if (!Commands.TryGetValue("addRowsAfter", out command))
+				{
+					void Action()
+					{
+						EditorModel.Presenter.BeginUpdate();
+						EditorModel.Presenter.Manager.InsertRows(EditorModel.Presenter.CurrentCell.Row + 1, 1);
+						EditorModel.Presenter.EndUpdate();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add("addRowsAfter", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand AddColumns
+		{
+			get
+			{
+				DelegateCommand command = null;
+				if (!Commands.TryGetValue("AddColumns", out command))
+				{
+					void Action()
+					{
+						EditorModel.Presenter.BeginUpdate();
+						EditorModel.Presenter.Manager.InsertColumns(EditorModel.Presenter.CurrentCell.Column, 1);
+						EditorModel.Presenter.EndUpdate();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add("AddColumns", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand AddColumnsAfter
+		{
+			get
+			{
+				DelegateCommand command = null;
+				if (!Commands.TryGetValue("AddColumnsAfter", out command))
+				{
+					void Action()
+					{
+						EditorModel.Presenter.BeginUpdate();
+						EditorModel.Presenter.Manager.InsertColumns(EditorModel.Presenter.CurrentCell.Column + 1, 1);
+						EditorModel.Presenter.EndUpdate();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add("AddColumnsAfter", command);
 				}
 
 				return command;

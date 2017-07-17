@@ -23,6 +23,7 @@ namespace CellReport.Editor
 			XmlCodeCompleteHelper.ApplyTo(Editor);
 			EditorModel.MainTabControl = MainTab;
 			EditorModel.CodeTab = CodeTab;
+			EditorModel.DesignerTab = DesignerTab;
 			EditorModel.ReportContainer = ReportContainer;
 			EditorModel.Editor = Editor;
 
