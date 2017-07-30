@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Globalization;
@@ -306,6 +307,10 @@ namespace CellReport.Presenters.WinForms
 					catch (System.IO.IOException)
 					{
 						MessageBox.Show("Невозможно сохранить файл. Возможно, файл занят другим приложением.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					}
+					catch (Win32Exception)
+					{
+						MessageBox.Show("Не удалось запустить приложения ассоциированное с файлом.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					}
 				}
 			}
