@@ -162,21 +162,36 @@ namespace CellReport.Core.Contents
 			var param = _params?.FirstOrDefault(p => p.Name == name);
 			if (param?.Value != null)
 			{
-				if (param.Value is DateTime)
+				if (param.Value is DateTime || param.Type == nameof(DateTime))
 				{
 					var value = (DateTime) param.Value;
 					if (string.IsNullOrEmpty(param.Format))
-						return value.ToString();
+						return value.ToString(CultureInfo.CurrentCulture);
 					if (string.IsNullOrEmpty(param.Culture))
 						return value.ToString(param.Format);
 
 					return value.ToString(param.Format, CultureInfo.GetCultureInfo(param.Culture));
 				}
-				if (param.Value is Decimal)
+				if (param.Value is Decimal || param.Type == nameof(Decimal))
 				{
-					var value = (decimal) param.Value;
+					var value = Convert.ToDecimal(param.Value);
 					if (string.IsNullOrEmpty(param.Format))
-						return value.ToString();
+						return value.ToString(CultureInfo.CurrentCulture);
+
+					if (param.Format.StartsWith("currency", StringComparison.OrdinalIgnoreCase) || param.Format.StartsWith("number", StringComparison.InvariantCultureIgnoreCase))
+					{
+						if (param.Format.Equals("numberString", StringComparison.OrdinalIgnoreCase))
+						{
+							return CurrencyToString.GetString(value, true, "", "", "", "", "", "", true);
+						}
+
+						var parts = param.Format.Split('|');
+						if (parts.Length == 1)
+							return CurrencyToString.GetString(value);
+
+						return CurrencyToString.GetString(value, parts[1]);
+					}
+
 					if (string.IsNullOrEmpty(param.Culture))
 						return value.ToString(param.Format);
 
@@ -187,7 +202,7 @@ namespace CellReport.Core.Contents
 			}
 
 			return null;
-		}
+		}		
 
 		public virtual BaseContent Clone(CellManager manager)
 		{			

@@ -257,6 +257,45 @@ namespace CellReport.Editor.CodeEditor
 										break;
 								}
 								break;
+							case "Format":
+								switch (elementName)
+								{
+									case "Param":
+										InvokeCompletionWindow(
+											new List<Tuple<string, string>> {
+												new Tuple<string, string>("currencyString", string.Empty),
+												new Tuple<string, string>("currencyString|RUR", string.Empty),
+												new Tuple<string, string>("currencyString|UAH", string.Empty),
+												new Tuple<string, string>("currencyString|KZT", string.Empty),
+												new Tuple<string, string>("currencyString|USD", string.Empty),
+												new Tuple<string, string>("currencyString|EUR", string.Empty),
+												new Tuple<string, string>("numberString", string.Empty),
+												new Tuple<string, string>("#0", string.Empty),
+												new Tuple<string, string>("00", string.Empty),
+												new Tuple<string, string>("#,##0.000", string.Empty),
+												new Tuple<string, string>("#,##0.00", string.Empty),
+												new Tuple<string, string>("#,##0.0", string.Empty),
+												new Tuple<string, string>("dd.MM.yyyy", string.Empty),
+												new Tuple<string, string>("dd.MM.yyyy HH:mm", string.Empty),
+												new Tuple<string, string>("dd.MM.yyyy HH:mm:ss", string.Empty),
+											},
+											XmlCompletionDataType.AttributeValue);
+										break;
+								}
+								break;
+							case "Type":
+								switch (elementName)
+								{
+									case "Param":
+										InvokeCompletionWindow(
+											new List<Tuple<string, string>> {
+												new Tuple<string, string>("DateTime", string.Empty),
+												new Tuple<string, string>("Decimal", string.Empty),
+											},
+											XmlCompletionDataType.AttributeValue);
+										break;
+								}
+								break;
 						}
 					}
 				}

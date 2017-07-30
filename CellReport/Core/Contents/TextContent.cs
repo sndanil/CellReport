@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -94,12 +91,11 @@ namespace CellReport.Core.Contents
 						&& Direction == other.Direction
 						&& HAlignment == other.HAlignment
 						&& VAlignment == other.VAlignment
-						&& Angle == other.Angle
+						&& Math.Abs(Angle - other.Angle) < float.Epsilon
 						&& Font.Equals(other.Font)
 						&& GetType() == other.GetType();
 			}
-			else
-				return false;
+			return false;
 		}
 
 		public override int GetHashCode()
@@ -112,23 +108,21 @@ namespace CellReport.Core.Contents
 		{
 			Direction direction = Direction.LeftToRight;
 			if (element.Attribute("Direction") != null)
-				direction = (Direction)Enum.Parse(typeof(Direction), element.Attribute("Direction").Value);
+				direction = (Direction)Enum.Parse(typeof(Direction), element.Attribute("Direction")?.Value ?? "LeftToRight");
 			float angle = 0;
 			if (element.Attribute("Angle") != null)
-				angle = float.Parse(element.Attribute("Angle").Value, CultureInfo.InvariantCulture);
+				angle = float.Parse(element.Attribute("Angle")?.Value ?? "0", CultureInfo.InvariantCulture);
 			var color = "Black";
 			if (element.Attribute("Color") != null)
-				color = element.Attribute("Color").Value;
+				color = element.Attribute("Color")?.Value;
 			HorizontalAlignment halign = HorizontalAlignment.Left;
 			VerticalAlignment valign = VerticalAlignment.Top;
 			if (element.Element("Alignment") != null)
 			{
-				if (element.Element("Alignment").Attribute("Horizontal") != null)
-					halign = (HorizontalAlignment)Enum.Parse(typeof(HorizontalAlignment),
-							element.Element("Alignment").Attribute("Horizontal").Value);
-				if (element.Element("Alignment").Attribute("Vertical") != null)
-					valign = (VerticalAlignment)Enum.Parse(typeof(VerticalAlignment),
-							element.Element("Alignment").Attribute("Vertical").Value);
+				if (element.Element("Alignment")?.Attribute("Horizontal") != null)
+					halign = (HorizontalAlignment)Enum.Parse(typeof(HorizontalAlignment), element.Element("Alignment")?.Attribute("Horizontal")?.Value ?? "");
+				if (element.Element("Alignment")?.Attribute("Vertical") != null)
+					valign = (VerticalAlignment)Enum.Parse(typeof(VerticalAlignment), element.Element("Alignment")?.Attribute("Vertical")?.Value ?? "");
 			}
 			var font = FontInfo.Parse(element.Element("Font"));
 
@@ -219,10 +213,7 @@ namespace CellReport.Core.Contents
 			{
 				return GetText().Contains(text);
 			}
-			else
-			{
-				return GetText().ToUpper().Contains(text.ToUpper());
-			}
+			return GetText().ToUpper().Contains(text.ToUpper());
 		}
 	}
 
@@ -287,17 +278,17 @@ namespace CellReport.Core.Contents
 		{
 			var textContent = new TextContent(manager);
 			if (element.Element("Text") != null)
-				textContent.Text = element.Element("Text").Value;
+				textContent.Text = element.Element("Text")?.Value;
 			if (element.Attribute("AutoSizeFont") != null)
-				textContent.AutoSizeFont = Convert.ToBoolean(element.Attribute("AutoSizeFont").Value);
+				textContent.AutoSizeFont = Convert.ToBoolean(element.Attribute("AutoSizeFont")?.Value);
 			if (element.Element("Template") != null)
-				textContent.Template = element.Element("Template").Value;
+				textContent.Template = element.Element("Template")?.Value;
 			return textContent;
 		}
 
 		public override string GetText()
 		{
-			string result = null;
+			string result;
 			var template = GetParamValueByTarget("Template") as string ?? Template;
 			if (string.IsNullOrEmpty(template))
 				result = (GetParamValueByTarget("Text") as string ?? Text) ?? string.Empty;

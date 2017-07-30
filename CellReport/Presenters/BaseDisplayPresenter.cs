@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using CellReport.Core;
 using CellReport.Core.Contents;
 
@@ -21,12 +20,11 @@ namespace CellReport.Presenters
 		private bool _showToolBar = true;
 		private PresenterState _state = PresenterState.Normal;
 
-		private CellLocation _currentCell = new CellLocation();
-		private bool _selectionMode = false;
+		private CellLocation _currentCell;
 		private CellLocation _startSelection = CellLocation.None;
 		private CellLocation _endSelection = CellLocation.None;
 
-		public BaseDisplayPresenter(CellManager manager)
+		protected BaseDisplayPresenter(CellManager manager)
 				: base(manager)
 		{
 		}
@@ -70,42 +68,41 @@ namespace CellReport.Presenters
 
 		public override bool ShowGridLines
 		{
-			get { return Manager.DisplaySettings.ShowGridLines; }
-			set { Manager.DisplaySettings.ShowGridLines = value; }
+			get => Manager.DisplaySettings.ShowGridLines;
+			set => Manager.DisplaySettings.ShowGridLines = value;
 		}
 
 		public override bool ShowBookMarks
 		{
-			get { return Manager.DisplaySettings.ShowBookMarks; }
-			set { Manager.DisplaySettings.ShowBookMarks = value; }
+			get => Manager.DisplaySettings.ShowBookMarks;
+			set => Manager.DisplaySettings.ShowBookMarks = value;
 		}
 
 		public override string GridColor
 		{
-			get { return Manager.DisplaySettings.GridColor; }
-			set { Manager.DisplaySettings.GridColor = value; }
+			get => Manager.DisplaySettings.GridColor;
+			set => Manager.DisplaySettings.GridColor = value;
 		}
 
 		public bool ShowResizers
 		{
-			get { return Manager.DisplaySettings.ShowResizers; }
-			set { Manager.DisplaySettings.ShowResizers = value; }
+			get => Manager.DisplaySettings.ShowResizers;
+			set => Manager.DisplaySettings.ShowResizers = value;
 		}
 
 		public bool ShowToolBar
 		{
-			get { return _showToolBar; }
+			get => _showToolBar;
 			set
 			{
 				_showToolBar = value;
-				if (ShowToolBarChanged != null)
-					ShowToolBarChanged(this, EventArgs.Empty);
+				ShowToolBarChanged?.Invoke(this, EventArgs.Empty);
 			}
 		}
 
 		public PresenterState State
 		{
-			get { return _state; }
+			get => _state;
 			set
 			{
 				if (_state != value)
@@ -118,13 +115,13 @@ namespace CellReport.Presenters
 
 		public override float Scale
 		{
-			get { return Manager.DisplaySettings.Scale; }
-			set { Manager.DisplaySettings.Scale = value; }
+			get => Manager.DisplaySettings.Scale;
+			set => Manager.DisplaySettings.Scale = value;
 		}
 
-		public CellReport.Core.CellLocation CurrentCell
+		public CellLocation CurrentCell
 		{
-			get { return _currentCell; }
+			get => _currentCell;
 			set
 			{
 				var row = value.Row < 0 ? 0 : (value.Row >= Manager.RowsCount ? Manager.RowsCount - 1 : value.Row);
@@ -177,15 +174,11 @@ namespace CellReport.Presenters
 			}
 		}
 
-		public bool SelectionMode
-		{
-			get { return _selectionMode; }
-			set { _selectionMode = value; }
-		}
+		public bool IsSelectionMode { get; set; }
 
 		public CellLocation StartSelection
 		{
-			get { return _startSelection; }
+			get => _startSelection;
 			set
 			{
 				if (!_startSelection.Equals(value) && (Manager.IsCurrectLocation(value) || value.Equals(CellLocation.None)))
@@ -198,7 +191,7 @@ namespace CellReport.Presenters
 
 		public CellLocation EndSelection
 		{
-			get { return _endSelection; }
+			get => _endSelection;
 			set
 			{
 				if (!_endSelection.Equals(value) && Manager.IsCurrectLocation(value) || value.Equals(CellLocation.None))
@@ -512,17 +505,17 @@ namespace CellReport.Presenters
 
 		private void DoAction(Cell cell, ActionContent content, ActionType type)
 		{
-			if ((content.Type == ActionType.All || content.Type == type) && this.Action != null)
-				this.Action(cell, content, type);
+			if ((content.Type == ActionType.All || content.Type == type) && Action != null)
+				Action(cell, content, type);
 		}
 
 		protected void RenderCurrentCell(object context, Rectangle bounds)
 		{
 			var rect = GetCellRect(CurrentCell);
 			if (Manager.DisplaySettings.ShowCurrentRows)
-				Renderer.RenderFillRect(context, new Rectangle(0, rect.Y, bounds.Width, rect.Height), 0, new string[] { "#38B7DBFF" });
+				Renderer.RenderFillRect(context, new Rectangle(0, rect.Y, bounds.Width, rect.Height), 0, new[] { "#38B7DBFF" });
 			Renderer.RenderLines(context, "#DC0000FF", 3, LineStyle.Solid,
-					new Point[] {
+					new[] {
 										new Point(rect.Right - 3, rect.Bottom),
 										new Point(rect.Left, rect.Bottom),
 										new Point(rect.Left, rect.Top),
@@ -550,7 +543,7 @@ namespace CellReport.Presenters
 				var startRect = GetCellRect(GetStartSelection());
 				var endRect = GetCellRect(GetEndSelection());
 				Renderer.RenderFillRect(context, new Rectangle(startRect.X, startRect.Y, endRect.Width + (endRect.X - startRect.X),
-						endRect.Height + (endRect.Y - startRect.Y)), 0, new string[] { "#A0B7DBFF" });
+						endRect.Height + (endRect.Y - startRect.Y)), 0, new[] { "#A0B7DBFF" });
 			}
 		}
 

@@ -26,6 +26,13 @@ namespace CellReport.Editor
 			EditorModel.DesignerTab = DesignerTab;
 			EditorModel.ReportContainer = ReportContainer;
 			EditorModel.Editor = Editor;
+			Editor.TextArea.KeyUp += (sender, args) =>
+			{
+				if(args.Key == Key.F && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && EditorCommands.Find.CanExecute())
+					EditorCommands.Find.Execute();
+				if (args.Key == Key.H && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && EditorCommands.FindAndReplace.CanExecute())
+					EditorCommands.FindAndReplace.Execute();
+			};
 
 			Loaded += (sender, args) =>
 			{

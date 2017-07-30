@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
+using System.Xml.Linq;
 using CellReport.Core;
 using CellReport.Presenters.Wpf;
 
@@ -56,6 +57,8 @@ namespace CellReport.Editor.ViewModel
 						var result = dialog.ShowDialog();
 						if (result == true)
 						{
+							EditorModel.DesignerTab.IsSelected = true;
+
 							CellTemplate template = new CellTemplate();
 							template.Load(dialog.FileName);
 							EditorModel.FileName = dialog.FileName;
@@ -399,6 +402,104 @@ namespace CellReport.Editor.ViewModel
 			}
 		}
 
+		public static DelegateCommand Find
+		{
+			get
+			{
+				DelegateCommand command = null;
+				if (!Commands.TryGetValue("Find", out command))
+				{
+					void Action()
+					{
+						if (EditorModel.IsDesignMode)
+						{
+							EditorModel.Presenter.ShowFindDialog();
+						}
+						if (EditorModel.IsCodeMode)
+						{
+							FindAndReplaceDialog.ShowForFind(EditorModel.Editor);
+						}
+					}
+
+					command = new DelegateCommand(Action, () => EditorModel.ReportManager != null && (EditorModel.IsDesignMode || EditorModel.IsCodeMode));
+					Commands.Add("Find", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand FindAndReplace
+		{
+			get
+			{
+				DelegateCommand command = null;
+				if (!Commands.TryGetValue("FindAndReplace", out command))
+				{
+					void Action()
+					{
+						if (EditorModel.IsCodeMode)
+						{
+							FindAndReplaceDialog.ShowForReplace(EditorModel.Editor);
+						}
+					}
+
+					command = new DelegateCommand(Action, () => EditorModel.ReportManager != null && (EditorModel.IsCodeMode));
+					Commands.Add("FindAndReplace", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand FindInCode
+		{
+			get
+			{
+				DelegateCommand command = null;
+				if (!Commands.TryGetValue("FindInCode", out command))
+				{
+					void Action()
+					{
+						EditorModel.CodeTab.IsSelected = true;
+						SwitchEditorToCodeMode();
+						var lineNumber = 0;
+						var currentRow = EditorModel.Presenter.CurrentCell.Row;
+						var rowIndex = -1;
+						var textLines = EditorModel.Editor.Text.Split('\n');
+						foreach (var textLine in textLines)
+						{
+							var line = textLine.Replace("\r", "");
+							if (line.Contains("<Row") && rowIndex != currentRow)
+							{
+								rowIndex++;
+
+								var rowElement = XElement.Parse(line.EndsWith("/>") ? line : line + "</Row>");
+								if (rowElement.Attribute("Index") != null)
+								{
+									rowIndex = Convert.ToInt32(rowElement.Attribute("Index").Value);
+								}
+							}
+
+							if (rowIndex == currentRow)
+								break;
+
+							lineNumber++;
+						}
+
+						double vertOffset = (EditorModel.Editor.TextArea.TextView.DefaultLineHeight) * lineNumber;
+						EditorModel.Editor.ScrollToVerticalOffset(vertOffset);
+						EditorModel.Editor.TextArea.Focus();
+					}
+
+					command = new DelegateCommand(Action, () => IsDefaultEnabled() && EditorModel.IsDesignMode);
+					Commands.Add("FindInCode", command);
+				}
+
+				return command;
+			}
+		}
+
 		public static void SwitchEditorToCodeMode()
 		{
 			if (EditorModel.ReportManager == null || EditorModel.Presenter == null)
@@ -421,12 +522,15 @@ namespace CellReport.Editor.ViewModel
 			{
 				CellTemplate template = new CellTemplate();
 				template.LoadFromXml(EditorModel.Editor.Text);
+				var currentCell = EditorModel.Presenter?.CurrentCell;
 				EditorModel.Presenter = new DisplayPresenter(template.Manager, EditorModel.ReportContainer);
 				foreach (var resourceName in EditorModel.ReportManager.GetResourceNames())
 				{
 					template.Manager.AddResource(resourceName, EditorModel.ReportManager.GetResource(resourceName));
 				}
 				EditorModel.ReportManager = template.Manager;
+				if (currentCell.HasValue)
+					EditorModel.Presenter.CurrentCell = currentCell.Value;
 			}
 			catch (Exception e)
 			{

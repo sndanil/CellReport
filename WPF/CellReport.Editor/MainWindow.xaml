@@ -8,103 +8,122 @@
         Width="525" 
         Height="350"
         WindowState="Maximized">
-    <Window.Resources>
-        <local:EditorModel x:Key="EditorModel"/>
-    </Window.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <fluent:Ribbon Grid.Row="0">
+	<Window.Resources>
+		<local:EditorModel x:Key="EditorModel"/>
+	</Window.Resources>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<fluent:Ribbon Grid.Row="0">
 
-            <fluent:Ribbon.QuickAccessItems>
-                <fluent:QuickAccessMenuItem IsChecked="True" Target="{Binding ElementName=SaveButton}">
-                </fluent:QuickAccessMenuItem>
-            </fluent:Ribbon.QuickAccessItems>
+			<fluent:Ribbon.QuickAccessItems>
+				<fluent:QuickAccessMenuItem IsChecked="True" Target="{Binding ElementName=SaveButton}">
+				</fluent:QuickAccessMenuItem>
+			</fluent:Ribbon.QuickAccessItems>
 
-            <fluent:Ribbon.Menu>
-                <fluent:Backstage>
-                    <fluent:BackstageTabControl>
-                        <fluent:Button Header="Создать" Command="local:EditorCommands.Create" KeyTip="N" />
-                        <fluent:Button Header="Открыть" Command="local:EditorCommands.Open" KeyTip="O" />
-                        <fluent:Button Header="Сохранить" x:Name="SaveButton" Command="local:EditorCommands.Save" KeyTip="S" />
-                        <fluent:Button Header="Сохранить как" Command="local:EditorCommands.SaveAs" KeyTip="A" />
-                        <fluent:SeparatorTabItem Header="" />
-                        <fluent:Button Header="Предварительный просмотр" Command="local:EditorCommands.PrintPreview" KeyTip="P" />
-                        <fluent:Button Header="Печать" Command="local:EditorCommands.Print" />
-                        <fluent:SeparatorTabItem Header="" />
-                        <fluent:Button Header="Выход"
+			<fluent:Ribbon.Menu>
+				<fluent:Backstage>
+					<fluent:BackstageTabControl>
+						<fluent:Button Header="Создать" Command="local:EditorCommands.Create" KeyTip="N" />
+						<fluent:Button Header="Открыть" Command="local:EditorCommands.Open" KeyTip="O" />
+						<fluent:Button Header="Сохранить" x:Name="SaveButton" Command="local:EditorCommands.Save" KeyTip="S" />
+						<fluent:Button Header="Сохранить как" Command="local:EditorCommands.SaveAs" KeyTip="A" />
+						<fluent:SeparatorTabItem Header="" />
+						<fluent:Button Header="Предварительный просмотр" Command="local:EditorCommands.PrintPreview" KeyTip="P" />
+						<fluent:Button Header="Печать" Command="local:EditorCommands.Print" />
+						<fluent:SeparatorTabItem Header="" />
+						<fluent:Button Header="Выход"
 					                   Icon="pack://application:,,,/Fluent.Ribbon.Showcase;component/Images/Exit.png"
 					                   KeyTip="X"
 					                   Command="local:EditorCommands.Exit" />
-                    </fluent:BackstageTabControl>
-                </fluent:Backstage>
-            </fluent:Ribbon.Menu>
+					</fluent:BackstageTabControl>
+				</fluent:Backstage>
+			</fluent:Ribbon.Menu>
 
-            <fluent:RibbonTabItem Header="Главная">
-                <fluent:RibbonGroupBox Header="Строки и столбцы">
-                    <fluent:DropDownButton Header="Добавить строку"
+			<fluent:RibbonTabItem Header="Главная">
+				<fluent:RibbonGroupBox Header="Строки и столбцы">
+					<fluent:DropDownButton Header="Добавить строку"
 												Icon="Images\32\row_add.png"
 												LargeIcon="Images\32\row_add.png" >
-                        <MenuItem Header="Добавить строку" Command="local:EditorCommands.AddRows" />
-                        <MenuItem Header="Добавить строку после" Command="local:EditorCommands.AddRowsAfter" />
-                    </fluent:DropDownButton>
-                    <fluent:Button Header="Удалить строку"
+						<MenuItem Header="Добавить строку" Command="local:EditorCommands.AddRows" />
+						<MenuItem Header="Добавить строку после" Command="local:EditorCommands.AddRowsAfter" />
+					</fluent:DropDownButton>
+					<fluent:Button Header="Удалить строку"
 												Icon="Images\32\row_delete.png"
 												LargeIcon="Images\32\row_delete.png" Command="local:EditorCommands.DeleteRows" />
-                    <fluent:DropDownButton Header="Добавить столбец"
+					<fluent:DropDownButton Header="Добавить столбец"
 												Icon="Images\32\column_add.png"
 												LargeIcon="Images\32\column_add.png">
-                        <MenuItem Header="Добавить строку" Command="local:EditorCommands.AddColumns" />
-                        <MenuItem Header="Добавить строку после" Command="local:EditorCommands.AddColumnsAfter" />
-                    </fluent:DropDownButton>
-                    <fluent:Button Header="Удалить столбец"
+						<MenuItem Header="Добавить столбец" Command="local:EditorCommands.AddColumns" />
+						<MenuItem Header="Добавить столбец после" Command="local:EditorCommands.AddColumnsAfter" />
+					</fluent:DropDownButton>
+					<fluent:Button Header="Удалить столбец"
 												Icon="Images\32\column_delete.png"
 												LargeIcon="Images\32\column_delete.png" Command="local:EditorCommands.DeleteColumns" />
-                </fluent:RibbonGroupBox>
-                <fluent:RibbonGroupBox Header="Ячейки">
-                    <fluent:ComboBox IsEditable="False"
+				</fluent:RibbonGroupBox>
+				<fluent:RibbonGroupBox Header="Ячейки">
+					<!--<fluent:ComboBox IsEditable="False"
                             InputWidth="150"
                             Header="Стиль"
                             IsEnabled="{Binding Source={StaticResource EditorModel}, Path=IsDesignMode}"
                             ItemsSource="{Binding Source={StaticResource EditorModel}, Path=CellStyles}">
-                        <fluent:ComboBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <VirtualizingStackPanel />
-                            </ItemsPanelTemplate>
-                        </fluent:ComboBox.ItemsPanel>
-                        <fluent:ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=ID}" />
-                            </DataTemplate>
-                        </fluent:ComboBox.ItemTemplate>
-                    </fluent:ComboBox>
-                    <fluent:Button Header="Объединить ячейки"
+						<fluent:ComboBox.ItemsPanel>
+							<ItemsPanelTemplate>
+								<VirtualizingStackPanel />
+							</ItemsPanelTemplate>
+						</fluent:ComboBox.ItemsPanel>
+						<fluent:ComboBox.ItemTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding Path=ID}" />
+							</DataTemplate>
+						</fluent:ComboBox.ItemTemplate>
+					</fluent:ComboBox>-->
+					<fluent:Button Header="Объединить ячейки"
 			                      Icon="Images\16\merge.png" 
                                   KeyTip="M"
 			                      Size="Middle"
 			                      Command="local:EditorCommands.MergeCells"
                                   />
-                </fluent:RibbonGroupBox>
-            </fluent:RibbonTabItem>
-        </fluent:Ribbon>
-        <TabControl Grid.Row="1" SelectionChanged="TabsSwitched" x:Name="MainTab">
-            <TabItem Header="Дизайнер" x:Name="DesignerTab">
-                <Grid x:Name="ReportContainer">
-                </Grid>
-            </TabItem>
-            <TabItem Header="Код" x:Name="CodeTab">
-                <avalonEdit:TextEditor FontFamily="Consolas" SyntaxHighlighting="XML" x:Name="Editor">
+				</fluent:RibbonGroupBox>
+				<fluent:RibbonGroupBox Header="Поиск">
+					<fluent:Button Header="Найти"
+																Icon="Images\16\find.png" 
+																KeyTip="F"
+																Size="Middle"
+																Command="local:EditorCommands.Find"
+									/>
+					<fluent:Button Header="Найти и заменить"
+												Icon="Images\16\replace-find.png" 
+												KeyTip="H"
+												Size="Middle"
+												Command="local:EditorCommands.FindAndReplace"
+					/>
+					<fluent:Button Header="Найти строку в коде"
+												Icon="Images\16\script-find.png" 
+												Size="Middle"
+												Command="local:EditorCommands.FindInCode"
+					/>
+				</fluent:RibbonGroupBox>
+			</fluent:RibbonTabItem>
+		</fluent:Ribbon>
+		<TabControl Grid.Row="1" SelectionChanged="TabsSwitched" x:Name="MainTab">
+			<TabItem Header="Дизайнер" x:Name="DesignerTab">
+				<Grid x:Name="ReportContainer">
+				</Grid>
+			</TabItem>
+			<TabItem Header="Код" x:Name="CodeTab">
+				<avalonEdit:TextEditor FontFamily="Consolas" SyntaxHighlighting="XML" x:Name="Editor">
 
-                </avalonEdit:TextEditor>
-            </TabItem>
-        </TabControl>
-        <fluent:StatusBar Grid.Row="2">
-            <fluent:StatusBarItem Title="Zoom Slider"
+				</avalonEdit:TextEditor>
+			</TabItem>
+		</TabControl>
+		<fluent:StatusBar Grid.Row="2">
+			<fluent:StatusBarItem Title="Zoom Slider"
 			                      HorizontalAlignment="Right">
-                <Slider x:Name="zoomSlider"
+				<Slider x:Name="zoomSlider"
 				        Minimum="0"
 				        Maximum="100"
 				        IsDirectionReversed="False"
@@ -115,7 +134,7 @@
 				        SmallChange="25"
 				        LargeChange="25"
 				        />
-            </fluent:StatusBarItem>
-        </fluent:StatusBar>
-    </Grid>
+			</fluent:StatusBarItem>
+		</fluent:StatusBar>
+	</Grid>
 </fluent:RibbonWindow>

@@ -27,7 +27,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\Release\Editor\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -80,9 +80,16 @@
     <Compile Include="CodeEditor\XHelper\XsdParser.cs" />
     <Compile Include="CodeEditor\XmlCodeCompleteHelper.cs" />
     <Compile Include="CodeEditor\XmlCompletionData.cs" />
+    <Compile Include="FindAndReplaceDialog.xaml.cs">
+      <DependentUpon>FindAndReplaceDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModel\DelegateCommand.cs" />
     <Compile Include="ViewModel\EditorCommands.cs" />
     <Compile Include="ViewModel\EditorModel.cs" />
+    <Page Include="FindAndReplaceDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -160,6 +167,15 @@
     <Resource Include="Images\32\column_delete.png" />
     <Resource Include="Images\32\row_add.png" />
     <Resource Include="Images\32\row_delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\16\find.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\16\script-find.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\16\replace-find.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

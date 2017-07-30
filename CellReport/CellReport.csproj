@@ -96,6 +96,7 @@
     <Compile Include="Core\Expressions\NowExpression.cs" />
     <Compile Include="Core\Expressions\CountExpression.cs" />
     <Compile Include="Core\MarkerResolver.cs" />
+    <Compile Include="Core\NumberToString.cs" />
     <Compile Include="Core\Point.cs" />
     <Compile Include="Core\PrintSettings.cs" />
     <Compile Include="Core\Properties.cs" />

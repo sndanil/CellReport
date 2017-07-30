@@ -8,13 +8,13 @@ namespace CellReport.Core.Contents
 	[Serializable]
 	public class Param : NotifyPropertyChanged
 	{
-		private object _value = null;
+		private object _value;
 		[NonSerialized]
-		private BaseExpression _expression = null;
+		private BaseExpression _expression;
 		[NonSerialized]
-		private CellManager _manager = null;
+		private CellManager _manager;
 		[NonSerialized]
-		private BaseContent _owner = null;
+		private BaseContent _owner;
 		private string _name;
 		private string _target;
 		private string _expressionId;
@@ -40,7 +40,7 @@ namespace CellReport.Core.Contents
 
 		public string Name
 		{
-			get { return _name; }
+			get => _name;
 			set
 			{
 				if (_name != value)
@@ -59,8 +59,7 @@ namespace CellReport.Core.Contents
 
 		internal void ResetExpression()
 		{
-			if (Expression != null)
-				Expression.Reset();
+			Expression?.Reset();
 		}
 
 		internal void ReplaceExpressionId(string oldId, string newId)
@@ -73,16 +72,16 @@ namespace CellReport.Core.Contents
 		{
 			get
 			{
-				if (Expression != null && Expression is SumExpression)
+				if (Expression is SumExpression)
 					return Expression.GetValue(_manager);
 
 				if (!string.IsNullOrEmpty(Type) && _value != null)
 				{
 					var type = System.Type.GetType(Type);
-					return Convert.ChangeType(_value, type);
+					if (type != null)
+						return Convert.ChangeType(_value, type);
 				}
-				else
-					return _value;
+				return _value;
 			}
 			set
 			{
@@ -93,7 +92,7 @@ namespace CellReport.Core.Contents
 
 		public string Target
 		{
-			get { return _target; }
+			get => _target;
 			set
 			{
 				if (_target != value)
@@ -104,9 +103,10 @@ namespace CellReport.Core.Contents
 			}
 		}
 
+		// ReSharper disable once InconsistentNaming
 		public string ExpressionID
 		{
-			get { return _expressionId; }
+			get => _expressionId;
 			set
 			{
 				if (_expressionId != value)
@@ -146,7 +146,7 @@ namespace CellReport.Core.Contents
 
 		public string Culture
 		{
-			get { return _culture; }
+			get => _culture;
 			set
 			{
 				if (_culture != value)
@@ -159,7 +159,7 @@ namespace CellReport.Core.Contents
 
 		public string Format
 		{
-			get { return _format; }
+			get => _format;
 			set
 			{
 				if (_format != value)
@@ -172,7 +172,7 @@ namespace CellReport.Core.Contents
 
 		public string Type
 		{
-			get { return _type; }
+			get => _type;
 			set
 			{
 				if (_type != value)
@@ -214,21 +214,21 @@ namespace CellReport.Core.Contents
 		{
 			var param = new Param(manager, owner);
 			if (element.Attribute("Name") != null)
-				param.Name = element.Attribute("Name").Value;
+				param.Name = element.Attribute("Name")?.Value;
 			else
 				param.Name = string.Empty;
 			if (element.Attribute("Target") != null)
-				param.Target = element.Attribute("Target").Value;
+				param.Target = element.Attribute("Target")?.Value;
 			if (element.Attribute("Expression") != null)
-				param.ExpressionID = element.Attribute("Expression").Value;
-			if (element.Attribute("Value") != null /*&& !string.IsNullOrEmpty(element.Attribute("Value").Value)*/)
-				param.Value = element.Attribute("Value").Value;
+				param.ExpressionID = element.Attribute("Expression")?.Value;
+			if (element.Attribute("Value") != null)
+				param.Value = element.Attribute("Value")?.Value;
 			if (element.Attribute("Culture") != null)
-				param.Culture = element.Attribute("Culture").Value;
+				param.Culture = element.Attribute("Culture")?.Value;
 			if (element.Attribute("Format") != null)
-				param.Format = element.Attribute("Format").Value;
+				param.Format = element.Attribute("Format")?.Value;
 			if (element.Attribute("Type") != null)
-				param.Type = element.Attribute("Type").Value;
+				param.Type = element.Attribute("Type")?.Value;
 
 			return param;
 		}
