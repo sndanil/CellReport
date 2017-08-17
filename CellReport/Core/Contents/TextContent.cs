@@ -291,7 +291,13 @@ namespace CellReport.Core.Contents
 			string result;
 			var template = GetParamValueByTarget("Template") as string ?? Template;
 			if (string.IsNullOrEmpty(template))
-				result = (GetParamValueByTarget("Text") as string ?? Text) ?? string.Empty;
+			{
+				var paramName = GetParamNameByTarget("Text");
+				if (paramName == null)
+					result = Text ?? string.Empty;
+				else
+					result = (GetFormattedParamValueByName(paramName) ?? Text) ?? string.Empty;
+			}
 			else
 			{
 				var reg = new Regex(@"\[(?=[^\[]*\]).*?\]");
