@@ -467,10 +467,12 @@ namespace CellReport.Editor.ViewModel
 						var currentRow = EditorModel.Presenter.CurrentCell.Row;
 						var rowIndex = -1;
 						var textLines = EditorModel.Editor.Text.Split('\n');
+						var selectStartLine = 0;
+						var selectEndLine = 0;
 						foreach (var textLine in textLines)
 						{
 							var line = textLine.Replace("\r", "");
-							if (line.Contains("<Row") && rowIndex != currentRow)
+							if (line.Contains("<Row") && rowIndex != currentRow && selectStartLine == 0)
 							{
 								rowIndex++;
 
@@ -481,13 +483,25 @@ namespace CellReport.Editor.ViewModel
 								}
 							}
 
-							if (rowIndex == currentRow)
+							if (line.Contains("</Row") && selectStartLine != 0)
+							{
+								selectEndLine = lineNumber + 1;
 								break;
+							}
+
+							if (rowIndex == currentRow && selectStartLine == 0)
+							{
+								selectStartLine = lineNumber + 1;
+							}
 
 							lineNumber++;
 						}
 
-						double vertOffset = (EditorModel.Editor.TextArea.TextView.DefaultLineHeight) * lineNumber;
+						var startLine = EditorModel.Editor.Document.GetLineByNumber(selectStartLine);
+						var endLine = EditorModel.Editor.Document.GetLineByNumber(selectEndLine);
+						EditorModel.Editor.Select(startLine.Offset, endLine.Offset + endLine.Length - startLine.Offset);
+
+						double vertOffset = (EditorModel.Editor.TextArea.TextView.DefaultLineHeight) * (selectStartLine - 1);
 						EditorModel.Editor.ScrollToVerticalOffset(vertOffset);
 						EditorModel.Editor.TextArea.Focus();
 					}

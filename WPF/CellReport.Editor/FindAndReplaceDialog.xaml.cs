@@ -64,14 +64,12 @@ namespace CellReport.Editor
 
 		private void FindNextClick(object sender, RoutedEventArgs e)
 		{
-			if (!FindNext(FindText.Text))
-				SystemSounds.Beep.Play();
+			FindNext(FindText.Text);
 		}
 
 		private void FindNext2Click(object sender, RoutedEventArgs e)
 		{
-			if (!FindNext(FindForReplaceText.Text))
-				SystemSounds.Beep.Play();
+			FindNext(FindForReplaceText.Text);
 		}
 
 		private void ReplaceClick(object sender, RoutedEventArgs e)
@@ -79,15 +77,12 @@ namespace CellReport.Editor
 			Regex regex = GetRegEx(FindForReplaceText.Text);
 			string input = _editor.Text.Substring(_editor.SelectionStart, _editor.SelectionLength);
 			Match match = regex.Match(input);
-			bool replaced = false;
 			if (match.Success && match.Index == 0 && match.Length == input.Length)
 			{
 				_editor.Document.Replace(_editor.SelectionStart, _editor.SelectionLength, ReplaceText.Text);
-				replaced = true;
 			}
 
-			if (!FindNext(FindForReplaceText.Text) && !replaced)
-				SystemSounds.Beep.Play();
+			FindNext(FindForReplaceText.Text);
 		}
 
 		private void ReplaceAllClick(object sender, RoutedEventArgs e)
