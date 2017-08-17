@@ -86,6 +86,7 @@
     <Compile Include="ViewModel\DelegateCommand.cs" />
     <Compile Include="ViewModel\EditorCommands.cs" />
     <Compile Include="ViewModel\EditorModel.cs" />
+    <Compile Include="ViewModel\SchemaError.cs" />
     <Page Include="FindAndReplaceDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

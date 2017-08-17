@@ -42,6 +42,7 @@
 			<xs:element name='LeftTop' type='CellLocationType' minOccurs='1' maxOccurs='1'/>
 			<xs:element name='RightBottom' type='CellLocationType' minOccurs='1' maxOccurs='1'/>
 		</xs:sequence>
+		<xs:attribute name='IsHeaderFixed' type='xs:boolean' />
 		<xs:attribute name='ID' type='xs:string' />
 	</xs:complexType>
 
@@ -108,16 +109,16 @@
 	</xs:complexType>
 
 	<xs:complexType name='CellType'>
-		<xs:choice>
-			<xs:element name='TextContent' type='TextContentType' />
-			<xs:element name='DecimalContent' type='DecimalContentType' />
-			<xs:element name='DateTimeContent' type='DateTimeContentType' />
-			<xs:element name='LineContent' type='LineContentType' />
-			<xs:element name='BarCodeContent' type='BarCodeContentType' />
-			<xs:element name='ActionContent' type='ActionContentType' />
-			<xs:element name='ImageContent' type='ImageContentType' />
-			<xs:element name='ChartContent' type='ChartContentType' />
-			<xs:element name='CollectionContent' type='CollectionContentType' />
+		<xs:choice maxOccurs="unbounded">
+			<xs:element name='TextContent' type='TextContentType' minOccurs='0' maxOccurs='1'/>
+			<xs:element name='DecimalContent' type='DecimalContentType' minOccurs='0' maxOccurs='1'/>
+			<xs:element name='DateTimeContent' type='DateTimeContentType' minOccurs='0' maxOccurs='1'/>
+			<xs:element name='LineContent' type='LineContentType' minOccurs='0' maxOccurs='1'/>
+			<xs:element name='BarCodeContent' type='BarCodeContentType' minOccurs='0' maxOccurs='1'/>
+			<xs:element name='ActionContent' type='ActionContentType' minOccurs='0' maxOccurs='1'/>
+			<xs:element name='ImageContent' type='ImageContentType' minOccurs='0' maxOccurs='1'/>
+			<xs:element name='ChartContent' type='ChartContentType' minOccurs='0' maxOccurs='1'/>
+			<xs:element name='CollectionContent' type='CollectionContentType' minOccurs='0' maxOccurs='1' />
 		</xs:choice>
 		<xs:attribute name='Style' type='xs:string' />
 		<xs:attribute name='Index' type='xs:int' default='0'/>
@@ -126,7 +127,7 @@
 	</xs:complexType>
 
 	<xs:complexType name='CollectionContentType'>
-		<xs:sequence>
+		<xs:choice maxOccurs="unbounded">
 			<xs:element name='TextContent' type='TextContentType' />
 			<xs:element name='DecimalContent' type='DecimalContentType' />
 			<xs:element name='DateTimeContent' type='DateTimeContentType' />
@@ -135,7 +136,7 @@
 			<xs:element name='ActionContent' type='ActionContentType' />
 			<xs:element name='ImageContent' type='ImageContentType' />
 			<xs:element name='ChartContent' type='ChartContentType' />
-		</xs:sequence>
+		</xs:choice>
 		<xs:attribute name='Layout' type='xs:string'/>
 		<xs:attribute name='ActualContentIndex' type='xs:int' default='0'/>
 	</xs:complexType>
@@ -237,7 +238,7 @@
 	</xs:complexType>
 
 	<xs:complexType name='StylesType'>
-		<xs:choice>
+		<xs:choice maxOccurs="unbounded">
 			<xs:element name='ExternalStyle' type='ExternalStyleType' minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name='CellStyle' type='CellStyleType' minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name='TextContentStyle' type='TextContentStyleType' minOccurs="0" maxOccurs="unbounded" />
@@ -248,10 +249,10 @@
 	</xs:complexType>
 
 	<xs:complexType name='CellStyleType'>
-		<xs:sequence>
-			<xs:element name='Paddings' type='xs:string' />
-			<xs:element name='Borders' type='BordersType' />
-		</xs:sequence>
+		<xs:choice maxOccurs="unbounded">
+			<xs:element name='Paddings' type='xs:string' minOccurs="0" maxOccurs="1" />
+			<xs:element name='Borders' type='BordersType' minOccurs="0" maxOccurs="1" />
+		</xs:choice>
 		<xs:attribute name='ID' type='xs:string'/>
 		<xs:attribute name='Color' type='xs:string'/>
 	</xs:complexType>

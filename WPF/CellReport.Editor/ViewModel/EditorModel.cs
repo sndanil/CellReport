@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Controls;
 using CellReport.Core;
@@ -17,6 +18,8 @@ namespace CellReport.Editor.ViewModel
 		public static Core.CellManager ReportManager;
 		public static Presenters.Wpf.DisplayPresenter Presenter;
 		public static string FileName;
+
+		public static ObservableCollection<SchemaError> CodeErrors = new ObservableCollection<SchemaError>();
 
 		public static bool IsCodeMode => MainTabControl?.SelectedItem == CodeTab;
 

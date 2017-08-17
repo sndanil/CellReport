@@ -26,6 +26,9 @@ namespace CellReport.Editor
 			EditorModel.DesignerTab = DesignerTab;
 			EditorModel.ReportContainer = ReportContainer;
 			EditorModel.Editor = Editor;
+
+			SchemaErrors.ItemsSource = EditorModel.CodeErrors;
+
 			Editor.TextArea.KeyUp += (sender, args) =>
 			{
 				if(args.Key == Key.F && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && EditorCommands.Find.CanExecute())

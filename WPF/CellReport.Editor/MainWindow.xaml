@@ -115,12 +115,31 @@
 				</Grid>
 			</TabItem>
 			<TabItem Header="Код" x:Name="CodeTab">
-				<avalonEdit:TextEditor FontFamily="Consolas" SyntaxHighlighting="XML" x:Name="Editor">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition></RowDefinition>
+						<RowDefinition Height="5"></RowDefinition>
+						<RowDefinition Height="150"></RowDefinition>
+					</Grid.RowDefinitions>
+					<avalonEdit:TextEditor FontFamily="Consolas" SyntaxHighlighting="XML" x:Name="Editor">
 
-				</avalonEdit:TextEditor>
+					</avalonEdit:TextEditor>
+					<GridSplitter Grid.Row="1" Height="5" VerticalAlignment="Center" HorizontalAlignment="Stretch"></GridSplitter>
+					<ListView Grid.Row="2" Name="SchemaErrors">
+						<ListView.View>
+							<GridView>
+								<GridView.Columns>
+									<!--<GridViewColumn Header="Строка" DisplayMemberBinding="{Binding Path=LineNumber}"></GridViewColumn>-->
+									<!--<GridViewColumn Header="Строка" DisplayMemberBinding="{Binding Path=UnitCost, StringFormat={}{0:C}}"></GridViewColumn>-->
+									<GridViewColumn Header="Ошибка" DisplayMemberBinding="{Binding Path=Message}"></GridViewColumn>
+								</GridView.Columns>
+							</GridView>
+						</ListView.View>
+					</ListView>
+				</Grid>
 			</TabItem>
 		</TabControl>
-		<fluent:StatusBar Grid.Row="2">
+		<!--<fluent:StatusBar Grid.Row="2">
 			<fluent:StatusBarItem Title="Zoom Slider"
 			                      HorizontalAlignment="Right">
 				<Slider x:Name="zoomSlider"
@@ -135,6 +154,6 @@
 				        LargeChange="25"
 				        />
 			</fluent:StatusBarItem>
-		</fluent:StatusBar>
+		</fluent:StatusBar>-->
 	</Grid>
 </fluent:RibbonWindow>

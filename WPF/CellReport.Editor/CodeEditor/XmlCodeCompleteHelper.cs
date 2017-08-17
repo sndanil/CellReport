@@ -63,13 +63,15 @@ namespace CellReport.Editor.CodeEditor
 			{
 				if (EditorModel.IsCodeMode)
 				{
+					EditorModel.CodeErrors.Clear();
 					try
 					{
 						var doc = XDocument.Parse(TextEditor.Text);
 						var wasErrorrs = false;
 						doc.Validate(schemas, (o, eventArgs) =>
 						{
-							Console.WriteLine("{0}", eventArgs.Message);
+							EditorModel.CodeErrors.Add(new SchemaError { Message = eventArgs.Message,
+								LineNumber = eventArgs.Exception.LineNumber, LinePosition = eventArgs.Exception.LinePosition });
 						});
 						if (!wasErrorrs)
 						{
@@ -80,7 +82,10 @@ namespace CellReport.Editor.CodeEditor
 					}
 					catch (Exception e)
 					{
-						Console.WriteLine(e);
+						EditorModel.CodeErrors.Add(new SchemaError
+						{
+							Message = e.Message,
+						});
 					}
 				}
 			};
