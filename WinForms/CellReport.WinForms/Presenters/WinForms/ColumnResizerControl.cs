@@ -1,25 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
+using CellReport.Core;
 
 namespace CellReport.Presenters.WinForms
 {
-	public partial class ColumnResizerControl : DoubleBufferedControl
+	public sealed partial class ColumnResizerControl : DoubleBufferedControl
 	{
 		public ColumnResizerControl()
 		{
 			InitializeComponent();
 
 			TabStop = false;
-			this.SetStyle(ControlStyles.Selectable, true);
-			this.ForeColor = Color.FromArgb(39, 65, 62);
+			SetStyle(ControlStyles.Selectable, true);
+			ForeColor = Color.FromArgb(39, 65, 62);
 		}
 
 		public BaseDisplayPresenter Presenter
@@ -30,7 +26,7 @@ namespace CellReport.Presenters.WinForms
 
 		private void DrawCellBackground(Graphics g, float left, float right, int col)
 		{
-			var rect = new RectangleF(left, 0, right - left, this.Height);
+			var rect = new RectangleF(left, 0, right - left, Height);
 			if (rect.Height != 0 && rect.Width != 0)
 			{
 				var cell = Presenter.Manager.GetCell(Presenter.CurrentCell);
@@ -48,15 +44,15 @@ namespace CellReport.Presenters.WinForms
 			stringFormat.Alignment = StringAlignment.Center;
 			stringFormat.LineAlignment = StringAlignment.Center;
 
-			var textHeight = g.MeasureString(text, this.Font).Height;
-			var rect = new RectangleF(left, (this.Height - textHeight) / 2, right - left, textHeight);
+			var textHeight = g.MeasureString(text, Font).Height;
+			var rect = new RectangleF(left, (Height - textHeight) / 2, right - left, textHeight);
 			if (rect.Height != 0 && rect.Width != 0)
 			{
 				using (var textBrush = new SolidBrush(Color.FromArgb(0x36, 0x36, 0x36)))
 				using (var linePen = new Pen(Color.FromArgb(0xB1, 0xB5, 0xBA)))
 				{
-					g.DrawString(text, this.Font, textBrush, rect, stringFormat);
-					g.DrawLine(linePen, right, 0, right, this.Height);
+					g.DrawString(text, Font, textBrush, rect, stringFormat);
+					g.DrawLine(linePen, right, 0, right, Height);
 				}
 			}
 		}
@@ -64,7 +60,7 @@ namespace CellReport.Presenters.WinForms
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			using (var brush = new SolidBrush(Color.FromArgb(0xDF, 0xE3, 0xE8)))
-				e.Graphics.FillRectangle(brush, this.ClientRectangle);
+				e.Graphics.FillRectangle(brush, ClientRectangle);
 			if (Presenter != null)
 			{
 				e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
@@ -80,13 +76,16 @@ namespace CellReport.Presenters.WinForms
 					var left = Presenter.GetLeftOffset(column);
 					var right = left + Presenter.GetColumnWidth(column);
 
-					DrawCell(e.Graphics, left, right, (column + 1).ToString());
+					if (CellManager.IsDesignMode)
+						DrawCell(e.Graphics, left, right, column.ToString());
+					else
+						DrawCell(e.Graphics, left, right, (column + 1).ToString());
 				}
 			}
 			using (var pen = new Pen(Color.FromArgb(0xB1, 0xB5, 0xBA)))
 			{
-				e.Graphics.DrawLine(pen, 0, 0, this.Width - 1, 0);
-				e.Graphics.DrawLine(pen, 0, this.Height - 1, this.Width - 1, this.Height - 1);
+				e.Graphics.DrawLine(pen, 0, 0, Width - 1, 0);
+				e.Graphics.DrawLine(pen, 0, Height - 1, Width - 1, Height - 1);
 			}
 		}
 
@@ -97,7 +96,7 @@ namespace CellReport.Presenters.WinForms
 				foreach (var colIndex in Presenter.GetColumnIndexes())
 				{
 					var left = Presenter.GetLeftOffset(colIndex);
-					if (left > this.Width)
+					if (left > Width)
 						break;
 
 					yield return colIndex;
@@ -111,14 +110,14 @@ namespace CellReport.Presenters.WinForms
 			{
 				if (_resizeColumn < 0 && _startSelectionColumn < 0)
 				{
-					this.Cursor = Cursors.Default;
+					Cursor = Cursors.Default;
 					foreach (var column in GetColumnIndexes())
 					{
 						var left = Presenter.GetLeftOffset(column);
 						var right = left + Presenter.GetColumnWidth(column);
 
 						if (e.X <= right + 3 && e.X >= right - 3)
-							this.Cursor = Cursors.SizeWE;
+							Cursor = Cursors.SizeWE;
 					}
 				}
 				else if (_resizeColumn >= 0 && _lastX != e.X)
@@ -126,7 +125,7 @@ namespace CellReport.Presenters.WinForms
 					var oldWidth = Presenter.GetColumnWidth(_resizeColumn);
 					var width = oldWidth + (e.X - _lastX);
 					Presenter.SetColumnWidth(_resizeColumn, width);
-					this.Update();
+					Update();
 				}
 				else if (_startSelectionColumn >= 0 && _lastX != e.X)
 				{
@@ -143,8 +142,8 @@ namespace CellReport.Presenters.WinForms
 					if (findCol >= 0)
 					{
 						Presenter.BeginUpdate();
-						Presenter.StartSelection = new Core.CellLocation() { Row = 0, Column = _startSelectionColumn };
-						Presenter.EndSelection = new Core.CellLocation() { Row = Presenter.Manager.RowsCount - 1, Column = findCol };
+						Presenter.StartSelection = new CellLocation() { Row = 0, Column = _startSelectionColumn };
+						Presenter.EndSelection = new CellLocation() { Row = Presenter.Manager.RowsCount - 1, Column = findCol };
 						Presenter.EndUpdate();
 					}
 				}
@@ -161,7 +160,7 @@ namespace CellReport.Presenters.WinForms
 			if (e.Button != MouseButtons.Left)
 				return;
 
-			if (this.Cursor == Cursors.SizeWE)
+			if (Cursor == Cursors.SizeWE)
 			{
 				_resizeColumn = -1;
 				foreach (var column in GetColumnIndexes())
@@ -170,12 +169,12 @@ namespace CellReport.Presenters.WinForms
 					var right = left + Presenter.GetColumnWidth(column);
 
 					if ((e.X <= right + 3) && (e.X >= right - 3) &&
-						((left < right) || CellReport.Core.MarkerResolver.Resolve(Presenter.Manager.GetColumnMarker(column))))
+						((left < right) || MarkerResolver.Resolve(Presenter.Manager.GetColumnMarker(column))))
 						_resizeColumn = column;
 				}
 				if (_resizeColumn >= 0)
 				{
-					this.Capture = true;
+					Capture = true;
 					Presenter.State = PresenterState.ColumnResize;
 				}
 			}
@@ -194,10 +193,10 @@ namespace CellReport.Presenters.WinForms
 				if (_startSelectionColumn >= 0)
 				{
 					Presenter.BeginUpdate();
-					Presenter.StartSelection = new Core.CellLocation() { Row = 0, Column = _startSelectionColumn };
-					Presenter.EndSelection = new Core.CellLocation() { Row = Presenter.Manager.RowsCount - 1, Column = _startSelectionColumn };
+					Presenter.StartSelection = new CellLocation() { Row = 0, Column = _startSelectionColumn };
+					Presenter.EndSelection = new CellLocation() { Row = Presenter.Manager.RowsCount - 1, Column = _startSelectionColumn };
 					Presenter.EndUpdate();
-					this.Capture = true;
+					Capture = true;
 				}
 			}
 		}
@@ -210,7 +209,7 @@ namespace CellReport.Presenters.WinForms
 				Presenter.State = PresenterState.Normal;
 			}
 			_startSelectionColumn = -1;
-			this.Capture = false;
+			Capture = false;
 		}
 	}
 }
