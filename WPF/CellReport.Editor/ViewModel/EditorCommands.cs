@@ -483,15 +483,15 @@ namespace CellReport.Editor.ViewModel
 								}
 							}
 
-							if (line.Contains("</Row") && selectStartLine != 0)
-							{
-								selectEndLine = lineNumber + 1;
-								break;
-							}
-
 							if (rowIndex == currentRow && selectStartLine == 0)
 							{
 								selectStartLine = lineNumber + 1;
+							}
+
+							if ((line.Contains("</Row") || line.Contains("<Row") && line.EndsWith("/>")) && selectStartLine != 0)
+							{
+								selectEndLine = lineNumber + 1;
+								break;
 							}
 
 							lineNumber++;
