@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -26,6 +27,22 @@ namespace CellReport.Editor
 			EditorModel.DesignerTab = DesignerTab;
 			EditorModel.ReportContainer = ReportContainer;
 			EditorModel.Editor = Editor;
+
+			FileResolver.OnResolve += fileName =>
+			{
+				if (EditorModel.FileName != null && File.Exists(EditorModel.FileName))
+				{
+					var directory = Path.GetDirectoryName(EditorModel.FileName);
+					if (directory != null)
+					{
+						var path = Path.Combine(directory, fileName);
+						if (File.Exists(path))
+							return File.ReadAllBytes(path);
+					}
+				}
+
+				return null;
+			};
 
 			SchemaErrors.ItemsSource = EditorModel.CodeErrors;
 

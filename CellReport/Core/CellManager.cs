@@ -234,9 +234,12 @@ namespace CellReport.Core
 					var name = uri.Substring(uri.IndexOf("://") + 3);
 					return GetResource(name);
 				}
-				else if (uri.ToUpper().StartsWith("FILE"))
+				if (uri.ToUpper().StartsWith("FILE"))
 				{
 					var path = uri.Substring(uri.IndexOf("://") + 3);
+					var resolved = FileResolver.Resolve(path);
+					if (resolved != null)
+						return resolved;
 					if (System.IO.File.Exists(path))
 						return System.IO.File.ReadAllBytes(path);
 					if (System.IO.File.Exists(System.IO.Path.GetFileName(path)))
