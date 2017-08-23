@@ -268,9 +268,9 @@
 	</xs:complexType>
 
 	<xs:complexType name='BordersType'>
-		<xs:sequence>
-			<xs:element name='Border' type='BorderType' />
-		</xs:sequence>
+		<xs:choice>
+			<xs:element name='Border' type='BorderType' minOccurs="0" maxOccurs="unbounded" />
+		</xs:choice>
 	</xs:complexType>
 
 	<xs:complexType name='BorderType'>
