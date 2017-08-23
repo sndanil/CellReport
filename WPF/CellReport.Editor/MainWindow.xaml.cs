@@ -78,10 +78,10 @@ namespace CellReport.Editor
 
 		private void TabsSwitched(object sender, SelectionChangedEventArgs e)
 		{
-			if (ReferenceEquals(e.AddedItems[0], DesignerTab))
+			if (e.AddedItems.Count > 0 && ReferenceEquals(e.AddedItems[0], DesignerTab))
 				EditorCommands.SwitchEditorToDesignMode();
 
-			if (ReferenceEquals(e.AddedItems[0], CodeTab))
+			if (e.AddedItems.Count > 0 && ReferenceEquals(e.AddedItems[0], CodeTab))
 				EditorCommands.SwitchEditorToCodeMode();
 		}
 
