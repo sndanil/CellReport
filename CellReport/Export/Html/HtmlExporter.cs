@@ -175,7 +175,7 @@ namespace CellReport.Export.Html
 				Action<object> renderAction = (context) =>
 				{
 					var rect = new Rectangle(0, 0, width, height);
-					Renderer.RenderBarCode(context, rect, barCode.LineMask, barCode.GetCode(),
+					Renderer.RenderBarCode(context, rect, barCode,
 						"Black", "Arial", 10f, FontStyle.Regular, barCode.Orientation);
 				};
 				var imgData = Renderer.CreateImage(width, height, renderAction);

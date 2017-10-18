@@ -7,6 +7,9 @@ using System.IO;
 
 using CellReport.Core;
 using CellReport.Core.Contents;
+using ZXing;
+using FontStyle = CellReport.Core.FontStyle;
+using Rectangle = CellReport.Core.Rectangle;
 
 // ReSharper disable CheckNamespace
 namespace CellReport.Presenters.WinForms
@@ -335,6 +338,79 @@ namespace CellReport.Presenters.WinForms
 				renderAction(g);
 				bmp.Save(stream, ImageFormat.Png);
 				return stream.ToArray();
+			}
+		}
+
+		public override void RenderBarCode(object context, Rectangle cellRect, BarCodeContent barcode, string color, string fontFamily, float fontSize, FontStyle fontStyle, Orientation orientation)
+		{
+			if (cellRect.Width < 1 || cellRect.Height < 1)
+				return;
+
+			var writer = new ZXing.BarcodeWriter
+			{
+				Options = new ZXing.Common.EncodingOptions
+				{
+					Width = Convert.ToInt32(cellRect.Width),
+					Height = Convert.ToInt32(cellRect.Height),
+					Margin = 0,
+					PureBarcode = true
+				}
+			};
+			switch (barcode.GetBarCodeType())
+			{
+				case BarCodeType.EAN13:
+					writer.Format = BarcodeFormat.EAN_13;
+					break;
+				case BarCodeType.EAN8:
+					writer.Format = BarcodeFormat.EAN_8;
+					break;
+				case BarCodeType.Code128:
+					writer.Format = BarcodeFormat.CODE_128;
+					break;
+				case BarCodeType.QR:
+					writer.Format = BarcodeFormat.QR_CODE;
+					break;
+				case BarCodeType.PDF417:
+					writer.Format = BarcodeFormat.PDF_417;
+					break;
+				case BarCodeType.UPCA:
+					writer.Format = BarcodeFormat.UPC_A;
+					break;
+				case BarCodeType.UPCE:
+					writer.Format = BarcodeFormat.UPC_E;
+					break;
+				case BarCodeType.Code39:
+					writer.Format = BarcodeFormat.CODE_39;
+					break;
+				case BarCodeType.UCC12:
+					writer.Format = BarcodeFormat.QR_CODE;
+					break;
+				case BarCodeType.Auto:
+					switch (barcode.GetCode().Length)
+					{
+						case 8:
+							writer.Format = BarcodeFormat.EAN_8;
+							break;
+						case 13:
+							writer.Format = BarcodeFormat.EAN_13;
+							break;
+						default:
+							writer.Format = BarcodeFormat.QR_CODE;
+							break;
+					}
+					break;
+			}
+
+			try
+			{
+				var result = writer.Write(barcode.GetCode());
+
+				var g = (Graphics)context;
+				using (var img = new Bitmap(result))
+					g.DrawImage(img, cellRect.ToRectangle());
+			}
+			catch (Exception e)
+			{
 			}
 		}
 	}

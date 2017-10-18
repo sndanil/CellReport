@@ -539,7 +539,7 @@ namespace CellReport.Presenters
 			else if (content is BarCodeContent)
 			{
 				var barCode = (BarCodeContent)content;
-				Renderer.RenderBarCode(context, cellRect, barCode.LineMask, barCode.GetCode(), "Black", "Arial", 10f, FontStyle.Regular, barCode.Orientation);
+				Renderer.RenderBarCode(context, cellRect, barCode, "Black", "Arial", 10f, FontStyle.Regular, barCode.Orientation);
 			}
 			else if (content is ImageContent)
 			{

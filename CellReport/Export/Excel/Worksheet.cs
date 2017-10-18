@@ -247,7 +247,7 @@ namespace CellReport.Export.Excel
 				Action<object> renderAction = (context) =>
 				{
 					var rect = new Rectangle(0, 0, width, height);
-					_exporter.Renderer.RenderBarCode(context, rect, barCode.LineMask, barCode.GetCode(),
+					_exporter.Renderer.RenderBarCode(context, rect, barCode, 
 						"Black", "Arial", 10f, FontStyle.Regular, barCode.Orientation);
 				};
 				var imgData = _exporter.Renderer.CreateImage(width, height, renderAction);

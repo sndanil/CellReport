@@ -57,21 +57,6 @@
           <Code>4606369064163</Code>
         </BarCodeContent>
       </Cell>
-      <Cell Index="6">
-        <TextContent>
-          <Text>UPC-A 026102975282</Text>
-        </TextContent>
-      </Cell>
-      <Cell Index="7" Style="cspd">
-        <BarCodeContent Type="UCC12" Orientation="Horizontal">
-          <Code>026102975282</Code>
-        </BarCodeContent>
-      </Cell>
-      <Cell Index="9" Style="cspd">
-        <BarCodeContent Type="UCC12" Orientation="Vertical">
-          <Code>026102975282</Code>
-        </BarCodeContent>
-      </Cell>
     </Row>
     <Row Height="5" />
     <Row>
@@ -92,35 +77,32 @@
       </Cell>
       <Cell Index="6">
         <TextContent>
-          <Text>UPC-E 02109183</Text>
+          <Text>QR</Text>
         </TextContent>
       </Cell>
       <Cell Index="7" Style="cspd">
-        <BarCodeContent Type="EAN8" Orientation="Horizontal">
-          <Code>02349036</Code>
+        <BarCodeContent Type="QR" Orientation="Horizontal">
+          <Code>http://kayala-soft.ru</Code>
         </BarCodeContent>
       </Cell>
       <Cell Index="9" Style="cspd">
-        <BarCodeContent Type="EAN8" Orientation="Vertical">
-          <Code>02109183</Code>
-        </BarCodeContent>
       </Cell>
     </Row>
     <Row Height="5" />
     <Row>
       <Cell Index="1">
         <TextContent>
-          <Text>UPC-E 03008010</Text>
+          <Text>PDF417 ABCabc123</Text>
         </TextContent>
       </Cell>
       <Cell Index="2" Style="cspd">
-        <BarCodeContent Type="EAN8" Orientation="Horizontal">
-          <Code>03008010</Code>
+        <BarCodeContent Type="PDF417" Orientation="Horizontal">
+          <Code>ABCabc123</Code>
         </BarCodeContent>
       </Cell>
       <Cell Index="4" Style="cspd">
-        <BarCodeContent Type="EAN8" Orientation="Vertical">
-          <Code>03008010</Code>
+        <BarCodeContent Type="PDF417" Orientation="Vertical">
+          <Code>ABCabc123</Code>
         </BarCodeContent>
       </Cell>
       <Cell Index="6">
