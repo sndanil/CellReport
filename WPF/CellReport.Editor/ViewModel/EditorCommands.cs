@@ -1,10 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Linq;
 using CellReport.Core;
+using CellReport.Core.Contents;
+using CellReport.Editor.Import;
 using CellReport.Presenters.Wpf;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
+using Border = CellReport.Core.Border;
+using HorizontalAlignment = CellReport.Core.Contents.HorizontalAlignment;
+using VerticalAlignment = CellReport.Core.Contents.VerticalAlignment;
 
 namespace CellReport.Editor.ViewModel
 {
@@ -51,7 +60,7 @@ namespace CellReport.Editor.ViewModel
 					{
 						var dialog = new Microsoft.Win32.OpenFileDialog
 						{
-							Filter = "CellReport templates (*.tcr)|*.tcr|CellReport templates package (*.tcrp)|*.tcrp|All files (*.*)|*.*",
+							Filter = "CellReport шаблон (*.tcr)|*.tcr|CellReport шаблон упакованный (*.tcrp)|*.tcrp|Все файлы (*.*)|*.*",
 							FilterIndex = 2
 						};
 						var result = dialog.ShowDialog();
@@ -69,6 +78,41 @@ namespace CellReport.Editor.ViewModel
 
 					command = new DelegateCommand(Action);
 					Commands.Add("open", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand Import
+		{
+			get
+			{
+				DelegateCommand command = null;
+				if (!Commands.TryGetValue("import", out command))
+				{
+					void Action()
+					{
+						var dialog = new Microsoft.Win32.OpenFileDialog
+						{
+							Filter = "Excel (*.xlsx)|*.xlsx",
+						};
+						var result = dialog.ShowDialog();
+						if (result == true)
+						{
+							EditorModel.DesignerTab.IsSelected = true;
+
+							CellManager manager = ExcelImporter.Import(dialog.FileName);
+							if (manager != null)
+							{
+								EditorModel.FileName = dialog.FileName;
+								ApplyReport(manager);
+							}
+						}
+					}
+
+					command = new DelegateCommand(Action);
+					Commands.Add("import", command);
 				}
 
 				return command;
@@ -132,7 +176,7 @@ namespace CellReport.Editor.ViewModel
 			{
 				var dialog = new Microsoft.Win32.SaveFileDialog
 				{
-					Filter = "CellReport templates (*.tcr)|*.tcr|CellReport templates package (*.tcrp)|*.tcrp|All files (*.*)|*.*",
+					Filter = "CellReport шаблон (*.tcr)|*.tcr|CellReport шаблон упакованный (*.tcrp)|*.tcrp|Все файлы (*.*)|*.*",
 					FilterIndex = 2
 				};
 				if (!emptyName)
@@ -463,47 +507,50 @@ namespace CellReport.Editor.ViewModel
 					{
 						EditorModel.CodeTab.IsSelected = true;
 						SwitchEditorToCodeMode();
-						var lineNumber = 0;
-						var currentRow = EditorModel.Presenter.CurrentCell.Row;
-						var rowIndex = -1;
-						var textLines = EditorModel.Editor.Text.Split('\n');
-						var selectStartLine = 0;
-						var selectEndLine = 0;
-						foreach (var textLine in textLines)
-						{
-							var line = textLine.Replace("\r", "");
-							if (line.Contains("<Row") && rowIndex != currentRow && selectStartLine == 0)
+						Task.Delay(500).ContinueWith(_ =>
 							{
-								rowIndex++;
-
-								var rowElement = XElement.Parse(line.EndsWith("/>") ? line : line + "</Row>");
-								if (rowElement.Attribute("Index") != null)
+								var lineNumber = 0;
+								var currentRow = EditorModel.Presenter.CurrentCell.Row;
+								var rowIndex = -1;
+								var textLines = EditorModel.Editor.Text.Split('\n');
+								var selectStartLine = 0;
+								var selectEndLine = 0;
+								foreach (var textLine in textLines)
 								{
-									rowIndex = Convert.ToInt32(rowElement.Attribute("Index").Value);
+									var line = textLine.Replace("\r", "");
+									if (line.Contains("<Row") && rowIndex != currentRow && selectStartLine == 0)
+									{
+										rowIndex++;
+
+										var rowElement = XElement.Parse(line.EndsWith("/>") ? line : line + "</Row>");
+										if (rowElement.Attribute("Index") != null)
+										{
+											rowIndex = Convert.ToInt32(rowElement.Attribute("Index").Value);
+										}
+									}
+
+									if (rowIndex == currentRow && selectStartLine == 0)
+									{
+										selectStartLine = lineNumber + 1;
+									}
+
+									if ((line.Contains("</Row") || line.Contains("<Row") && line.EndsWith("/>")) && selectStartLine != 0)
+									{
+										selectEndLine = lineNumber + 1;
+										break;
+									}
+
+									lineNumber++;
 								}
-							}
 
-							if (rowIndex == currentRow && selectStartLine == 0)
-							{
-								selectStartLine = lineNumber + 1;
-							}
+								var startLine = EditorModel.Editor.Document.GetLineByNumber(selectStartLine);
+								var endLine = EditorModel.Editor.Document.GetLineByNumber(selectEndLine);
+								EditorModel.Editor.Select(startLine.Offset, endLine.Offset + endLine.Length - startLine.Offset);
 
-							if ((line.Contains("</Row") || line.Contains("<Row") && line.EndsWith("/>")) && selectStartLine != 0)
-							{
-								selectEndLine = lineNumber + 1;
-								break;
-							}
-
-							lineNumber++;
-						}
-
-						var startLine = EditorModel.Editor.Document.GetLineByNumber(selectStartLine);
-						var endLine = EditorModel.Editor.Document.GetLineByNumber(selectEndLine);
-						EditorModel.Editor.Select(startLine.Offset, endLine.Offset + endLine.Length - startLine.Offset);
-
-						double vertOffset = (EditorModel.Editor.TextArea.TextView.DefaultLineHeight) * (selectStartLine - 1);
-						EditorModel.Editor.ScrollToVerticalOffset(vertOffset);
-						EditorModel.Editor.TextArea.Focus();
+								double vertOffset = (EditorModel.Editor.TextArea.TextView.DefaultLineHeight) * (selectStartLine - 1);
+								EditorModel.Editor.ScrollToVerticalOffset(vertOffset);
+								EditorModel.Editor.TextArea.Focus();
+							}, TaskScheduler.FromCurrentSynchronizationContext());
 					}
 
 					command = new DelegateCommand(Action, () => IsDefaultEnabled() && EditorModel.IsDesignMode);

@@ -39,6 +39,9 @@
     <Reference Include="ControlzEx, Version=2.2.0.4, Culture=neutral, PublicKeyToken=f08b075e934b7045, processorArchitecture=MSIL">
       <HintPath>..\..\packages\ControlzEx.2.2.0.4\lib\net45\ControlzEx.dll</HintPath>
     </Reference>
+    <Reference Include="EPPlus, Version=4.1.1.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPPlus.4.1.1\lib\net40\EPPlus.dll</HintPath>
+    </Reference>
     <Reference Include="Fluent, Version=5.0.2.46, Culture=neutral, PublicKeyToken=3e436e32a8c5546f, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Fluent.Ribbon.5.0.2.46\lib\net45\Fluent.dll</HintPath>
     </Reference>
@@ -83,6 +86,7 @@
     <Compile Include="FindAndReplaceDialog.xaml.cs">
       <DependentUpon>FindAndReplaceDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Import\ExcelImporter.cs" />
     <Compile Include="ViewModel\DelegateCommand.cs" />
     <Compile Include="ViewModel\EditorCommands.cs" />
     <Compile Include="ViewModel\EditorModel.cs" />

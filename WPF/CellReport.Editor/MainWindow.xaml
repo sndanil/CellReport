@@ -29,6 +29,7 @@
 					<fluent:BackstageTabControl>
 						<fluent:Button Header="Создать" Command="local:EditorCommands.Create" KeyTip="N" />
 						<fluent:Button Header="Открыть" Command="local:EditorCommands.Open" KeyTip="O" />
+						<fluent:Button Header="Импорт" Command="local:EditorCommands.Import" KeyTip="I" />
 						<fluent:Button Header="Сохранить" x:Name="SaveButton" Command="local:EditorCommands.Save" KeyTip="S" />
 						<fluent:Button Header="Сохранить как" Command="local:EditorCommands.SaveAs" KeyTip="A" />
 						<fluent:SeparatorTabItem Header="" />
