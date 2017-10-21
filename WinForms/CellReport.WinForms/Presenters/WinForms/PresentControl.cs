@@ -20,6 +20,7 @@ namespace CellReport.Presenters.WinForms
 		private CellManager Manager => _presenter.Manager;
 
 		private readonly Timer _moveTimer = new Timer();
+		private DateTime _lastMouseDown = DateTime.Now;
 
 		public PresentControl()
 		{
@@ -62,7 +63,7 @@ namespace CellReport.Presenters.WinForms
 
 		void PaintPanelMouseMove(object sender, MouseEventArgs e)
 		{
-			if (Presenter == null || !Presenter.IsSelectionMode)
+			if (Presenter == null || !Presenter.IsSelectionMode || (DateTime.Now - _lastMouseDown).TotalSeconds < 0.5)
 				return;
 
 			Presenter.EndSelection = Presenter.GetCellByDevicePoint(Convert.ToSingle(e.X), Convert.ToSingle(e.Y), false);
@@ -97,6 +98,7 @@ namespace CellReport.Presenters.WinForms
 			Presenter.StartSelection = Presenter.GetCellByDevicePoint(Convert.ToSingle(e.X), Convert.ToSingle(e.Y), false);
 			Presenter.IsSelectionMode = true;
 			_moveTimer.Start();
+			_lastMouseDown = DateTime.Now;
 		}
 
 		private void PaintPanelDoubleClick(object sender, EventArgs e)

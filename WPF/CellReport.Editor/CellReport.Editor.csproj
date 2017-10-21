@@ -86,10 +86,12 @@
     <Compile Include="FindAndReplaceDialog.xaml.cs">
       <DependentUpon>FindAndReplaceDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\ObservableObject.cs" />
     <Compile Include="Import\ExcelImporter.cs" />
     <Compile Include="ViewModel\DelegateCommand.cs" />
     <Compile Include="ViewModel\EditorCommands.cs" />
     <Compile Include="ViewModel\EditorModel.cs" />
+    <Compile Include="ViewModel\EditorState.cs" />
     <Compile Include="ViewModel\SchemaError.cs" />
     <Page Include="FindAndReplaceDialog.xaml">
       <SubType>Designer</SubType>

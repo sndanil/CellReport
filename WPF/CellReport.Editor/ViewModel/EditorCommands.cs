@@ -1,19 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Xml.Linq;
 using CellReport.Core;
-using CellReport.Core.Contents;
 using CellReport.Editor.Import;
 using CellReport.Presenters.Wpf;
-using OfficeOpenXml;
-using OfficeOpenXml.Style;
-using Border = CellReport.Core.Border;
-using HorizontalAlignment = CellReport.Core.Contents.HorizontalAlignment;
-using VerticalAlignment = CellReport.Core.Contents.VerticalAlignment;
 
 namespace CellReport.Editor.ViewModel
 {
@@ -122,11 +114,11 @@ namespace CellReport.Editor.ViewModel
 		public static void ApplyReport(CellManager manager)
 		{
 			EditorModel.ReportManager = null;
-			EditorModel.Presenter = null;
 			EditorModel.ReportContainer.Focus();
 
 			EditorModel.ReportManager = manager;
-			EditorModel.Presenter = new DisplayPresenter(manager, EditorModel.ReportContainer);
+			EditorModel.State.Manager = manager;
+			EditorModel.State.Presenter = new DisplayPresenter(manager, EditorModel.ReportContainer);
 		}
 
 		public static DelegateCommand Save
@@ -261,19 +253,19 @@ namespace CellReport.Editor.ViewModel
 				{
 					void Action()
 					{
-						EditorModel.Presenter.BeginUpdate();
-						if (EditorModel.Presenter.HaveSelection())
+						EditorModel.State.Presenter.BeginUpdate();
+						if (EditorModel.State.Presenter.HaveSelection())
 						{
-							var start = EditorModel.Presenter.GetStartSelection();
-							var end = EditorModel.Presenter.GetEndSelection();
-							EditorModel.Presenter.ClearSelection();
-							EditorModel.Presenter.Manager.DeleteRows(start.Row, end.Row - start.Row + 1);
+							var start = EditorModel.State.Presenter.GetStartSelection();
+							var end = EditorModel.State.Presenter.GetEndSelection();
+							EditorModel.State.Presenter.ClearSelection();
+							EditorModel.State.Presenter.Manager.DeleteRows(start.Row, end.Row - start.Row + 1);
 						}
 						else
-							EditorModel.Presenter.Manager.DeleteRows(EditorModel.Presenter.CurrentCell.Row, 1);
-						if (EditorModel.Presenter.CurrentCell.Row >= EditorModel.Presenter.Manager.RowsCount)
-							EditorModel.Presenter.CurrentCell = new CellLocation() {Row = EditorModel.Presenter.CurrentCell.Row - 1, Column = EditorModel.Presenter.CurrentCell.Column};
-						EditorModel.Presenter.EndUpdate();
+							EditorModel.State.Presenter.Manager.DeleteRows(EditorModel.State.Presenter.CurrentCell.Row, 1);
+						if (EditorModel.State.Presenter.CurrentCell.Row >= EditorModel.State.Presenter.Manager.RowsCount)
+							EditorModel.State.Presenter.CurrentCell = new CellLocation() {Row = EditorModel.State.Presenter.CurrentCell.Row - 1, Column = EditorModel.State.Presenter.CurrentCell.Column};
+						EditorModel.State.Presenter.EndUpdate();
 					}
 
 					command = new DelegateCommand(Action, IsDefaultEnabled);
@@ -293,19 +285,19 @@ namespace CellReport.Editor.ViewModel
 				{
 					void Action()
 					{
-						EditorModel.Presenter.BeginUpdate();
-						if (EditorModel.Presenter.HaveSelection())
+						EditorModel.State.Presenter.BeginUpdate();
+						if (EditorModel.State.Presenter.HaveSelection())
 						{
-							var start = EditorModel.Presenter.GetStartSelection();
-							var end = EditorModel.Presenter.GetEndSelection();
-							EditorModel.Presenter.ClearSelection();
-							EditorModel.Presenter.Manager.DeleteColumns(start.Column, end.Column - start.Column + 1);
+							var start = EditorModel.State.Presenter.GetStartSelection();
+							var end = EditorModel.State.Presenter.GetEndSelection();
+							EditorModel.State.Presenter.ClearSelection();
+							EditorModel.State.Presenter.Manager.DeleteColumns(start.Column, end.Column - start.Column + 1);
 						}
 						else
-							EditorModel.Presenter.Manager.DeleteColumns(EditorModel.Presenter.CurrentCell.Column, 1);
-						if (EditorModel.Presenter.CurrentCell.Column >= EditorModel.Presenter.Manager.ColumnsCount)
-							EditorModel.Presenter.CurrentCell = new CellLocation() {Row = EditorModel.Presenter.CurrentCell.Row, Column = EditorModel.Presenter.CurrentCell.Column - 1};
-						EditorModel.Presenter.EndUpdate();
+							EditorModel.State.Presenter.Manager.DeleteColumns(EditorModel.State.Presenter.CurrentCell.Column, 1);
+						if (EditorModel.State.Presenter.CurrentCell.Column >= EditorModel.State.Presenter.Manager.ColumnsCount)
+							EditorModel.State.Presenter.CurrentCell = new CellLocation() {Row = EditorModel.State.Presenter.CurrentCell.Row, Column = EditorModel.State.Presenter.CurrentCell.Column - 1};
+						EditorModel.State.Presenter.EndUpdate();
 					}
 
 					command = new DelegateCommand(Action, IsDefaultEnabled);
@@ -325,9 +317,9 @@ namespace CellReport.Editor.ViewModel
 				{
 					void Action()
 					{
-						EditorModel.Presenter.BeginUpdate();
-						EditorModel.Presenter.Manager.InsertRows(EditorModel.Presenter.CurrentCell.Row, 1);
-						EditorModel.Presenter.EndUpdate();
+						EditorModel.State.Presenter.BeginUpdate();
+						EditorModel.State.Presenter.Manager.InsertRows(EditorModel.State.Presenter.CurrentCell.Row, 1);
+						EditorModel.State.Presenter.EndUpdate();
 					}
 
 					command = new DelegateCommand(Action, IsDefaultEnabled);
@@ -347,9 +339,9 @@ namespace CellReport.Editor.ViewModel
 				{
 					void Action()
 					{
-						EditorModel.Presenter.BeginUpdate();
-						EditorModel.Presenter.Manager.InsertRows(EditorModel.Presenter.CurrentCell.Row + 1, 1);
-						EditorModel.Presenter.EndUpdate();
+						EditorModel.State.Presenter.BeginUpdate();
+						EditorModel.State.Presenter.Manager.InsertRows(EditorModel.State.Presenter.CurrentCell.Row + 1, 1);
+						EditorModel.State.Presenter.EndUpdate();
 					}
 
 					command = new DelegateCommand(Action, IsDefaultEnabled);
@@ -369,9 +361,9 @@ namespace CellReport.Editor.ViewModel
 				{
 					void Action()
 					{
-						EditorModel.Presenter.BeginUpdate();
-						EditorModel.Presenter.Manager.InsertColumns(EditorModel.Presenter.CurrentCell.Column, 1);
-						EditorModel.Presenter.EndUpdate();
+						EditorModel.State.Presenter.BeginUpdate();
+						EditorModel.State.Presenter.Manager.InsertColumns(EditorModel.State.Presenter.CurrentCell.Column, 1);
+						EditorModel.State.Presenter.EndUpdate();
 					}
 
 					command = new DelegateCommand(Action, IsDefaultEnabled);
@@ -391,9 +383,9 @@ namespace CellReport.Editor.ViewModel
 				{
 					void Action()
 					{
-						EditorModel.Presenter.BeginUpdate();
-						EditorModel.Presenter.Manager.InsertColumns(EditorModel.Presenter.CurrentCell.Column + 1, 1);
-						EditorModel.Presenter.EndUpdate();
+						EditorModel.State.Presenter.BeginUpdate();
+						EditorModel.State.Presenter.Manager.InsertColumns(EditorModel.State.Presenter.CurrentCell.Column + 1, 1);
+						EditorModel.State.Presenter.EndUpdate();
 					}
 
 					command = new DelegateCommand(Action, IsDefaultEnabled);
@@ -414,30 +406,28 @@ namespace CellReport.Editor.ViewModel
 					void Action()
 					{
 						//StateManager.BeginUpdate();
-						EditorModel.Presenter.BeginUpdate();
-						if (EditorModel.Presenter.HaveSelection())
+						EditorModel.State.Presenter.BeginUpdate();
+						if (EditorModel.State.Presenter.HaveSelection())
 						{
-							var start = EditorModel.Presenter.GetStartSelection();
-							var end = EditorModel.Presenter.GetEndSelection();
-							var cell = EditorModel.ReportManager.GetCell(EditorModel.Presenter.CurrentCell.Row, EditorModel.Presenter.CurrentCell.Column);
+							var start = EditorModel.State.Presenter.GetStartSelection();
+							var end = EditorModel.State.Presenter.GetEndSelection();
+							var cell = EditorModel.ReportManager.GetCell(EditorModel.State.Presenter.CurrentCell.Row, EditorModel.State.Presenter.CurrentCell.Column);
 							if (cell != null)
-								cell = EditorModel.Presenter.Manager.CreateCell(start.Row, start.Column, cell);
+								cell = EditorModel.State.Presenter.Manager.CreateCell(start.Row, start.Column, cell);
 							else
-								cell = EditorModel.Presenter.Manager.CreateCell(start);
+								cell = EditorModel.State.Presenter.Manager.CreateCell(start);
 							cell.Span = new CellSpan {RowSpan = end.Row - start.Row, ColSpan = end.Column - start.Column};
-							EditorModel.Presenter.ClearSelection();
-							EditorModel.Presenter.CurrentCell = start;
+							EditorModel.State.Presenter.ClearSelection();
+							EditorModel.State.Presenter.CurrentCell = start;
 						}
-						else if (EditorModel.Presenter.Manager.GetCell(EditorModel.Presenter.CurrentCell) != null)
-							EditorModel.Presenter.Manager.GetCell(EditorModel.Presenter.CurrentCell).Span = new CellSpan();
-						EditorModel.Presenter.EndUpdate();
-						//StateManager.EndUpdate();
+						else if (EditorModel.State.Presenter.Manager.GetCell(EditorModel.State.Presenter.CurrentCell) != null)
+							EditorModel.State.Presenter.Manager.GetCell(EditorModel.State.Presenter.CurrentCell).Span = new CellSpan();
+						EditorModel.State.Presenter.EndUpdate();
 					}
 
 					command = new DelegateCommand(Action, () =>
 					{
 						return IsDefaultEnabled();
-						//&& (EditorModel.Presenter?.HaveSelection() == true || EditorModel.Presenter?.HaveSelection() == true)
 					});
 					Commands.Add("MergeCells", command);
 				}
@@ -457,7 +447,7 @@ namespace CellReport.Editor.ViewModel
 					{
 						if (EditorModel.IsDesignMode)
 						{
-							EditorModel.Presenter.ShowFindDialog();
+							EditorModel.State.Presenter.ShowFindDialog();
 						}
 						if (EditorModel.IsCodeMode)
 						{
@@ -510,7 +500,7 @@ namespace CellReport.Editor.ViewModel
 						Task.Delay(500).ContinueWith(_ =>
 							{
 								var lineNumber = 0;
-								var currentRow = EditorModel.Presenter.CurrentCell.Row;
+								var currentRow = EditorModel.State.Presenter.CurrentCell.Row;
 								var rowIndex = -1;
 								var textLines = EditorModel.Editor.Text.Split('\n');
 								var selectStartLine = 0;
@@ -563,7 +553,7 @@ namespace CellReport.Editor.ViewModel
 
 		public static void SwitchEditorToCodeMode()
 		{
-			if (EditorModel.ReportManager == null || EditorModel.Presenter == null)
+			if (EditorModel.ReportManager == null || EditorModel.State.Presenter == null)
 				return;
 
 			CellTemplate template = new CellTemplate(EditorModel.ReportManager);
@@ -583,19 +573,18 @@ namespace CellReport.Editor.ViewModel
 			{
 				CellTemplate template = new CellTemplate();
 				template.LoadFromXml(EditorModel.Editor.Text);
-				var currentCell = EditorModel.Presenter?.CurrentCell;
-				EditorModel.Presenter = new DisplayPresenter(template.Manager, EditorModel.ReportContainer);
+				var currentCell = EditorModel.State.Presenter?.CurrentCell;
 				foreach (var resourceName in EditorModel.ReportManager.GetResourceNames())
 				{
 					template.Manager.AddResource(resourceName, EditorModel.ReportManager.GetResource(resourceName));
 				}
-				EditorModel.ReportManager = template.Manager;
+				ApplyReport(template.Manager);
 				if (currentCell.HasValue)
-					EditorModel.Presenter.CurrentCell = currentCell.Value;
+					EditorModel.State.Presenter.CurrentCell = currentCell.Value;
 			}
 			catch (Exception e)
 			{
-				EditorModel.Presenter = null;
+				EditorModel.State.Presenter = null;
 			}
 		}
 	}

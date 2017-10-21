@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CellReport.Core;
 using CellReport.Core.Contents;
 using OfficeOpenXml;
@@ -14,7 +12,6 @@ namespace CellReport.Editor.Import
 {
 	public static class ExcelImporter
 	{
-
 		private static Dictionary<int, CellStyle> _cellStyles = new Dictionary<int, CellStyle>();
 		private static Dictionary<int, TextContentStyle> _textStyles = new Dictionary<int, TextContentStyle>();
 		private static Dictionary<int, DecimalContentStyle> _decimalStyles = new Dictionary<int, DecimalContentStyle>();

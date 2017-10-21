@@ -28,7 +28,6 @@ namespace CellReport.Presenters.Wpf
 			DeviceDpiX = Convert.ToSingle(m.M11);
 			DeviceDpiY = Convert.ToSingle(m.M22);
 			CurrentUnit = GraphicsUnit.WpfPoint;
-			//DeviceOffsetX = 1;
 
 			if (control != null)
 				_control.Children.Add(_presentControl);

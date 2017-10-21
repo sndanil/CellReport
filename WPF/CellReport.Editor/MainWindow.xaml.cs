@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using CellReport.Core;
 using CellReport.Editor.CodeEditor;
@@ -18,8 +19,9 @@ namespace CellReport.Editor
 		{
 			InitializeComponent();
 
-			Core.CellManager.IsDesignMode = true;
+			CellManager.IsDesignMode = true;
 			Export.BaseExporter.RendererFactory = new Presenters.WinForms.RendererFactory();
+			EditorModel.State = new EditorState();
 
 			XmlCodeCompleteHelper.ApplyTo(Editor);
 			EditorModel.MainTabControl = MainTab;
@@ -27,6 +29,8 @@ namespace CellReport.Editor
 			EditorModel.DesignerTab = DesignerTab;
 			EditorModel.ReportContainer = ReportContainer;
 			EditorModel.Editor = Editor;
+
+			this.DataContext = EditorModel.State;
 
 			FileResolver.OnResolve += fileName =>
 			{
