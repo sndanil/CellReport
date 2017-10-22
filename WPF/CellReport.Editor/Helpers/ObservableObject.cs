@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace CellReport.Editor.Helpers
@@ -46,6 +47,18 @@ namespace CellReport.Editor.Helpers
 				return;
 
 			changed.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		protected void ResetAllProperties()
+		{
+			var changed = PropertyChanged;
+			if (changed == null)
+				return;
+
+			foreach (var propertyInfo in GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
+			{
+				changed.Invoke(this, new PropertyChangedEventArgs(propertyInfo.Name));
+			}
 		}
 	}
 }

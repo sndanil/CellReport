@@ -24,8 +24,7 @@ namespace CellReport.Editor.ViewModel
 			set
 			{
 				SetProperty(ref _manager, value);
-				OnPropertyChanged(nameof(CurrentCell));
-				OnPropertyChanged(nameof(CellStyles));
+				ResetAllProperties();
 			}
 		}
 
@@ -39,6 +38,7 @@ namespace CellReport.Editor.ViewModel
 					_presenter.PropertyChanged -= PresenterOnPropertyChanged;
 
 				SetProperty(ref _presenter, value);
+				ResetAllProperties();
 				_presenter.PropertyChanged += PresenterOnPropertyChanged;
 			}
 		}
@@ -50,6 +50,33 @@ namespace CellReport.Editor.ViewModel
 				case "CurrentCell":
 					CurrentCell = CurrentCell;
 					break;
+			}
+		}
+
+		private string _fileName;
+		public string FileName
+		{
+			get => _fileName;
+			set => SetProperty(ref _fileName, value);
+		}
+
+		public int Scale
+		{
+			get
+			{
+				if (_presenter == null)
+					return 100;
+
+				return Convert.ToInt32(Presenter.Scale * 100);
+			}
+			set
+			{
+				if (_presenter == null)
+					return;
+
+				Presenter.Scale = value / 100f;
+				OnPropertyChanged();
+				Presenter.Update();
 			}
 		}
 
@@ -70,11 +97,32 @@ namespace CellReport.Editor.ViewModel
 				Presenter.CurrentCell = value;
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(CurrentCellStyle));
+				OnPropertyChanged(nameof(CurrentTextStyle));
 				OnPropertyChanged(nameof(CurrentText));
 				OnPropertyChanged(nameof(CurrentTemplate));
 				OnPropertyChanged(nameof(IsTextContent));
 				Presenter.Update();
 			}
+		}
+
+		private T GetContent<T>() where T : BaseContent
+		{
+			if (CurrentCell.Equals(CellLocation.None))
+				return null;
+
+			return GetContent<T>(_manager?.GetCell(CurrentCell));
+		}
+
+		private T GetContent<T>(Cell cell) where T : BaseContent
+		{
+			if (cell == null)
+				return null;
+
+			var content = cell.Content;
+			if (content is CollectionContent)
+				content = ((CollectionContent)content).GetContents().FirstOrDefault(c => c.GetType() == typeof(T));
+
+			return content as T;
 		}
 
 		public string CurrentText
@@ -84,24 +132,17 @@ namespace CellReport.Editor.ViewModel
 				if (_manager == null || _presenter == null)
 					return null;
 
-				var content = _manager.GetCell(CurrentCell)?.Content;
-				if (content is CollectionContent)
-					content = ((CollectionContent) content).GetContents().FirstOrDefault(c => c is TextContent);
-
-				return (content as TextContent)?.Text;
+				return GetContent<TextContent>()?.Text;
 			}
 			set
 			{
 				if (_manager == null || _presenter == null)
 					return;
 
-				var content = _manager.GetCell(CurrentCell)?.Content;
-				if (content is CollectionContent)
-					content = ((CollectionContent)content).GetContents().FirstOrDefault(c => c is TextContent);
-
-				if (content is TextContent)
+				var content = GetContent<TextContent>();
+				if (content != null)
 				{
-					((TextContent) content).Text = value;
+					content.Text = value;
 					OnPropertyChanged();
 					Presenter.Update();
 				}
@@ -115,24 +156,17 @@ namespace CellReport.Editor.ViewModel
 				if (_manager == null || _presenter == null)
 					return null;
 
-				var content = _manager.GetCell(CurrentCell)?.Content;
-				if (content is CollectionContent)
-					content = ((CollectionContent)content).GetContents().FirstOrDefault(c => c is TextContent);
-
-				return (content as TextContent)?.Template;
+				return GetContent<TextContent>()?.Template;
 			}
 			set
 			{
 				if (_manager == null || _presenter == null)
 					return;
 
-				var content = _manager.GetCell(CurrentCell)?.Content;
-				if (content is CollectionContent)
-					content = ((CollectionContent)content).GetContents().FirstOrDefault(c => c is TextContent);
-
-				if (content is TextContent)
+				var content = GetContent<TextContent>();
+				if (content != null)
 				{
-					((TextContent)content).Template = value;
+					content.Template = value;
 					OnPropertyChanged();
 					Presenter.Update();
 				}
@@ -146,25 +180,15 @@ namespace CellReport.Editor.ViewModel
 				if (_manager == null || _presenter == null)
 					return false;
 
-				var content = _manager.GetCell(CurrentCell)?.Content;
-				if (content is CollectionContent)
-					content = ((CollectionContent)content).GetContents().FirstOrDefault(c => c is TextContent);
-
-				return content is TextContent;
+				return GetContent<TextContent>() != null;
 			}
 			set
 			{
 				if (_manager == null || _presenter == null)
 					return;
 
-				var content = _manager.GetCell(CurrentCell)?.Content;
-				if (content is CollectionContent)
-					content = ((CollectionContent)content).GetContents().FirstOrDefault(c => c is TextContent);
-
-				if (content is TextContent)
-				{
+				if (GetContent<TextContent>() != null)
 					OnPropertyChanged();
-				}
 			}
 		}
 
@@ -214,5 +238,50 @@ namespace CellReport.Editor.ViewModel
 			}
 		}
 
+		public List<TextContentStyle> TextStyles
+		{
+			get
+			{
+				if (_manager == null)
+					return new List<TextContentStyle>();
+
+				var result = Manager.GetStyles().Where(s => s.GetType() == typeof(TextContentStyle)).Select(s => (TextContentStyle)s).ToList();
+				result.Insert(0, TextBasedContent.DefaultStyle);
+
+				return result;
+			}
+			set => OnPropertyChanged();
+		}
+
+		public TextContentStyle CurrentTextStyle
+		{
+			get => GetContent<TextContent>()?.GetStyle() as TextContentStyle;
+			set
+			{
+				if (value == null || _presenter == null || _manager == null)
+					return;
+
+				if (Presenter.HaveSelection())
+				{
+					var start = Presenter.GetStartSelection();
+					var end = Presenter.GetEndSelection();
+					for (int row = start.Row; row <= end.Row; row++)
+					for (int col = start.Column; col <= end.Column; col++)
+					{
+						var content = GetContent<TextContent>(Presenter.Manager.GetCell(row, col));
+						if (content != null)
+							content.StyleID = value.ID;
+					}
+				}
+				else
+				{
+					var content = GetContent<TextContent>();
+					if (content != null)
+						content.StyleID = value.ID;
+				}
+				Presenter.Update();
+				OnPropertyChanged();
+			}
+		}
 	}
 }

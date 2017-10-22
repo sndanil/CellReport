@@ -13,8 +13,6 @@ namespace CellReport.Editor.ViewModel
 		public static Panel ReportContainer;
 		public static TextEditor Editor;
 		public static Core.CellManager ReportManager;
-		public static Presenters.Wpf.DisplayPresenter Presenter1;
-		public static string FileName;
 
 		public static EditorState State { get; set; }
 		public static ObservableCollection<SchemaError> CodeErrors = new ObservableCollection<SchemaError>();

@@ -10,14 +10,15 @@
         WindowState="Maximized">
   <Window.Resources>
 	<local:EditorModel x:Key="EditorModel"/>
-	<local:WpfUnitsConverter x:Key="wpfUnitsConverter" />
-
+	<local:WpfUnitsConverter x:Key="WpfUnitsConverter" />
+	<local:BoolToVisibilityConverter x:Key="BoolToHiddenConverter" TrueValue="Visible" FalseValue="Hidden" />
+	
 	<Style x:Key="cellLineStyle" TargetType="{x:Type Line}">
 		<Setter Property="SnapsToDevicePixels" Value="True" />
 		<Setter Property="RenderOptions.EdgeMode" Value="Aliased" />
 		<Setter Property="Stroke" Value="{Binding Color}" />
-		<Setter Property="StrokeThickness" Value="{Binding Weight, Converter={StaticResource wpfUnitsConverter}}" />
-		<Setter Property="StrokeDashArray" Value="{Binding Style, Converter={StaticResource wpfUnitsConverter}, ConverterParameter=DashStyle}" />
+		<Setter Property="StrokeThickness" Value="{Binding Weight, Converter={StaticResource WpfUnitsConverter}}" />
+		<Setter Property="StrokeDashArray" Value="{Binding Style, Converter={StaticResource WpfUnitsConverter}, ConverterParameter=DashStyle}" />
 		<Setter Property="StrokeDashCap" Value="Square" />
 	</Style>
 
@@ -31,6 +32,21 @@
 			<Line X1="0" X2="0" Y1="0" Y2="25" Style="{StaticResource cellLineStyle}" DataContext="{Binding Borders.Left}" />
 			<Line X1="150" X2="150" Y1="0" Y2="25" Style="{StaticResource cellLineStyle}" DataContext="{Binding Borders.Right}" />
 		</Canvas>
+	</DataTemplate>
+	<DataTemplate x:Key="textStyleTemplate">
+		<Border BorderBrush="Gray" BorderThickness="1" Padding="2" Margin="2">
+			<TextBlock 
+				Text="{Binding ID}"
+				TextTrimming="CharacterEllipsis" Width="140"
+				Foreground="{Binding Color}" 
+				VerticalAlignment="{Binding Path=VAlignment, Converter={StaticResource WpfUnitsConverter},ConverterParameter=VAlign}"
+				HorizontalAlignment="{Binding Path=HAlignment, Converter={StaticResource WpfUnitsConverter},ConverterParameter=HAlign}"
+				FontStyle="{Binding Path=Font.Style, Converter={StaticResource WpfUnitsConverter},ConverterParameter=FontStyle}"
+				FontFamily="{Binding Path=Font.Family, Converter={StaticResource WpfUnitsConverter},ConverterParameter=FontFamily}" 
+				FontWeight="{Binding Path=Font.Style, Converter={StaticResource WpfUnitsConverter},ConverterParameter=FontWeight}" 
+				FontSize="{Binding Path=Font.Size, Converter={StaticResource WpfUnitsConverter},ConverterParameter=PointToWPF}" 
+			/>
+		</Border>
 	</DataTemplate>
 
   </Window.Resources>
@@ -119,11 +135,20 @@
 	  <fluent:RibbonTabItem Header="Стили">
 		<fluent:RibbonGroupBox Header="Ячейки">
 		  <fluent:InRibbonGallery ItemsSource="{Binding CellStyles}" ItemTemplate="{StaticResource cellStyleTemplate}" SelectedItem="{Binding CurrentCellStyle}"
-				MaxItemsInRow="5"
+				MaxItemsInRow="4"
 				ItemWidth="160" 
 				ItemHeight="35">
 			
 		  </fluent:InRibbonGallery>
+		</fluent:RibbonGroupBox>
+		<fluent:RibbonGroupBox Header="Содержимое">
+		  <fluent:InRibbonGallery Visibility="{Binding IsTextContent, Converter={StaticResource BoolToHiddenConverter}}" 
+									ItemsSource="{Binding TextStyles}" ItemTemplate="{StaticResource textStyleTemplate}" SelectedItem="{Binding CurrentTextStyle}"
+									MaxItemsInRow="4"
+									ItemWidth="160" 
+									ItemHeight="35">
+
+			</fluent:InRibbonGallery>
 		</fluent:RibbonGroupBox>
 	  </fluent:RibbonTabItem>
 	</fluent:Ribbon>
@@ -176,21 +201,20 @@
 		</Grid>
 	  </TabItem>
 	</TabControl>
-	<!--<fluent:StatusBar Grid.Row="2">
-			<fluent:StatusBarItem Title="Zoom Slider"
-			                      HorizontalAlignment="Right">
-				<Slider x:Name="zoomSlider"
-				        Minimum="0"
-				        Maximum="100"
+	<fluent:StatusBar Grid.Row="2">
+			<fluent:StatusBarItem Title="Масштаб" HorizontalAlignment="Right">
+                <Slider Minimum="0"
+				        Maximum="200"
 				        IsDirectionReversed="False"
 				        Style="{DynamicResource ZoomSliderStyle}"
-				        Value="{Binding Zoom}"
+				        Value="{Binding Scale}"
 				        IsSnapToTickEnabled="True"
 				        TickFrequency="0.1"
 				        SmallChange="25"
-				        LargeChange="25"
+				        LargeChange="25"								
 				        />
-			</fluent:StatusBarItem>
-		</fluent:StatusBar>-->
+            </fluent:StatusBarItem>
+            <fluent:StatusBarItem HorizontalAlignment="Right" Value="{Binding Scale, StringFormat={}{0} %}" />
+		</fluent:StatusBar>
   </Grid>
 </fluent:RibbonWindow>

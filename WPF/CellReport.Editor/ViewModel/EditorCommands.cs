@@ -62,7 +62,7 @@ namespace CellReport.Editor.ViewModel
 
 							CellTemplate template = new CellTemplate();
 							template.Load(dialog.FileName);
-							EditorModel.FileName = dialog.FileName;
+							EditorModel.State.FileName = dialog.FileName;
 
 							ApplyReport(template.Manager);
 						}
@@ -97,7 +97,7 @@ namespace CellReport.Editor.ViewModel
 							CellManager manager = ExcelImporter.Import(dialog.FileName);
 							if (manager != null)
 							{
-								EditorModel.FileName = dialog.FileName;
+								EditorModel.State.FileName = dialog.FileName;
 								ApplyReport(manager);
 							}
 						}
@@ -163,7 +163,7 @@ namespace CellReport.Editor.ViewModel
 
 		private static void SaveReport(bool saveAs)
 		{
-			var emptyName = string.IsNullOrEmpty(EditorModel.FileName);
+			var emptyName = string.IsNullOrEmpty(EditorModel.State.FileName);
 			if (emptyName || saveAs)
 			{
 				var dialog = new Microsoft.Win32.SaveFileDialog
@@ -172,14 +172,14 @@ namespace CellReport.Editor.ViewModel
 					FilterIndex = 2
 				};
 				if (!emptyName)
-					dialog.FileName = Path.GetFileName(EditorModel.FileName);
+					dialog.FileName = Path.GetFileName(EditorModel.State.FileName);
 				if (dialog.ShowDialog() == true)
-					EditorModel.FileName = dialog.FileName;
+					EditorModel.State.FileName = dialog.FileName;
 				else
 					return;
 			}
 			CellTemplate template = new CellTemplate(EditorModel.ReportManager);
-			template.Save(EditorModel.FileName, Path.GetExtension(EditorModel.FileName)?.ToUpper() == ".TCRP" ? TemplateType.Package : TemplateType.Xml);
+			template.Save(EditorModel.State.FileName, Path.GetExtension(EditorModel.State.FileName)?.ToUpper() == ".TCRP" ? TemplateType.Package : TemplateType.Xml);
 		}
 
 		public static DelegateCommand Print

@@ -30,13 +30,18 @@ namespace CellReport.Editor
 			EditorModel.ReportContainer = ReportContainer;
 			EditorModel.Editor = Editor;
 
-			this.DataContext = EditorModel.State;
+			DataContext = EditorModel.State;
+			EditorModel.State.PropertyChanged += (sender, args) =>
+			{
+				if (args.PropertyName == "FileName")
+					Title = $"Редактор отчетов {EditorModel.State.FileName}";
+			};
 
 			FileResolver.OnResolve += fileName =>
 			{
-				if (EditorModel.FileName != null && File.Exists(EditorModel.FileName))
+				if (EditorModel.State.FileName != null && File.Exists(EditorModel.State.FileName))
 				{
-					var directory = Path.GetDirectoryName(EditorModel.FileName);
+					var directory = Path.GetDirectoryName(EditorModel.State.FileName);
 					if (directory != null)
 					{
 						var path = Path.Combine(directory, fileName);
@@ -60,7 +65,7 @@ namespace CellReport.Editor
 
 			Loaded += (sender, args) =>
 			{
-				System.Windows.Forms.Application.EnableVisualStyles();
+				Application.EnableVisualStyles();
 
 				if (Environment.GetCommandLineArgs().Length > 0)
 				{
@@ -69,7 +74,7 @@ namespace CellReport.Editor
 						var fileName = Environment.GetCommandLineArgs()[1];
 						CellTemplate template = new CellTemplate();
 						template.Load(fileName);
-						EditorModel.FileName = fileName;
+						EditorModel.State.FileName = fileName;
 
 						EditorCommands.ApplyReport(template.Manager);
 					}
