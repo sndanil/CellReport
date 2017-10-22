@@ -88,6 +88,7 @@
     </Compile>
     <Compile Include="Helpers\ObservableObject.cs" />
     <Compile Include="Import\ExcelImporter.cs" />
+    <Compile Include="ViewModel\Converters.cs" />
     <Compile Include="ViewModel\DelegateCommand.cs" />
     <Compile Include="ViewModel\EditorCommands.cs" />
     <Compile Include="ViewModel\EditorModel.cs" />
