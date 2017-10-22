@@ -206,6 +206,7 @@
             <fluent:StatusBarItem HorizontalAlignment="Left" Value="{Binding CurrentCellWidth, StringFormat={}{0}}" />
             <fluent:StatusBarItem HorizontalAlignment="Left" Value=" х " />
             <fluent:StatusBarItem HorizontalAlignment="Left" Value="{Binding CurrentCellHeight, StringFormat={}{0}}" />
+						<fluent:StatusBarItem HorizontalAlignment="Left" Value=" мм " />
             <fluent:StatusBarItem Title="Масштаб" HorizontalAlignment="Right">
                 <Slider Minimum="0"
 				        Maximum="200"

@@ -111,14 +111,13 @@ namespace CellReport.Editor.ViewModel
 			}
 		}
 
-		public static void ApplyReport(CellManager manager)
+		public static void ApplyReport(CellManager manager, CellLocation currentCell = new CellLocation())
 		{
 			EditorModel.ReportManager = null;
 			EditorModel.ReportContainer.Focus();
 
 			EditorModel.ReportManager = manager;
-			EditorModel.State.Manager = manager;
-			EditorModel.State.Presenter = new DisplayPresenter(manager, EditorModel.ReportContainer);
+			EditorModel.State.Presenter = new DisplayPresenter(manager, EditorModel.ReportContainer) { CurrentCell = currentCell };
 		}
 
 		public static DelegateCommand Save
@@ -578,9 +577,10 @@ namespace CellReport.Editor.ViewModel
 				{
 					template.Manager.AddResource(resourceName, EditorModel.ReportManager.GetResource(resourceName));
 				}
-				ApplyReport(template.Manager);
 				if (currentCell.HasValue)
-					EditorModel.State.Presenter.CurrentCell = currentCell.Value;
+					ApplyReport(template.Manager, currentCell.Value);
+				else
+					ApplyReport(template.Manager);
 			}
 			catch (Exception e)
 			{

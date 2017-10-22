@@ -87,6 +87,7 @@
       <DependentUpon>FindAndReplaceDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\ObservableObject.cs" />
+    <Compile Include="Helpers\ObservableRangeCollection.cs" />
     <Compile Include="Import\ExcelImporter.cs" />
     <Compile Include="ViewModel\Converters.cs" />
     <Compile Include="ViewModel\DelegateCommand.cs" />

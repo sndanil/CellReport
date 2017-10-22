@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -17,19 +18,49 @@ namespace CellReport.Editor.ViewModel
 		{
 		}
 
-		private CellManager _manager;
-		public CellManager Manager
+		public CellManager Manager => _presenter?.Manager;
+
+		private void TotalUpdate()
 		{
-			get => _manager;
+			ResetAllProperties();
+
+			Task.Delay(500).ContinueWith(_ =>
+			{
+				var currentCell = CurrentCell;
+				CurrentCell = CellLocation.None;
+				CurrentCell = currentCell;
+			}, TaskScheduler.FromCurrentSynchronizationContext());
+		}
+
+		private DisplayPresenter _presenter;
+		public DisplayPresenter Presenter
+		{
+			get => _presenter;
 			set
 			{
-				if (_manager != null)
-					_manager.PropertyChanged -= ManagerOnPropertyChanged;
+				if (_presenter != null)
+				{
+					_presenter.PropertyChanged -= PresenterOnPropertyChanged;
+					_presenter.Manager.PropertyChanged -= ManagerOnPropertyChanged;
+				}
 
-				SetProperty(ref _manager, value);
+				SetProperty(ref _presenter, value);
+				TotalUpdate();
+				_presenter.PropertyChanged += PresenterOnPropertyChanged;
+				_presenter.Manager.PropertyChanged += ManagerOnPropertyChanged;
+			}
+		}
 
-				_manager.PropertyChanged += ManagerOnPropertyChanged;
-				ResetAllProperties();
+		private void PresenterOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+		{
+			switch (propertyChangedEventArgs.PropertyName)
+			{
+				case "CurrentCell":
+					CurrentCell = CurrentCell;
+					break;
+				//case "State":
+					//TotalUpdate();
+				//	break;
 			}
 		}
 
@@ -43,34 +74,6 @@ namespace CellReport.Editor.ViewModel
 				case "RowHeight":
 					OnPropertyChanged(nameof(CurrentCellHeight));
 					break;
-			}
-		}
-
-		private DisplayPresenter _presenter;
-		public DisplayPresenter Presenter
-		{
-			get => _presenter;
-			set
-			{
-				if (_presenter != null)
-					_presenter.PropertyChanged -= PresenterOnPropertyChanged;
-
-				SetProperty(ref _presenter, value);
-				ResetAllProperties();
-				_presenter.PropertyChanged += PresenterOnPropertyChanged;
-			}
-		}
-
-		private void PresenterOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
-		{
-			switch (propertyChangedEventArgs.PropertyName)
-			{
-				case "CurrentCell":
-					CurrentCell = CurrentCell;
-					break;
-				//case "State":
-				//	ResetAllProperties();
-				//	break;
 			}
 		}
 
@@ -105,24 +108,24 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				if (_manager == null || _presenter == null)
+				if (_presenter == null)
 					return CellLocation.None;
 
 				return Presenter.CurrentCell;
 			}
 			set
 			{
-				if (_manager == null || _presenter == null)
+				if (_presenter == null)
 					return;
 
 				Presenter.CurrentCell = value;
-				ResetAllProperties();
-				//OnPropertyChanged();
-				//OnPropertyChanged(nameof(CurrentCellStyle));
-				//OnPropertyChanged(nameof(CurrentTextStyle));
-				//OnPropertyChanged(nameof(CurrentText));
-				//OnPropertyChanged(nameof(CurrentTemplate));
-				//OnPropertyChanged(nameof(IsTextContent));
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(CurrentCellStyle));
+				OnPropertyChanged(nameof(CurrentTextStyle));
+				OnPropertyChanged(nameof(CurrentTemplate));
+				OnPropertyChanged(nameof(CurrentText));
+				OnPropertyChanged(nameof(IsTextContent));
+				//TotalUpdate();
 				Presenter.Update();
 			}
 		}
@@ -131,14 +134,14 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				if (_manager == null || _presenter == null)
+				if (_presenter == null)
 					return 0;
 
 				return Manager.GetColumnWidth(Presenter.CurrentCell.Column);
 			}
 			set
 			{
-				if (_manager == null || _presenter == null)
+				if (_presenter == null)
 					return;
 
 				Presenter.Update();
@@ -149,14 +152,14 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				if (_manager == null || _presenter == null)
+				if (_presenter == null)
 					return 0;
 
 				return Manager.GetRowHeight(Presenter.CurrentCell.Row);
 			}
 			set
 			{
-				if (_manager == null || _presenter == null)
+				if (_presenter == null)
 					return;
 
 				Presenter.Update();
@@ -168,7 +171,7 @@ namespace CellReport.Editor.ViewModel
 			if (CurrentCell.Equals(CellLocation.None))
 				return null;
 
-			return GetContent<T>(_manager?.GetCell(CurrentCell));
+			return GetContent<T>(Manager?.GetCell(CurrentCell));
 		}
 
 		private T GetContent<T>(Cell cell) where T : BaseContent
@@ -187,14 +190,14 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				if (_manager == null || _presenter == null)
+				if (_presenter == null)
 					return null;
 
 				return GetContent<TextContent>()?.Text;
 			}
 			set
 			{
-				if (_manager == null || _presenter == null)
+				if (_presenter == null)
 					return;
 
 				var content = GetContent<TextContent>();
@@ -211,14 +214,14 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				if (_manager == null || _presenter == null)
+				if (_presenter == null)
 					return null;
 
 				return GetContent<TextContent>()?.Template;
 			}
 			set
 			{
-				if (_manager == null || _presenter == null)
+				if (_presenter == null)
 					return;
 
 				var content = GetContent<TextContent>();
@@ -235,14 +238,14 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				if (_manager == null || _presenter == null)
+				if (_presenter == null)
 					return false;
 
 				return GetContent<TextContent>() != null;
 			}
 			set
 			{
-				if (_manager == null || _presenter == null)
+				if (_presenter == null)
 					return;
 
 				if (GetContent<TextContent>() != null)
@@ -250,17 +253,21 @@ namespace CellReport.Editor.ViewModel
 			}
 		}
 
-		public List<CellStyle> CellStyles
+		private readonly ObservableRangeCollection<CellStyle> _cellStyles = new ObservableRangeCollection<CellStyle>();
+		public ObservableCollection<CellStyle> CellStyles
 		{
 			get
 			{
-				if (_manager == null)
-					return new List<CellStyle>();
+				_cellStyles.Clear();
+				if (Manager != null)
+				{
+					var result = Manager.GetStyles().Where(s => s.GetType() == typeof(CellStyle)).Select(s => (CellStyle)s).ToList();
+					result.Insert(0, Cell.DefaultStyle);
 
-				var result = Manager.GetStyles().Where(s => s.GetType() == typeof(CellStyle)).Select(s => (CellStyle)s).ToList();
-				result.Insert(0, Cell.DefaultStyle);
+					_cellStyles.AddRange(result);
+				}
 
-				return result;
+				return _cellStyles;
 			}
 			set => OnPropertyChanged();
 		}
@@ -270,7 +277,7 @@ namespace CellReport.Editor.ViewModel
 			get => (CurrentCell.Equals(CellLocation.None) || Manager?.GetCell(CurrentCell) == null) ? Cell.DefaultStyle : Manager.GetCell(CurrentCell).Style;
 			set
 			{
-				if (value == null || _presenter == null || _manager == null)
+				if (value == null || _presenter == null || Manager == null)
 					return;
 
 				if (Presenter.HaveSelection())
@@ -291,22 +298,27 @@ namespace CellReport.Editor.ViewModel
 						Manager.CreateCell(CurrentCell);
 					Manager.GetCell(CurrentCell).Style = value;
 				}
+
 				Presenter.Update();
 				OnPropertyChanged();
 			}
 		}
 
-		public List<TextContentStyle> TextStyles
+		private readonly ObservableRangeCollection<TextContentStyle> _textStyles = new ObservableRangeCollection<TextContentStyle>();
+		public ObservableCollection<TextContentStyle> TextStyles
 		{
 			get
 			{
-				if (_manager == null)
-					return new List<TextContentStyle>();
+				_textStyles.Clear();
+				if (Manager != null)
+				{
+					var result = Manager.GetStyles().Where(s => s.GetType() == typeof(TextContentStyle)).Select(s => (TextContentStyle)s).ToList();
+					result.Insert(0, TextBasedContent.DefaultStyle);
 
-				var result = Manager.GetStyles().Where(s => s.GetType() == typeof(TextContentStyle)).Select(s => (TextContentStyle)s).ToList();
-				result.Insert(0, TextBasedContent.DefaultStyle);
+					_textStyles.AddRange(result);
+				}
 
-				return result;
+				return _textStyles;
 			}
 			set => OnPropertyChanged();
 		}
@@ -316,7 +328,7 @@ namespace CellReport.Editor.ViewModel
 			get => GetContent<TextContent>()?.GetStyle() as TextContentStyle;
 			set
 			{
-				if (value == null || _presenter == null || _manager == null)
+				if (value == null || _presenter == null || Manager == null)
 					return;
 
 				if (Presenter.HaveSelection())
