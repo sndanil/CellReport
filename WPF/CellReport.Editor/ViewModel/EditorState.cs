@@ -23,8 +23,26 @@ namespace CellReport.Editor.ViewModel
 			get => _manager;
 			set
 			{
+				if (_manager != null)
+					_manager.PropertyChanged -= ManagerOnPropertyChanged;
+
 				SetProperty(ref _manager, value);
+
+				_manager.PropertyChanged += ManagerOnPropertyChanged;
 				ResetAllProperties();
+			}
+		}
+
+		private void ManagerOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+		{
+			switch (propertyChangedEventArgs.PropertyName)
+			{
+				case "ColumnWidth":
+					OnPropertyChanged(nameof(CurrentCellWidth));
+					break;
+				case "RowHeight":
+					OnPropertyChanged(nameof(CurrentCellHeight));
+					break;
 			}
 		}
 
@@ -50,6 +68,9 @@ namespace CellReport.Editor.ViewModel
 				case "CurrentCell":
 					CurrentCell = CurrentCell;
 					break;
+				//case "State":
+				//	ResetAllProperties();
+				//	break;
 			}
 		}
 
@@ -95,12 +116,49 @@ namespace CellReport.Editor.ViewModel
 					return;
 
 				Presenter.CurrentCell = value;
-				OnPropertyChanged();
-				OnPropertyChanged(nameof(CurrentCellStyle));
-				OnPropertyChanged(nameof(CurrentTextStyle));
-				OnPropertyChanged(nameof(CurrentText));
-				OnPropertyChanged(nameof(CurrentTemplate));
-				OnPropertyChanged(nameof(IsTextContent));
+				ResetAllProperties();
+				//OnPropertyChanged();
+				//OnPropertyChanged(nameof(CurrentCellStyle));
+				//OnPropertyChanged(nameof(CurrentTextStyle));
+				//OnPropertyChanged(nameof(CurrentText));
+				//OnPropertyChanged(nameof(CurrentTemplate));
+				//OnPropertyChanged(nameof(IsTextContent));
+				Presenter.Update();
+			}
+		}
+
+		public float CurrentCellWidth
+		{
+			get
+			{
+				if (_manager == null || _presenter == null)
+					return 0;
+
+				return Manager.GetColumnWidth(Presenter.CurrentCell.Column);
+			}
+			set
+			{
+				if (_manager == null || _presenter == null)
+					return;
+
+				Presenter.Update();
+			}
+		}
+
+		public float CurrentCellHeight
+		{
+			get
+			{
+				if (_manager == null || _presenter == null)
+					return 0;
+
+				return Manager.GetRowHeight(Presenter.CurrentCell.Row);
+			}
+			set
+			{
+				if (_manager == null || _presenter == null)
+					return;
+
 				Presenter.Update();
 			}
 		}
