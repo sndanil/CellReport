@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using CellReport.Core;
 using CellReport.Core.Contents;
@@ -14,9 +14,12 @@ namespace CellReport.Editor.ViewModel
 {
 	public class EditorState: ObservableObject
 	{
-		public EditorState()
-		{
-		}
+		private const int MaxStatesCount = 2000;
+
+		private static readonly List<Stream> States = new List<Stream>();
+		private static int _current = -1;
+		private static bool _updateMode;
+		private static bool _hasChanges;
 
 		public CellManager Manager => _presenter?.Manager;
 
@@ -66,6 +69,11 @@ namespace CellReport.Editor.ViewModel
 
 		private void ManagerOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
 		{
+			if (_updateMode)
+				_hasChanges = true;
+			else
+				AddCurrentState();
+
 			switch (propertyChangedEventArgs.PropertyName)
 			{
 				case "ColumnWidth":
@@ -353,5 +361,88 @@ namespace CellReport.Editor.ViewModel
 				OnPropertyChanged();
 			}
 		}
+
+		#region Undo Redo
+		public void Clear()
+		{
+			foreach (var state in States)
+				state.Dispose();
+			States.Clear();
+			_current = -1;
+		}
+
+		private void RemoveState(int index)
+		{
+			States[index].Dispose();
+			States.RemoveAt(index);
+		}
+
+		public void AddCurrentState()
+		{
+			while (States.Count - 1 > _current)
+				RemoveState(States.Count - 1);
+			while (States.Count >= MaxStatesCount)
+				RemoveState(0);
+
+			var template = new CellTemplate(_presenter.Manager);
+			var ms = new MemoryStream();
+			template.Save(ms, TemplateType.Package);
+			States.Add(ms);
+			_current = States.Count - 1;
+		}
+
+		public bool CanUndo()
+		{
+			return (_current > 0);
+		}
+
+		public void Undo()
+		{
+			if (!CanUndo())
+				return;
+			_current--;
+			LoadCurrentState();
+		}
+
+		public bool CanRedo()
+		{
+			return _current >= 0 && (_current < States.Count - 1);
+		}
+
+		public void Redo()
+		{
+			if (!CanRedo())
+				return;
+			_current++;
+			LoadCurrentState();
+		}
+
+		public void BeginUpdate()
+		{
+			_updateMode = true;
+			_hasChanges = false;
+			_presenter.BeginUpdate();
+		}
+
+		public void EndUpdate()
+		{
+			if (_hasChanges)
+				AddCurrentState();
+			_updateMode = false;
+			_presenter.EndUpdate();
+		}
+
+		private void LoadCurrentState()
+		{
+			var template = new CellTemplate();
+			States[_current].Position = 0;
+			template.Load(States[_current]);
+			_presenter.Manager.PropertyChanged -= ManagerOnPropertyChanged;
+			_presenter.Manager = template.Manager;
+			Presenter = _presenter;
+			_presenter.Update();
+		}
+
+		#endregion
 	}
 }

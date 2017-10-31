@@ -90,6 +90,7 @@
     <Compile Include="Helpers\ObservableRangeCollection.cs" />
     <Compile Include="Import\ExcelImporter.cs" />
     <Compile Include="ViewModel\Converters.cs" />
+    <Compile Include="ViewModel\CopyManager.cs" />
     <Compile Include="ViewModel\DelegateCommand.cs" />
     <Compile Include="ViewModel\EditorCommands.cs" />
     <Compile Include="ViewModel\EditorModel.cs" />
@@ -185,6 +186,19 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\16\replace-find.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\16\undo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\16\redo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\16\clipboard_copy.png" />
+    <Resource Include="Images\16\clipboard_cut.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\16\clipboard_paste.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

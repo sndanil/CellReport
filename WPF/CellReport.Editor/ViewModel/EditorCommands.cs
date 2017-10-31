@@ -22,8 +22,7 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				DelegateCommand command = null;
-				if (!Commands.TryGetValue("create", out command))
+				if (!Commands.TryGetValue("create", out var command))
 				{
 					void Action()
 					{
@@ -45,8 +44,7 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				DelegateCommand command = null;
-				if (!Commands.TryGetValue("open", out command))
+				if (!Commands.TryGetValue("open", out var command))
 				{
 					void Action()
 					{
@@ -80,8 +78,7 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				DelegateCommand command = null;
-				if (!Commands.TryGetValue("import", out command))
+				if (!Commands.TryGetValue("import", out var command))
 				{
 					void Action()
 					{
@@ -118,14 +115,15 @@ namespace CellReport.Editor.ViewModel
 
 			EditorModel.ReportManager = manager;
 			EditorModel.State.Presenter = new DisplayPresenter(manager, EditorModel.ReportContainer) { CurrentCell = currentCell };
+			EditorModel.State.Clear();
+			EditorModel.State.AddCurrentState();
 		}
 
 		public static DelegateCommand Save
 		{
 			get
 			{
-				DelegateCommand command = null;
-				if (!Commands.TryGetValue("save", out command))
+				if (!Commands.TryGetValue("save", out var command))
 				{
 					void Action()
 					{
@@ -144,8 +142,7 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				DelegateCommand command = null;
-				if (!Commands.TryGetValue("SaveAs", out command))
+				if (!Commands.TryGetValue("SaveAs", out var command))
 				{
 					void Action()
 					{
@@ -185,8 +182,7 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				DelegateCommand command = null;
-				if (!Commands.TryGetValue("Print", out command))
+				if (!Commands.TryGetValue("Print", out var command))
 				{
 					void Action()
 					{
@@ -206,8 +202,7 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				DelegateCommand command = null;
-				if (!Commands.TryGetValue("PrintPreview", out command))
+				if (!Commands.TryGetValue("PrintPreview", out var command))
 				{
 					void Action()
 					{
@@ -227,8 +222,7 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				DelegateCommand command = null;
-				if (!Commands.TryGetValue("Exit", out command))
+				if (!Commands.TryGetValue("Exit", out var command))
 				{
 					void Action()
 					{
@@ -243,16 +237,117 @@ namespace CellReport.Editor.ViewModel
 			}
 		}
 
+		public static DelegateCommand Undo
+		{
+			get
+			{
+				if (!Commands.TryGetValue("Undo", out var command))
+				{
+					command = new DelegateCommand(() =>
+					{
+						if (EditorModel.IsDesignMode)
+							EditorModel.State?.Undo();
+						else
+							EditorModel.Editor.Undo();
+					}, () => EditorModel.IsDesignMode ? EditorModel.State?.CanUndo() == true : EditorModel.Editor.CanUndo);
+					Commands.Add("Undo", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand Redo
+		{
+			get
+			{
+				if (!Commands.TryGetValue("Redo", out var command))
+				{
+					command = new DelegateCommand(() =>
+					{
+						if (EditorModel.IsDesignMode)
+							EditorModel.State?.Redo();
+						else
+							EditorModel.Editor.Redo();
+					}, () => EditorModel.IsDesignMode ? EditorModel.State?.CanRedo() == true : EditorModel.Editor.CanRedo);
+					Commands.Add("Redo", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand Copy
+		{
+			get
+			{
+				if (!Commands.TryGetValue("Copy", out var command))
+				{
+					void Action()
+					{
+						CopyManager.Copy();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add("Copy", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand Cut
+		{
+			get
+			{
+				if (!Commands.TryGetValue("Cut", out var command))
+				{
+					void Action()
+					{
+						EditorModel.State.BeginUpdate();
+						CopyManager.Cut();
+						EditorModel.State.EndUpdate();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add("Cut", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand Paste
+		{
+			get
+			{
+				if (!Commands.TryGetValue("Paste", out var command))
+				{
+					void Action()
+					{
+						EditorModel.State.BeginUpdate();
+						CopyManager.Paste();
+						EditorModel.State.EndUpdate();
+					}
+
+					bool Enabled() => IsDefaultEnabled() && CopyManager.HasData;
+					command = new DelegateCommand(Action, Enabled);
+					Commands.Add("Paste", command);
+				}
+
+				return command;
+			}
+		}
+
 		public static DelegateCommand DeleteRows
 		{
 			get
 			{
-				DelegateCommand command = null;
-				if (!Commands.TryGetValue("DeleteRows", out command))
+				if (!Commands.TryGetValue("DeleteRows", out var command))
 				{
 					void Action()
 					{
-						EditorModel.State.Presenter.BeginUpdate();
+						EditorModel.State.BeginUpdate();
 						if (EditorModel.State.Presenter.HaveSelection())
 						{
 							var start = EditorModel.State.Presenter.GetStartSelection();
@@ -264,7 +359,7 @@ namespace CellReport.Editor.ViewModel
 							EditorModel.State.Presenter.Manager.DeleteRows(EditorModel.State.Presenter.CurrentCell.Row, 1);
 						if (EditorModel.State.Presenter.CurrentCell.Row >= EditorModel.State.Presenter.Manager.RowsCount)
 							EditorModel.State.Presenter.CurrentCell = new CellLocation() {Row = EditorModel.State.Presenter.CurrentCell.Row - 1, Column = EditorModel.State.Presenter.CurrentCell.Column};
-						EditorModel.State.Presenter.EndUpdate();
+						EditorModel.State.EndUpdate();
 					}
 
 					command = new DelegateCommand(Action, IsDefaultEnabled);
@@ -279,12 +374,11 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				DelegateCommand command = null;
-				if (!Commands.TryGetValue("DeleteColumns", out command))
+				if (!Commands.TryGetValue("DeleteColumns", out var command))
 				{
 					void Action()
 					{
-						EditorModel.State.Presenter.BeginUpdate();
+						EditorModel.State.BeginUpdate();
 						if (EditorModel.State.Presenter.HaveSelection())
 						{
 							var start = EditorModel.State.Presenter.GetStartSelection();
@@ -296,7 +390,7 @@ namespace CellReport.Editor.ViewModel
 							EditorModel.State.Presenter.Manager.DeleteColumns(EditorModel.State.Presenter.CurrentCell.Column, 1);
 						if (EditorModel.State.Presenter.CurrentCell.Column >= EditorModel.State.Presenter.Manager.ColumnsCount)
 							EditorModel.State.Presenter.CurrentCell = new CellLocation() {Row = EditorModel.State.Presenter.CurrentCell.Row, Column = EditorModel.State.Presenter.CurrentCell.Column - 1};
-						EditorModel.State.Presenter.EndUpdate();
+						EditorModel.State.EndUpdate();
 					}
 
 					command = new DelegateCommand(Action, IsDefaultEnabled);
@@ -311,14 +405,13 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				DelegateCommand command = null;
-				if (!Commands.TryGetValue("addRows", out command))
+				if (!Commands.TryGetValue("addRows", out var command))
 				{
 					void Action()
 					{
-						EditorModel.State.Presenter.BeginUpdate();
+						EditorModel.State.BeginUpdate();
 						EditorModel.State.Presenter.Manager.InsertRows(EditorModel.State.Presenter.CurrentCell.Row, 1);
-						EditorModel.State.Presenter.EndUpdate();
+						EditorModel.State.EndUpdate();
 					}
 
 					command = new DelegateCommand(Action, IsDefaultEnabled);
@@ -333,14 +426,13 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				DelegateCommand command = null;
-				if (!Commands.TryGetValue("addRowsAfter", out command))
+				if (!Commands.TryGetValue("addRowsAfter", out var command))
 				{
 					void Action()
 					{
-						EditorModel.State.Presenter.BeginUpdate();
+						EditorModel.State.BeginUpdate();
 						EditorModel.State.Presenter.Manager.InsertRows(EditorModel.State.Presenter.CurrentCell.Row + 1, 1);
-						EditorModel.State.Presenter.EndUpdate();
+						EditorModel.State.EndUpdate();
 					}
 
 					command = new DelegateCommand(Action, IsDefaultEnabled);
@@ -355,14 +447,13 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				DelegateCommand command = null;
-				if (!Commands.TryGetValue("AddColumns", out command))
+				if (!Commands.TryGetValue("AddColumns", out var command))
 				{
 					void Action()
 					{
-						EditorModel.State.Presenter.BeginUpdate();
+						EditorModel.State.BeginUpdate();
 						EditorModel.State.Presenter.Manager.InsertColumns(EditorModel.State.Presenter.CurrentCell.Column, 1);
-						EditorModel.State.Presenter.EndUpdate();
+						EditorModel.State.EndUpdate();
 					}
 
 					command = new DelegateCommand(Action, IsDefaultEnabled);
@@ -377,14 +468,13 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				DelegateCommand command = null;
-				if (!Commands.TryGetValue("AddColumnsAfter", out command))
+				if (!Commands.TryGetValue("AddColumnsAfter", out var command))
 				{
 					void Action()
 					{
-						EditorModel.State.Presenter.BeginUpdate();
+						EditorModel.State.BeginUpdate();
 						EditorModel.State.Presenter.Manager.InsertColumns(EditorModel.State.Presenter.CurrentCell.Column + 1, 1);
-						EditorModel.State.Presenter.EndUpdate();
+						EditorModel.State.EndUpdate();
 					}
 
 					command = new DelegateCommand(Action, IsDefaultEnabled);
@@ -399,13 +489,12 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				DelegateCommand command = null;
-				if (!Commands.TryGetValue("MergeCells", out command))
+				if (!Commands.TryGetValue("MergeCells", out var command))
 				{
 					void Action()
 					{
 						//StateManager.BeginUpdate();
-						EditorModel.State.Presenter.BeginUpdate();
+						EditorModel.State.BeginUpdate();
 						if (EditorModel.State.Presenter.HaveSelection())
 						{
 							var start = EditorModel.State.Presenter.GetStartSelection();
@@ -421,7 +510,7 @@ namespace CellReport.Editor.ViewModel
 						}
 						else if (EditorModel.State.Presenter.Manager.GetCell(EditorModel.State.Presenter.CurrentCell) != null)
 							EditorModel.State.Presenter.Manager.GetCell(EditorModel.State.Presenter.CurrentCell).Span = new CellSpan();
-						EditorModel.State.Presenter.EndUpdate();
+						EditorModel.State.EndUpdate();
 					}
 
 					command = new DelegateCommand(Action, () =>
@@ -439,8 +528,7 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				DelegateCommand command = null;
-				if (!Commands.TryGetValue("Find", out command))
+				if (!Commands.TryGetValue("Find", out var command))
 				{
 					void Action()
 					{
@@ -466,8 +554,7 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				DelegateCommand command = null;
-				if (!Commands.TryGetValue("FindAndReplace", out command))
+				if (!Commands.TryGetValue("FindAndReplace", out var command))
 				{
 					void Action()
 					{
@@ -489,8 +576,7 @@ namespace CellReport.Editor.ViewModel
 		{
 			get
 			{
-				DelegateCommand command = null;
-				if (!Commands.TryGetValue("FindInCode", out command))
+				if (!Commands.TryGetValue("FindInCode", out var command))
 				{
 					void Action()
 					{
@@ -570,6 +656,8 @@ namespace CellReport.Editor.ViewModel
 
 			try
 			{
+				EditorModel.State.AddCurrentState();
+
 				CellTemplate template = new CellTemplate();
 				template.LoadFromXml(EditorModel.Editor.Text);
 				var currentCell = EditorModel.State.Presenter?.CurrentCell;

@@ -8,6 +8,9 @@ using System.IO;
 using CellReport.Core;
 using CellReport.Core.Contents;
 using ZXing;
+using ZXing.OneD;
+using ZXing.PDF417;
+using ZXing.QrCode;
 using FontStyle = CellReport.Core.FontStyle;
 using Rectangle = CellReport.Core.Rectangle;
 
@@ -346,16 +349,15 @@ namespace CellReport.Presenters.WinForms
 			if (cellRect.Width < 1 || cellRect.Height < 1)
 				return;
 
-			var writer = new ZXing.BarcodeWriter
+			var writer = new ZXing.BarcodeWriter();
+			var options = new ZXing.Common.EncodingOptions
 			{
-				Options = new ZXing.Common.EncodingOptions
-				{
-					Width = Convert.ToInt32(cellRect.Width),
-					Height = Convert.ToInt32(cellRect.Height),
-					Margin = 0,
-					PureBarcode = true
-				}
+				Width = Convert.ToInt32(cellRect.Width),
+				Height = Convert.ToInt32(cellRect.Height),
+				Margin = 0,
+				PureBarcode = true
 			};
+		
 			switch (barcode.GetBarCodeType())
 			{
 				case BarCodeType.EAN13:
@@ -366,12 +368,35 @@ namespace CellReport.Presenters.WinForms
 					break;
 				case BarCodeType.Code128:
 					writer.Format = BarcodeFormat.CODE_128;
+					options = new Code128EncodingOptions
+					{
+						Width = Convert.ToInt32(cellRect.Width),
+						Height = Convert.ToInt32(cellRect.Height),
+						Margin = 0,
+						PureBarcode = true
+					};
 					break;
 				case BarCodeType.QR:
 					writer.Format = BarcodeFormat.QR_CODE;
+					options = new QrCodeEncodingOptions
+					{
+						Width = Convert.ToInt32(cellRect.Width),
+						Height = Convert.ToInt32(cellRect.Height),
+						Margin = 0,
+						PureBarcode = true,
+						CharacterSet = "utf-8"
+					};
 					break;
 				case BarCodeType.PDF417:
 					writer.Format = BarcodeFormat.PDF_417;
+					options = new PDF417EncodingOptions
+					{
+						Width = Convert.ToInt32(cellRect.Width),
+						Height = Convert.ToInt32(cellRect.Height),
+						Margin = 0,
+						PureBarcode = true,
+						CharacterSet = "utf-8"
+					};
 					break;
 				case BarCodeType.UPCA:
 					writer.Format = BarcodeFormat.UPC_A;
@@ -396,10 +421,19 @@ namespace CellReport.Presenters.WinForms
 							break;
 						default:
 							writer.Format = BarcodeFormat.QR_CODE;
+							options = new QrCodeEncodingOptions
+							{
+								Width = Convert.ToInt32(cellRect.Width),
+								Height = Convert.ToInt32(cellRect.Height),
+								Margin = 0,
+								PureBarcode = true,
+								CharacterSet = "utf-8"
+							};
 							break;
 					}
 					break;
 			}
+			writer.Options = options;
 
 			try
 			{

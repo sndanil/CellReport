@@ -159,6 +159,8 @@ namespace CellReport.Core
 		public static Cell Parse(CellManager manager, XElement element)
 		{
 			var cell = new Cell(manager, 0, 0);
+			if (element.Attribute("Style") != null)
+				cell.Style = manager.GetStyleByID<CellStyle>(element.Attribute("Style").Value);
 			cell.SpanInternal = Parse(manager, cell, element);
 			return cell;
 		}
