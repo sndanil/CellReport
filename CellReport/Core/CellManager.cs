@@ -337,7 +337,7 @@ namespace CellReport.Core
 				ColumnsCount = column*2;
 		}
 
-		public void InsertRows(int startIndex, int count)
+		public void InsertRows(int startIndex, int count, bool fitSections = false)
 		{
 			var oldRowsCount = RowsCount;
 			RowsCount += count;
@@ -355,10 +355,29 @@ namespace CellReport.Core
 				SetRowHeight(row + count, GetRowHeight(row));
 				SetRowHeight(row, Properties.DefaultRowHeight);
 			}
+			if (fitSections)
+			{
+				foreach (var section in GetSections())
+				{
+					if (section.Top > startIndex)
+					{
+						var oldTop = section.Top;
+						var oldBottom = section.Bottom;
+						section.Top = oldTop + count;
+						section.Bottom = oldBottom + count;
+					}
+					else if (section.Top < startIndex && section.Bottom >= startIndex)
+					{
+						var oldBottom = section.Bottom;
+						section.Bottom = oldBottom + count;
+					}
+				}
+			}
+
 			OnPropertyChanged("Rows");
 		}
 
-		public void InsertColumns(int startIndex, int count)
+		public void InsertColumns(int startIndex, int count, bool fitSections = false)
 		{
 			var oldColsCount = ColumnsCount;
 			ColumnsCount += count;
@@ -376,10 +395,29 @@ namespace CellReport.Core
 				SetColumnWidth(col + count, GetColumnWidth(col));
 				SetColumnWidth(col, Properties.DefaultColumn.Width);
 			}
+			if (fitSections)
+			{
+				foreach (var section in GetSections())
+				{
+					if (section.Left > startIndex)
+					{
+						var oldLeft = section.Left;
+						var oldRight = section.Right;
+						section.Left = oldLeft + count;
+						section.Right = oldRight + count;
+					}
+					else if (section.Left < startIndex && section.Right >= startIndex)
+					{
+						var oldRight = section.Right;
+						section.Right = oldRight + count;
+					}
+				}
+			}
+
 			OnPropertyChanged("Columns");
 		}
 
-		public void DeleteRows(int startIndex, int count)
+		public void DeleteRows(int startIndex, int count, bool fitSections = false)
 		{
 			for (int row = startIndex; row < startIndex + count; row++)
 			{
@@ -409,11 +447,29 @@ namespace CellReport.Core
 				}
 				SetRowHeight(row - count, GetRowHeight(row));
 			}
+			if (fitSections)
+			{
+				foreach (var section in GetSections())
+				{
+					if (section.Top > startIndex)
+					{
+						var oldTop = section.Top;
+						var oldBottom = section.Bottom;
+						section.Top = oldTop - count;
+						section.Bottom = oldBottom - count;
+					}
+					else if (section.Top < startIndex && section.Bottom >= startIndex)
+					{
+						var oldBottom = section.Bottom;
+						section.Bottom = oldBottom - count;
+					}
+				}
+			}
 			RowsCount -= count;
 			OnPropertyChanged("Rows");
 		}
 
-		public void DeleteColumns(int startIndex, int count)
+		public void DeleteColumns(int startIndex, int count, bool fitSections = false)
 		{
 			for (int col = startIndex; col < startIndex + count; col++)
 			{
@@ -442,6 +498,24 @@ namespace CellReport.Core
 					}
 				}
 				SetColumnWidth(col - count, GetColumnWidth(col));
+			}
+			if (fitSections)
+			{
+				foreach (var section in GetSections())
+				{
+					if (section.Left > startIndex)
+					{
+						var oldLeft = section.Left;
+						var oldRight = section.Right;
+						section.Left = oldLeft - count;
+						section.Right = oldRight - count;
+					}
+					else if (section.Left < startIndex && section.Right >= startIndex)
+					{
+						var oldRight = section.Right;
+						section.Right = oldRight - count;
+					}
+				}
 			}
 			ColumnsCount -= count;
 			OnPropertyChanged("Columns");

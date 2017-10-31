@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Xml.Linq;
 using CellReport.Core;
 using CellReport.Editor.Import;
@@ -353,10 +354,10 @@ namespace CellReport.Editor.ViewModel
 							var start = EditorModel.State.Presenter.GetStartSelection();
 							var end = EditorModel.State.Presenter.GetEndSelection();
 							EditorModel.State.Presenter.ClearSelection();
-							EditorModel.State.Presenter.Manager.DeleteRows(start.Row, end.Row - start.Row + 1);
+							EditorModel.State.Presenter.Manager.DeleteRows(start.Row, end.Row - start.Row + 1, AskAboutSections());
 						}
 						else
-							EditorModel.State.Presenter.Manager.DeleteRows(EditorModel.State.Presenter.CurrentCell.Row, 1);
+							EditorModel.State.Presenter.Manager.DeleteRows(EditorModel.State.Presenter.CurrentCell.Row, 1, AskAboutSections());
 						if (EditorModel.State.Presenter.CurrentCell.Row >= EditorModel.State.Presenter.Manager.RowsCount)
 							EditorModel.State.Presenter.CurrentCell = new CellLocation() {Row = EditorModel.State.Presenter.CurrentCell.Row - 1, Column = EditorModel.State.Presenter.CurrentCell.Column};
 						EditorModel.State.EndUpdate();
@@ -384,10 +385,10 @@ namespace CellReport.Editor.ViewModel
 							var start = EditorModel.State.Presenter.GetStartSelection();
 							var end = EditorModel.State.Presenter.GetEndSelection();
 							EditorModel.State.Presenter.ClearSelection();
-							EditorModel.State.Presenter.Manager.DeleteColumns(start.Column, end.Column - start.Column + 1);
+							EditorModel.State.Presenter.Manager.DeleteColumns(start.Column, end.Column - start.Column + 1, AskAboutSections());
 						}
 						else
-							EditorModel.State.Presenter.Manager.DeleteColumns(EditorModel.State.Presenter.CurrentCell.Column, 1);
+							EditorModel.State.Presenter.Manager.DeleteColumns(EditorModel.State.Presenter.CurrentCell.Column, 1, AskAboutSections());
 						if (EditorModel.State.Presenter.CurrentCell.Column >= EditorModel.State.Presenter.Manager.ColumnsCount)
 							EditorModel.State.Presenter.CurrentCell = new CellLocation() {Row = EditorModel.State.Presenter.CurrentCell.Row, Column = EditorModel.State.Presenter.CurrentCell.Column - 1};
 						EditorModel.State.EndUpdate();
@@ -401,6 +402,11 @@ namespace CellReport.Editor.ViewModel
 			}
 		}
 
+		private static bool AskAboutSections()
+		{
+			return MessageBox.Show("Изменить размеры или положение секции находящиеся в затронутых ячейках?", "Секции", MessageBoxButton.YesNo) == MessageBoxResult.Yes;
+		}
+
 		public static DelegateCommand AddRows
 		{
 			get
@@ -410,7 +416,7 @@ namespace CellReport.Editor.ViewModel
 					void Action()
 					{
 						EditorModel.State.BeginUpdate();
-						EditorModel.State.Presenter.Manager.InsertRows(EditorModel.State.Presenter.CurrentCell.Row, 1);
+						EditorModel.State.Presenter.Manager.InsertRows(EditorModel.State.Presenter.CurrentCell.Row, 1, AskAboutSections());
 						EditorModel.State.EndUpdate();
 					}
 
@@ -431,7 +437,7 @@ namespace CellReport.Editor.ViewModel
 					void Action()
 					{
 						EditorModel.State.BeginUpdate();
-						EditorModel.State.Presenter.Manager.InsertRows(EditorModel.State.Presenter.CurrentCell.Row + 1, 1);
+						EditorModel.State.Presenter.Manager.InsertRows(EditorModel.State.Presenter.CurrentCell.Row + 1, 1, AskAboutSections());
 						EditorModel.State.EndUpdate();
 					}
 
@@ -452,7 +458,7 @@ namespace CellReport.Editor.ViewModel
 					void Action()
 					{
 						EditorModel.State.BeginUpdate();
-						EditorModel.State.Presenter.Manager.InsertColumns(EditorModel.State.Presenter.CurrentCell.Column, 1);
+						EditorModel.State.Presenter.Manager.InsertColumns(EditorModel.State.Presenter.CurrentCell.Column, 1, AskAboutSections());
 						EditorModel.State.EndUpdate();
 					}
 
@@ -473,7 +479,7 @@ namespace CellReport.Editor.ViewModel
 					void Action()
 					{
 						EditorModel.State.BeginUpdate();
-						EditorModel.State.Presenter.Manager.InsertColumns(EditorModel.State.Presenter.CurrentCell.Column + 1, 1);
+						EditorModel.State.Presenter.Manager.InsertColumns(EditorModel.State.Presenter.CurrentCell.Column + 1, 1, AskAboutSections());
 						EditorModel.State.EndUpdate();
 					}
 
