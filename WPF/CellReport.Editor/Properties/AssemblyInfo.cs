@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("CellReport.Editor")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("ИП Сафонов Д.Н.")]
 [assembly: AssemblyProduct("CellReport.Editor")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
