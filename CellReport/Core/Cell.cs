@@ -22,16 +22,15 @@ namespace CellReport.Core
 		private CellLocation _location;
 		[NonSerialized]
 		private CellStyle _style;
+		// ReSharper disable once InconsistentNaming
 		private string _styleID;
 		private BaseContent _content;
 
 		internal void SetManager(CellManager manager)
 		{
 			_manager = manager;
-			if (Content != null)
-				Content.SetManager(manager);
-			var collection = Content as CollectionContent;
-			if (collection != null)
+			Content?.SetManager(manager);
+			if (Content is CollectionContent collection)
 			{
 				foreach (var content in collection.GetContents())
 					content.SetManager(manager);
@@ -47,13 +46,13 @@ namespace CellReport.Core
 
 		public CellSpan Span
 		{
-			get { return _span; }
-			set { _manager.SetSpansForCell(_location, value); }
+			get => _span;
+			set => _manager.SetSpansForCell(_location, value);
 		}
 
 		internal CellSpan SpanInternal
 		{
-			get { return _span; }
+			get => _span;
 			set
 			{
 				_span = value;
@@ -61,10 +60,7 @@ namespace CellReport.Core
 			}
 		}
 
-		public CellLocation Location
-		{
-			get { return _location; }
-		}
+		public CellLocation Location => _location;
 
 		public Size Size
 		{
@@ -83,9 +79,10 @@ namespace CellReport.Core
 			}
 		}
 
+		// ReSharper disable once InconsistentNaming
 		public string StyleID
 		{
-			get { return _styleID; }
+			get => _styleID;
 			set
 			{
 				if (_styleID == value)
@@ -99,7 +96,7 @@ namespace CellReport.Core
 
 		public CellStyle Style
 		{
-			get { return _style ?? (_style = _manager.GetStyleByID<CellStyle>(StyleID) ?? DefaultStyle); }
+			get => _style ?? (_style = _manager.GetStyleByID<CellStyle>(StyleID) ?? DefaultStyle);
 			set
 			{
 				if (ReferenceEquals(DefaultStyle, value) || value == null)
@@ -111,7 +108,7 @@ namespace CellReport.Core
 
 		public BaseContent Content
 		{
-			get { return _content; }
+			get => _content;
 			set
 			{
 				if (_content != value)
@@ -126,8 +123,7 @@ namespace CellReport.Core
 		{
 			if (Content != null)
 			{
-				var collection = Content as CollectionContent;
-				if (collection != null)
+				if (Content is CollectionContent collection)
 				{
 					foreach (var item in collection.GetContents())
 						yield return item;
@@ -139,7 +135,7 @@ namespace CellReport.Core
 
 		public override string ToString()
 		{
-			return string.Format("Cell [{0},{1}]", Location.Row, Location.Column);
+			return $"Cell [{Location.Row},{Location.Column}]";
 		}
 
 		public XElement Serialize(int index = -1)
@@ -151,7 +147,7 @@ namespace CellReport.Core
 				cellElement.Add(new XAttribute("ColSpan", Span.ColSpan));
 			if (Content != null)
 				cellElement.Add(Content.Serialize());
-			if (!string.IsNullOrEmpty(this.Style.ID))
+			if (!string.IsNullOrEmpty(Style.ID))
 				cellElement.Add(new XAttribute("Style", Style.ID));
 			return cellElement;
 		}
@@ -160,30 +156,30 @@ namespace CellReport.Core
 		{
 			var cell = new Cell(manager, 0, 0);
 			if (element.Attribute("Style") != null)
-				cell.Style = manager.GetStyleByID<CellStyle>(element.Attribute("Style").Value);
-			cell.SpanInternal = Parse(manager, cell, element);
+				cell.Style = manager.GetStyleByID<CellStyle>(element.Attribute("Style")?.Value);
+			cell.SpanInternal = Parse(element);
 			return cell;
 		}
 
 		internal static Cell Parse(CellManager manager, XElement element, int row, ref int col)
 		{
 			if (element.Attribute("Index") != null)
-				col = Convert.ToInt32(element.Attribute("Index").Value);
+				col = Convert.ToInt32(element.Attribute("Index")?.Value);
 			var cell = manager.CreateCell(row, col);
 			if (element.Attribute("Style") != null)
-				cell.Style = manager.GetStyleByID<CellStyle>(element.Attribute("Style").Value);
-			cell.Span = Parse(manager, cell, element);
+				cell.Style = manager.GetStyleByID<CellStyle>(element.Attribute("Style")?.Value);
+			cell.Span = Parse(element);
 			col += (cell.Span.ColSpan + 1);
 			return cell;
 		}
 
-		private static CellSpan Parse(CellManager manager, Cell cell, XElement element)
+		private static CellSpan Parse(XElement element)
 		{
 			var span = new CellSpan();
 			if (element.Attribute("ColSpan") != null)
-				span.ColSpan = Convert.ToInt32(element.Attribute("ColSpan").Value);
+				span.ColSpan = Convert.ToInt32(element.Attribute("ColSpan")?.Value);
 			if (element.Attribute("RowSpan") != null)
-				span.RowSpan = Convert.ToInt32(element.Attribute("RowSpan").Value);
+				span.RowSpan = Convert.ToInt32(element.Attribute("RowSpan")?.Value);
 			return span;
 		}
 	}
