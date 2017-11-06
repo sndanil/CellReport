@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Linq;
 using CellReport.Core;
+using CellReport.Core.Contents;
 using CellReport.Editor.Import;
 using CellReport.Presenters.Wpf;
+using OfficeOpenXml;
 
 namespace CellReport.Editor.ViewModel
 {
@@ -485,6 +488,141 @@ namespace CellReport.Editor.ViewModel
 
 					command = new DelegateCommand(Action, IsDefaultEnabled);
 					Commands.Add("AddColumnsAfter", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand AddTextContent
+		{
+			get
+			{
+				if (!Commands.TryGetValue("AddTextContent", out var command))
+				{
+					void Action()
+					{
+						EditorModel.State.BeginUpdate();
+						ContentHelper.AddContent(new TextContent(EditorModel.State.Manager));
+						EditorModel.State.CurrentCell = EditorModel.State.CurrentCell;
+						EditorModel.State.EndUpdate();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add("AddTextContent", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand AddDecimalContent
+		{
+			get
+			{
+				if (!Commands.TryGetValue("AddDecimalContent", out var command))
+				{
+					void Action()
+					{
+						EditorModel.State.BeginUpdate();
+						ContentHelper.AddContent(new DecimalContent(EditorModel.State.Manager));
+						EditorModel.State.CurrentCell = EditorModel.State.CurrentCell;
+						EditorModel.State.EndUpdate();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add("AddDecimalContent", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand AddDateTimeContent
+		{
+			get
+			{
+				if (!Commands.TryGetValue("AddDateTimeContent", out var command))
+				{
+					void Action()
+					{
+						EditorModel.State.BeginUpdate();
+						ContentHelper.AddContent(new DateTimeContent(EditorModel.State.Manager));
+						EditorModel.State.CurrentCell = EditorModel.State.CurrentCell;
+						EditorModel.State.EndUpdate();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add("AddDateTimeContent", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand AddBarCodeContent
+		{
+			get
+			{
+				if (!Commands.TryGetValue("AddBarCodeContent", out var command))
+				{
+					void Action()
+					{
+						EditorModel.State.BeginUpdate();
+						ContentHelper.AddContent(new BarCodeContent(EditorModel.State.Manager, BarCodeType.EAN13));
+						EditorModel.State.CurrentCell = EditorModel.State.CurrentCell;
+						EditorModel.State.EndUpdate();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add("AddBarCodeContent", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand AddImageContent
+		{
+			get
+			{
+				if (!Commands.TryGetValue("AddImageContent", out var command))
+				{
+					void Action()
+					{
+						EditorModel.State.BeginUpdate();
+						ContentHelper.AddContent(new ImageContent(EditorModel.State.Manager));
+						EditorModel.State.CurrentCell = EditorModel.State.CurrentCell;
+						EditorModel.State.EndUpdate();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add("AddImageContent", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand DeleteContent
+		{
+			get
+			{
+				if (!Commands.TryGetValue("DeleteContent", out var command))
+				{
+					void Action()
+					{
+						EditorModel.State.BeginUpdate();
+						var cell = EditorModel.State.Manager.GetCell(EditorModel.State.CurrentCell);
+
+						if (cell != null && cell.Content != null)
+								cell.Content = null;
+						EditorModel.State.CurrentCell = EditorModel.State.CurrentCell;
+						EditorModel.State.EndUpdate();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add("DeleteContent", command);
 				}
 
 				return command;

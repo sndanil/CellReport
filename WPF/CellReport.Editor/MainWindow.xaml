@@ -11,7 +11,10 @@
 	<Window.Resources>
 		<local:EditorModel x:Key="EditorModel"/>
 		<local:WpfUnitsConverter x:Key="WpfUnitsConverter" />
-		<local:BoolToVisibilityConverter x:Key="BoolToHiddenConverter" TrueValue="Visible" FalseValue="Hidden" />
+		<local:BoolToVisibilityConverter x:Key="BoolToHiddenConverter" TrueValue="Visible" FalseValue="Collapsed" />
+		<local:DecimalStyleConverter x:Key="DecimalStyleConverter" />
+		<local:DateTimeStyleConverter x:Key="DateTimeStyleConverter" />
+		<local:InvertBoolConverter x:Key="InvertBoolConverter" />
 
 		<Style x:Key="cellLineStyle" TargetType="{x:Type Line}">
 			<Setter Property="SnapsToDevicePixels" Value="True" />
@@ -46,6 +49,65 @@
 									FontWeight="{Binding Path=Font.Style, Converter={StaticResource WpfUnitsConverter},ConverterParameter=FontWeight}" 
 									FontSize="{Binding Path=Font.Size, Converter={StaticResource WpfUnitsConverter},ConverterParameter=PointToWPF}" 
 								/>
+			</Border>
+		</DataTemplate>
+		<DataTemplate x:Key="decimalStyleTemplate">
+			<Border BorderBrush="Gray" BorderThickness="1" Padding="2" Margin="2">
+				<Grid Width="145">
+					<Grid.RowDefinitions>
+						<RowDefinition />
+						<RowDefinition />
+						<RowDefinition />
+					</Grid.RowDefinitions>
+					<TextBlock 
+            Text="{Binding Converter={StaticResource DecimalStyleConverter}, ConverterParameter=Positive}" 
+            Foreground="{Binding Color}" 
+            VerticalAlignment="{Binding Path=VAlignment, Converter={StaticResource WpfUnitsConverter},ConverterParameter=VAlign}"
+            HorizontalAlignment="{Binding Path=HAlignment, Converter={StaticResource WpfUnitsConverter},ConverterParameter=HAlign}"
+            FontStyle="{Binding Path=Font.Style, Converter={StaticResource WpfUnitsConverter},ConverterParameter=FontStyle}"
+            FontFamily="{Binding Path=Font.Family, Converter={StaticResource WpfUnitsConverter},ConverterParameter=FontFamily}" 
+            FontWeight="{Binding Path=Font.Style, Converter={StaticResource WpfUnitsConverter},ConverterParameter=FontWeight}" 
+            FontSize="{Binding Path=Font.Size, Converter={StaticResource WpfUnitsConverter},ConverterParameter=PointToWPF}" 
+            />
+					<TextBlock Grid.Row="1"
+            Text="{Binding Converter={StaticResource DecimalStyleConverter}, ConverterParameter=Negative}" 
+            Foreground="{Binding NegativeColor}" 
+            VerticalAlignment="{Binding Path=VAlignment, Converter={StaticResource WpfUnitsConverter},ConverterParameter=VAlign}"
+            HorizontalAlignment="{Binding Path=HAlignment, Converter={StaticResource WpfUnitsConverter},ConverterParameter=HAlign}"
+            FontStyle="{Binding Path=Font.Style, Converter={StaticResource WpfUnitsConverter},ConverterParameter=FontStyle}"
+            FontFamily="{Binding Path=Font.Family, Converter={StaticResource WpfUnitsConverter},ConverterParameter=FontFamily}" 
+            FontWeight="{Binding Path=Font.Style, Converter={StaticResource WpfUnitsConverter},ConverterParameter=FontWeight}" 
+            FontSize="{Binding Path=Font.Size, Converter={StaticResource WpfUnitsConverter},ConverterParameter=PointToWPF}" 
+            />
+					<TextBlock Grid.Row="2" 
+            Text="{Binding Converter={StaticResource DecimalStyleConverter}, ConverterParameter=Zero}" 
+            Foreground="{Binding Color}" 
+            VerticalAlignment="{Binding Path=VAlignment, Converter={StaticResource WpfUnitsConverter},ConverterParameter=VAlign}"
+            HorizontalAlignment="{Binding Path=HAlignment, Converter={StaticResource WpfUnitsConverter},ConverterParameter=HAlign}"
+            FontStyle="{Binding Path=Font.Style, Converter={StaticResource WpfUnitsConverter},ConverterParameter=FontStyle}"
+            FontFamily="{Binding Path=Font.Family, Converter={StaticResource WpfUnitsConverter},ConverterParameter=FontFamily}" 
+            FontWeight="{Binding Path=Font.Style, Converter={StaticResource WpfUnitsConverter},ConverterParameter=FontWeight}" 
+            FontSize="{Binding Path=Font.Size, Converter={StaticResource WpfUnitsConverter},ConverterParameter=PointToWPF}" 
+            />
+					<TextBlock Grid.Row="2" Text="{Binding ID}"></TextBlock>
+				</Grid>
+			</Border>
+		</DataTemplate>
+		<DataTemplate x:Key="dateTimeStyleTemplate">
+			<Border BorderBrush="Gray" BorderThickness="1" Padding="2" Margin="2">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition />
+						<RowDefinition />
+					</Grid.RowDefinitions>
+					<TextBlock HorizontalAlignment="Right" 
+                               Text="{Binding Converter={StaticResource DateTimeStyleConverter}, ConverterParameter=Positive}" 
+                               Foreground="{Binding Color}" 
+                               FontFamily="{Binding Path=Font.Family, Converter={StaticResource WpfUnitsConverter},ConverterParameter=FontFamily}" 
+                               FontSize="{Binding Path=Font.Size, Converter={StaticResource WpfUnitsConverter},ConverterParameter=PointToWPF}" 
+                               />
+					<TextBlock Grid.Row="1" Text="{Binding ID}"></TextBlock>
+				</Grid>
 			</Border>
 		</DataTemplate>
 
@@ -165,22 +227,54 @@
 												Command="local:EditorCommands.MergeCells"
 					/>
 				</fluent:RibbonGroupBox>
-			</fluent:RibbonTabItem>
-			<fluent:RibbonTabItem Header="Стили">
-				<fluent:RibbonGroupBox Header="Ячейки">
+				<fluent:RibbonGroupBox Header="Стиль">
 					<fluent:InRibbonGallery ItemsSource="{Binding CellStyles}" ItemTemplate="{StaticResource cellStyleTemplate}" SelectedItem="{Binding CurrentCellStyle}"
-							MaxItemsInRow="4"
-							ItemWidth="160" 
-							ItemHeight="35">
+																	MaxItemsInRow="4"
+																	ItemWidth="160" 
+																	ItemHeight="35">
 
 					</fluent:InRibbonGallery>
 				</fluent:RibbonGroupBox>
-				<fluent:RibbonGroupBox Header="Содержимое">
+			</fluent:RibbonTabItem>
+			<fluent:RibbonTabItem Header="Содержимое">
+				<fluent:RibbonGroupBox Header="Контент">
+					<fluent:DropDownButton Header="Добавить"
+																Icon="Images\32\add_button.png"
+																LargeIcon="Images\32\add_button.png">
+						<MenuItem Header="Добавить текст" Command="local:EditorCommands.AddTextContent" 
+											IsEnabled="{Binding IsTextContent, Converter={StaticResource InvertBoolConverter}}" />
+						<MenuItem Header="Добавить число" Command="local:EditorCommands.AddDecimalContent"
+													IsEnabled="{Binding IsDecimalContent, Converter={StaticResource InvertBoolConverter}}"></MenuItem>
+						<MenuItem Header="Добавить дату" Command="local:EditorCommands.AddDateTimeContent"
+													IsEnabled="{Binding IsDateTimeContent, Converter={StaticResource InvertBoolConverter}}"></MenuItem>
+						<MenuItem Header="Добавить штрих-код" Command="local:EditorCommands.AddBarCodeContent"
+													IsEnabled="{Binding IsBarCodeContent, Converter={StaticResource InvertBoolConverter}}"></MenuItem>
+						<MenuItem Header="Добавить изображение" Command="local:EditorCommands.AddImageContent"
+													IsEnabled="{Binding IsImageContent, Converter={StaticResource InvertBoolConverter}}"></MenuItem>
+					</fluent:DropDownButton>
+
+					<fluent:Button Header="Удалить" Size="Large" LargeIcon="Images/32/delete.png" Command="local:EditorCommands.DeleteContent"></fluent:Button>
+				</fluent:RibbonGroupBox>
+				<fluent:RibbonGroupBox Header="Стиль" Visibility="{Binding HasStyledContent, Converter={StaticResource BoolToHiddenConverter}}">
 					<fluent:InRibbonGallery Visibility="{Binding IsTextContent, Converter={StaticResource BoolToHiddenConverter}}" 
 									ItemsSource="{Binding TextStyles}" ItemTemplate="{StaticResource textStyleTemplate}" SelectedItem="{Binding CurrentTextStyle}"
 									MaxItemsInRow="4"
 									ItemWidth="160" 
 									ItemHeight="35">
+
+					</fluent:InRibbonGallery>
+					<fluent:InRibbonGallery Visibility="{Binding IsDecimalContent, Converter={StaticResource BoolToHiddenConverter}}" 
+																	ItemsSource="{Binding DecimalStyles}" ItemTemplate="{StaticResource decimalStyleTemplate}" SelectedItem="{Binding CurrentDecimalStyle}"
+																	MaxItemsInRow="4"
+																	ItemWidth="160" 
+																	ItemHeight="57">
+
+					</fluent:InRibbonGallery>
+					<fluent:InRibbonGallery Visibility="{Binding IsDateTimeContent, Converter={StaticResource BoolToHiddenConverter}}" 
+																	ItemsSource="{Binding DateTimeStyles}" ItemTemplate="{StaticResource dateTimeStyleTemplate}" SelectedItem="{Binding CurrentDateTimeStyle}"
+																	MaxItemsInRow="4"
+																	ItemWidth="160" 
+																	ItemHeight="57">
 
 					</fluent:InRibbonGallery>
 				</fluent:RibbonGroupBox>
@@ -197,14 +291,10 @@
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="Auto"></ColumnDefinition>
 							<ColumnDefinition Width="*"></ColumnDefinition>
-							<ColumnDefinition Width="Auto"></ColumnDefinition>
-							<ColumnDefinition Width="*"></ColumnDefinition>
 						</Grid.ColumnDefinitions>
 
 						<TextBlock Grid.Column="0" Margin="3">Текст</TextBlock>
 						<TextBox Grid.Column="1" Margin="3" MaxHeight="30" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" Text="{Binding CurrentText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsTextContent}" TextWrapping="Wrap" AcceptsReturn="True"></TextBox>
-						<TextBlock Grid.Column="2" Margin="3">Шаблон</TextBlock>
-						<TextBox Grid.Column="3" Margin="3" MaxHeight="30" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" Text="{Binding CurrentTemplate, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsTextContent}" TextWrapping="Wrap" AcceptsReturn="True"></TextBox>
 					</Grid>
 					<Grid Grid.Row="1" x:Name="ReportContainer">
 					</Grid>

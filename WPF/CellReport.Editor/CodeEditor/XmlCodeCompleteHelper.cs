@@ -122,6 +122,7 @@ namespace CellReport.Editor.CodeEditor
 							}
 						}
 						var elementName = currentElement.Elements.Last().Name;
+						var parentElement = currentElement.Elements.Count >= 2 ? currentElement.Elements[currentElement.Elements.Count - 2].Name : null;
 						switch (attribute)
 						{
 							case "Style":
@@ -266,25 +267,83 @@ namespace CellReport.Editor.CodeEditor
 								switch (elementName)
 								{
 									case "Param":
-										InvokeCompletionWindow(
-											new List<Tuple<string, string>> {
-												new Tuple<string, string>("currencyString", string.Empty),
-												new Tuple<string, string>("currencyString|RUR", string.Empty),
-												new Tuple<string, string>("currencyString|UAH", string.Empty),
-												new Tuple<string, string>("currencyString|KZT", string.Empty),
-												new Tuple<string, string>("currencyString|USD", string.Empty),
-												new Tuple<string, string>("currencyString|EUR", string.Empty),
-												new Tuple<string, string>("numberString", string.Empty),
-												new Tuple<string, string>("#0", string.Empty),
-												new Tuple<string, string>("00", string.Empty),
-												new Tuple<string, string>("#,##0.000", string.Empty),
-												new Tuple<string, string>("#,##0.00", string.Empty),
-												new Tuple<string, string>("#,##0.0", string.Empty),
-												new Tuple<string, string>("dd.MM.yyyy", string.Empty),
-												new Tuple<string, string>("dd.MM.yyyy HH:mm", string.Empty),
-												new Tuple<string, string>("dd.MM.yyyy HH:mm:ss", string.Empty),
-											},
-											XmlCompletionDataType.AttributeValue);
+										var formatList = new List<Tuple<string, string>>
+										{
+											new Tuple<string, string>("currencyString", string.Empty),
+											new Tuple<string, string>("currencyString|RUR", string.Empty),
+											new Tuple<string, string>("currencyString|UAH", string.Empty),
+											new Tuple<string, string>("currencyString|KZT", string.Empty),
+											new Tuple<string, string>("currencyString|USD", string.Empty),
+											new Tuple<string, string>("currencyString|EUR", string.Empty),
+											new Tuple<string, string>("numberString", string.Empty),
+											new Tuple<string, string>("#0", string.Empty),
+											new Tuple<string, string>("00", string.Empty),
+											new Tuple<string, string>("#,##0.000", string.Empty),
+											new Tuple<string, string>("#,##0.00", string.Empty),
+											new Tuple<string, string>("#,##0.0", string.Empty),
+											new Tuple<string, string>("dd.MM.yyyy", string.Empty),
+											new Tuple<string, string>("dd.MM.yyyy HH:mm", string.Empty),
+											new Tuple<string, string>("dd.MM.yyyy HH:mm:ss", string.Empty),
+										};
+
+										InvokeCompletionWindow(formatList, XmlCompletionDataType.AttributeValue);
+										break;
+								}
+								break;
+							case "Target":
+								switch (elementName)
+								{
+									case "Param":
+										var targetList = new List<Tuple<string, string>>
+										{
+											new Tuple<string, string>("Style.Color", string.Empty),
+											new Tuple<string, string>("Style.Font.Family", string.Empty),
+											new Tuple<string, string>("Style.Font.Size", string.Empty),
+											new Tuple<string, string>("Style.Font.Style", string.Empty),
+											new Tuple<string, string>("Style.HAlignment", string.Empty),
+											new Tuple<string, string>("Style.VAlignment", string.Empty),
+											new Tuple<string, string>("Style.Direction", string.Empty),
+											new Tuple<string, string>("Style.Angle", string.Empty),
+										};
+
+										switch (parentElement)
+										{
+											case "TextContent":
+												targetList.Insert(0, new Tuple<string, string>("Text", string.Empty));
+												break;
+											case "DecimalContent":
+												targetList.Insert(0, new Tuple<string, string>("Value", string.Empty));
+												targetList.AddRange(new[]
+												{
+													new Tuple<string, string>("Style.Format", string.Empty),
+													new Tuple<string, string>("Style.Culture", string.Empty),
+													new Tuple<string, string>("Style.NegativeColor", string.Empty),
+												});
+												break;
+											case "DateTimeContent":
+												targetList.Insert(0, new Tuple<string, string>("Value", string.Empty));
+												targetList.AddRange(new[]
+												{
+													new Tuple<string, string>("Style.Format", string.Empty),
+													new Tuple<string, string>("Style.Culture", string.Empty),
+												});
+												break;
+											case "BarCodeContent":
+												targetList = new List<Tuple<string, string>>
+												{
+													new Tuple<string, string>("Type", string.Empty),
+													new Tuple<string, string>("Code", string.Empty),
+												};
+												break;
+											case "ImageContent":
+												targetList = new List<Tuple<string, string>>
+												{
+													new Tuple<string, string>("Uri", string.Empty),
+												};
+												break;
+										}
+
+										InvokeCompletionWindow(targetList, XmlCompletionDataType.AttributeValue);
 										break;
 								}
 								break;

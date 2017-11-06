@@ -236,7 +236,7 @@ namespace CellReport.Core.Contents
 
 		public string Text
 		{
-			get { return _text; }
+			get => _text;
 			set
 			{
 				if (_text != value)
@@ -249,7 +249,7 @@ namespace CellReport.Core.Contents
 
 		public bool AutoSizeFont
 		{
-			get { return _autoSizeFont; }
+			get => _autoSizeFont;
 			set
 			{
 				if (_autoSizeFont != value)
@@ -261,19 +261,6 @@ namespace CellReport.Core.Contents
 			}
 		}
 
-		public string Template
-		{
-			get { return _template; }
-			set
-			{
-				if (_template != value)
-				{
-					_template = value;
-					OnPropertyChanged("Template");
-				}
-			}
-		}
-
 		internal new static TextContent Parse(CellManager manager, XElement element)
 		{
 			var textContent = new TextContent(manager);
@@ -281,35 +268,38 @@ namespace CellReport.Core.Contents
 				textContent.Text = element.Element("Text")?.Value;
 			if (element.Attribute("AutoSizeFont") != null)
 				textContent.AutoSizeFont = Convert.ToBoolean(element.Attribute("AutoSizeFont")?.Value);
+
+			// избавляемся от темплейта
 			if (element.Element("Template") != null)
-				textContent.Template = element.Element("Template")?.Value;
+				textContent.Text = element.Element("Template")?.Value;
+
 			return textContent;
 		}
 
 		public override string GetText()
 		{
 			string result;
-			var template = GetParamValueByTarget("Template") as string ?? Template;
-			if (string.IsNullOrEmpty(template))
+			var text = (GetParamValueByTarget("Text") as string ?? Text) ?? string.Empty;
+			if (!text.Contains("[") && !text.Contains("]"))
 			{
 				var paramName = GetParamNameByTarget("Text");
 				if (paramName == null)
-					result = Text ?? string.Empty;
+					result = text;
 				else
-					result = (GetFormattedParamValueByName(paramName) ?? Text) ?? string.Empty;
+					result = GetFormattedParamValueByName(paramName) ?? text;
 			}
 			else
 			{
 				var reg = new Regex(@"\[(?=[^\[]*\]).*?\]");
-				var matches = reg.Matches(template);
+				var matches = reg.Matches(text);
 				foreach (Match match in matches)
 				{
 					var paramName = match.ToString().Replace("]", string.Empty).Replace("[", string.Empty);
 					var value = GetFormattedParamValueByName(paramName);
 					if (value != null)
-						template = template.Replace(match.ToString(), value);
+						text = text.Replace(match.ToString(), value);
 				}
-				result = template;
+				result = text;
 			}
 
 			return result;
@@ -322,8 +312,6 @@ namespace CellReport.Core.Contents
 				result.Add(new XElement("Text", Text));
 			if (AutoSizeFont)
 				result.Add(new XAttribute("AutoSizeFont", "true"));
-			if (!string.IsNullOrEmpty(Template))
-				result.Add(new XElement("Template", Template));
 			return result;
 		}
 
@@ -331,7 +319,7 @@ namespace CellReport.Core.Contents
 		{
 			var text = Text ?? string.Empty;
 			text = text.Length > 10 ? text.Substring(0, 10) + "..." : text;
-			return string.Format("Текст ({0})", text);
+			return $"Текст ({text})";
 		}
 	}
 }

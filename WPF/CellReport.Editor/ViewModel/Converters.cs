@@ -41,6 +41,22 @@ namespace CellReport.Editor.ViewModel
 		}
 	}
 
+	[ValueConversion(typeof(bool), typeof(bool))]
+	public class InvertBoolConverter : IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			bool booleanValue = (bool)value;
+			return !booleanValue;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			bool booleanValue = (bool)value;
+			return !booleanValue;
+		}
+	}
+
 	public class WpfUnitsConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -126,9 +142,9 @@ namespace CellReport.Editor.ViewModel
 			switch (parameter?.ToString())
 			{
 				case "Positive":
-					return (1234567890.1234567890123456789m).ToString(style.Format);
+					return (1234.12345m).ToString(style.Format);
 				case "Negative":
-					return (-1234567890.1234567890123456789m).ToString(style.Format);
+					return (-1234.12345m).ToString(style.Format);
 				case "Zero":
 					return (0m).ToString(style.Format);
 			}

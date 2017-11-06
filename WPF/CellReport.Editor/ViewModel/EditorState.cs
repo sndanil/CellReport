@@ -130,9 +130,15 @@ namespace CellReport.Editor.ViewModel
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(CurrentCellStyle));
 				OnPropertyChanged(nameof(CurrentTextStyle));
-				OnPropertyChanged(nameof(CurrentTemplate));
+				OnPropertyChanged(nameof(CurrentDecimalStyle));
+				OnPropertyChanged(nameof(CurrentDateTimeStyle));
 				OnPropertyChanged(nameof(CurrentText));
+				OnPropertyChanged(nameof(HasStyledContent));
 				OnPropertyChanged(nameof(IsTextContent));
+				OnPropertyChanged(nameof(IsDecimalContent));
+				OnPropertyChanged(nameof(IsDateTimeContent));
+				OnPropertyChanged(nameof(IsBarCodeContent));
+				OnPropertyChanged(nameof(IsImageContent));
 				//TotalUpdate();
 				Presenter.Update();
 			}
@@ -218,27 +224,21 @@ namespace CellReport.Editor.ViewModel
 			}
 		}
 
-		public string CurrentTemplate
+		public bool HasStyledContent
 		{
 			get
 			{
 				if (_presenter == null)
-					return null;
+					return false;
 
-				return GetContent<TextContent>()?.Template;
+				return IsTextContent || IsDecimalContent || IsDateTimeContent;
 			}
 			set
 			{
 				if (_presenter == null)
 					return;
 
-				var content = GetContent<TextContent>();
-				if (content != null)
-				{
-					content.Template = value;
-					OnPropertyChanged();
-					Presenter.Update();
-				}
+				OnPropertyChanged();
 			}
 		}
 
@@ -257,6 +257,82 @@ namespace CellReport.Editor.ViewModel
 					return;
 
 				if (GetContent<TextContent>() != null)
+					OnPropertyChanged();
+			}
+		}
+
+		public bool IsDecimalContent
+		{
+			get
+			{
+				if (_presenter == null)
+					return false;
+
+				return GetContent<DecimalContent>() != null;
+			}
+			set
+			{
+				if (_presenter == null)
+					return;
+
+				if (GetContent<DecimalContent>() != null)
+					OnPropertyChanged();
+			}
+		}
+
+		public bool IsDateTimeContent
+		{
+			get
+			{
+				if (_presenter == null)
+					return false;
+
+				return GetContent<DateTimeContent>() != null;
+			}
+			set
+			{
+				if (_presenter == null)
+					return;
+
+				if (GetContent<DateTimeContent>() != null)
+					OnPropertyChanged();
+			}
+		}
+
+		public bool IsBarCodeContent
+		{
+			get
+			{
+				if (_presenter == null)
+					return false;
+
+				return GetContent<BarCodeContent>() != null;
+			}
+			set
+			{
+				if (_presenter == null)
+					return;
+
+				if (GetContent<BarCodeContent>() != null)
+					OnPropertyChanged();
+			}
+		}
+
+		public bool IsImageContent
+		{
+			get
+			{
+				if (_presenter == null)
+					return false;
+
+				return GetContent<ImageContent>() != null;
+			}
+			set
+			{
+				if (_presenter == null)
+					return;
+
+				if (GetContent<ImageContent>() != null)
 					OnPropertyChanged();
 			}
 		}
@@ -331,6 +407,44 @@ namespace CellReport.Editor.ViewModel
 			set => OnPropertyChanged();
 		}
 
+		private readonly ObservableRangeCollection<DecimalContentStyle> _decimalStyles = new ObservableRangeCollection<DecimalContentStyle>();
+		public ObservableCollection<DecimalContentStyle> DecimalStyles
+		{
+			get
+			{
+				_decimalStyles.Clear();
+				if (Manager != null)
+				{
+					var result = Manager.GetStyles().Where(s => s.GetType() == typeof(DecimalContentStyle)).Select(s => (DecimalContentStyle)s).ToList();
+					result.Insert(0, DecimalContent.DefaultStyle);
+
+					_decimalStyles.AddRange(result);
+				}
+
+				return _decimalStyles;
+			}
+			set => OnPropertyChanged();
+		}
+
+		private readonly ObservableRangeCollection<DateTimeContentStyle> _dateTimeStyles = new ObservableRangeCollection<DateTimeContentStyle>();
+		public ObservableCollection<DateTimeContentStyle> DateTimeStyles
+		{
+			get
+			{
+				_dateTimeStyles.Clear();
+				if (Manager != null)
+				{
+					var result = Manager.GetStyles().Where(s => s.GetType() == typeof(DateTimeContentStyle)).Select(s => (DateTimeContentStyle)s).ToList();
+					result.Insert(0, DateTimeContent.DefaultStyle);
+
+					_dateTimeStyles.AddRange(result);
+				}
+
+				return _dateTimeStyles;
+			}
+			set => OnPropertyChanged();
+		}
+
 		public TextContentStyle CurrentTextStyle
 		{
 			get => GetContent<TextContent>()?.GetStyle() as TextContentStyle;
@@ -354,6 +468,68 @@ namespace CellReport.Editor.ViewModel
 				else
 				{
 					var content = GetContent<TextContent>();
+					if (content != null)
+						content.StyleID = value.ID;
+				}
+				Presenter.Update();
+				OnPropertyChanged();
+			}
+		}
+
+		public DecimalContentStyle CurrentDecimalStyle
+		{
+			get => GetContent<DecimalContent>()?.GetStyle() as DecimalContentStyle;
+			set
+			{
+				if (value == null || _presenter == null || Manager == null)
+					return;
+
+				if (Presenter.HaveSelection())
+				{
+					var start = Presenter.GetStartSelection();
+					var end = Presenter.GetEndSelection();
+					for (int row = start.Row; row <= end.Row; row++)
+					for (int col = start.Column; col <= end.Column; col++)
+					{
+						var content = GetContent<DecimalContent>(Presenter.Manager.GetCell(row, col));
+						if (content != null)
+							content.StyleID = value.ID;
+					}
+				}
+				else
+				{
+					var content = GetContent<DecimalContent>();
+					if (content != null)
+						content.StyleID = value.ID;
+				}
+				Presenter.Update();
+				OnPropertyChanged();
+			}
+		}
+
+		public DateTimeContentStyle CurrentDateTimeStyle
+		{
+			get => GetContent<DateTimeContent>()?.GetStyle() as DateTimeContentStyle;
+			set
+			{
+				if (value == null || _presenter == null || Manager == null)
+					return;
+
+				if (Presenter.HaveSelection())
+				{
+					var start = Presenter.GetStartSelection();
+					var end = Presenter.GetEndSelection();
+					for (int row = start.Row; row <= end.Row; row++)
+					for (int col = start.Column; col <= end.Column; col++)
+					{
+						var content = GetContent<DateTimeContent>(Presenter.Manager.GetCell(row, col));
+						if (content != null)
+							content.StyleID = value.ID;
+					}
+				}
+				else
+				{
+					var content = GetContent<DateTimeContent>();
 					if (content != null)
 						content.StyleID = value.ID;
 				}

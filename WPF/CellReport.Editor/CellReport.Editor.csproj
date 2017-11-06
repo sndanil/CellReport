@@ -107,6 +107,7 @@
     <Compile Include="Helpers\ObservableObject.cs" />
     <Compile Include="Helpers\ObservableRangeCollection.cs" />
     <Compile Include="Import\ExcelImporter.cs" />
+    <Compile Include="ViewModel\ContentHelper.cs" />
     <Compile Include="ViewModel\Converters.cs" />
     <Compile Include="ViewModel\CopyManager.cs" />
     <Compile Include="ViewModel\DelegateCommand.cs" />
@@ -225,6 +226,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\32\add_button.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\32\delete.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
