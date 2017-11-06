@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CellReport.Core;
 using CellReport.Core.BookMarks;
+using CellReport.Core.Contents;
 
 namespace CellReport
 {
@@ -21,19 +22,13 @@ namespace CellReport
 
 		public ReportDocument(CellTemplate template)
 		{
-			if (template == null)
-				throw new ArgumentNullException("template");
-
-			_template = template;
+			_template = template ?? throw new ArgumentNullException(nameof(template));
 			CreateManager();
 		}
 
 		public ReportDocument(CellTemplate template, CellManager manager)
 		{
-			if (template == null)
-				throw new ArgumentNullException("template");
-
-			_template = template;
+			_template = template ?? throw new ArgumentNullException(nameof(template));
 			if (manager != null)
 				Manager = manager;
 			else
@@ -194,8 +189,22 @@ namespace CellReport
 		public void SetParameter(string paramName, object value)
 		{
 			foreach (var cell in _lastAddedCells)
-				if (cell.Content != null)
-					cell.Content.SetContentParam(paramName, value);
+			{
+				cell.Content?.SetContentParam(paramName, value);
+			}
+		}
+
+		public void SetSectionObject(ISectionObject obj)
+		{
+			foreach (var cell in _lastAddedCells)
+			{
+				foreach (var param in cell.Content?.GetParams() ?? new Param[0])
+				{
+					var value = obj.GetParamValue(param.Name);
+					if (value != null)
+						SetParameter(param.Name, value);
+				}
+			}
 		}
 
 		public void FitDocument()
