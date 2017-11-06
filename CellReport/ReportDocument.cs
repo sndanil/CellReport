@@ -207,6 +207,22 @@ namespace CellReport
 			}
 		}
 
+		public void SetSectionObject(string prefix, ISectionObject obj)
+		{
+			foreach (var cell in _lastAddedCells)
+			{
+				foreach (var param in cell.Content?.GetParams() ?? new Param[0])
+				{
+					if (param.Name?.StartsWith(prefix) == true)
+					{
+						var value = obj.GetParamValue(param.Name.Replace(prefix, string.Empty));
+						if (value != null)
+							SetParameter(param.Name, value);
+					}
+				}
+			}
+		}
+
 		public void FitDocument()
 		{
 			Manager.RowsCount = Manager.ActualRowsCount;
