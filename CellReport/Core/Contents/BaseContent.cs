@@ -50,7 +50,7 @@ namespace CellReport.Core.Contents
 			if (_style == null || styleId != _style.ID || CellManager.IsDesignMode)
 				_style = _manager.GetStyleByID<T>(styleId);
 
-			return (T) _style;
+			return (T)_style;
 		}
 
 		protected void SetStyle(BaseStyle style, BaseStyle defaultStyle)
@@ -170,7 +170,15 @@ namespace CellReport.Core.Contents
 			{
 				if (param.Value is DateTime || param.Type == nameof(DateTime))
 				{
-					var value = (DateTime) param.Value;
+					var value = DateTime.MinValue;
+					if (param.Value is string)
+					{
+						if (!DateTime.TryParseExact(param.Value?.ToString(), "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out value))
+							return string.Empty;
+					}
+					else
+						value = Convert.ToDateTime(param.Value);
+
 					if (string.IsNullOrEmpty(param.Format))
 						return value.ToString(CultureInfo.CurrentCulture);
 					if (string.IsNullOrEmpty(param.Culture))
@@ -180,16 +188,22 @@ namespace CellReport.Core.Contents
 				}
 				if (param.Value is Decimal || param.Type == nameof(Decimal))
 				{
-					var value = Convert.ToDecimal(param.Value);
+					var value = 0m;
+					if (param.Value is string)
+					{
+						if (!decimal.TryParse(param.Value?.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture, out value))
+							return string.Empty;
+					}
+					else
+						value = Convert.ToDecimal(param.Value);
+
 					if (string.IsNullOrEmpty(param.Format))
 						return value.ToString(CultureInfo.CurrentCulture);
 
 					if (param.Format.StartsWith("currency", StringComparison.OrdinalIgnoreCase) || param.Format.StartsWith("number", StringComparison.InvariantCultureIgnoreCase))
 					{
 						if (param.Format.Equals("numberString", StringComparison.OrdinalIgnoreCase))
-						{
 							return CurrencyToString.GetString(value, true, "", "", "", "", "", "", true);
-						}
 
 						var parts = param.Format.Split('|');
 						if (parts.Length == 1)
@@ -202,17 +216,18 @@ namespace CellReport.Core.Contents
 						return value.ToString(param.Format);
 
 					return value.ToString(param.Format, CultureInfo.GetCultureInfo(param.Culture));
+
 				}
 
 				return param.Value.ToString();
 			}
 
 			return null;
-		}		
+		}
 
 		public virtual BaseContent Clone(CellManager manager)
-		{			
-			var clone = (BaseContent) MemberwiseClone();
+		{
+			var clone = (BaseContent)MemberwiseClone();
 			clone._manager = manager;
 			if (_params != null)
 				clone._params = _params.Select(p => p.Clone(manager, clone)).ToArray();

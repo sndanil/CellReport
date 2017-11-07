@@ -30,8 +30,7 @@ namespace CellReport.Editor.ViewModel
 			return (bool)value ? TrueValue : FalseValue;
 		}
 
-		public object ConvertBack(object value, Type targetType,
-			object parameter, CultureInfo culture)
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			if (Equals(value, TrueValue))
 				return true;
@@ -54,6 +53,20 @@ namespace CellReport.Editor.ViewModel
 		{
 			bool booleanValue = (bool)value;
 			return !booleanValue;
+		}
+	}
+
+	[ValueConversion(typeof(object), typeof(bool))]
+	public class IsNotNullConverter : IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return value != null;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return value != null;
 		}
 	}
 

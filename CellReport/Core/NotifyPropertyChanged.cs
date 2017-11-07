@@ -54,9 +54,9 @@ namespace CellReport.Core
 				field.PropertyChanged += OnPropertyChanged;
 		}
 
-		internal void RaisePropertyChanged(string name)
+		internal void RaisePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			OnPropertyChanged(name);
+			OnPropertyChanged(sender, e);
 		}
 
 		protected virtual void OnPropertyChanged(string name)

@@ -15,6 +15,7 @@
 		<local:DecimalStyleConverter x:Key="DecimalStyleConverter" />
 		<local:DateTimeStyleConverter x:Key="DateTimeStyleConverter" />
 		<local:InvertBoolConverter x:Key="InvertBoolConverter" />
+		<local:IsNotNullConverter x:Key="IsNotNullConverter" />
 
 		<Style x:Key="cellLineStyle" TargetType="{x:Type Line}">
 			<Setter Property="SnapsToDevicePixels" Value="True" />
@@ -287,7 +288,11 @@
 						<RowDefinition Height="Auto"></RowDefinition>
 						<RowDefinition Height="*"></RowDefinition>
 					</Grid.RowDefinitions>
-					<Grid Grid.Row="0">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"></ColumnDefinition>
+						<ColumnDefinition Width="*"></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+					<Grid Grid.Row="0" Grid.ColumnSpan="2">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="Auto"></ColumnDefinition>
 							<ColumnDefinition Width="*"></ColumnDefinition>
@@ -296,7 +301,89 @@
 						<TextBlock Grid.Column="0" Margin="3">Текст</TextBlock>
 						<TextBox Grid.Column="1" Margin="3" MaxHeight="30" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" Text="{Binding CurrentText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsTextContent}" TextWrapping="Wrap" AcceptsReturn="True"></TextBox>
 					</Grid>
-					<Grid Grid.Row="1" x:Name="ReportContainer">
+					<TabControl Grid.Row="1" Grid.Column="0" Width="200">
+						<TabItem Header="Параметры" IsEnabled="{Binding HasContent}">
+							<Grid>
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto"></RowDefinition>
+									<RowDefinition Height="*"></RowDefinition>
+								</Grid.RowDefinitions>
+								<Grid>
+									<Grid.RowDefinitions>
+										<RowDefinition></RowDefinition>
+										<RowDefinition Height="30"></RowDefinition>
+									</Grid.RowDefinitions>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition></ColumnDefinition>
+										<ColumnDefinition></ColumnDefinition>
+									</Grid.ColumnDefinitions>
+									<ListBox Height="100" Grid.ColumnSpan="2" ItemsSource="{Binding ContentParams}" SelectedItem="{Binding CurrentParam}" DisplayMemberPath="Name"></ListBox>
+									<Button Grid.Row="1" Grid.Column="0" Margin="2" Command="local:EditorCommands.AddParam" IsEnabled="False">Добавить</Button>
+									<Button Grid.Row="1" Grid.Column="1" Margin="2" Command="local:EditorCommands.AddParam" IsEnabled="False">Удалить</Button>
+								</Grid>
+								<Grid Grid.Row="1">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto"></ColumnDefinition>
+										<ColumnDefinition Width="*"></ColumnDefinition>
+									</Grid.ColumnDefinitions>
+									<Grid.RowDefinitions>
+										<RowDefinition Height="30"></RowDefinition>
+										<RowDefinition Height="30"></RowDefinition>
+										<RowDefinition Height="30"></RowDefinition>
+										<RowDefinition Height="30"></RowDefinition>
+										<RowDefinition Height="30"></RowDefinition>
+										<RowDefinition Height="30"></RowDefinition>
+										<RowDefinition Height="30"></RowDefinition>
+									</Grid.RowDefinitions>
+									
+									<Label Grid.Row="0" Grid.Column="0">Имя</Label>
+									<TextBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="0" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentParam.Name, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+									<Label Grid.Row="1" Grid.Column="0">Значение</Label>
+									<TextBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="1" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentParam.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+									<Label Grid.Row="2" Grid.Column="0">Цель</Label>
+									<ComboBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="2" Grid.Column="1" MaxHeight="22" SelectedValue="{Binding CurrentParam.Target, Mode=TwoWay}" SelectedValuePath="Tag">
+										<ComboBoxItem Tag="">Не установлено</ComboBoxItem>
+										<ComboBoxItem Tag="Text">Текст</ComboBoxItem>
+										<ComboBoxItem Tag="Value">Значение</ComboBoxItem>
+										<ComboBoxItem Tag="Code">Штрих-код</ComboBoxItem>
+										<ComboBoxItem Tag="Type">Тип штрих-кода</ComboBoxItem>
+										<ComboBoxItem Tag="Uri">Адрес изображения</ComboBoxItem>
+										<ComboBoxItem Tag="Style">Стиль</ComboBoxItem>
+										<ComboBoxItem Tag="Style.Color">Цвет</ComboBoxItem>
+										<ComboBoxItem Tag="Style.NegativeColor">Цвет отрицательного числа</ComboBoxItem>
+										<ComboBoxItem Tag="Style.HAlignment">Выравнивание по горизонтали</ComboBoxItem>
+										<ComboBoxItem Tag="Style.VAlignment">Выравнивание по вертикали</ComboBoxItem>
+										<ComboBoxItem Tag="Style.Direction">Направление</ComboBoxItem>
+										<ComboBoxItem Tag="Style.Angle">Угол наклона</ComboBoxItem>
+										<ComboBoxItem Tag="Style.Font.Size">Размер шрифта</ComboBoxItem>
+										<ComboBoxItem Tag="Style.Font.Family">Шрифт</ComboBoxItem>
+										<ComboBoxItem Tag="Style.Font.Style">Стиль шрифта</ComboBoxItem>
+										<ComboBoxItem Tag="Style.Format">Форматирование</ComboBoxItem>
+										<ComboBoxItem Tag="Style.Culture">Культура</ComboBoxItem>
+									</ComboBox>
+
+									<Label Grid.Row="3" Grid.Column="0">Выражение</Label>
+									<TextBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="3" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentParam.Expression}"></TextBox>
+
+									<Label Grid.Row="4" Grid.Column="0">Формат</Label>
+									<TextBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="4" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentParam.Format}"></TextBox>
+
+									<Label Grid.Row="5" Grid.Column="0">Культура</Label>
+									<TextBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="5" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentParam.Culture}"></TextBox>
+
+									<Label Grid.Row="6" Grid.Column="0">Тип</Label>
+									<ComboBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="6" Grid.Column="1" MaxHeight="22" SelectedValue="{Binding CurrentParam.Type, Mode=TwoWay}" SelectedValuePath="Tag">
+										<ComboBoxItem Tag="">Не установлено</ComboBoxItem>
+										<ComboBoxItem Tag="Decimal">Число</ComboBoxItem>
+										<ComboBoxItem Tag="DateTime">Дата и время</ComboBoxItem>
+									</ComboBox>
+								</Grid>
+							</Grid>
+						</TabItem>
+					</TabControl>
+					<Grid Grid.Row="1" Grid.Column="1" x:Name="ReportContainer">
 					</Grid>
 				</Grid>
 			</TabItem>

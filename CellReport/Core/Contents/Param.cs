@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Xml.Linq;
 
 using CellReport.Core.Expressions;
@@ -241,7 +242,7 @@ namespace CellReport.Core.Contents
 		protected override void OnPropertyChanged(string name)
 		{
 			base.OnPropertyChanged(name);
-			_owner.RaisePropertyChanged(name);
+			_owner.RaisePropertyChanged(this, new PropertyChangedEventArgs(name));
 		}
 	}
 }

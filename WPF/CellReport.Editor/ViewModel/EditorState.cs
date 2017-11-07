@@ -74,6 +74,11 @@ namespace CellReport.Editor.ViewModel
 			else
 				AddCurrentState();
 
+			if (sender is Param)
+			{
+				Presenter.Update();	
+			}
+
 			switch (propertyChangedEventArgs.PropertyName)
 			{
 				case "ColumnWidth":
@@ -139,6 +144,10 @@ namespace CellReport.Editor.ViewModel
 				OnPropertyChanged(nameof(IsDateTimeContent));
 				OnPropertyChanged(nameof(IsBarCodeContent));
 				OnPropertyChanged(nameof(IsImageContent));
+				OnPropertyChanged(nameof(HasContent));
+				OnPropertyChanged(nameof(ContentParams));
+
+				CurrentParam = null;
 				//TotalUpdate();
 				Presenter.Update();
 			}
@@ -240,6 +249,54 @@ namespace CellReport.Editor.ViewModel
 
 				OnPropertyChanged();
 			}
+		}
+
+		public bool HasContent
+		{
+			get
+			{
+				if (_presenter == null)
+					return false;
+
+				return Manager?.GetCell(CurrentCell)?.Content != null;
+			}
+			set
+			{
+				if (_presenter == null)
+					return;
+
+				OnPropertyChanged();
+			}
+		}
+
+		public ObservableCollection<Param> ContentParams
+		{
+			get
+			{
+				if (_presenter == null)
+					return null;
+
+				var @params = Manager?.GetCell(CurrentCell)?.Content?.GetParams();
+
+				if (@params != null)
+					return new ObservableCollection<Param>(@params);
+
+				return null;
+			}
+			set
+			{
+				if (_presenter == null)
+					return;
+
+				OnPropertyChanged();
+			}
+		}
+
+		private Param _currentParam;
+		public Param CurrentParam
+		{
+			get => _currentParam;
+			set => SetProperty(ref _currentParam, value);
 		}
 
 		public bool IsTextContent

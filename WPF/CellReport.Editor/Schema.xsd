@@ -340,7 +340,7 @@
 	</xs:complexType>
 
 	<xs:complexType name='ExpressionsType'>
-		<xs:choice>
+		<xs:choice maxOccurs="unbounded">
 			<xs:element name='CountExpression' type='CountExpressionType' minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name='NowExpression' type='NowExpressionType' minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name='PagesCountExpression' type='PagesCountExpressionType' minOccurs="0" maxOccurs="unbounded" />

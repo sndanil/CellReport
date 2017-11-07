@@ -7,103 +7,102 @@ using System.Globalization;
 
 namespace CellReport.Core.Contents
 {
-    [Serializable]
-    public class DecimalContentStyle : FormatContentStyle
-    {
-        public DecimalContentStyle(HorizontalAlignment h, 
-            VerticalAlignment v, 
-            FontInfo font, 
-            string color, 
-            string negativeColor,
-            float angle,
-            string format,
-            string culture,
-            Direction direction)
-            : base(h, v, font, color, angle, format, culture, direction)
-        {
-            NegativeColor = negativeColor;
-        }
+	[Serializable]
+	public class DecimalContentStyle : FormatContentStyle
+	{
+		public DecimalContentStyle(HorizontalAlignment h,
+				VerticalAlignment v,
+				FontInfo font,
+				string color,
+				string negativeColor,
+				float angle,
+				string format,
+				string culture,
+				Direction direction)
+				: base(h, v, font, color, angle, format, culture, direction)
+		{
+			NegativeColor = negativeColor;
+		}
 
-        public string NegativeColor
-        {
-            get;
-            private set;
-        }
+		public string NegativeColor
+		{
+			get;
+			private set;
+		}
 
-        public override bool Equals(object obj)
-        {
-            var other = obj as DecimalContentStyle;
-            if (other != null)
-                return base.Equals(obj) && this.NegativeColor.Equals(other.NegativeColor);
-            else
-                return false;
-        }
+		public override bool Equals(object obj)
+		{
+			var other = obj as DecimalContentStyle;
+			if (other != null)
+				return base.Equals(obj) && this.NegativeColor.Equals(other.NegativeColor);
+			else
+				return false;
+		}
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode() + this.NegativeColor.GetHashCode();
-        }
+		public override int GetHashCode()
+		{
+			return base.GetHashCode() + this.NegativeColor.GetHashCode();
+		}
 
-        internal new static DecimalContentStyle Parse(XElement element)
-        {
-            var dcs = FormatContentStyle.Parse(element);
-            HorizontalAlignment halign = HorizontalAlignment.Right;
-            if (element.Element("Alignment") != null)
-            {
-                if (element.Element("Alignment").Attribute("Horizontal") != null)
-                    halign = (HorizontalAlignment)Enum.Parse(typeof(HorizontalAlignment),
-                        element.Element("Alignment").Attribute("Horizontal").Value);
-            }
-            var negativeColor = dcs.Color;
-            if (element.Attribute("NegativeColor") != null)
-                negativeColor = element.Attribute("NegativeColor").Value;
-            return new DecimalContentStyle(halign, dcs.VAlignment, dcs.Font, dcs.Color, 
-                negativeColor, dcs.Angle, dcs.Format, dcs.Culture, dcs.Direction);        
-        }
+		internal new static DecimalContentStyle Parse(XElement element)
+		{
+			var dcs = FormatContentStyle.Parse(element);
+			HorizontalAlignment halign = HorizontalAlignment.Right;
+			if (element.Element("Alignment") != null)
+			{
+				if (element.Element("Alignment").Attribute("Horizontal") != null)
+					halign = (HorizontalAlignment)Enum.Parse(typeof(HorizontalAlignment),
+							element.Element("Alignment").Attribute("Horizontal").Value);
+			}
+			var negativeColor = dcs.Color;
+			if (element.Attribute("NegativeColor") != null)
+				negativeColor = element.Attribute("NegativeColor").Value;
+			return new DecimalContentStyle(halign, dcs.VAlignment, dcs.Font, dcs.Color,
+					negativeColor, dcs.Angle, dcs.Format, dcs.Culture, dcs.Direction);
+		}
 
-        protected override XElement OnSerialize(string styleName)
-        {
-            var result = base.OnSerialize(styleName ?? "DecimalContentStyle");
-            result.Add(
-                new XAttribute("NegativeColor", NegativeColor)
-                );
-            return result;
-        }
-    }
+		protected override XElement OnSerialize(string styleName)
+		{
+			var result = base.OnSerialize(styleName ?? "DecimalContentStyle");
+			result.Add(
+					new XAttribute("NegativeColor", NegativeColor)
+					);
+			return result;
+		}
+	}
 
-    [Serializable]
-    public class DecimalContent : TextBasedContent
-    {
-        public new static readonly DecimalContentStyle DefaultStyle = new DecimalContentStyle(HorizontalAlignment.Right,
-            VerticalAlignment.Middle, FontInfo.Default, "Black", "Black", 0, string.Empty, string.Empty, Direction.LeftToRight);
+	[Serializable]
+	public class DecimalContent : TextBasedContent
+	{
+		public new static readonly DecimalContentStyle DefaultStyle = new DecimalContentStyle(HorizontalAlignment.Right,
+				VerticalAlignment.Middle, FontInfo.Default, "Black", "Black", 0, string.Empty, string.Empty, Direction.LeftToRight);
 
-        public DecimalContent(CellManager manager)
-            : base(manager)
-        {
-        }
+		public DecimalContent(CellManager manager)
+				: base(manager)
+		{
+		}
 
-        public decimal Value
-        {
-            get;
-            set;
-        }
+		public decimal Value
+		{
+			get;
+			set;
+		}
 
-        public decimal GetValue()
-        {
-            var valueAsObject = GetParamValueByTarget("Value");
-            decimal result = 0;
-            if (valueAsObject != null && (valueAsObject is string)
-                && decimal.TryParse(valueAsObject.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture, out result))
-                return result;
-            try
-            {
-                return valueAsObject != null ? Convert.ToDecimal(valueAsObject) : Value;
-            }
-            catch (FormatException)
-            {
-                return 0;
-            }
-        }
+		public decimal GetValue()
+		{
+			var valueAsObject = GetParamValueByTarget("Value");
+			decimal result = 0;
+			if (valueAsObject != null && (valueAsObject is string) && decimal.TryParse(valueAsObject.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture, out result))
+				return result;
+			try
+			{
+				return valueAsObject != null ? Convert.ToDecimal(valueAsObject) : Value;
+			}
+			catch (FormatException)
+			{
+				return 0;
+			}
+		}
 
 		public override BaseStyle GetStyle()
 		{
@@ -121,65 +120,65 @@ namespace CellReport.Core.Contents
 				actualStyle.Color, negativeColor, actualStyle.Angle, format, culture, actualStyle.Direction);
 		}
 
-        public override string GetText()
-        {
+		public override string GetText()
+		{
 			var style = (DecimalContentStyle)GetActualStyle();
-            var text = string.Empty;
+			var text = string.Empty;
 			if (string.IsNullOrEmpty(style.Format))
-                text = GetValue().ToString();
+				text = GetValue().ToString();
 			else if (string.IsNullOrEmpty(style.Culture))
 				text = GetValue().ToString(style.Format);
-            else
+			else
 				text = GetValue().ToString(style.Format, CultureInfo.GetCultureInfo(style.Culture));
-            return text;
-        }
+			return text;
+		}
 
-        internal override string GetColor()
-        {
+		internal override string GetColor()
+		{
 			var actualStyle = (DecimalContentStyle)GetActualStyle();
-            if (GetValue() < 0)
+			if (GetValue() < 0)
 				return actualStyle.NegativeColor;
-            else
+			else
 				return actualStyle.Color;
-        }
+		}
 
-        internal new static DecimalContent Parse(CellManager manager, XElement element)
-        {
-            var decimalContent = new DecimalContent(manager);
-            if (element.Element("Value") != null)
-            {
-                var value = 0m;
-                decimal.TryParse(element.Element("Value").Value, NumberStyles.Any, CultureInfo.InvariantCulture, out value);
-                decimalContent.Value = value;
-            }
-            return decimalContent;
-        }
+		internal new static DecimalContent Parse(CellManager manager, XElement element)
+		{
+			var decimalContent = new DecimalContent(manager);
+			if (element.Element("Value") != null)
+			{
+				var value = 0m;
+				decimal.TryParse(element.Element("Value").Value, NumberStyles.Any, CultureInfo.InvariantCulture, out value);
+				decimalContent.Value = value;
+			}
+			return decimalContent;
+		}
 
-        protected override XElement OnSerialize(string contentName)
-        {
-            var result = base.OnSerialize(contentName ?? "DecimalContent");
-            if (Value != 0)
-                result.Add(new XElement("Value", Value.ToString(CultureInfo.InvariantCulture)));
-            return result;
-        }
+		protected override XElement OnSerialize(string contentName)
+		{
+			var result = base.OnSerialize(contentName ?? "DecimalContent");
+			if (Value != 0)
+				result.Add(new XElement("Value", Value.ToString(CultureInfo.InvariantCulture)));
+			return result;
+		}
 
-        public override string ToString()
-        {
-            return "Число";
-        }
+		public override string ToString()
+		{
+			return "Число";
+		}
 
-        public override bool FindText(string text, bool caseSensetive)
-        {
-            text = text.Replace(System.Globalization.NumberFormatInfo.CurrentInfo.NumberGroupSeparator, string.Empty);
-            var ourText = GetText().Replace(System.Globalization.NumberFormatInfo.CurrentInfo.NumberGroupSeparator, string.Empty);
-            if (caseSensetive)
-            {
-                return ourText.Contains(text);
-            }
-            else
-            {
-                return ourText.ToUpper().Contains(text.ToUpper());
-            }
-        }
-    }
+		public override bool FindText(string text, bool caseSensetive)
+		{
+			text = text.Replace(System.Globalization.NumberFormatInfo.CurrentInfo.NumberGroupSeparator, string.Empty);
+			var ourText = GetText().Replace(System.Globalization.NumberFormatInfo.CurrentInfo.NumberGroupSeparator, string.Empty);
+			if (caseSensetive)
+			{
+				return ourText.Contains(text);
+			}
+			else
+			{
+				return ourText.ToUpper().Contains(text.ToUpper());
+			}
+		}
+	}
 }

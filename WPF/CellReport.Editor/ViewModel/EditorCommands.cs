@@ -54,8 +54,8 @@ namespace CellReport.Editor.ViewModel
 					{
 						var dialog = new Microsoft.Win32.OpenFileDialog
 						{
-							Filter = "CellReport шаблон (*.tcr)|*.tcr|CellReport шаблон упакованный (*.tcrp)|*.tcrp|Все файлы (*.*)|*.*",
-							FilterIndex = 2
+							Filter = "CellReport шаблон|*.tcr;*.tcrp|Все файлы (*.*)|*.*",
+							FilterIndex = 1
 						};
 						var result = dialog.ShowDialog();
 						if (result == true)
@@ -615,7 +615,7 @@ namespace CellReport.Editor.ViewModel
 						EditorModel.State.BeginUpdate();
 						var cell = EditorModel.State.Manager.GetCell(EditorModel.State.CurrentCell);
 
-						if (cell != null && cell.Content != null)
+						if (cell?.Content != null)
 								cell.Content = null;
 						EditorModel.State.CurrentCell = EditorModel.State.CurrentCell;
 						EditorModel.State.EndUpdate();
@@ -623,6 +623,34 @@ namespace CellReport.Editor.ViewModel
 
 					command = new DelegateCommand(Action, IsDefaultEnabled);
 					Commands.Add("DeleteContent", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand AddParam
+		{
+			get
+			{
+				if (!Commands.TryGetValue("AddParam", out var command))
+				{
+					void Action()
+					{
+						EditorModel.State.BeginUpdate();
+						var cell = EditorModel.State.Manager.GetCell(EditorModel.State.CurrentCell);
+
+						if (cell?.Content != null)
+						{
+							var param = new Param(EditorModel.State.Manager, cell.Content) { Name = "Новый" };
+							cell.Content.AddParam(param);
+						}
+						EditorModel.State.CurrentCell = EditorModel.State.CurrentCell;
+						EditorModel.State.EndUpdate();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add("AddParam", command);
 				}
 
 				return command;
