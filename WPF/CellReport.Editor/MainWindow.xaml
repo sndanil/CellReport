@@ -306,10 +306,15 @@
 							<Grid>
 								<Grid.RowDefinitions>
 									<RowDefinition Height="Auto"></RowDefinition>
+									<RowDefinition Height="Auto"></RowDefinition>
+									<RowDefinition Height="Auto"></RowDefinition>
 									<RowDefinition Height="*"></RowDefinition>
 								</Grid.RowDefinitions>
-								<Grid>
+								<Label>Список содержимого</Label>
+								<ListBox Grid.Row="1" Height="100" Margin="2" ItemsSource="{Binding CurrentContents}" SelectedItem="{Binding CurrentContent}" IsEnabled="{Binding HasContent}"></ListBox>
+								<Grid Grid.Row="2">
 									<Grid.RowDefinitions>
+										<RowDefinition></RowDefinition>
 										<RowDefinition></RowDefinition>
 										<RowDefinition Height="30"></RowDefinition>
 									</Grid.RowDefinitions>
@@ -317,11 +322,12 @@
 										<ColumnDefinition></ColumnDefinition>
 										<ColumnDefinition></ColumnDefinition>
 									</Grid.ColumnDefinitions>
-									<ListBox Height="100" Grid.ColumnSpan="2" ItemsSource="{Binding ContentParams}" SelectedItem="{Binding CurrentParam}" DisplayMemberPath="Name"></ListBox>
-									<Button Grid.Row="1" Grid.Column="0" Margin="2" Command="local:EditorCommands.AddParam" IsEnabled="False">Добавить</Button>
-									<Button Grid.Row="1" Grid.Column="1" Margin="2" Command="local:EditorCommands.AddParam" IsEnabled="False">Удалить</Button>
+									<Label Grid.ColumnSpan="2">Список параметров</Label>
+									<ListBox Grid.Row="1" Grid.Column="0" Height="100" Margin="2" Grid.ColumnSpan="2" ItemsSource="{Binding ContentParams}" SelectedItem="{Binding CurrentParam}" DisplayMemberPath="Name"></ListBox>
+									<Button Grid.Row="2" Grid.Column="0" Margin="2" Command="local:EditorCommands.AddParam" IsEnabled="{Binding CurrentContent, Converter={StaticResource IsNotNullConverter}}">Добавить</Button>
+									<Button Grid.Row="2" Grid.Column="1" Margin="2" Command="local:EditorCommands.DeleteParam" IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}">Удалить</Button>
 								</Grid>
-								<Grid Grid.Row="1">
+								<Grid Grid.Row="3">
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="Auto"></ColumnDefinition>
 										<ColumnDefinition Width="*"></ColumnDefinition>

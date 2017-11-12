@@ -145,9 +145,10 @@ namespace CellReport.Editor.ViewModel
 				OnPropertyChanged(nameof(IsBarCodeContent));
 				OnPropertyChanged(nameof(IsImageContent));
 				OnPropertyChanged(nameof(HasContent));
-				OnPropertyChanged(nameof(ContentParams));
+				OnPropertyChanged(nameof(CurrentContents));
 
 				CurrentParam = null;
+				CurrentContent = null;
 				//TotalUpdate();
 				Presenter.Update();
 			}
@@ -269,6 +270,41 @@ namespace CellReport.Editor.ViewModel
 			}
 		}
 
+		public ObservableCollection<BaseContent> CurrentContents
+		{
+			get
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return null;
+
+				var contents = Manager?.GetCell(CurrentCell)?.Content?.GetParams();
+
+				if (Manager?.GetCell(CurrentCell)?.Content is CollectionContent collectionContent)
+					return new ObservableCollection<BaseContent>(collectionContent.GetContents());
+
+				return new ObservableCollection<BaseContent>(new [] { Manager?.GetCell(CurrentCell)?.Content });
+			}
+			set
+			{
+				if (_presenter == null)
+					return;
+
+				OnPropertyChanged();
+			}
+		}
+
+		private BaseContent _currentContent;
+		public BaseContent CurrentContent
+		{
+			get => _currentContent;
+			set
+			{
+				SetProperty(ref _currentContent, value);
+				OnPropertyChanged(nameof(ContentParams));
+				CurrentParam = null;
+			}
+		}
+
 		public ObservableCollection<Param> ContentParams
 		{
 			get
@@ -276,7 +312,7 @@ namespace CellReport.Editor.ViewModel
 				if (_presenter == null)
 					return null;
 
-				var @params = Manager?.GetCell(CurrentCell)?.Content?.GetParams();
+				var @params = CurrentContent?.GetParams();
 
 				if (@params != null)
 					return new ObservableCollection<Param>(@params);

@@ -638,19 +638,44 @@ namespace CellReport.Editor.ViewModel
 					void Action()
 					{
 						EditorModel.State.BeginUpdate();
-						var cell = EditorModel.State.Manager.GetCell(EditorModel.State.CurrentCell);
 
-						if (cell?.Content != null)
+						if (EditorModel.State.CurrentContent != null)
 						{
-							var param = new Param(EditorModel.State.Manager, cell.Content) { Name = "Новый" };
-							cell.Content.AddParam(param);
+							var param = new Param(EditorModel.State.Manager, EditorModel.State.CurrentContent) { Name = "Новый" };
+							EditorModel.State.CurrentContent.AddParam(param);
 						}
-						EditorModel.State.CurrentCell = EditorModel.State.CurrentCell;
+						EditorModel.State.CurrentContent = EditorModel.State.CurrentContent;
 						EditorModel.State.EndUpdate();
 					}
 
 					command = new DelegateCommand(Action, IsDefaultEnabled);
 					Commands.Add("AddParam", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand DeleteParam
+		{
+			get
+			{
+				if (!Commands.TryGetValue("DeleteParam", out var command))
+				{
+					void Action()
+					{
+						EditorModel.State.BeginUpdate();
+
+						if (EditorModel.State.CurrentContent != null && EditorModel.State.CurrentParam != null)
+						{
+							EditorModel.State.CurrentContent.RemoveParam(EditorModel.State.CurrentParam);
+						}
+						EditorModel.State.CurrentContent = EditorModel.State.CurrentContent;
+						EditorModel.State.EndUpdate();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add("DeleteParam", command);
 				}
 
 				return command;
