@@ -450,6 +450,46 @@ namespace CellReport.Editor.ViewModel
 			}
 		}
 
+		private readonly ObservableRangeCollection<TemplateSection> _sections = new ObservableRangeCollection<TemplateSection>();
+		public ObservableCollection<TemplateSection> Sections
+		{
+			get
+			{
+				_sections.Clear();
+				if (Manager != null)
+				{
+					var result = Manager.GetSections().ToList();
+					_sections.AddRange(result);
+				}
+
+				return _sections;
+			}
+			set => OnPropertyChanged();
+		}
+
+		private TemplateSection _currentSection;
+		public TemplateSection CurrentSection
+		{
+			get => _currentSection;
+			set
+			{
+				SetProperty(ref _currentSection, value);
+
+				if (value != null)
+				{
+					Presenter.BeginUpdate();
+					Presenter.StartSelection = value.LeftTop;
+					Presenter.EndSelection = value.RightBottom;
+					Presenter.EndUpdate();
+				}
+				else
+				{
+					Presenter.ClearSelection();
+				}
+			}
+		}
+
+
 		private readonly ObservableRangeCollection<CellStyle> _cellStyles = new ObservableRangeCollection<CellStyle>();
 		public ObservableCollection<CellStyle> CellStyles
 		{

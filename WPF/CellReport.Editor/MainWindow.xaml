@@ -390,6 +390,55 @@
 								</Grid>
 							</Grid>
 						</TabItem>
+						<TabItem Header="Секции">
+							<StackPanel>
+								<Grid>
+									<Grid.RowDefinitions>
+										<RowDefinition></RowDefinition>
+										<RowDefinition></RowDefinition>
+										<RowDefinition Height="30"></RowDefinition>
+									</Grid.RowDefinitions>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition></ColumnDefinition>
+										<ColumnDefinition></ColumnDefinition>
+									</Grid.ColumnDefinitions>
+									<ListBox Grid.Row="1" Grid.Column="0" Height="200" Margin="2" Grid.ColumnSpan="2" ItemsSource="{Binding Sections}" SelectedItem="{Binding CurrentSection}" DisplayMemberPath="Name"></ListBox>
+									<Button Grid.Row="2" Grid.Column="0" Margin="2" Command="local:EditorCommands.AddSection">Добавить</Button>
+									<Button Grid.Row="2" Grid.Column="1" Margin="2" Command="local:EditorCommands.DeleteSection" IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}">Удалить</Button>
+								</Grid>
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto"></ColumnDefinition>
+										<ColumnDefinition Width="*"></ColumnDefinition>
+									</Grid.ColumnDefinitions>
+									<Grid.RowDefinitions>
+										<RowDefinition Height="30"></RowDefinition>
+										<RowDefinition Height="30"></RowDefinition>
+										<RowDefinition Height="30"></RowDefinition>
+										<RowDefinition Height="30"></RowDefinition>
+										<RowDefinition Height="30"></RowDefinition>
+										<RowDefinition Height="30"></RowDefinition>
+									</Grid.RowDefinitions>
+
+									<Label Grid.Row="0" Grid.Column="0">Имя</Label>
+									<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="0" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.Name, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+									<Label Grid.Row="1" Grid.Column="0">Лево</Label>
+									<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="1" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.Left, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+									<Label Grid.Row="2" Grid.Column="0">Верх</Label>
+									<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="2" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.Top, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+									<Label Grid.Row="3" Grid.Column="0">Право</Label>
+									<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="3" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.Right, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+									<Label Grid.Row="4" Grid.Column="0">Низ</Label>
+									<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="4" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.Bottom, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+									<Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="2" Command="local:EditorCommands.SetSectionBounds" IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}">Установить</Button>
+								</Grid>
+							</StackPanel>
+						</TabItem>
 					</TabControl>
 					<Grid Grid.Row="1" Grid.Column="1" x:Name="ReportContainer">
 					</Grid>

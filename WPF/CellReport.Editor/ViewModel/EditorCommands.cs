@@ -704,6 +704,87 @@ namespace CellReport.Editor.ViewModel
 			}
 		}
 
+		public static DelegateCommand AddSection
+		{
+			get
+			{
+				if (!Commands.TryGetValue("AddSection", out var command))
+				{
+					void Action()
+					{
+						EditorModel.State.BeginUpdate();
+
+						var newSection = new TemplateSection {Name = "Новая"};
+						EditorModel.State.Manager.AddSection(newSection);
+						EditorModel.State.Sections = null;
+						EditorModel.State.EndUpdate();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add("AddSection", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand DeleteSection
+		{
+			get
+			{
+				if (!Commands.TryGetValue("DeleteSection", out var command))
+				{
+					void Action()
+					{
+						EditorModel.State.BeginUpdate();
+
+						if (EditorModel.State.CurrentSection != null)
+						{
+							EditorModel.State.Manager.RemoveSection(EditorModel.State.CurrentSection);
+							EditorModel.State.Sections = null;
+							EditorModel.State.CurrentSection = null;
+						}
+
+						EditorModel.State.EndUpdate();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add("DeleteSection", command);
+				}
+
+				return command;
+			}
+		}
+
+		public static DelegateCommand SetSectionBounds
+		{
+			get
+			{
+				if (!Commands.TryGetValue("SetSectionBounds", out var command))
+				{
+					void Action()
+					{
+						EditorModel.State.BeginUpdate();
+
+						if (EditorModel.State.CurrentSection != null)
+						{
+							EditorModel.State.CurrentSection.Left = EditorModel.State.Presenter.StartSelection.Column;
+							EditorModel.State.CurrentSection.Top = EditorModel.State.Presenter.StartSelection.Row;
+							EditorModel.State.CurrentSection.Right = EditorModel.State.Presenter.EndSelection.Column;
+							EditorModel.State.CurrentSection.Bottom = EditorModel.State.Presenter.EndSelection.Row;
+						}
+
+						EditorModel.State.EndUpdate();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add("SetSectionBounds", command);
+				}
+
+				return command;
+			}
+		}
+
 		public static DelegateCommand MergeCells
 		{
 			get
