@@ -144,6 +144,7 @@ namespace CellReport.Editor.ViewModel
 				OnPropertyChanged(nameof(IsDateTimeContent));
 				OnPropertyChanged(nameof(IsBarCodeContent));
 				OnPropertyChanged(nameof(IsImageContent));
+				OnPropertyChanged(nameof(IsActionContent));
 				OnPropertyChanged(nameof(HasContent));
 				OnPropertyChanged(nameof(CurrentContents));
 
@@ -426,6 +427,25 @@ namespace CellReport.Editor.ViewModel
 					return;
 
 				if (GetContent<ImageContent>() != null)
+					OnPropertyChanged();
+			}
+		}
+
+		public bool IsActionContent
+		{
+			get
+			{
+				if (_presenter == null)
+					return false;
+
+				return GetContent<ActionContent>() != null;
+			}
+			set
+			{
+				if (_presenter == null)
+					return;
+
+				if (GetContent<ActionContent>() != null)
 					OnPropertyChanged();
 			}
 		}

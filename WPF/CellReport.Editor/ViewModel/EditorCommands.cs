@@ -604,6 +604,28 @@ namespace CellReport.Editor.ViewModel
 			}
 		}
 
+		public static DelegateCommand AddActionContent
+		{
+			get
+			{
+				if (!Commands.TryGetValue("AddActionContent", out var command))
+				{
+					void Action()
+					{
+						EditorModel.State.BeginUpdate();
+						ContentHelper.AddContent(new ActionContent(EditorModel.State.Manager) { Type = ActionType.MouseDblClick });
+						EditorModel.State.CurrentCell = EditorModel.State.CurrentCell;
+						EditorModel.State.EndUpdate();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add("AddActionContent", command);
+				}
+
+				return command;
+			}
+		}
+
 		public static DelegateCommand DeleteContent
 		{
 			get

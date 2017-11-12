@@ -242,19 +242,21 @@
 					<fluent:DropDownButton Header="Добавить"
 																Icon="Images\32\add_button.png"
 																LargeIcon="Images\32\add_button.png">
-						<MenuItem Header="Добавить текст" Command="local:EditorCommands.AddTextContent" 
+						<MenuItem Header="Текст" Command="local:EditorCommands.AddTextContent" 
 											IsEnabled="{Binding IsTextContent, Converter={StaticResource InvertBoolConverter}}" />
-						<MenuItem Header="Добавить число" Command="local:EditorCommands.AddDecimalContent"
+						<MenuItem Header="Число" Command="local:EditorCommands.AddDecimalContent"
 													IsEnabled="{Binding IsDecimalContent, Converter={StaticResource InvertBoolConverter}}"></MenuItem>
-						<MenuItem Header="Добавить дату" Command="local:EditorCommands.AddDateTimeContent"
+						<MenuItem Header="Дату и время" Command="local:EditorCommands.AddDateTimeContent"
 													IsEnabled="{Binding IsDateTimeContent, Converter={StaticResource InvertBoolConverter}}"></MenuItem>
-						<MenuItem Header="Добавить штрих-код" Command="local:EditorCommands.AddBarCodeContent"
+						<MenuItem Header="Штрих-код" Command="local:EditorCommands.AddBarCodeContent"
 													IsEnabled="{Binding IsBarCodeContent, Converter={StaticResource InvertBoolConverter}}"></MenuItem>
-						<MenuItem Header="Добавить изображение" Command="local:EditorCommands.AddImageContent"
+						<MenuItem Header="Изображение" Command="local:EditorCommands.AddImageContent"
 													IsEnabled="{Binding IsImageContent, Converter={StaticResource InvertBoolConverter}}"></MenuItem>
+						<MenuItem Header="Действие" Command="local:EditorCommands.AddActionContent"
+											IsEnabled="{Binding IsActionContent, Converter={StaticResource InvertBoolConverter}}"></MenuItem>
 					</fluent:DropDownButton>
 
-					<fluent:Button Header="Удалить" Size="Large" LargeIcon="Images/32/delete.png" Command="local:EditorCommands.DeleteContent"></fluent:Button>
+					<fluent:Button Header="Удалить все" Size="Large" LargeIcon="Images/32/delete.png" Command="local:EditorCommands.DeleteContent"></fluent:Button>
 				</fluent:RibbonGroupBox>
 				<fluent:RibbonGroupBox Header="Стиль" Visibility="{Binding HasStyledContent, Converter={StaticResource BoolToHiddenConverter}}">
 					<fluent:InRibbonGallery Visibility="{Binding IsTextContent, Converter={StaticResource BoolToHiddenConverter}}" 
