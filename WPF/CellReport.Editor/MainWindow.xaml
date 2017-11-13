@@ -304,143 +304,170 @@
 						<TextBox Grid.Column="1" Margin="3" Height="35" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" Text="{Binding CurrentText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsTextContent}" TextWrapping="Wrap" AcceptsReturn="True"></TextBox>
 					</Grid>
 					<TabControl Grid.Row="1" Grid.Column="0" Width="200">
-						<TabItem Header="Параметры" IsEnabled="{Binding HasContent}">
-							<Grid>
-								<Grid.RowDefinitions>
-									<RowDefinition Height="Auto"></RowDefinition>
-									<RowDefinition Height="Auto"></RowDefinition>
-									<RowDefinition Height="Auto"></RowDefinition>
-									<RowDefinition Height="*"></RowDefinition>
-								</Grid.RowDefinitions>
-								<Label>Список содержимого</Label>
-								<ListBox Grid.Row="1" Height="100" Margin="2" ItemsSource="{Binding CurrentContents}" SelectedItem="{Binding CurrentContent}" IsEnabled="{Binding HasContent}"></ListBox>
-								<Grid Grid.Row="2">
+						<TabItem Header="Параметры">
+							<ScrollViewer VerticalScrollBarVisibility="Auto">
+								<Grid>
 									<Grid.RowDefinitions>
-										<RowDefinition></RowDefinition>
-										<RowDefinition></RowDefinition>
-										<RowDefinition Height="30"></RowDefinition>
+										<RowDefinition Height="Auto"></RowDefinition>
+										<RowDefinition Height="Auto"></RowDefinition>
+										<RowDefinition Height="Auto"></RowDefinition>
+										<RowDefinition Height="*"></RowDefinition>
 									</Grid.RowDefinitions>
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition></ColumnDefinition>
-										<ColumnDefinition></ColumnDefinition>
-									</Grid.ColumnDefinitions>
-									<Label Grid.ColumnSpan="2">Список параметров</Label>
-									<ListBox Grid.Row="1" Grid.Column="0" Height="100" Margin="2" Grid.ColumnSpan="2" ItemsSource="{Binding ContentParams}" SelectedItem="{Binding CurrentParam}" DisplayMemberPath="Name"></ListBox>
-									<Button Grid.Row="2" Grid.Column="0" Margin="2" Command="local:EditorCommands.AddParam" IsEnabled="{Binding CurrentContent, Converter={StaticResource IsNotNullConverter}}">Добавить</Button>
-									<Button Grid.Row="2" Grid.Column="1" Margin="2" Command="local:EditorCommands.DeleteParam" IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}">Удалить</Button>
+									<Label>Список содержимого</Label>
+									<ListBox Grid.Row="1" Height="100" Margin="2" ItemsSource="{Binding CurrentContents}" SelectedItem="{Binding CurrentContent}" IsEnabled="{Binding HasContent}"></ListBox>
+									<Grid Grid.Row="2">
+										<Grid.RowDefinitions>
+											<RowDefinition></RowDefinition>
+											<RowDefinition></RowDefinition>
+											<RowDefinition Height="30"></RowDefinition>
+										</Grid.RowDefinitions>
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition></ColumnDefinition>
+											<ColumnDefinition></ColumnDefinition>
+										</Grid.ColumnDefinitions>
+										<Label Grid.ColumnSpan="2">Список параметров</Label>
+										<ListBox Grid.Row="1" Grid.Column="0" Height="100" Margin="2" Grid.ColumnSpan="2" 
+														 ItemsSource="{Binding ContentParams}" 
+														IsEnabled="{Binding HasContent}"
+														 SelectedItem="{Binding CurrentParam}" DisplayMemberPath="Name"></ListBox>
+										<Button Grid.Row="2" Grid.Column="0" Margin="2" Command="local:EditorCommands.AddParam" IsEnabled="{Binding CurrentContent, Converter={StaticResource IsNotNullConverter}}">Добавить</Button>
+										<Button Grid.Row="2" Grid.Column="1" Margin="2" Command="local:EditorCommands.DeleteParam" IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}">Удалить</Button>
+									</Grid>
+									<Grid Grid.Row="3" Margin="0 0 2 0">
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="Auto"></ColumnDefinition>
+											<ColumnDefinition Width="*"></ColumnDefinition>
+										</Grid.ColumnDefinitions>
+										<Grid.RowDefinitions>
+											<RowDefinition Height="30"></RowDefinition>
+											<RowDefinition Height="30"></RowDefinition>
+											<RowDefinition Height="30"></RowDefinition>
+											<RowDefinition Height="30"></RowDefinition>
+											<RowDefinition Height="30"></RowDefinition>
+											<RowDefinition Height="30"></RowDefinition>
+											<RowDefinition Height="30"></RowDefinition>
+										</Grid.RowDefinitions>
+
+										<Label Grid.Row="0" Grid.Column="0">Имя</Label>
+										<TextBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="0" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentParam.Name, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+										<Label Grid.Row="1" Grid.Column="0">Значение</Label>
+										<TextBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="1" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentParam.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+										<Label Grid.Row="2" Grid.Column="0">Цель</Label>
+										<ComboBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="2" Grid.Column="1" MaxHeight="22" SelectedValue="{Binding CurrentParam.Target, Mode=TwoWay}" SelectedValuePath="Tag">
+											<ComboBoxItem Tag="">Не установлено</ComboBoxItem>
+											<ComboBoxItem Tag="Text">Текст</ComboBoxItem>
+											<ComboBoxItem Tag="Value">Значение</ComboBoxItem>
+											<ComboBoxItem Tag="Code">Штрих-код</ComboBoxItem>
+											<ComboBoxItem Tag="Type">Тип штрих-кода</ComboBoxItem>
+											<ComboBoxItem Tag="Uri">Адрес изображения</ComboBoxItem>
+											<ComboBoxItem Tag="Style">Стиль</ComboBoxItem>
+											<ComboBoxItem Tag="Style.Color">Цвет</ComboBoxItem>
+											<ComboBoxItem Tag="Style.NegativeColor">Цвет отрицательного числа</ComboBoxItem>
+											<ComboBoxItem Tag="Style.HAlignment">Выравнивание по горизонтали</ComboBoxItem>
+											<ComboBoxItem Tag="Style.VAlignment">Выравнивание по вертикали</ComboBoxItem>
+											<ComboBoxItem Tag="Style.Direction">Направление</ComboBoxItem>
+											<ComboBoxItem Tag="Style.Angle">Угол наклона</ComboBoxItem>
+											<ComboBoxItem Tag="Style.Font.Size">Размер шрифта</ComboBoxItem>
+											<ComboBoxItem Tag="Style.Font.Family">Шрифт</ComboBoxItem>
+											<ComboBoxItem Tag="Style.Font.Style">Стиль шрифта</ComboBoxItem>
+											<ComboBoxItem Tag="Style.Format">Форматирование</ComboBoxItem>
+											<ComboBoxItem Tag="Style.Culture">Культура</ComboBoxItem>
+										</ComboBox>
+
+										<Label Grid.Row="3" Grid.Column="0">Выражение</Label>
+										<TextBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="3" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentParam.Expression}"></TextBox>
+
+										<Label Grid.Row="4" Grid.Column="0">Формат</Label>
+										<TextBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="4" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentParam.Format}"></TextBox>
+
+										<Label Grid.Row="5" Grid.Column="0">Культура</Label>
+										<TextBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="5" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentParam.Culture}"></TextBox>
+
+										<Label Grid.Row="6" Grid.Column="0">Тип</Label>
+										<ComboBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="6" Grid.Column="1" MaxHeight="22" SelectedValue="{Binding CurrentParam.Type, Mode=TwoWay}" SelectedValuePath="Tag">
+											<ComboBoxItem Tag="">Не установлено</ComboBoxItem>
+											<ComboBoxItem Tag="Decimal">Число</ComboBoxItem>
+											<ComboBoxItem Tag="DateTime">Дата и время</ComboBoxItem>
+										</ComboBox>
+									</Grid>
 								</Grid>
-								<Grid Grid.Row="3">
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="Auto"></ColumnDefinition>
-										<ColumnDefinition Width="*"></ColumnDefinition>
-									</Grid.ColumnDefinitions>
-									<Grid.RowDefinitions>
-										<RowDefinition Height="30"></RowDefinition>
-										<RowDefinition Height="30"></RowDefinition>
-										<RowDefinition Height="30"></RowDefinition>
-										<RowDefinition Height="30"></RowDefinition>
-										<RowDefinition Height="30"></RowDefinition>
-										<RowDefinition Height="30"></RowDefinition>
-										<RowDefinition Height="30"></RowDefinition>
-									</Grid.RowDefinitions>
-									
-									<Label Grid.Row="0" Grid.Column="0">Имя</Label>
-									<TextBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="0" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentParam.Name, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-
-									<Label Grid.Row="1" Grid.Column="0">Значение</Label>
-									<TextBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="1" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentParam.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-
-									<Label Grid.Row="2" Grid.Column="0">Цель</Label>
-									<ComboBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="2" Grid.Column="1" MaxHeight="22" SelectedValue="{Binding CurrentParam.Target, Mode=TwoWay}" SelectedValuePath="Tag">
-										<ComboBoxItem Tag="">Не установлено</ComboBoxItem>
-										<ComboBoxItem Tag="Text">Текст</ComboBoxItem>
-										<ComboBoxItem Tag="Value">Значение</ComboBoxItem>
-										<ComboBoxItem Tag="Code">Штрих-код</ComboBoxItem>
-										<ComboBoxItem Tag="Type">Тип штрих-кода</ComboBoxItem>
-										<ComboBoxItem Tag="Uri">Адрес изображения</ComboBoxItem>
-										<ComboBoxItem Tag="Style">Стиль</ComboBoxItem>
-										<ComboBoxItem Tag="Style.Color">Цвет</ComboBoxItem>
-										<ComboBoxItem Tag="Style.NegativeColor">Цвет отрицательного числа</ComboBoxItem>
-										<ComboBoxItem Tag="Style.HAlignment">Выравнивание по горизонтали</ComboBoxItem>
-										<ComboBoxItem Tag="Style.VAlignment">Выравнивание по вертикали</ComboBoxItem>
-										<ComboBoxItem Tag="Style.Direction">Направление</ComboBoxItem>
-										<ComboBoxItem Tag="Style.Angle">Угол наклона</ComboBoxItem>
-										<ComboBoxItem Tag="Style.Font.Size">Размер шрифта</ComboBoxItem>
-										<ComboBoxItem Tag="Style.Font.Family">Шрифт</ComboBoxItem>
-										<ComboBoxItem Tag="Style.Font.Style">Стиль шрифта</ComboBoxItem>
-										<ComboBoxItem Tag="Style.Format">Форматирование</ComboBoxItem>
-										<ComboBoxItem Tag="Style.Culture">Культура</ComboBoxItem>
-									</ComboBox>
-
-									<Label Grid.Row="3" Grid.Column="0">Выражение</Label>
-									<TextBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="3" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentParam.Expression}"></TextBox>
-
-									<Label Grid.Row="4" Grid.Column="0">Формат</Label>
-									<TextBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="4" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentParam.Format}"></TextBox>
-
-									<Label Grid.Row="5" Grid.Column="0">Культура</Label>
-									<TextBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="5" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentParam.Culture}"></TextBox>
-
-									<Label Grid.Row="6" Grid.Column="0">Тип</Label>
-									<ComboBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="6" Grid.Column="1" MaxHeight="22" SelectedValue="{Binding CurrentParam.Type, Mode=TwoWay}" SelectedValuePath="Tag">
-										<ComboBoxItem Tag="">Не установлено</ComboBoxItem>
-										<ComboBoxItem Tag="Decimal">Число</ComboBoxItem>
-										<ComboBoxItem Tag="DateTime">Дата и время</ComboBoxItem>
-									</ComboBox>
-								</Grid>
-							</Grid>
+							</ScrollViewer>
 						</TabItem>
 						<TabItem Header="Секции">
-							<StackPanel>
-								<Grid>
+							<ScrollViewer VerticalScrollBarVisibility="Auto">
+								<StackPanel>
+									<Grid>
+										<Grid.RowDefinitions>
+											<RowDefinition></RowDefinition>
+											<RowDefinition></RowDefinition>
+											<RowDefinition Height="30"></RowDefinition>
+										</Grid.RowDefinitions>
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition></ColumnDefinition>
+											<ColumnDefinition></ColumnDefinition>
+										</Grid.ColumnDefinitions>
+										<ListBox Grid.Row="1" Grid.Column="0" Height="200" Margin="2" Grid.ColumnSpan="2" ItemsSource="{Binding Sections}" SelectedItem="{Binding CurrentSection}" DisplayMemberPath="Name"></ListBox>
+										<Button Grid.Row="2" Grid.Column="0" Margin="2" Command="local:EditorCommands.AddSection">Добавить</Button>
+										<Button Grid.Row="2" Grid.Column="1" Margin="2" Command="local:EditorCommands.DeleteSection" IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}">Удалить</Button>
+									</Grid>
+									<Grid Margin="0 0 2 0">
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="Auto"></ColumnDefinition>
+											<ColumnDefinition Width="*"></ColumnDefinition>
+										</Grid.ColumnDefinitions>
+										<Grid.RowDefinitions>
+											<RowDefinition Height="30"></RowDefinition>
+											<RowDefinition Height="30"></RowDefinition>
+											<RowDefinition Height="30"></RowDefinition>
+											<RowDefinition Height="30"></RowDefinition>
+											<RowDefinition Height="30"></RowDefinition>
+											<RowDefinition Height="30"></RowDefinition>
+										</Grid.RowDefinitions>
+
+										<Label Grid.Row="0" Grid.Column="0">Имя</Label>
+										<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="0" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.Name, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+										<Label Grid.Row="1" Grid.Column="0">Лево</Label>
+										<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="1" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.Left, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+										<Label Grid.Row="2" Grid.Column="0">Верх</Label>
+										<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="2" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.Top, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+										<Label Grid.Row="3" Grid.Column="0">Право</Label>
+										<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="3" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.Right, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+										<Label Grid.Row="4" Grid.Column="0">Низ</Label>
+										<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="4" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.Bottom, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+										<Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="2 2 0 2" Command="local:EditorCommands.SetSectionBounds" IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}">Установить</Button>
+									</Grid>
+								</StackPanel>
+							</ScrollViewer>
+						</TabItem>
+						<TabItem Header="Ячейка">
+							<ScrollViewer VerticalScrollBarVisibility="Auto">
+								<Grid Margin="2">
 									<Grid.RowDefinitions>
-										<RowDefinition></RowDefinition>
-										<RowDefinition></RowDefinition>
+										<RowDefinition Height="30"></RowDefinition>
 										<RowDefinition Height="30"></RowDefinition>
 									</Grid.RowDefinitions>
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition></ColumnDefinition>
-										<ColumnDefinition></ColumnDefinition>
-									</Grid.ColumnDefinitions>
-									<ListBox Grid.Row="1" Grid.Column="0" Height="200" Margin="2" Grid.ColumnSpan="2" ItemsSource="{Binding Sections}" SelectedItem="{Binding CurrentSection}" DisplayMemberPath="Name"></ListBox>
-									<Button Grid.Row="2" Grid.Column="0" Margin="2" Command="local:EditorCommands.AddSection">Добавить</Button>
-									<Button Grid.Row="2" Grid.Column="1" Margin="2" Command="local:EditorCommands.DeleteSection" IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}">Удалить</Button>
-								</Grid>
-								<Grid>
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="Auto"></ColumnDefinition>
 										<ColumnDefinition Width="*"></ColumnDefinition>
 									</Grid.ColumnDefinitions>
-									<Grid.RowDefinitions>
-										<RowDefinition Height="30"></RowDefinition>
-										<RowDefinition Height="30"></RowDefinition>
-										<RowDefinition Height="30"></RowDefinition>
-										<RowDefinition Height="30"></RowDefinition>
-										<RowDefinition Height="30"></RowDefinition>
-										<RowDefinition Height="30"></RowDefinition>
-									</Grid.RowDefinitions>
 
-									<Label Grid.Row="0" Grid.Column="0">Имя</Label>
-									<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="0" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.Name, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+									<Label Grid.Row="0" Grid.Column="0">Ширина</Label>
+									<TextBox Grid.Row="0" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentCellWidth, UpdateSourceTrigger=PropertyChanged}"></TextBox>
 
-									<Label Grid.Row="1" Grid.Column="0">Лево</Label>
-									<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="1" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.Left, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-
-									<Label Grid.Row="2" Grid.Column="0">Верх</Label>
-									<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="2" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.Top, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-
-									<Label Grid.Row="3" Grid.Column="0">Право</Label>
-									<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="3" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.Right, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-
-									<Label Grid.Row="4" Grid.Column="0">Низ</Label>
-									<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="4" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.Bottom, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-
-									<Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="2" Command="local:EditorCommands.SetSectionBounds" IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}">Установить</Button>
+									<Label Grid.Row="1" Grid.Column="0">Высота</Label>
+									<TextBox Grid.Row="1" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentCellHeight, UpdateSourceTrigger=PropertyChanged}"></TextBox>
 								</Grid>
-							</StackPanel>
+							</ScrollViewer>
 						</TabItem>
 					</TabControl>
-					<Grid Grid.Row="1" Grid.Column="1" x:Name="ReportContainer">
+					<Grid Grid.Row="1" Grid.Column="1" Margin="2 0 0 0" x:Name="ReportContainer">
 					</Grid>
 				</Grid>
 			</TabItem>
@@ -475,6 +502,15 @@
 			<fluent:StatusBarItem HorizontalAlignment="Left" Value=" х " />
 			<fluent:StatusBarItem HorizontalAlignment="Left" Value="{Binding CurrentCellHeight, StringFormat={}{0}}" />
 			<fluent:StatusBarItem HorizontalAlignment="Left" Value=" мм " />
+
+			<fluent:StatusBarItem HorizontalAlignment="Left" Value=" (" Visibility="{Binding HaveSelection, Converter={StaticResource BooleanToVisibilityConverter}}" />
+			<fluent:StatusBarItem HorizontalAlignment="Left" Value="{Binding SelectionWidth, StringFormat={}{0}}"
+					Visibility="{Binding HaveSelection, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+			<fluent:StatusBarItem HorizontalAlignment="Left" Value=" х " Visibility="{Binding HaveSelection, Converter={StaticResource BooleanToVisibilityConverter}}" />
+			<fluent:StatusBarItem HorizontalAlignment="Left" Value="{Binding SelectionHeight, StringFormat={}{0}}" 
+					Visibility="{Binding HaveSelection, Converter={StaticResource BooleanToVisibilityConverter}}" />
+			<fluent:StatusBarItem HorizontalAlignment="Left" Value=" мм) " Visibility="{Binding HaveSelection, Converter={StaticResource BooleanToVisibilityConverter}}" />
+			
 			<fluent:StatusBarItem Title="Масштаб" HorizontalAlignment="Right">
 				<Slider Minimum="0"
 				        Maximum="200"

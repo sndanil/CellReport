@@ -61,6 +61,11 @@ namespace CellReport.Editor.ViewModel
 				case "CurrentCell":
 					CurrentCell = CurrentCell;
 					break;
+				case "EndSelection":
+					OnPropertyChanged(nameof(SelectionWidth));
+					OnPropertyChanged(nameof(SelectionHeight));
+					OnPropertyChanged(nameof(HaveSelection));
+					break;
 				//case "State":
 					//TotalUpdate();
 				//	break;
@@ -83,9 +88,11 @@ namespace CellReport.Editor.ViewModel
 			{
 				case "ColumnWidth":
 					OnPropertyChanged(nameof(CurrentCellWidth));
+					OnPropertyChanged(nameof(SelectionWidth));
 					break;
 				case "RowHeight":
 					OnPropertyChanged(nameof(CurrentCellHeight));
+					OnPropertyChanged(nameof(SelectionHeight));
 					break;
 			}
 		}
@@ -133,6 +140,8 @@ namespace CellReport.Editor.ViewModel
 
 				Presenter.CurrentCell = value;
 				OnPropertyChanged();
+				OnPropertyChanged(nameof(CurrentCellWidth));
+				OnPropertyChanged(nameof(CurrentCellHeight));
 				OnPropertyChanged(nameof(CurrentCellStyle));
 				OnPropertyChanged(nameof(CurrentTextStyle));
 				OnPropertyChanged(nameof(CurrentDecimalStyle));
@@ -169,7 +178,10 @@ namespace CellReport.Editor.ViewModel
 				if (_presenter == null)
 					return;
 
+				OnPropertyChanged(nameof(SelectionWidth));
+				Manager.SetColumnWidth(Presenter.CurrentCell.Column, value);
 				Presenter.Update();
+				OnPropertyChanged();
 			}
 		}
 
@@ -187,9 +199,115 @@ namespace CellReport.Editor.ViewModel
 				if (_presenter == null)
 					return;
 
+				OnPropertyChanged(nameof(SelectionHeight));
+				Manager.SetRowHeight(Presenter.CurrentCell.Row, value);
 				Presenter.Update();
+				OnPropertyChanged();
 			}
 		}
+
+		public bool HaveSelection
+		{
+			get
+			{
+				if (Presenter == null)
+					return false;
+
+				if (Presenter.HaveSelection())
+					return true;
+
+				return Manager.GetCell(Presenter.CurrentCell)?.Span.ColSpan > 0 || Manager.GetCell(Presenter.CurrentCell)?.Span.RowSpan > 0;
+			}
+			set
+			{
+				if (_presenter == null)
+					return;
+
+				OnPropertyChanged();
+			}
+		}
+
+		public float SelectionWidth
+		{
+			get
+			{
+				if (_presenter == null)
+					return 0;
+
+				if (Presenter.HaveSelection())
+				{
+					float width = 0;
+					var start = EditorModel.State.Presenter.GetStartSelection();
+					var end = EditorModel.State.Presenter.GetEndSelection();
+					for (int i = start.Column; i <= end.Column; i++)
+					{
+						width += Manager.GetColumnWidth(i);
+					}
+					return width;
+				}
+
+				var cell = Manager.GetCell(CurrentCell);
+				if (cell != null)
+				{
+					float width = 0;
+					for (int i = cell.Location.Column; i <= cell.Location.Column + cell.Span.ColSpan; i++)
+					{
+						width += Manager.GetColumnWidth(i);
+					}
+					return width;
+				}
+
+				return CurrentCellWidth;
+			}
+			set
+			{
+				if (_presenter == null)
+					return;
+
+				OnPropertyChanged();
+			}
+		}
+
+		public float SelectionHeight
+		{
+			get
+			{
+				if (_presenter == null)
+					return 0;
+
+				if (Presenter.HaveSelection())
+				{
+					float height = 0;
+					var start = EditorModel.State.Presenter.GetStartSelection();
+					var end = EditorModel.State.Presenter.GetEndSelection();
+					for (int i = start.Row; i <= end.Row; i++)
+					{
+						height += Manager.GetRowHeight(i);
+					}
+					return height;
+				}
+
+				var cell = Manager.GetCell(CurrentCell);
+				if (cell != null)
+				{
+					float height = 0;
+					for (int i = cell.Location.Row; i <= cell.Location.Row + cell.Span.RowSpan; i++)
+					{
+						height += Manager.GetRowHeight(i);
+					}
+					return height;
+				}
+
+				return CurrentCellHeight;
+			}
+			set
+			{
+				if (_presenter == null)
+					return;
+
+				OnPropertyChanged();
+			}
+	}
 
 		private T GetContent<T>() where T : BaseContent
 		{
