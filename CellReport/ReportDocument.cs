@@ -21,6 +21,9 @@ namespace CellReport
 		[field:NonSerialized]
 		public event Action<string> SectionAttached;
 
+		[field: NonSerialized]
+		public event Action<ISectionObject> SetDefaultSectionObject;
+
 		public CellManager Manager { get; private set; }
 
 		public ReportDocument(CellTemplate template)
@@ -213,6 +216,8 @@ namespace CellReport
 						SetParameter(param.Name, value);
 				}
 			}
+
+			SetDefaultSectionObject?.Invoke(obj);
 		}
 
 		public void SetSectionObject(string prefix, ISectionObject obj)
