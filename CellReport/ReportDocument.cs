@@ -18,6 +18,9 @@ namespace CellReport
 		[NonSerialized] private string _lastSectionName;
 		[NonSerialized] private BookMark _lastBookMark;
 
+		[field:NonSerialized]
+		public event Action<string> SectionAttached;
+
 		public CellManager Manager { get; private set; }
 
 		public ReportDocument(CellTemplate template)
@@ -175,6 +178,8 @@ namespace CellReport
 				Manager.PrintSettings.HeaderFixedRows.Add(new Range(_rowNumberForAddSection - section.Height, _rowNumberForAddSection - 1));
 			if (section.IsFooterFixed)
 				Manager.PrintSettings.FooterFixedRows.Add(new Range(_rowNumberForAddSection - section.Height, _rowNumberForAddSection - 1));
+
+			SectionAttached?.Invoke(sectionName);
 		}
 
 		public void JoinSection(string sectionName)
@@ -184,6 +189,8 @@ namespace CellReport
 			var section = _template.GetSectionByName(sectionName);
 			CreateCells(_rowNumberForJoinSection, _colNumberForJoinSection, section);
 			_colNumberForJoinSection += section.Width;
+
+			SectionAttached?.Invoke(sectionName);
 		}
 
 		public void SetParameter(string paramName, object value)
@@ -200,7 +207,8 @@ namespace CellReport
 			{
 				foreach (var param in cell.Content?.GetParams() ?? new Param[0])
 				{
-					var value = obj.GetParamValue(param.Name);
+					var value = obj.GetParamValue(param.Name) ?? obj.GetParamValue(param.Assign);
+
 					if (value != null)
 						SetParameter(param.Name, value);
 				}
@@ -216,6 +224,12 @@ namespace CellReport
 					if (param.Name?.StartsWith(prefix) == true)
 					{
 						var value = obj.GetParamValue(param.Name.Replace(prefix, string.Empty));
+						if (value != null)
+							SetParameter(param.Name, value);
+					}
+					if (param.Assign?.StartsWith(prefix) == true)
+					{
+						var value = obj.GetParamValue(param.Assign.Replace(prefix, string.Empty));
 						if (value != null)
 							SetParameter(param.Name, value);
 					}

@@ -218,6 +218,7 @@
 		<xs:attribute name='Culture' type='xs:string' />
 		<xs:attribute name='Format' type='xs:string' />
 		<xs:attribute name='Type' type='xs:string' />
+		<xs:attribute name='Assign' type='xs:string' />
 	</xs:complexType>
 
 	<xs:complexType name='SeriesType'>

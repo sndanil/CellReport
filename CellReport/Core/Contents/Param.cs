@@ -22,6 +22,7 @@ namespace CellReport.Core.Contents
 		private string _culture;
 		private string _format;
 		private string _type;
+		private string _assign;
 
 		internal void SetManager(CellManager manager)
 		{
@@ -184,6 +185,19 @@ namespace CellReport.Core.Contents
 			}
 		}
 
+		public string Assign
+		{
+			get => _assign;
+			set
+			{
+				if (_assign != value)
+				{
+					_assign = value;
+					OnPropertyChanged("Assign");
+				}
+			}
+		}
+
 		public Param Clone(CellManager manager, BaseContent owner)
 		{
 			return new Param(manager, owner)
@@ -194,7 +208,8 @@ namespace CellReport.Core.Contents
 				Format = Format,
 				Target = Target,
 				Type = Type,
-				Value = Value
+				Value = Value,
+				Assign = Assign
 			};
 		}
 
@@ -204,6 +219,7 @@ namespace CellReport.Core.Contents
 							string.IsNullOrEmpty(Name) ? null : new XAttribute("Name", Name),
 							string.IsNullOrEmpty(Target) ? null : new XAttribute("Target", Target),
 							Value == null ? null : new XAttribute("Value", Value),
+							string.IsNullOrEmpty(Assign) ? null : new XAttribute("Assign", Assign),
 							Expression == null ? null : new XAttribute("Expression", ExpressionID),
 							string.IsNullOrEmpty(Type) ? null : new XAttribute("Type", Type),
 							string.IsNullOrEmpty(Format) ? null : new XAttribute("Format", Format),
@@ -230,6 +246,8 @@ namespace CellReport.Core.Contents
 				param.Format = element.Attribute("Format")?.Value;
 			if (element.Attribute("Type") != null)
 				param.Type = element.Attribute("Type")?.Value;
+			if (element.Attribute("Assign") != null)
+				param.Assign = element.Attribute("Assign")?.Value;
 
 			return param;
 		}

@@ -346,6 +346,7 @@
 											<RowDefinition Height="30"></RowDefinition>
 											<RowDefinition Height="30"></RowDefinition>
 											<RowDefinition Height="30"></RowDefinition>
+											<RowDefinition Height="30"></RowDefinition>
 										</Grid.RowDefinitions>
 
 										<Label Grid.Row="0" Grid.Column="0">Имя</Label>
@@ -391,6 +392,9 @@
 											<ComboBoxItem Tag="Decimal">Число</ComboBoxItem>
 											<ComboBoxItem Tag="DateTime">Дата и время</ComboBoxItem>
 										</ComboBox>
+
+										<Label Grid.Row="7" Grid.Column="0">Присвоить</Label>
+										<TextBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="7" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentParam.Assign}"></TextBox>
 									</Grid>
 								</Grid>
 							</ScrollViewer>
