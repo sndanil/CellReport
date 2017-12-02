@@ -173,7 +173,8 @@ namespace CellReport.Core.Contents
 					var value = DateTime.MinValue;
 					if (param.Value is string)
 					{
-						if (!DateTime.TryParseExact(param.Value?.ToString(), "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out value))
+						if (!DateTime.TryParseExact(param.Value?.ToString(), "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out value)
+							&& !DateTime.TryParseExact(param.Value?.ToString(), "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out value))
 							return string.Empty;
 					}
 					else
