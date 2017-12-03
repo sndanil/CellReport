@@ -174,7 +174,7 @@ namespace CellReport.Core.Contents
 					if (param.Value is string)
 					{
 						if (!DateTime.TryParseExact(param.Value?.ToString(), "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out value)
-							&& !DateTime.TryParseExact(param.Value?.ToString(), "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out value))
+							&& !DateTime.TryParseExact(param.Value?.ToString(), param.Format ?? "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out value))
 							return string.Empty;
 					}
 					else

@@ -286,7 +286,11 @@ namespace CellReport.Core.Contents
 				if (paramName == null)
 					result = text;
 				else
+				{
 					result = GetFormattedParamValueByName(paramName) ?? text;
+					if (CellManager.IsDesignMode && string.IsNullOrEmpty(result))
+						result = $"[{paramName}]";
+				}
 			}
 			else
 			{

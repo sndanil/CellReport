@@ -378,7 +378,7 @@
 										</ComboBox>
 
 										<Label Grid.Row="3" Grid.Column="0">Выражение</Label>
-										<TextBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="3" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentParam.Expression}"></TextBox>
+										<TextBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="3" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentParam.ExpressionID}"></TextBox>
 
 										<Label Grid.Row="4" Grid.Column="0">Формат</Label>
 										<TextBox IsEnabled="{Binding CurrentParam, Converter={StaticResource IsNotNullConverter}}" Grid.Row="4" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentParam.Format}"></TextBox>

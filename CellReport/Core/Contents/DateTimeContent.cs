@@ -44,8 +44,7 @@ namespace CellReport.Core.Contents
 			if (object.ReferenceEquals(this, obj))
 				return true;
 
-			var other = obj as FormatContentStyle;
-			if (other != null)
+			if (obj is FormatContentStyle other)
 				return base.Equals(obj) && this.Format.Equals(other.Format)
 						&& this.Culture.Equals(other.Culture);
 			else
@@ -125,6 +124,8 @@ namespace CellReport.Core.Contents
 
 		private DateTime _value = DateTime.MinValue;
 
+		private static readonly DateTime DefaultDateTimeForView = new DateTime(1999, 12, 31, 23, 59, 59);
+
 		public DateTimeContent(CellManager manager)
 				: base(manager)
 		{
@@ -162,24 +163,24 @@ namespace CellReport.Core.Contents
 		public DateTime GetValue()
 		{
 			var valueAsObject = GetParamValueByTarget("Value");
-			DateTime value = DateTime.Now;
-			if ((valueAsObject is string) && DateTime.TryParse(valueAsObject.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out value))
+			if (valueAsObject is string valueAsStr
+				&& DateTime.TryParseExact(valueAsStr, ((DateTimeContentStyle)GetActualStyle()).Format, CultureInfo.InvariantCulture, DateTimeStyles.None, out var value))
 				return value;
 
 			try
 			{
-				return valueAsObject != null ? Convert.ToDateTime(valueAsObject) : Value;
+				return valueAsObject != null ? Convert.ToDateTime(valueAsObject) : (Value == DateTime.MinValue ? DefaultDateTimeForView : Value);
 			}
 			catch (FormatException)
 			{
-				return DateTime.MinValue;
+				return DefaultDateTimeForView;
 			}
 		}
 
 		public DateTime Value
 		{
-			get { return _value; }
-			set { _value = value; }
+			get => _value;
+			set => _value = value;
 		}
 
 		internal new static DateTimeContent Parse(CellManager manager, XElement element)

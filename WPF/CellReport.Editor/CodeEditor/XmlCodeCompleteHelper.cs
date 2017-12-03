@@ -360,6 +360,15 @@ namespace CellReport.Editor.CodeEditor
 										break;
 								}
 								break;
+							case "Expression":
+								switch (elementName)
+								{
+									case "Param":
+										InvokeCompletionWindow(
+											manager.GetExpressions().Select(x => new Tuple<string, string>(x.ID, x.GetType().Name)).ToList(), XmlCompletionDataType.AttributeValue);
+										break;
+								}
+								break;
 						}
 					}
 				}
