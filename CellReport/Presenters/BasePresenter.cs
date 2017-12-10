@@ -60,7 +60,7 @@ namespace CellReport.Presenters
 
 		protected void ProcessFit()
 		{
-			if (!_manager.AutoFitted)
+			if (!_manager.AutoFitted && !CellManager.IsDesignMode)
 			{
 				var alreadyFit = new HashSet<Cell>();
 				foreach (var row in _manager.GetAutoFitRows())
