@@ -36,6 +36,21 @@ namespace CellReport.Presenters.WinForms
 			Application.Idle += Application_Idle;
 			_moveTimer.Interval = 100;
 			_moveTimer.Tick += MoveTimerOnTick;
+
+			Localization.LocalizationManager.AddDefaultString("Report/Print", "Печать");
+			Localization.LocalizationManager.AddDefaultString("Report/CustomPrint", "Выборочная печать");
+			Localization.LocalizationManager.AddDefaultString("Report/Preview", "Предварительный просмотр");
+			Localization.LocalizationManager.AddDefaultString("Report/PageSettings", "Параметры страницы");
+			Localization.LocalizationManager.AddDefaultString("Report/AutoFitPage", "Автоширина по странице");
+			Localization.LocalizationManager.AddDefaultString("Report/ShowHideGrid", "Отобразить или скрыть сетку");
+			Localization.LocalizationManager.AddDefaultString("Report/ShowHideHeaders", "Отобразить или скрыть заголовки строк и столбцов");
+			Localization.LocalizationManager.AddDefaultString("Report/ExportToExcel", "Экспорт в Excel");
+			Localization.LocalizationManager.AddDefaultString("Report/Search", "Поиск");
+			Localization.LocalizationManager.AddDefaultString("Report/GoToLine", "Перейти к строке");
+			Localization.LocalizationManager.AddDefaultString("Report/Save", "Сохранить");
+			Localization.LocalizationManager.AddDefaultString("Report/BookMarks", "Закладки");
+
+			LocalHelper.LocalizeControl(this);
 		}
 
 		private void MoveTimerOnTick(object sender, EventArgs eventArgs)

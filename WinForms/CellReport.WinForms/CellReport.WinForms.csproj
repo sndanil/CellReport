@@ -110,6 +110,7 @@
     <Compile Include="Presenters\WinForms\GoToRowForm.Designer.cs">
       <DependentUpon>GoToRowForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Presenters\WinForms\LocalHelper.cs" />
     <Compile Include="Presenters\WinForms\PresentControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

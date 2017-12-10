@@ -120,6 +120,7 @@
     <Compile Include="Export\Image\ImageExporter.cs" />
     <Compile Include="Export\Image\ImagePresenter.cs" />
     <Compile Include="ISectionObject.cs" />
+    <Compile Include="Localization\LocalizationManager.cs" />
     <Compile Include="Presenters\BaseDisplayPresenter.cs" />
     <Compile Include="Presenters\BasePresenter.cs" />
     <Compile Include="Presenters\BasePrintPresenter.cs" />

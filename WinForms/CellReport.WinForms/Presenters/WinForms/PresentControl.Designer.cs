@@ -36,7 +36,6 @@ namespace CellReport.Presenters.WinForms
 			this._vScrollBar = new System.Windows.Forms.VScrollBar();
 			this._hScrollBar = new System.Windows.Forms.HScrollBar();
 			this._gridPanel = new System.Windows.Forms.Panel();
-			this._paintPanel = new CellReport.Presenters.WinForms.DoubleBufferedControl();
 			this._contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this._printCntxMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this._customPrintCntxMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,8 +49,6 @@ namespace CellReport.Presenters.WinForms
 			this._findMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this._exportExcelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this._saveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this._columnResizer = new CellReport.Presenters.WinForms.ColumnResizerControl();
-			this._rowsResizer = new CellReport.Presenters.WinForms.RowResizerControl();
 			this._bookMarksSplitter = new System.Windows.Forms.Splitter();
 			this._bookMarksTreeView = new System.Windows.Forms.TreeView();
 			this._bookMarksImageList = new System.Windows.Forms.ImageList(this.components);
@@ -71,6 +68,9 @@ namespace CellReport.Presenters.WinForms
 			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			this._findStripButton = new System.Windows.Forms.ToolStripButton();
 			this._bookMarksStripButton = new System.Windows.Forms.ToolStripButton();
+			this._paintPanel = new CellReport.Presenters.WinForms.DoubleBufferedControl();
+			this._columnResizer = new CellReport.Presenters.WinForms.ColumnResizerControl();
+			this._rowsResizer = new CellReport.Presenters.WinForms.RowResizerControl();
 			this._gridPanel.SuspendLayout();
 			this._contextMenu.SuspendLayout();
 			this._toolBar.SuspendLayout();
@@ -114,16 +114,6 @@ namespace CellReport.Presenters.WinForms
 			this._gridPanel.Size = new System.Drawing.Size(559, 457);
 			this._gridPanel.TabIndex = 3;
 			// 
-			// _paintPanel
-			// 
-			this._paintPanel.BackColor = System.Drawing.Color.White;
-			this._paintPanel.ContextMenuStrip = this._contextMenu;
-			this._paintPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-			this._paintPanel.Location = new System.Drawing.Point(213, 43);
-			this._paintPanel.Name = "_paintPanel";
-			this._paintPanel.Size = new System.Drawing.Size(346, 414);
-			this._paintPanel.TabIndex = 2;
-			// 
 			// _contextMenu
 			// 
 			this._contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -137,7 +127,7 @@ namespace CellReport.Presenters.WinForms
             this._saveMenuItem});
 			this._contextMenu.Name = "_contextMenu";
 			this._contextMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-			this._contextMenu.Size = new System.Drawing.Size(363, 164);
+			this._contextMenu.Size = new System.Drawing.Size(219, 164);
 			// 
 			// _printCntxMenuItem
 			// 
@@ -148,8 +138,8 @@ namespace CellReport.Presenters.WinForms
             this._autoWidthCntxMenuItem});
 			this._printCntxMenuItem.Image = global::CellReport.WinForms.Properties.Resources.print;
 			this._printCntxMenuItem.Name = "_printCntxMenuItem";
-			this._printCntxMenuItem.Size = new System.Drawing.Size(362, 22);
-			this._printCntxMenuItem.Text = "Печать";
+			this._printCntxMenuItem.Size = new System.Drawing.Size(218, 22);
+			this._printCntxMenuItem.Text = "#Report/Print";
 			this._printCntxMenuItem.Click += new System.EventHandler(this.PrintButtonClick);
 			// 
 			// _customPrintCntxMenuItem
@@ -157,60 +147,60 @@ namespace CellReport.Presenters.WinForms
 			this._customPrintCntxMenuItem.Image = global::CellReport.WinForms.Properties.Resources.print;
 			this._customPrintCntxMenuItem.Name = "_customPrintCntxMenuItem";
 			this._customPrintCntxMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
-			this._customPrintCntxMenuItem.Size = new System.Drawing.Size(233, 22);
-			this._customPrintCntxMenuItem.Text = "Выборочная печать";
+			this._customPrintCntxMenuItem.Size = new System.Drawing.Size(229, 22);
+			this._customPrintCntxMenuItem.Text = "#Report/CustomPrint";
 			this._customPrintCntxMenuItem.Click += new System.EventHandler(this.CustomPrintMenuItemClick);
 			// 
 			// _previewCntxMenuItem
 			// 
 			this._previewCntxMenuItem.Image = global::CellReport.WinForms.Properties.Resources.print_preview;
 			this._previewCntxMenuItem.Name = "_previewCntxMenuItem";
-			this._previewCntxMenuItem.Size = new System.Drawing.Size(233, 22);
-			this._previewCntxMenuItem.Text = "Предварительный просмотр";
+			this._previewCntxMenuItem.Size = new System.Drawing.Size(229, 22);
+			this._previewCntxMenuItem.Text = "#Report/Preview";
 			this._previewCntxMenuItem.Click += new System.EventHandler(this.PrintPreviewMenuItemClick);
 			// 
 			// _customPageCntxMenuItem
 			// 
 			this._customPageCntxMenuItem.Image = global::CellReport.WinForms.Properties.Resources.print_setup;
 			this._customPageCntxMenuItem.Name = "_customPageCntxMenuItem";
-			this._customPageCntxMenuItem.Size = new System.Drawing.Size(233, 22);
-			this._customPageCntxMenuItem.Text = "Параметры страницы";
+			this._customPageCntxMenuItem.Size = new System.Drawing.Size(229, 22);
+			this._customPageCntxMenuItem.Text = "#Report/PageSettings";
 			this._customPageCntxMenuItem.Click += new System.EventHandler(this.PageSetupMenuItemClick);
 			// 
 			// _autoWidthCntxMenuItem
 			// 
 			this._autoWidthCntxMenuItem.Name = "_autoWidthCntxMenuItem";
-			this._autoWidthCntxMenuItem.Size = new System.Drawing.Size(233, 22);
-			this._autoWidthCntxMenuItem.Text = "Автоширина по странице";
+			this._autoWidthCntxMenuItem.Size = new System.Drawing.Size(229, 22);
+			this._autoWidthCntxMenuItem.Text = "#Report/AutoFitPage";
 			this._autoWidthCntxMenuItem.Click += new System.EventHandler(this.AutoWidthMenuItemClick);
 			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(359, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(215, 6);
 			// 
 			// _showGridMenuItem
 			// 
 			this._showGridMenuItem.Image = global::CellReport.WinForms.Properties.Resources.show_grid_16x16;
 			this._showGridMenuItem.Name = "_showGridMenuItem";
-			this._showGridMenuItem.Size = new System.Drawing.Size(362, 22);
-			this._showGridMenuItem.Text = "Отобразить или скрыть сетку";
+			this._showGridMenuItem.Size = new System.Drawing.Size(218, 22);
+			this._showGridMenuItem.Text = "#Report/ShowHideGrid";
 			this._showGridMenuItem.Click += new System.EventHandler(this.ShowGridButtonClick);
 			// 
 			// _showResizersMenuItem
 			// 
 			this._showResizersMenuItem.Image = global::CellReport.WinForms.Properties.Resources.show_columns_16x16;
 			this._showResizersMenuItem.Name = "_showResizersMenuItem";
-			this._showResizersMenuItem.Size = new System.Drawing.Size(362, 22);
-			this._showResizersMenuItem.Text = "Отобразить или скрыть заголовки строк и столбцов";
+			this._showResizersMenuItem.Size = new System.Drawing.Size(218, 22);
+			this._showResizersMenuItem.Text = "#Report/ShowHideHeaders";
 			this._showResizersMenuItem.Click += new System.EventHandler(this.ShowResizersButtonClick);
 			// 
 			// _goToRowMenuItem
 			// 
 			this._goToRowMenuItem.Name = "_goToRowMenuItem";
 			this._goToRowMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
-			this._goToRowMenuItem.Size = new System.Drawing.Size(362, 22);
-			this._goToRowMenuItem.Text = "Перейти к строке";
+			this._goToRowMenuItem.Size = new System.Drawing.Size(218, 22);
+			this._goToRowMenuItem.Text = "#Report/GoToLine";
 			this._goToRowMenuItem.Click += new System.EventHandler(this.GoToRowMenuItemClick);
 			// 
 			// _findMenuItem
@@ -218,50 +208,25 @@ namespace CellReport.Presenters.WinForms
 			this._findMenuItem.Image = global::CellReport.WinForms.Properties.Resources.find;
 			this._findMenuItem.Name = "_findMenuItem";
 			this._findMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-			this._findMenuItem.Size = new System.Drawing.Size(362, 22);
-			this._findMenuItem.Text = "Поиск";
+			this._findMenuItem.Size = new System.Drawing.Size(218, 22);
+			this._findMenuItem.Text = "#Report/Search";
 			this._findMenuItem.Click += new System.EventHandler(this.FindMenuItemClick);
 			// 
 			// _exportExcelMenuItem
 			// 
 			this._exportExcelMenuItem.Image = global::CellReport.WinForms.Properties.Resources.excel2013_16;
 			this._exportExcelMenuItem.Name = "_exportExcelMenuItem";
-			this._exportExcelMenuItem.Size = new System.Drawing.Size(362, 22);
-			this._exportExcelMenuItem.Text = "Экспорт в Excel";
+			this._exportExcelMenuItem.Size = new System.Drawing.Size(218, 22);
+			this._exportExcelMenuItem.Text = "#Report/ExportToExcel";
 			this._exportExcelMenuItem.Click += new System.EventHandler(this.ExportExcelButtonClick);
 			// 
 			// _saveMenuItem
 			// 
 			this._saveMenuItem.Image = global::CellReport.WinForms.Properties.Resources.save;
 			this._saveMenuItem.Name = "_saveMenuItem";
-			this._saveMenuItem.Size = new System.Drawing.Size(362, 22);
-			this._saveMenuItem.Text = "Сохранить";
+			this._saveMenuItem.Size = new System.Drawing.Size(218, 22);
+			this._saveMenuItem.Text = "#Report/Save";
 			this._saveMenuItem.Click += new System.EventHandler(this.SaveMenuItemClick);
-			// 
-			// _columnResizer
-			// 
-			this._columnResizer.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this._columnResizer.Dock = System.Windows.Forms.DockStyle.Top;
-			this._columnResizer.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(65)))), ((int)(((byte)(62)))));
-			this._columnResizer.Location = new System.Drawing.Point(213, 25);
-			this._columnResizer.Name = "_columnResizer";
-			this._columnResizer.Presenter = null;
-			this._columnResizer.Size = new System.Drawing.Size(346, 18);
-			this._columnResizer.TabIndex = 3;
-			this._columnResizer.TabStop = false;
-			// 
-			// _rowsResizer
-			// 
-			this._rowsResizer.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this._rowsResizer.Dock = System.Windows.Forms.DockStyle.Left;
-			this._rowsResizer.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(65)))), ((int)(((byte)(62)))));
-			this._rowsResizer.Location = new System.Drawing.Point(173, 25);
-			this._rowsResizer.Name = "_rowsResizer";
-			this._rowsResizer.Presenter = null;
-			this._rowsResizer.Size = new System.Drawing.Size(40, 432);
-			this._rowsResizer.TabIndex = 4;
-			this._rowsResizer.TabStop = false;
-			this._rowsResizer.TopOffset = 0;
 			// 
 			// _bookMarksSplitter
 			// 
@@ -323,39 +288,39 @@ namespace CellReport.Presenters.WinForms
 			this._printButton.Image = global::CellReport.WinForms.Properties.Resources.print;
 			this._printButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this._printButton.Name = "_printButton";
-			this._printButton.Size = new System.Drawing.Size(78, 22);
-			this._printButton.Text = "Печать";
+			this._printButton.Size = new System.Drawing.Size(111, 22);
+			this._printButton.Text = "#Report/Print";
 			this._printButton.ButtonClick += new System.EventHandler(this.PrintButtonClick);
 			// 
 			// _customPrintMenuItem
 			// 
 			this._customPrintMenuItem.Image = global::CellReport.WinForms.Properties.Resources.print;
 			this._customPrintMenuItem.Name = "_customPrintMenuItem";
-			this._customPrintMenuItem.Size = new System.Drawing.Size(233, 22);
-			this._customPrintMenuItem.Text = "Выборочная печать";
+			this._customPrintMenuItem.Size = new System.Drawing.Size(189, 22);
+			this._customPrintMenuItem.Text = "#Report/CustomPrint";
 			this._customPrintMenuItem.Click += new System.EventHandler(this.CustomPrintMenuItemClick);
 			// 
 			// _printPreviewMenuItem
 			// 
 			this._printPreviewMenuItem.Image = global::CellReport.WinForms.Properties.Resources.print_preview;
 			this._printPreviewMenuItem.Name = "_printPreviewMenuItem";
-			this._printPreviewMenuItem.Size = new System.Drawing.Size(233, 22);
-			this._printPreviewMenuItem.Text = "Предварительный просмотр";
+			this._printPreviewMenuItem.Size = new System.Drawing.Size(189, 22);
+			this._printPreviewMenuItem.Text = "#Report/Preview";
 			this._printPreviewMenuItem.Click += new System.EventHandler(this.PrintPreviewMenuItemClick);
 			// 
 			// _pageSetupMenuItem
 			// 
 			this._pageSetupMenuItem.Image = global::CellReport.WinForms.Properties.Resources.print_setup;
 			this._pageSetupMenuItem.Name = "_pageSetupMenuItem";
-			this._pageSetupMenuItem.Size = new System.Drawing.Size(233, 22);
-			this._pageSetupMenuItem.Text = "Параметры страницы";
+			this._pageSetupMenuItem.Size = new System.Drawing.Size(189, 22);
+			this._pageSetupMenuItem.Text = "#Report/PageSettings";
 			this._pageSetupMenuItem.Click += new System.EventHandler(this.PageSetupMenuItemClick);
 			// 
 			// _autoWidthMenuItem
 			// 
 			this._autoWidthMenuItem.Name = "_autoWidthMenuItem";
-			this._autoWidthMenuItem.Size = new System.Drawing.Size(233, 22);
-			this._autoWidthMenuItem.Text = "Автоширина по странице";
+			this._autoWidthMenuItem.Size = new System.Drawing.Size(189, 22);
+			this._autoWidthMenuItem.Text = "#Report/AutoFitPage";
 			this._autoWidthMenuItem.Click += new System.EventHandler(this.AutoWidthMenuItemClick);
 			// 
 			// toolStripSeparator1
@@ -370,7 +335,7 @@ namespace CellReport.Presenters.WinForms
 			this._showGridButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this._showGridButton.Name = "_showGridButton";
 			this._showGridButton.Size = new System.Drawing.Size(23, 22);
-			this._showGridButton.Text = "Отобразить или скрыть сетку";
+			this._showGridButton.Text = "#Report/ShowHideGrid";
 			this._showGridButton.Click += new System.EventHandler(this.ShowGridButtonClick);
 			// 
 			// _showResizersButton
@@ -380,7 +345,7 @@ namespace CellReport.Presenters.WinForms
 			this._showResizersButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this._showResizersButton.Name = "_showResizersButton";
 			this._showResizersButton.Size = new System.Drawing.Size(23, 22);
-			this._showResizersButton.Text = "Отобразить или скрыть заголовки строк и столбцов";
+			this._showResizersButton.Text = "#Report/ShowHideHeaders";
 			this._showResizersButton.Click += new System.EventHandler(this.ShowResizersButtonClick);
 			// 
 			// toolStripSeparator3
@@ -404,7 +369,6 @@ namespace CellReport.Presenters.WinForms
             "500%"});
 			this._scaleComboBox.Name = "_scaleComboBox";
 			this._scaleComboBox.Size = new System.Drawing.Size(75, 25);
-			this._scaleComboBox.ToolTipText = "Масштаб";
 			this._scaleComboBox.SelectedIndexChanged += new System.EventHandler(this.ScaleComboBoxSelectedIndexChanged);
 			// 
 			// toolStripSeparator4
@@ -419,8 +383,7 @@ namespace CellReport.Presenters.WinForms
 			this._excelExportButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this._excelExportButton.Name = "_excelExportButton";
 			this._excelExportButton.Size = new System.Drawing.Size(23, 22);
-			this._excelExportButton.Text = "toolStripButton1";
-			this._excelExportButton.ToolTipText = "Экспорт в Excel";
+			this._excelExportButton.Text = "#Report/ExportToExcel";
 			this._excelExportButton.Click += new System.EventHandler(this.ExportExcelButtonClick);
 			// 
 			// toolStripSeparator5
@@ -433,9 +396,8 @@ namespace CellReport.Presenters.WinForms
 			this._findStripButton.Image = global::CellReport.WinForms.Properties.Resources.find;
 			this._findStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this._findStripButton.Name = "_findStripButton";
-			this._findStripButton.Size = new System.Drawing.Size(62, 22);
-			this._findStripButton.Text = "Поиск";
-			this._findStripButton.ToolTipText = "Поиск";
+			this._findStripButton.Size = new System.Drawing.Size(109, 22);
+			this._findStripButton.Text = "#Report/Search";
 			this._findStripButton.Click += new System.EventHandler(this.FindMenuItemClick);
 			// 
 			// _bookMarksStripButton
@@ -445,8 +407,43 @@ namespace CellReport.Presenters.WinForms
 			this._bookMarksStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this._bookMarksStripButton.Name = "_bookMarksStripButton";
 			this._bookMarksStripButton.Size = new System.Drawing.Size(23, 22);
-			this._bookMarksStripButton.ToolTipText = "Закладки";
+			this._bookMarksStripButton.Text = "#Report/BookMarks";
 			this._bookMarksStripButton.Click += new System.EventHandler(this.BookMarksStripButtonClick);
+			// 
+			// _paintPanel
+			// 
+			this._paintPanel.BackColor = System.Drawing.Color.White;
+			this._paintPanel.ContextMenuStrip = this._contextMenu;
+			this._paintPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this._paintPanel.Location = new System.Drawing.Point(213, 43);
+			this._paintPanel.Name = "_paintPanel";
+			this._paintPanel.Size = new System.Drawing.Size(346, 414);
+			this._paintPanel.TabIndex = 2;
+			// 
+			// _columnResizer
+			// 
+			this._columnResizer.BackColor = System.Drawing.SystemColors.ActiveBorder;
+			this._columnResizer.Dock = System.Windows.Forms.DockStyle.Top;
+			this._columnResizer.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(65)))), ((int)(((byte)(62)))));
+			this._columnResizer.Location = new System.Drawing.Point(213, 25);
+			this._columnResizer.Name = "_columnResizer";
+			this._columnResizer.Presenter = null;
+			this._columnResizer.Size = new System.Drawing.Size(346, 18);
+			this._columnResizer.TabIndex = 3;
+			this._columnResizer.TabStop = false;
+			// 
+			// _rowsResizer
+			// 
+			this._rowsResizer.BackColor = System.Drawing.SystemColors.ActiveBorder;
+			this._rowsResizer.Dock = System.Windows.Forms.DockStyle.Left;
+			this._rowsResizer.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(65)))), ((int)(((byte)(62)))));
+			this._rowsResizer.Location = new System.Drawing.Point(173, 25);
+			this._rowsResizer.Name = "_rowsResizer";
+			this._rowsResizer.Presenter = null;
+			this._rowsResizer.Size = new System.Drawing.Size(40, 432);
+			this._rowsResizer.TabIndex = 4;
+			this._rowsResizer.TabStop = false;
+			this._rowsResizer.TopOffset = 0;
 			// 
 			// PresentControl
 			// 

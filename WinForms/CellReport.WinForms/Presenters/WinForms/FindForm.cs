@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using CellReport.Core.Contents;
+using CellReport.Localization;
 using CellReport.Presenters;
 
 namespace CellReport.WinForms.Presenters.WinForms
@@ -22,8 +24,40 @@ namespace CellReport.WinForms.Presenters.WinForms
 		{
 			InitializeComponent();
 			BindComboBox();
+
+			LocalizationManager.AddDefaultString("Report/Search/Title", "Поиск");
+			LocalizationManager.AddDefaultString("Report/Search/FindWhat", "Найти");
+			LocalizationManager.AddDefaultString("Report/Search/MatchCase", "Учитывать регистр");
+			LocalizationManager.AddDefaultString("Report/Search/MatchWholeWord", "Только слово целиком");
+			LocalizationManager.AddDefaultString("Report/Search/All", "Найти все");
+			LocalizationManager.AddDefaultString("Report/Search/Next", "Найти далее");
+			LocalizationManager.AddDefaultString("Report/Search/Close", "Закрыть");
+			LocalizationManager.AddDefaultString("Report/Search/LookOver", "Просматривать");
+			LocalizationManager.AddDefaultString("Report/Search/LookOver/ByRows", "По строкам"); 			
+			LocalizationManager.AddDefaultString("Report/Search/LookOver/ByColumns", "По столбцам");
+			LocalizationManager.AddDefaultString("Report/Search/Direction", "Направление");
+			LocalizationManager.AddDefaultString("Report/Search/Direction/Forward", "Вперед");
+			LocalizationManager.AddDefaultString("Report/Search/Direction/Backward", "Назад");
+			LocalizationManager.AddDefaultString("Report/Search/Result/Content", "Содержимое");
+			LocalizationManager.AddDefaultString("Report/Search/Result/Row", "Строка");
+			LocalizationManager.AddDefaultString("Report/Search/Result/Column", "Столбец");
+			LocalizationManager.AddDefaultString("Report/Search/NotFound", "Искомая комбинация не найдена.");
+
+			_findByComboBox.Items.AddRange(new object[]
+			{
+				LocalizationManager.GetLocalString("#Report/Search/LookOver/ByRows"),
+				LocalizationManager.GetLocalString("#Report/Search/LookOver/ByColumns"),
+			});
+			_directionComboBox.Items.AddRange(new object[]
+			{
+				LocalizationManager.GetLocalString("#Report/Search/Direction/Forward"),
+				LocalizationManager.GetLocalString("#Report/Search/Direction/Backward"),
+			});
+
 			_directionComboBox.SelectedIndex = 0;
 			_findByComboBox.SelectedIndex = 0;
+
+			LocalHelper.LocalizeForm(this);
 		}
 
 		private void BindComboBox()
@@ -55,8 +89,7 @@ namespace CellReport.WinForms.Presenters.WinForms
 		{
 			if (cell != null && _lastCell != cell)
 			{
-				var textContent = cell.Content as Core.Contents.TextBasedContent;
-				if (textContent != null)
+				if (cell.Content is TextBasedContent textContent)
 				{
 					if (textContent.FindText(_findComboBox.Text, _caseSensCheckBox.Checked))
 					{
@@ -66,12 +99,11 @@ namespace CellReport.WinForms.Presenters.WinForms
 						return textContent.GetTextForRender();
 					}
 				}
-				var collection = cell.Content as Core.Contents.CollectionContent;
-				if (collection != null)
+				if (cell.Content is CollectionContent collection)
 				{
 					foreach (var item in collection.GetContents())
 					{
-						textContent = item as Core.Contents.TextBasedContent;
+						textContent = item as TextBasedContent;
 						if (textContent != null)
 						{
 							if (textContent.FindText(_findComboBox.Text, _caseSensCheckBox.Checked))
@@ -145,7 +177,7 @@ namespace CellReport.WinForms.Presenters.WinForms
 					}
 				}
 			}
-			MessageBox.Show("Искомая комбинация не найдена.");
+			MessageBox.Show(LocalizationManager.GetLocalString("#Report/Search/NotFound"));
 		}
 
 		private void FindAllButtonClick(object sender, EventArgs e)
@@ -185,7 +217,7 @@ namespace CellReport.WinForms.Presenters.WinForms
 			}
 			_findListView.EndUpdate();
 			if (_findListView.Items.Count == 0)
-				MessageBox.Show("Искомая комбинация не найдена.");
+				MessageBox.Show(LocalizationManager.GetLocalString("#Report/Search/NotFound"));
 		}
 
 		private void AddItemToList(string text, int row, int col)
