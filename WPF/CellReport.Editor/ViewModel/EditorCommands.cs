@@ -98,7 +98,7 @@ namespace CellReport.Editor.ViewModel
 							CellManager manager = ExcelImporter.Import(dialog.FileName);
 							if (manager != null)
 							{
-								EditorModel.State.FileName = dialog.FileName;
+								EditorModel.State.FileName = Path.Combine(Path.GetDirectoryName(dialog.FileName), Path.GetFileNameWithoutExtension(dialog.FileName) + ".tcr");
 								ApplyReport(manager);
 							}
 						}
