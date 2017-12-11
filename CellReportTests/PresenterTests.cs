@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using CellReport;
 using CellReport.Core;
+using CellReport.Export.Excel;
 using CellReport.Presenters.WinForms;
 using NUnit.Framework;
 
@@ -32,13 +33,19 @@ namespace CellReportTests
 			var height1 = doc.Manager.GetRowHeight(0);
 			var height2 = doc.Manager.GetRowHeight(1);
 
-			var form = new ReportForm();
-			var pesenter = new DisplayPresenter(doc.Manager, form);
+			//var form = new ReportForm();
+			var pesenter = new DisplayPresenter(doc.Manager, null);
 
 			Assert.AreEqual(height1, doc.Manager.GetRowHeight(0));
 			Assert.AreNotEqual(height2, doc.Manager.GetRowHeight(1));
 
-			form.ShowDialog();
+			var excel = new ExcelExporter(doc.Manager);
+			using (var file = File.Create("d:\\export.xlsx"))
+			{
+				excel.ExportTo(file);
+			}
+
+			//form.ShowDialog();
 		}
 
 		[Test]

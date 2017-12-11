@@ -429,7 +429,7 @@ namespace CellReport.Core
 						if (cell.Location.Row == row && cell.Location.Column == col)
 							DeleteCell(row, col);
 						else
-							cell.Span = new CellSpan() {ColSpan = 0, RowSpan = 0};
+							cell.Span = new CellSpan {ColSpan = 0, RowSpan = 0};
 					}
 				}
 			}
@@ -481,7 +481,7 @@ namespace CellReport.Core
 						if (cell.Location.Row == row && cell.Location.Column == col)
 							DeleteCell(row, col);
 						else
-							cell.Span = new CellSpan() {ColSpan = 0, RowSpan = 0};
+							cell.Span = new CellSpan {ColSpan = 0, RowSpan = 0};
 					}
 				}
 			}
@@ -531,37 +531,40 @@ namespace CellReport.Core
 			if (_cells[row][column] != null)
 			{
 				var cell = _cells[row][column];
-				_cells[row][column].Span = new CellSpan() {ColSpan = 0, RowSpan = 0};
+				_cells[row][column].Span = new CellSpan {ColSpan = 0, RowSpan = 0};
 				_cells[cell.Location.Row][cell.Location.Column] = null;
 
-				var found = false;
-				for (int colIndex = _actualColumnsCount; colIndex >= 0 ; colIndex--)
+				if (row == _actualRowsCount - 1 || column == _actualColumnsCount - 1)
 				{
-					for (int rowIndex = 0; rowIndex < _actualRowsCount; rowIndex++)
+					var found = false;
+					for (var colIndex = _actualColumnsCount - 1; colIndex >= 0; colIndex--)
 					{
-						if (_cells.Length < rowIndex && _cells[rowIndex].Length < colIndex && _cells[rowIndex][colIndex] != null)
+						for (var rowIndex = 0; rowIndex < _cells.Length; rowIndex++)
 						{
-							found = true;
-							break;
+							if (colIndex < _cells[rowIndex].Length && _cells[rowIndex][colIndex] != null)
+							{
+								found = true;
+								break;
+							}
 						}
+						if (found)
+							break;
+						_actualColumnsCount--;
 					}
-					if (found)
-						break;
-					_actualColumnsCount--;
-				}
-				for (int rowIndex = _actualRowsCount; rowIndex >= 0; rowIndex--)
-				{
-					for (int colIndex = 0; colIndex < _actualColumnsCount; colIndex++)
+					for (var rowIndex = _actualRowsCount - 1; rowIndex >= 0; rowIndex--)
 					{
-						if (_cells.Length < rowIndex && _cells[rowIndex].Length < colIndex && _cells[rowIndex][colIndex] != null)
+						for (var colIndex = 0; colIndex < _actualColumnsCount; colIndex++)
 						{
-							found = true;
-							break;
+							if (rowIndex < _cells.Length && colIndex < _cells[rowIndex].Length && _cells[rowIndex][colIndex] != null)
+							{
+								found = true;
+								break;
+							}
 						}
+						if (found)
+							break;
+						_actualRowsCount--;
 					}
-					if (found)
-						break;
-					_actualRowsCount--;
 				}
 			}
 			OnPropertyChanged("Cells");
