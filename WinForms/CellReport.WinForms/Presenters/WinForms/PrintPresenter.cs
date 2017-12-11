@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using CellReport.Core;
 using System.Drawing.Printing;
-using System.Drawing;
 using System.Windows.Forms;
-using CellReport.Core.Contents;
 
 namespace CellReport.Presenters.WinForms
 {
@@ -20,29 +15,29 @@ namespace CellReport.Presenters.WinForms
 				: base(manager)
 		{
 			Renderer = new GdiPlusRenderer();
-			CurrentUnit = Core.GraphicsUnit.Display;
+			CurrentUnit = GraphicsUnit.Display;
 		}
 
 		public PrintDocument GetDocument()
 		{
 			BeforePrinting();
 			PrintDocument doc = new PrintDocument();
-			doc.BeginPrint += new PrintEventHandler(doc_BeginPrint);
+			doc.BeginPrint += DocBeginPrint;
 			doc.DefaultPageSettings.Landscape = Manager.PrintSettings.Landscape;
 			doc.DefaultPageSettings.Margins = new System.Drawing.Printing.Margins()
 			{
-				Left = Convert.ToInt32(UnitsConverter.ConvertValue(Manager.PrintSettings.Margins.Left, Core.GraphicsUnit.Millimeter, Core.GraphicsUnit.Display, 0)),
-				Top = Convert.ToInt32(UnitsConverter.ConvertValue(Manager.PrintSettings.Margins.Top, Core.GraphicsUnit.Millimeter, Core.GraphicsUnit.Display, 0)),
-				Right = Convert.ToInt32(UnitsConverter.ConvertValue(Manager.PrintSettings.Margins.Right, Core.GraphicsUnit.Millimeter, Core.GraphicsUnit.Display, 0)),
-				Bottom = Convert.ToInt32(UnitsConverter.ConvertValue(Manager.PrintSettings.Margins.Bottom, Core.GraphicsUnit.Millimeter, Core.GraphicsUnit.Display, 0))
+				Left = Convert.ToInt32(UnitsConverter.ConvertValue(Manager.PrintSettings.Margins.Left, GraphicsUnit.Millimeter, GraphicsUnit.Display, 0)),
+				Top = Convert.ToInt32(UnitsConverter.ConvertValue(Manager.PrintSettings.Margins.Top, GraphicsUnit.Millimeter, GraphicsUnit.Display, 0)),
+				Right = Convert.ToInt32(UnitsConverter.ConvertValue(Manager.PrintSettings.Margins.Right, GraphicsUnit.Millimeter, GraphicsUnit.Display, 0)),
+				Bottom = Convert.ToInt32(UnitsConverter.ConvertValue(Manager.PrintSettings.Margins.Bottom, GraphicsUnit.Millimeter, GraphicsUnit.Display, 0))
 			};
 			doc.DocumentName = Manager.Properties.DocumentName;
-			doc.PrintPage += new PrintPageEventHandler(DocPrintPage);
+			doc.PrintPage += DocPrintPage;
 
 			return doc;
 		}
 
-		void doc_BeginPrint(object sender, PrintEventArgs e)
+		void DocBeginPrint(object sender, PrintEventArgs e)
 		{
 			_action = e.PrintAction;
 		}
@@ -75,10 +70,10 @@ namespace CellReport.Presenters.WinForms
 				{
 					Manager.PrintSettings.Landscape = doc.DefaultPageSettings.Landscape;
 					Manager.PrintSettings.Margins = new Core.Margins(
-							UnitsConverter.ConvertValue(doc.DefaultPageSettings.Margins.Left, Core.GraphicsUnit.Display, Core.GraphicsUnit.Millimeter, 0),
-							UnitsConverter.ConvertValue(doc.DefaultPageSettings.Margins.Right, Core.GraphicsUnit.Display, Core.GraphicsUnit.Millimeter, 0),
-							UnitsConverter.ConvertValue(doc.DefaultPageSettings.Margins.Top, Core.GraphicsUnit.Display, Core.GraphicsUnit.Millimeter, 0),
-							UnitsConverter.ConvertValue(doc.DefaultPageSettings.Margins.Bottom, Core.GraphicsUnit.Display, Core.GraphicsUnit.Millimeter, 0)
+							UnitsConverter.ConvertValue(doc.DefaultPageSettings.Margins.Left, GraphicsUnit.Display, GraphicsUnit.Millimeter, 0),
+							UnitsConverter.ConvertValue(doc.DefaultPageSettings.Margins.Right, GraphicsUnit.Display, GraphicsUnit.Millimeter, 0),
+							UnitsConverter.ConvertValue(doc.DefaultPageSettings.Margins.Top, GraphicsUnit.Display, GraphicsUnit.Millimeter, 0),
+							UnitsConverter.ConvertValue(doc.DefaultPageSettings.Margins.Bottom, GraphicsUnit.Display, GraphicsUnit.Millimeter, 0)
 							);
 				}
 			}
@@ -97,8 +92,7 @@ namespace CellReport.Presenters.WinForms
 		{
 			BeginRender();
 			e.HasMorePages = true;
-			PrintDocument doc = sender as PrintDocument;
-			if (doc == null)
+			if (!(sender is PrintDocument doc))
 				throw new ArgumentException("sender");
 
 			SetExpressionPrintMode(true);
@@ -114,10 +108,31 @@ namespace CellReport.Presenters.WinForms
 						_hardMarginX = e.PageSettings.HardMarginX;
 						_hardMarginY = e.PageSettings.HardMarginY;
 					}
-					bounds.X = Math.Max(_hardMarginX, e.PageSettings.Margins.Left - _hardMarginX);
-					bounds.Y = Math.Max(_hardMarginY, e.PageSettings.Margins.Top - _hardMarginY);
+					var printableArea = e.PageSettings.PrintableArea;
+					var realPrintableArea = new System.Drawing.RectangleF(
+						(e.PageSettings.Landscape ? printableArea.Y : printableArea.X),
+						(e.PageSettings.Landscape ? printableArea.X : printableArea.Y),
+						(e.PageSettings.Landscape ? printableArea.Height : printableArea.Width),
+						(e.PageSettings.Landscape ? printableArea.Width : printableArea.Height)
+					);
+
+					bounds.X = Math.Max(0, e.PageSettings.Margins.Left - _hardMarginX);
+					if (bounds.X > 0)
+						bounds.X++;
+					bounds.Y = Math.Max(0, e.PageSettings.Margins.Top - _hardMarginY);
+					if (bounds.Y > 0)
+						bounds.Y++;
+
+					if (e.PageSettings.Margins.Left < _hardMarginX)
+						bounds.Width -= _hardMarginX - e.PageSettings.Margins.Left;
+					if (bounds.Width > realPrintableArea.Width)
+						bounds.Width -= (bounds.Width - realPrintableArea.Width);
+
+					if (e.PageSettings.Margins.Top < _hardMarginY)
+						bounds.Height -= _hardMarginY - e.PageSettings.Margins.Top;
+					if (bounds.Height > realPrintableArea.Height)
+						bounds.Height -= (bounds.Height - realPrintableArea.Height);
 				}
-				var defaultBounds = bounds;
 
 				if (CountOfPrintedPages == 0)
 				{
@@ -127,10 +142,9 @@ namespace CellReport.Presenters.WinForms
 					BeforePrinting();
 					RecalcScale(bounds);
 				}
-				CellLocation rightBottom;
 				var oldTop = TopRow;
 				var oldLeft = LeftColumn;
-				CalcPageEndCheckHasMorePage(bounds, out rightBottom);
+				CalcPageEndCheckHasMorePage(bounds, out var rightBottom);
 				TopRow = oldTop;
 				LeftColumn = oldLeft;
 				ExecuteExpressions(new CellLocation() { Row = TopRow, Column = LeftColumn }, rightBottom);
@@ -159,7 +173,7 @@ namespace CellReport.Presenters.WinForms
 			}
 		}
 
-		protected override Core.Size GetTextSize(Core.Rectangle rect, string text, string fontFamily, float fontSize, Core.FontStyle fontStyle)
+		protected override Size GetTextSize(Rectangle rect, string text, string fontFamily, float fontSize, FontStyle fontStyle)
 		{
 			return GdiPlusRenderer.GetTextSize(rect, text, fontFamily, fontSize, fontStyle);
 		}
