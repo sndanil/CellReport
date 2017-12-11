@@ -331,10 +331,10 @@ namespace CellReport.Core
 		private void ResizeIfNeed(int row, int column)
 		{
 			if (row >= RowsCount)
-				RowsCount = row*2;
+				RowsCount = row + 1;
 
 			if (column >= ColumnsCount)
-				ColumnsCount = column*2;
+				ColumnsCount = column + 1;
 		}
 
 		public void InsertRows(int startIndex, int count, bool fitSections = false)
@@ -528,14 +528,41 @@ namespace CellReport.Core
 
 		public void DeleteCell(int row, int column)
 		{
-			// TODOD: просчитать количество актуальных строк и колонок
-			//_actualRowsCount = Math.Max(_actualRowsCount, row + 1);
-			//_actualColumnsCount = Math.Max(_actualColumnsCount, column + 1);
 			if (_cells[row][column] != null)
 			{
 				var cell = _cells[row][column];
 				_cells[row][column].Span = new CellSpan() {ColSpan = 0, RowSpan = 0};
 				_cells[cell.Location.Row][cell.Location.Column] = null;
+
+				var found = false;
+				for (int colIndex = _actualColumnsCount; colIndex >= 0 ; colIndex--)
+				{
+					for (int rowIndex = 0; rowIndex < _actualRowsCount; rowIndex++)
+					{
+						if (_cells.Length < rowIndex && _cells[rowIndex].Length < colIndex && _cells[rowIndex][colIndex] != null)
+						{
+							found = true;
+							break;
+						}
+					}
+					if (found)
+						break;
+					_actualColumnsCount--;
+				}
+				for (int rowIndex = _actualRowsCount; rowIndex >= 0; rowIndex--)
+				{
+					for (int colIndex = 0; colIndex < _actualColumnsCount; colIndex++)
+					{
+						if (_cells.Length < rowIndex && _cells[rowIndex].Length < colIndex && _cells[rowIndex][colIndex] != null)
+						{
+							found = true;
+							break;
+						}
+					}
+					if (found)
+						break;
+					_actualRowsCount--;
+				}
 			}
 			OnPropertyChanged("Cells");
 		}
@@ -630,6 +657,7 @@ namespace CellReport.Core
 
 		public void SetRowHeight(int index, float height)
 		{
+			ResizeIfNeed(index, 0);
 			if (_rows[index] != height)
 			{
 				_rows[index] = height < 0 ? 0 : height;
@@ -692,6 +720,7 @@ namespace CellReport.Core
 
 		public void SetColumnWidth(int index, float width)
 		{
+			ResizeIfNeed(0, index);
 			if (_columns[index].Width != width)
 			{
 				_columns[index].Width = width < 0 ? 0 : width;

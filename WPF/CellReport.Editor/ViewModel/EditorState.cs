@@ -48,9 +48,12 @@ namespace CellReport.Editor.ViewModel
 				}
 
 				SetProperty(ref _presenter, value);
-				TotalUpdate();
-				_presenter.PropertyChanged += PresenterOnPropertyChanged;
-				_presenter.Manager.PropertyChanged += ManagerOnPropertyChanged;
+				if (_presenter != null)
+				{
+					TotalUpdate();
+					_presenter.PropertyChanged += PresenterOnPropertyChanged;
+					_presenter.Manager.PropertyChanged += ManagerOnPropertyChanged;
+				}
 			}
 		}
 
