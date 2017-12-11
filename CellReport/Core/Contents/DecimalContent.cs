@@ -91,8 +91,7 @@ namespace CellReport.Core.Contents
 		public decimal GetValue()
 		{
 			var valueAsObject = GetParamValueByTarget("Value");
-			decimal result = 0;
-			if (valueAsObject != null && (valueAsObject is string) && decimal.TryParse(valueAsObject.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture, out result))
+			if (valueAsObject is string && decimal.TryParse(valueAsObject.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture, out var result))
 				return result;
 			try
 			{
@@ -123,14 +122,21 @@ namespace CellReport.Core.Contents
 		public override string GetText()
 		{
 			var style = (DecimalContentStyle)GetActualStyle();
-			var text = string.Empty;
-			if (string.IsNullOrEmpty(style.Format))
-				text = GetValue().ToString();
-			else if (string.IsNullOrEmpty(style.Culture))
-				text = GetValue().ToString(style.Format);
-			else
-				text = GetValue().ToString(style.Format, CultureInfo.GetCultureInfo(style.Culture));
-			return text;
+			try
+			{
+				string text;
+				if (string.IsNullOrEmpty(style.Format))
+					text = GetValue().ToString(CultureInfo.CurrentCulture);
+				else if (string.IsNullOrEmpty(style.Culture))
+					text = GetValue().ToString(style.Format);
+				else
+					text = GetValue().ToString(style.Format, CultureInfo.GetCultureInfo(style.Culture));
+				return text;
+			}
+			catch (FormatException e)
+			{
+				return GetValue().ToString(CultureInfo.CurrentCulture);
+			}
 		}
 
 		internal override string GetColor()

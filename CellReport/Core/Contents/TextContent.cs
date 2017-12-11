@@ -166,40 +166,87 @@ namespace CellReport.Core.Contents
 			return result;
 		}
 
+		private Single ConvertToSingle(object value, Single defaultValue)
+		{
+			if (value == null)
+				return defaultValue;
+
+			try
+			{
+				return Convert.ToSingle(value);
+			}
+			catch (Exception e)
+			{
+				return defaultValue;
+			}		
+		}
+
+		private int ConvertToInt(object value, int defaultValue)
+		{
+			if (value == null)
+				return defaultValue;
+
+			try
+			{
+				return Convert.ToInt32(value);
+			}
+			catch (Exception e)
+			{
+				return defaultValue;
+			}
+		}
+
+		private int ConvertToEnum(Type enumType, object value, int defaultValue)
+		{
+			if (value == null)
+				return defaultValue;
+
+			try
+			{
+				if (value is string)
+					value = Enum.Parse(enumType, (string)value);
+
+				return Convert.ToInt32(value);
+			}
+			catch (Exception e)
+			{
+				return defaultValue;
+			}
+		}
+
 		public override BaseStyle GetActualStyle()
 		{
 			var style = (TextContentStyle)GetStyle();
-			var color = GetParamValueByTarget("Style.Color") as string ?? style.Color;
-			var fontFamily = GetParamValueByTarget("Style.Font.Family") as string ?? style.Font.Family;
+			try
+			{
+				var color = GetParamValueByTarget("Style.Color") as string ?? style.Color;
+				var fontFamily = GetParamValueByTarget("Style.Font.Family") as string ?? style.Font.Family;
 
-			var obj = GetParamValueByTarget("Style.Font.Size");
-			var fontSize = (obj != null) ? Convert.ToSingle(obj) : style.Font.Size;
+				var obj = GetParamValueByTarget("Style.Font.Size");
+				var fontSize = ConvertToSingle(obj, style.Font.Size);
 
-			obj = GetParamValueByTarget("Style.Font.Style");
-			if (obj is string)
-				obj = Enum.Parse(typeof(FontStyle), (string)obj);
-			var fontStyle = (obj != null) ? (FontStyle)Convert.ToInt32(obj) : style.Font.Style;
+				obj = GetParamValueByTarget("Style.Font.Style");
+				var fontStyle = (FontStyle)ConvertToEnum(typeof(FontStyle), obj, (int)style.Font.Style);
 
-			obj = GetParamValueByTarget("Style.HAlignment");
-			if (obj is string)
-				obj = Enum.Parse(typeof(HorizontalAlignment), (string)obj);
-			var hAlign = (obj != null) ? (HorizontalAlignment)Convert.ToInt32(obj) : style.HAlignment;
+				obj = GetParamValueByTarget("Style.HAlignment");
+				var hAlign = (HorizontalAlignment)ConvertToEnum(typeof(HorizontalAlignment), obj, (int)style.HAlignment);
 
-			obj = GetParamValueByTarget("Style.VAlignment");
-			if (obj is string)
-				obj = Enum.Parse(typeof(VerticalAlignment), (string)obj);
-			var vAlign = (obj != null) ? (VerticalAlignment)Convert.ToInt32(obj) : style.VAlignment;
+				obj = GetParamValueByTarget("Style.VAlignment");
+				var vAlign = (VerticalAlignment)ConvertToEnum(typeof(VerticalAlignment), obj, (int)style.VAlignment);
 
-			obj = GetParamValueByTarget("Style.Direction");
-			if (obj is string)
-				obj = Enum.Parse(typeof(Direction), (string)obj);
-			var direction = (obj != null) ? (Direction)Convert.ToInt32(obj) : style.Direction;
+				obj = GetParamValueByTarget("Style.Direction");
+				var direction = (Direction)ConvertToEnum(typeof(Direction), obj, (int)style.Direction);
 
-			obj = GetParamValueByTarget("Style.Angle");
-			var angle = (obj != null) ? Convert.ToSingle(obj) : style.Angle;
+				obj = GetParamValueByTarget("Style.Angle");
+				var angle = ConvertToSingle(obj, style.Angle);
 
-			var font = new FontInfo(fontFamily, fontSize, fontStyle);
-			return new TextContentStyle(hAlign, vAlign, font, color, angle, direction);
+				var font = new FontInfo(fontFamily, fontSize, fontStyle);
+				return new TextContentStyle(hAlign, vAlign, font, color, angle, direction);
+			}
+			catch (Exception e)
+			{
+				return style;
+			}
 		}
 
 		internal virtual string GetColor()

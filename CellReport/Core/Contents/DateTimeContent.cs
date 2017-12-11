@@ -149,15 +149,21 @@ namespace CellReport.Core.Contents
 		public override string GetText()
 		{
 			var style = (DateTimeContentStyle)GetActualStyle();
-			var text = string.Empty;
-			if (string.IsNullOrEmpty(style.Format))
-				text = GetValue().ToString();
-			else if (string.IsNullOrEmpty(style.Culture))
-				text = GetValue().ToString(style.Format);
-			else
-				text = GetValue().ToString(style.Format, CultureInfo.GetCultureInfo(style.Culture));
-
-			return text;
+			try
+			{
+				string text;
+				if (string.IsNullOrEmpty(style.Format))
+					text = GetValue().ToString(CultureInfo.CurrentCulture);
+				else if (string.IsNullOrEmpty(style.Culture))
+					text = GetValue().ToString(style.Format);
+				else
+					text = GetValue().ToString(style.Format, CultureInfo.GetCultureInfo(style.Culture));
+				return text;
+			}
+			catch (FormatException e)
+			{
+				return GetValue().ToString(CultureInfo.CurrentCulture);
+			}
 		}
 
 		public DateTime GetValue()
