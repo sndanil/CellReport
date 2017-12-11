@@ -24,7 +24,7 @@ namespace CellReport.Core
 		private Properties _properties;
 		private readonly Dictionary<int, bool> _autoFitRows = new Dictionary<int, bool>();
 		private readonly Dictionary<BaseExpression, int> _expressions = new Dictionary<BaseExpression, int>();
-		private readonly Dictionary<string, TemplateSection> _sections = new Dictionary<string, TemplateSection>();
+		private readonly List<TemplateSection> _sections = new List<TemplateSection>();
 		private readonly List<BookMark> _bookMarks = new List<BookMark>();
 		private readonly List<int> _pageBreakRows = new List<int>();
 
@@ -181,30 +181,34 @@ namespace CellReport.Core
 
 		public void AddSection(TemplateSection section)
 		{
-			_sections[section.Name] = section;
+			var foundSection = _sections.FirstOrDefault(s => s.Name == section.Name);
+			if (foundSection != null)
+				_sections.Remove(foundSection);
+
+			_sections.Add(section);
 			section.PropertyChanged += OnPropertyChanged;
 			OnPropertyChanged("Sections");
 		}
 
 		public void RemoveSection(TemplateSection section)
 		{
-			_sections.Remove(section.Name);
+			_sections.Remove(section);
 			section.PropertyChanged -= OnPropertyChanged;
 			OnPropertyChanged("Sections");
 		}
 
 		public TemplateSection GetSectionByName(string name)
 		{
-			if (!_sections.ContainsKey(name))
+			var foundSection = _sections.FirstOrDefault(s => s.Name == name);
+			if (foundSection == null)
 				throw new ApplicationException("Section not found");
 
-			return _sections[name];
+			return foundSection;
 		}
 
 		public IEnumerable<TemplateSection> GetSections()
 		{
-			foreach (var item in _sections.Values)
-				yield return item;
+			return _sections.ToArray();
 		}
 
 		public void AddBookMark(BookMarks.BookMark bookMark)
