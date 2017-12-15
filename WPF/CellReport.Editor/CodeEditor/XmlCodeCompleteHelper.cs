@@ -99,7 +99,7 @@ namespace CellReport.Editor.CodeEditor
 
 		static void TextAreaOnKeyDown(object sender, KeyEventArgs e)
 		{
-			var manager = TempManager ?? EditorModel.ReportManager;
+			var manager = TempManager ?? EditorModel.State.Manager;
 			if (e.Key == Key.Space && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
 			{
 				e.Handled = true;

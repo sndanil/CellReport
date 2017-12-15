@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Linq;
@@ -9,7 +8,6 @@ using CellReport.Core;
 using CellReport.Core.Contents;
 using CellReport.Editor.Import;
 using CellReport.Presenters.Wpf;
-using OfficeOpenXml;
 
 namespace CellReport.Editor.ViewModel
 {
@@ -19,7 +17,7 @@ namespace CellReport.Editor.ViewModel
 
 		private static bool IsDefaultEnabled()
 		{
-			return EditorModel.ReportManager != null && !EditorModel.IsCodeMode;
+			return EditorModel.State?.Manager != null && !EditorModel.IsCodeMode;
 		}
 
 		public static DelegateCommand Create
@@ -114,10 +112,8 @@ namespace CellReport.Editor.ViewModel
 
 		public static void ApplyReport(CellManager manager, CellLocation currentCell = new CellLocation())
 		{
-			EditorModel.ReportManager = null;
 			EditorModel.ReportContainer.Focus();
 
-			EditorModel.ReportManager = manager;
 			EditorModel.State.Presenter = new DisplayPresenter(manager, EditorModel.ReportContainer) { CurrentCell = currentCell };
 			EditorModel.State.Clear();
 			EditorModel.State.AddCurrentState();
@@ -178,7 +174,7 @@ namespace CellReport.Editor.ViewModel
 				else
 					return;
 			}
-			CellTemplate template = new CellTemplate(EditorModel.ReportManager);
+			CellTemplate template = new CellTemplate(EditorModel.State.Manager);
 			template.Save(EditorModel.State.FileName, Path.GetExtension(EditorModel.State.FileName)?.ToUpper() == ".TCRP" ? TemplateType.Package : TemplateType.Xml);
 		}
 
@@ -190,7 +186,7 @@ namespace CellReport.Editor.ViewModel
 				{
 					void Action()
 					{
-						var printPresenter = new Presenters.WinForms.PrintPresenter(EditorModel.ReportManager);
+						var printPresenter = new Presenters.WinForms.PrintPresenter(EditorModel.State.Manager);
 						printPresenter.CustomPrint();
 					}
 
@@ -210,7 +206,7 @@ namespace CellReport.Editor.ViewModel
 				{
 					void Action()
 					{
-						var printPresenter = new Presenters.WinForms.PrintPresenter(EditorModel.ReportManager);
+						var printPresenter = new Presenters.WinForms.PrintPresenter(EditorModel.State.Manager);
 						printPresenter.ShowPreviewDialog();
 					}
 
@@ -799,7 +795,7 @@ namespace CellReport.Editor.ViewModel
 						{
 							var start = EditorModel.State.Presenter.GetStartSelection();
 							var end = EditorModel.State.Presenter.GetEndSelection();
-							var cell = EditorModel.ReportManager.GetCell(EditorModel.State.Presenter.CurrentCell.Row, EditorModel.State.Presenter.CurrentCell.Column);
+							var cell = EditorModel.State.Manager.GetCell(EditorModel.State.Presenter.CurrentCell.Row, EditorModel.State.Presenter.CurrentCell.Column);
 							if (cell != null)
 								cell = EditorModel.State.Presenter.Manager.CreateCell(start.Row, start.Column, cell);
 							else
@@ -842,7 +838,7 @@ namespace CellReport.Editor.ViewModel
 						}
 					}
 
-					command = new DelegateCommand(Action, () => EditorModel.ReportManager != null && (EditorModel.IsDesignMode || EditorModel.IsCodeMode));
+					command = new DelegateCommand(Action, () => EditorModel.State?.Manager != null && (EditorModel.IsDesignMode || EditorModel.IsCodeMode));
 					Commands.Add("Find", command);
 				}
 
@@ -864,7 +860,7 @@ namespace CellReport.Editor.ViewModel
 						}
 					}
 
-					command = new DelegateCommand(Action, () => EditorModel.ReportManager != null && (EditorModel.IsCodeMode));
+					command = new DelegateCommand(Action, () => EditorModel.State?.Manager != null && (EditorModel.IsCodeMode));
 					Commands.Add("FindAndReplace", command);
 				}
 
@@ -938,10 +934,10 @@ namespace CellReport.Editor.ViewModel
 
 		public static void SwitchEditorToCodeMode()
 		{
-			if (EditorModel.ReportManager == null || EditorModel.State.Presenter == null)
+			if (EditorModel.State.Presenter == null)
 				return;
 
-			CellTemplate template = new CellTemplate(EditorModel.ReportManager);
+			CellTemplate template = new CellTemplate(EditorModel.State.Manager);
 			var memoryStream = new MemoryStream();
 			template.Save(memoryStream, TemplateType.Xml);
 			memoryStream.Position = 0;
@@ -951,7 +947,7 @@ namespace CellReport.Editor.ViewModel
 
 		public static void SwitchEditorToDesignMode()
 		{
-			if (EditorModel.ReportManager == null)
+			if (EditorModel.State.Manager == null)
 				return;
 
 			try
@@ -961,9 +957,9 @@ namespace CellReport.Editor.ViewModel
 				CellTemplate template = new CellTemplate();
 				template.LoadFromXml(EditorModel.Editor.Text);
 				var currentCell = EditorModel.State.Presenter?.CurrentCell;
-				foreach (var resourceName in EditorModel.ReportManager.GetResourceNames())
+				foreach (var resourceName in EditorModel.State.Manager.GetResourceNames())
 				{
-					template.Manager.AddResource(resourceName, EditorModel.ReportManager.GetResource(resourceName));
+					template.Manager.AddResource(resourceName, EditorModel.State.Manager.GetResource(resourceName));
 				}
 				if (currentCell.HasValue)
 					ApplyReport(template.Manager, currentCell.Value);
