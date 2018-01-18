@@ -347,8 +347,11 @@ namespace CellReport.Core.Contents
 				{
 					var paramName = match.ToString().Replace("]", string.Empty).Replace("[", string.Empty);
 					var value = GetFormattedParamValueByName(paramName);
-					if (value != null)
+					if (CellManager.IsDesignMode && !string.IsNullOrEmpty(value))
 						text = text.Replace(match.ToString(), value);
+
+					if (!CellManager.IsDesignMode)
+						text = text.Replace(match.ToString(), value ?? string.Empty);
 				}
 				result = text;
 			}
