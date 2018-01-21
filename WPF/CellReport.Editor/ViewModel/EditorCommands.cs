@@ -162,13 +162,21 @@ namespace CellReport.Editor.ViewModel
 			var emptyName = string.IsNullOrEmpty(EditorModel.State.FileName);
 			if (emptyName || saveAs)
 			{
+				var filterIndex = 1;
+				if (!emptyName)
+				{
+					filterIndex = EditorModel.State.FileName.ToLower().EndsWith("tcrp") ? 2 : 1;
+				}
 				var dialog = new Microsoft.Win32.SaveFileDialog
 				{
 					Filter = "CellReport шаблон (*.tcr)|*.tcr|CellReport шаблон упакованный (*.tcrp)|*.tcrp|Все файлы (*.*)|*.*",
-					FilterIndex = 2
+					FilterIndex = filterIndex
 				};
 				if (!emptyName)
+				{
+					dialog.InitialDirectory = Path.GetDirectoryName(EditorModel.State.FileName);
 					dialog.FileName = Path.GetFileName(EditorModel.State.FileName);
+				}
 				if (dialog.ShowDialog() == true)
 					EditorModel.State.FileName = dialog.FileName;
 				else
