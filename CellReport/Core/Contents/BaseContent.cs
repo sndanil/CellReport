@@ -203,14 +203,24 @@ namespace CellReport.Core.Contents
 
 					if (param.Format.StartsWith("currency", StringComparison.OrdinalIgnoreCase) || param.Format.StartsWith("number", StringComparison.InvariantCultureIgnoreCase))
 					{
-						if (param.Format.Equals("numberString", StringComparison.OrdinalIgnoreCase))
-							return CurrencyToString.GetString(value, true, "", "", "", "", "", "", true);
+						if (!string.IsNullOrEmpty(param.Culture))
+							NumberToString.CurrentCulture.Value = param.Culture;
 
-						var parts = param.Format.Split('|');
-						if (parts.Length == 1)
-							return CurrencyToString.GetString(value);
+						try
+						{
+							if (param.Format.Equals("numberString", StringComparison.OrdinalIgnoreCase))
+								return CurrencyToString.GetString(value, true, "", "", "", "", "", "", true);
 
-						return CurrencyToString.GetString(value, parts[1]);
+							var parts = param.Format.Split('|');
+							if (parts.Length == 1)
+								return CurrencyToString.GetString(value);
+
+							return CurrencyToString.GetString(value, parts[1]);
+						}
+						finally
+						{
+							NumberToString.CurrentCulture.Value = null;
+						}
 					}
 
 					if (string.IsNullOrEmpty(param.Culture))

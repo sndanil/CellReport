@@ -2,36 +2,39 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace CellReport.Core
 {
 	public class NumberToString
 	{
-		public static string[] Hunds;
+		public static ThreadLocal<string> CurrentCulture = new ThreadLocal<string>(() => null);
 
-		public static string[] Tens;
+		public string[] Hunds;
 
-		public static string[] Frac;
+		public string[] Tens;
 
-		public static string[] Female;
+		public string[] Frac;
 
-		public static string[] Thausand;
+		public string[] Female;
 
-		public static string[] Million;
+		public string[] Thausand;
 
-		public static string[] Milliard;
+		public string[] Million;
 
-		public static string[] Trillion;
+		public string[] Milliard;
 
-		public static string[] Trilliard;
+		public string[] Trillion;
 
-		public static string Zero;
+		public string[] Trilliard;
 
-		public static string Minus;
+		public string Zero;
 
-		static NumberToString()
+		public string Minus;
+
+		public NumberToString()
 		{
-			if (System.Globalization.CultureInfo.CurrentCulture.Name == "uk-UA")
+			if (CurrentCulture.Value == "uk-UA")
 			{
 				Hunds = new[]
 				{
@@ -105,7 +108,7 @@ namespace CellReport.Core
 			Trilliard = new[] { "триллиард", "триллиарда", "триллиардов" };
 		}
 
-		public static string GetString(long val, bool male, string one, string two, string five)
+		public string GetString(long val, bool male, string one, string two, string five)
 		{
 			var frac20 = Frac.ToArray();
 
@@ -138,7 +141,7 @@ namespace CellReport.Core
 			return r.ToString();
 		}
 
-		public static string Case(long val, string one, string two, string five)
+		public string Case(long val, string one, string two, string five)
 		{
 			var t = (val % 100 > 20) ? val % 10 : val % 20;
 
@@ -190,10 +193,10 @@ namespace CellReport.Core
 
 		public static string GetString(decimal val)
 		{
-			if (System.Globalization.CultureInfo.CurrentCulture.Name == "uk-UA")
+			if (NumberToString.CurrentCulture.Value == "uk-UA")
 				return GetString(val, "UAH");
 
-			if (System.Globalization.CultureInfo.CurrentCulture.Name == "kk-KZ")
+			if (NumberToString.CurrentCulture.Value == "kk-KZ")
 				return GetString(val, "KZT");
 
 			return GetString(val, "RUR");
@@ -201,10 +204,10 @@ namespace CellReport.Core
 
 		public static string GetShortCurrencyName()
 		{
-			if (System.Globalization.CultureInfo.CurrentCulture.Name == "uk-UA")
+			if (NumberToString.CurrentCulture.Value == "uk-UA")
 				return "грн.";
 
-			if (System.Globalization.CultureInfo.CurrentCulture.Name == "kk-KZ")
+			if (NumberToString.CurrentCulture.Value == "kk-KZ")
 				return "тг.";
 
 			return "руб.";
@@ -236,33 +239,34 @@ namespace CellReport.Core
 			var remainder = Convert.ToInt64((val - n) * 100);
 
 			var r = new StringBuilder();
+			var numToStr = new NumberToString();
 
 			if (0 == n)
-				r.Append(NumberToString.Zero);
-			r.Append(n % 1000 != 0 ? NumberToString.GetString(n, male, seniorOne, seniorTwo, seniorFive) : seniorFive + " ");
+				r.Append(numToStr.Zero);
+			r.Append(n % 1000 != 0 ? numToStr.GetString(n, male, seniorOne, seniorTwo, seniorFive) : seniorFive + " ");
 
 			n /= 1000;
 
-			r.Insert(0, NumberToString.GetString(n, false, NumberToString.Thausand[0], NumberToString.Thausand[1], NumberToString.Thausand[2]));
+			r.Insert(0, numToStr.GetString(n, false, numToStr.Thausand[0], numToStr.Thausand[1], numToStr.Thausand[2]));
 			n /= 1000;
 
-			r.Insert(0, NumberToString.GetString(n, true, NumberToString.Million[0], NumberToString.Million[1], NumberToString.Million[2]));
+			r.Insert(0, numToStr.GetString(n, true, numToStr.Million[0], numToStr.Million[1], numToStr.Million[2]));
 			n /= 1000;
 
-			r.Insert(0, NumberToString.GetString(n, true, NumberToString.Milliard[0], NumberToString.Milliard[1], NumberToString.Milliard[2]));
+			r.Insert(0, numToStr.GetString(n, true, numToStr.Milliard[0], numToStr.Milliard[1], numToStr.Milliard[2]));
 			n /= 1000;
 
-			r.Insert(0, NumberToString.GetString(n, true, NumberToString.Trillion[0], NumberToString.Trillion[1], NumberToString.Trillion[2]));
+			r.Insert(0, numToStr.GetString(n, true, numToStr.Trillion[0], numToStr.Trillion[1], numToStr.Trillion[2]));
 			n /= 1000;
 
-			r.Insert(0, NumberToString.GetString(n, true, NumberToString.Trilliard[0], NumberToString.Trilliard[1], NumberToString.Trilliard[2]));
+			r.Insert(0, numToStr.GetString(n, true, numToStr.Trilliard[0], numToStr.Trilliard[1], numToStr.Trilliard[2]));
 			if (minus)
-				r.Insert(0, NumberToString.Minus);
+				r.Insert(0, numToStr.Minus);
 
 			if (remainder != 0 || !withoutRemainder)
 				r.Append(remainder.ToString("00 "));
 
-			r.Append(NumberToString.Case(remainder, juniorOne, juniorTwo, juniorFive));
+			r.Append(numToStr.Case(remainder, juniorOne, juniorTwo, juniorFive));
 
 			//Делаем первую букву заглавной
 			r[0] = char.ToUpper(r[0]);
