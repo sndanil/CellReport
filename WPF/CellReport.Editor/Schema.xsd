@@ -251,7 +251,7 @@
 
 	<xs:complexType name='CellStyleType'>
 		<xs:choice maxOccurs="unbounded">
-			<xs:element name='Paddings' type='xs:string' minOccurs="0" maxOccurs="1" />
+			<xs:element name='Paddings' type='PaddingsType' minOccurs="0" maxOccurs="1" />
 			<xs:element name='Borders' type='BordersType' minOccurs="0" maxOccurs="1" />
 		</xs:choice>
 		<xs:attribute name='ID' type='xs:string'/>
@@ -259,13 +259,17 @@
 	</xs:complexType>
 
 	<xs:complexType name='PaddingsType'>
-		<xs:sequence>
-			<xs:element name='Padding' type='PaddingType' />
-		</xs:sequence>
+		<xs:choice>
+			<xs:element name='Padding' type='PaddingType' minOccurs="0" maxOccurs="unbounded" />
+		</xs:choice>
 	</xs:complexType>
 
 	<xs:complexType name='PaddingType'>
-		<xs:attribute name='Position' type='xs:string'/>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="Position" type="xs:string" />
+			</xs:extension>
+		</xs:simpleContent>
 	</xs:complexType>
 
 	<xs:complexType name='BordersType'>
