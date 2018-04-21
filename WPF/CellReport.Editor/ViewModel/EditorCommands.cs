@@ -99,6 +99,10 @@ namespace CellReport.Editor.ViewModel
 								EditorModel.State.FileName = Path.Combine(Path.GetDirectoryName(dialog.FileName), Path.GetFileNameWithoutExtension(dialog.FileName) + ".tcr");
 								ApplyReport(manager);
 							}
+							else
+							{
+								MessageBox.Show("Не удалось импортировать шаблон, возможно файл занят другим приложением");
+							}
 						}
 					}
 
