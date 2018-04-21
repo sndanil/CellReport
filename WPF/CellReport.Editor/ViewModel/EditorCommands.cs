@@ -28,6 +28,7 @@ namespace CellReport.Editor.ViewModel
 				{
 					void Action()
 					{
+						EditorModel.State.FileName = null;
 						var manager = new CellManager();
 						manager.AddExternalStyle(new ExternalStyle("file://DefaultStyles.xml"));
 
