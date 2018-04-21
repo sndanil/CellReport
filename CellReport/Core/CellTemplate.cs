@@ -112,7 +112,8 @@ namespace CellReport.Core
 				yield return new XElement("Column",
 					(lastIndex + 1) == i ? null : new XAttribute("Index", i),
 					(currCol.Width == defCol.Width) ? null : new XAttribute("Width", currCol.Width.ToString(CultureInfo.InvariantCulture)),
-					(currCol.Marker == defCol.Marker) ? null : new XAttribute("Marker", currCol.Marker ?? string.Empty));
+					(currCol.MarkerForShow == defCol.MarkerForShow) ? null : new XAttribute("MarkerForShow", currCol.MarkerForShow ?? string.Empty),
+					(currCol.MarkerForHide == defCol.MarkerForHide) ? null : new XAttribute("MarkerForHide", currCol.MarkerForHide ?? string.Empty));
 				lastIndex = i;
 			}
 		}
@@ -357,12 +358,19 @@ namespace CellReport.Core
 					columnIndex = Convert.ToInt32(column.Attribute("Index").Value);
 				var hasWidth = (column.Attribute("Width") != null);
 				var width = hasWidth ? UnitsConverter.ParseUnit(column.Attribute("Width").Value, GraphicsUnit.Millimeter) : 0;
-				var hasMarker = (column.Attribute("Marker") != null);
-				var marker = hasMarker ? column.Attribute("Marker").Value : null;
 				if (hasWidth)
 					_manager.SetColumnWidth(columnIndex, width);
+
+				var hasMarker = (column.Attribute("MarkerForShow") != null);
+				var marker = hasMarker ? column.Attribute("MarkerForShow").Value : null;
 				if (hasMarker)
-					_manager.SetColumnMarker(columnIndex, string.IsNullOrEmpty(marker) ? null : marker);
+					_manager.SetColumnMarkerForShow(columnIndex, string.IsNullOrEmpty(marker) ? null : marker);
+
+				hasMarker = (column.Attribute("MarkerForHide") != null);
+				marker = hasMarker ? column.Attribute("MarkerForHide").Value : null;
+				if (hasMarker)
+					_manager.SetColumnMarkerForHide(columnIndex, string.IsNullOrEmpty(marker) ? null : marker);
+
 				columnIndex++;
 			}
 		}

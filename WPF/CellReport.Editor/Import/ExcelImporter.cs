@@ -20,29 +20,35 @@ namespace CellReport.Editor.Import
 		public static CellManager Import(string fileName)
 		{
 			CellManager manager = null;
-			using (ExcelPackage package = new ExcelPackage(new FileInfo(fileName)))
+			try
 			{
-				_cellStyles.Clear();
-				foreach (var workSheet in package.Workbook.Worksheets)
+				using (ExcelPackage package = new ExcelPackage(new FileInfo(fileName)))
 				{
-					manager = new CellManager(workSheet.Dimension.End.Row, workSheet.Dimension.End.Column);
-					manager.Properties.DocumentName = workSheet.Name;
-					for (int i = 0; i < manager.ColumnsCount; i++)
-						manager.SetColumnWidth(i, FromExcelUnit(workSheet.Column(i + 1).Width));
-					for (int i = 0; i < manager.RowsCount; i++)
-						manager.SetRowHeight(i, UnitsConverter.ConvertValue((float)workSheet.Row(i + 1).Height, GraphicsUnit.Point, GraphicsUnit.Millimeter, 0));
-
-					for (int rowIndex = 0; rowIndex < manager.RowsCount; rowIndex++)
+					_cellStyles.Clear();
+					foreach (var workSheet in package.Workbook.Worksheets)
 					{
-						for (int colIndex = 0; colIndex < manager.ColumnsCount; colIndex++)
-						{
-							var excelCell = workSheet.Cells[rowIndex + 1, colIndex + 1];
-							CreateCell(excelCell, manager, rowIndex, colIndex, workSheet);
-						}
-					}
+						manager = new CellManager(workSheet.Dimension.End.Row, workSheet.Dimension.End.Column);
+						manager.Properties.DocumentName = workSheet.Name;
+						for (int i = 0; i < manager.ColumnsCount; i++)
+							manager.SetColumnWidth(i, FromExcelUnit(workSheet.Column(i + 1).Width));
+						for (int i = 0; i < manager.RowsCount; i++)
+							manager.SetRowHeight(i, UnitsConverter.ConvertValue((float)workSheet.Row(i + 1).Height, GraphicsUnit.Point, GraphicsUnit.Millimeter, 0));
 
-					break;
+						for (int rowIndex = 0; rowIndex < manager.RowsCount; rowIndex++)
+						{
+							for (int colIndex = 0; colIndex < manager.ColumnsCount; colIndex++)
+							{
+								var excelCell = workSheet.Cells[rowIndex + 1, colIndex + 1];
+								CreateCell(excelCell, manager, rowIndex, colIndex, workSheet);
+							}
+						}
+
+						break;
+					}
 				}
+			}
+			catch (Exception)
+			{
 			}
 
 			return manager;

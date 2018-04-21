@@ -708,21 +708,37 @@ namespace CellReport.Core
 			return _columns[index];
 		}
 
-		public string GetColumnMarker(int index)
+		public string GetColumnMarkerForShow(int index)
 		{
-			return _columns[index].Marker;
+			return _columns[index].MarkerForShow;
 		}
 
-		public void SetColumnMarker(int index, string marker)
+		public void SetColumnMarkerForShow(int index, string markerForShow)
 		{
-			_columns[index].Marker = marker;
-			OnPropertyChanged("ColumnMarker");
+			_columns[index].MarkerForShow = markerForShow;
+			OnPropertyChanged("ColumnMarkerForShow");
+		}
+
+		public string GetColumnMarkerForHide(int index)
+		{
+			return _columns[index].MarkerForHide;
+		}
+
+		public void SetColumnMarkerForHide(int index, string markerForHide)
+		{
+			_columns[index].MarkerForHide = markerForHide;
+			OnPropertyChanged("ColumnMarkerForHide");
 		}
 
 		public float GetColumnWidth(int index)
 		{
 			var col = _columns[index];
-			return MarkerResolver.Resolve(col.Marker) ? col.Width : 0;
+			if (!string.IsNullOrEmpty(col.MarkerForShow))
+				return MarkerResolver.Resolve(col.MarkerForShow) ? col.Width : 0;
+			if (!string.IsNullOrEmpty(col.MarkerForHide))
+				return MarkerResolver.Resolve(col.MarkerForHide) ? 0 : col.Width;
+
+			return col.Width;
 		}
 
 		public void SetColumnWidth(int index, float width)
@@ -730,6 +746,11 @@ namespace CellReport.Core
 			ResizeIfNeed(0, index);
 			if (_columns[index].Width != width)
 			{
+				if (!string.IsNullOrEmpty(_columns[index].MarkerForShow) && !MarkerResolver.Resolve(_columns[index].MarkerForShow))
+					return;
+				if (!string.IsNullOrEmpty(_columns[index].MarkerForHide) && !MarkerResolver.Resolve(_columns[index].MarkerForHide))
+					return;
+
 				_columns[index].Width = width < 0 ? 0 : width;
 				OnPropertyChanged("ColumnWidth");
 			}

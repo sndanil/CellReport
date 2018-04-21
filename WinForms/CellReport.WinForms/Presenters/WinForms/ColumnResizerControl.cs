@@ -168,8 +168,9 @@ namespace CellReport.Presenters.WinForms
 					var left = Presenter.GetLeftOffset(column);
 					var right = left + Presenter.GetColumnWidth(column);
 
-					if ((e.X <= right + 3) && (e.X >= right - 3) &&
-						((left < right) || MarkerResolver.Resolve(Presenter.Manager.GetColumnMarker(column))))
+					if ((e.X <= right + 3) && (e.X >= right - 3) && (left < right)
+						&& MarkerResolver.Resolve(Presenter.Manager.GetColumnMarkerForShow(column))
+						&& (string.IsNullOrEmpty(Presenter.Manager.GetColumnMarkerForHide(column)) || !MarkerResolver.Resolve(Presenter.Manager.GetColumnMarkerForHide(column))))
 						_resizeColumn = column;
 				}
 				if (_resizeColumn >= 0)

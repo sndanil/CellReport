@@ -24,7 +24,6 @@
 		<xs:attribute name='DefaultRowsCount' type='xs:int' default='0'/>
 		<xs:attribute name='DefaultColumnWidth' type='xs:int' default='0'/>
 		<xs:attribute name='DefaultRowHeight' type='xs:int' default='0'/>
-		<xs:attribute name='DefaultColumnMarker' type='xs:string' />
 	</xs:complexType>
 
 	<xs:complexType name='ExportSettingsType'>
@@ -95,7 +94,8 @@
 	<xs:complexType name='ColumnType'>
 		<xs:attribute name='Width' type='xs:double' default='0'/>
 		<xs:attribute name='Index' type='xs:int' default='0'/>
-		<xs:attribute name='Marker' type='xs:string' />
+		<xs:attribute name='MarkerForShow' type='xs:string' />
+		<xs:attribute name='MarkerForHide' type='xs:string' />
 	</xs:complexType>
 
 	<xs:complexType name='RowType'>

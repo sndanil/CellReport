@@ -17,6 +17,21 @@ namespace Demo
 		public MainForm()
 		{
 			InitializeComponent();
+
+			CellReport.Core.MarkerResolver.OnResolve += MarkerResolver_OnResolve;
+		}
+
+		private bool MarkerResolver_OnResolve(string arg)
+		{
+			switch (arg)
+			{
+				case "Hide":
+					return true;
+				//case "Show":
+				//	return true;
+				default:
+					return false;
+			}
 		}
 
 		private void _groupButton_Click(object sender, EventArgs e)
@@ -199,6 +214,13 @@ namespace Demo
 			rep.SetParameter("Наим", "Вареники с картофелем 550гр. ООО \"НатурПродукт\" Вареники с картофелем 550гр. ООО \"НатурПродукт\"");
 
 			rep.Show();
+		}
+
+		private void button1_Click_1(object sender, EventArgs e)
+		{
+			var template = new CellReport.Core.CellTemplate();
+			template.Load(@"Templates\ShowHideColumn.tcrp");
+			template.Show(null).ShowResizers = true;
 		}
 	}
 }

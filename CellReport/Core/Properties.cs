@@ -11,7 +11,6 @@ namespace CellReport.Core
 		private const int DefaultRowsCountConst = 10;
 		private const float DefaultRowHeightConst = 20;
 		private const float DefaultColumnWidthConst = 50;
-		private const string DefaultColumnMarkerConst = null;
 
 		public Properties()
 		{
@@ -31,7 +30,7 @@ namespace CellReport.Core
 			}
 		}
 
-		private Column _defaultColumn = new Column { Width = DefaultColumnWidthConst, Marker = DefaultColumnMarkerConst };
+		private Column _defaultColumn = new Column { Width = DefaultColumnWidthConst, MarkerForShow = null, MarkerForHide = null };
 		public Column DefaultColumn
 		{
 			get { return _defaultColumn; }
@@ -108,8 +107,6 @@ namespace CellReport.Core
 				var column = result.DefaultColumn;
 				if (element.Attribute("DefaultColumnWidth") != null)
 					column.Width = UnitsConverter.ParseUnit(element.Attribute("DefaultColumnWidth").Value, GraphicsUnit.Millimeter);
-				if (element.Attribute("DefaultColumnMarker") != null)
-					column.Marker = element.Attribute("DefaultColumnMarker").Value;
 				result.DefaultColumn = column;
 
 				if (element.Attribute("DefaultRowHeight") != null)
@@ -130,8 +127,6 @@ namespace CellReport.Core
 				result.Add(new XAttribute("DefaultRowHeight", DefaultRowHeight.ToString(CultureInfo.InvariantCulture)));
 			if (DefaultColumn.Width != DefaultColumnWidthConst)
 				result.Add(new XAttribute("DefaultColumnWidth", DefaultColumn.Width.ToString(CultureInfo.InvariantCulture)));
-			if (DefaultColumn.Marker != DefaultColumnMarkerConst)
-				result.Add(new XAttribute("DefaultColumnMarker", DefaultColumn.Marker.ToString()));
 			return result;
 		}
 	}
