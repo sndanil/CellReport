@@ -55,14 +55,17 @@ namespace CellReport.Presenters
 				return;
 			}
 
-			switch (e.PropertyName)
+			if (sender is CellManager)
 			{
-				case "RowsCount":
-				case "ColumnsCount":
-				case "RowHeight":
-				case "ColumnWidth":
-					Update();
-					break;
+				switch (e.PropertyName)
+				{
+					case "RowsCount":
+					case "ColumnsCount":
+					case "RowHeight":
+					case "ColumnWidth":
+						Update();
+						break;
+				}
 			}
 		}
 

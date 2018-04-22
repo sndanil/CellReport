@@ -87,16 +87,25 @@ namespace CellReport.Editor.ViewModel
 				Presenter.Update();	
 			}
 
-			switch (propertyChangedEventArgs.PropertyName)
+			if (sender is TemplateSection)
 			{
-				case "ColumnWidth":
-					OnPropertyChanged(nameof(CurrentCellWidth));
-					OnPropertyChanged(nameof(SelectionWidth));
-					break;
-				case "RowHeight":
-					OnPropertyChanged(nameof(CurrentCellHeight));
-					OnPropertyChanged(nameof(SelectionHeight));
-					break;
+				CurrentSection = CurrentSection;
+				return;
+			}
+
+			if (sender is CellManager)
+			{
+				switch (propertyChangedEventArgs.PropertyName)
+				{
+					case "ColumnWidth":
+						OnPropertyChanged(nameof(CurrentCellWidth));
+						OnPropertyChanged(nameof(SelectionWidth));
+						break;
+					case "RowHeight":
+						OnPropertyChanged(nameof(CurrentCellHeight));
+						OnPropertyChanged(nameof(SelectionHeight));
+						break;
+				}
 			}
 		}
 

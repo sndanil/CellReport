@@ -87,9 +87,29 @@ namespace CellReport.Core
 			}
 		}
 
+		public int TopDesign
+		{
+			get => LeftTop.Row;
+			set
+			{
+				_leftTop = new CellLocation { Row = value, Column = LeftTop.Column };
+				OnPropertyChanged("Top");
+			}
+		}
+
 		public int Left
 		{
 			get => Math.Min(LeftTop.Column, RightBottom.Column);
+			set
+			{
+				_leftTop = new CellLocation { Row = LeftTop.Row, Column = value };
+				OnPropertyChanged("Left");
+			}
+		}
+
+		public int LeftDesign
+		{
+			get => LeftTop.Column;
 			set
 			{
 				_leftTop = new CellLocation { Row = LeftTop.Row, Column = value };
@@ -107,9 +127,29 @@ namespace CellReport.Core
 			}
 		}
 
+		public int RightDesign
+		{
+			get => RightBottom.Column;
+			set
+			{
+				_rightBottom = new CellLocation { Row = RightBottom.Row, Column = value };
+				OnPropertyChanged("Right");
+			}
+		}
+
 		public int Bottom
 		{
 			get => Math.Max(LeftTop.Row, RightBottom.Row);
+			set
+			{
+				_rightBottom = new CellLocation { Row = value, Column = RightBottom.Column };
+				OnPropertyChanged("Bottom");
+			}
+		}
+
+		public int BottomDesign
+		{
+			get => RightBottom.Row;
 			set
 			{
 				_rightBottom = new CellLocation { Row = value, Column = RightBottom.Column };

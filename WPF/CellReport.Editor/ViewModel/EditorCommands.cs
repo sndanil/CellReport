@@ -779,10 +779,10 @@ namespace CellReport.Editor.ViewModel
 
 						if (EditorModel.State.CurrentSection != null)
 						{
-							EditorModel.State.CurrentSection.Left = EditorModel.State.Presenter.StartSelection.Column;
-							EditorModel.State.CurrentSection.Top = EditorModel.State.Presenter.StartSelection.Row;
-							EditorModel.State.CurrentSection.Right = EditorModel.State.Presenter.EndSelection.Column;
-							EditorModel.State.CurrentSection.Bottom = EditorModel.State.Presenter.EndSelection.Row;
+							EditorModel.State.CurrentSection.Left = Math.Min(EditorModel.State.Presenter.StartSelection.Column, EditorModel.State.Presenter.EndSelection.Column);
+							EditorModel.State.CurrentSection.Top = Math.Min(EditorModel.State.Presenter.StartSelection.Row, EditorModel.State.Presenter.EndSelection.Row);
+							EditorModel.State.CurrentSection.Right = Math.Max(EditorModel.State.Presenter.StartSelection.Column, EditorModel.State.Presenter.EndSelection.Column);
+							EditorModel.State.CurrentSection.Bottom = Math.Max(EditorModel.State.Presenter.StartSelection.Row, EditorModel.State.Presenter.EndSelection.Row);
 						}
 
 						EditorModel.State.EndUpdate();
