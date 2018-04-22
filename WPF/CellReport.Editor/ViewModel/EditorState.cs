@@ -162,6 +162,13 @@ namespace CellReport.Editor.ViewModel
 
 				CurrentParam = null;
 				CurrentContent = null;
+				if (HasContent)
+				{
+					CurrentContent = CurrentContents?.Count > 1 ? CurrentContents?.FirstOrDefault(c => !(c is ActionContent)) : CurrentContents?.FirstOrDefault();
+					if (ContentParams?.Count  > 0)
+						CurrentParam = ContentParams.FirstOrDefault();
+				}
+
 				//TotalUpdate();
 				Presenter.Update();
 			}

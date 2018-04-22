@@ -320,6 +320,7 @@ namespace CellReport.Editor.ViewModel
 						EditorModel.State.BeginUpdate();
 						CopyManager.Cut();
 						EditorModel.State.EndUpdate();
+						EditorModel.State.CurrentCell = EditorModel.State.CurrentCell;
 					}
 
 					command = new DelegateCommand(Action, IsDefaultEnabled);
@@ -341,6 +342,7 @@ namespace CellReport.Editor.ViewModel
 						EditorModel.State.BeginUpdate();
 						CopyManager.Paste();
 						EditorModel.State.EndUpdate();
+						EditorModel.State.CurrentCell = EditorModel.State.CurrentCell;
 					}
 
 					bool Enabled() => IsDefaultEnabled() && CopyManager.HasData;
