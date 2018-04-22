@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<CellReportTemplate>
+  <Properties>
+    <DocumentName></DocumentName>
+  </Properties>
+  <ExportSettings RunExcelAfterExport="true" />
+  <DisplaySettings FrozenColumns="0" FrozenRows="0" ShowGridLines="false" ShowDesignerGridLines="true" ShowCurrentRows="true" ShowBookMarks="false" ShowResizers="false" ShowDesignerResizers="true" Scale="1" />
+  <PrintSettings Landscape="false" AutoFitWidthPages="1" Scale="1">
+    <Margins Top="10" Left="10" Right="10" Bottom="10" />
+  </PrintSettings>
+  <Sections>
+    <Section ID="Section">
+      <LeftTop Row="0" Column="0" />
+      <RightBottom Row="0" Column="4" />
+    </Section>
+  </Sections>
+  <BookMarks />
+  <Table RowsCount="10" ColumnsCount="5">
+    <Row>
+      <Cell>
+        <TextContent>
+          <Text>Это витуальный параметр [Virtual]</Text>
+        </TextContent>
+      </Cell>
+      <Cell>
+        <TextContent>
+          <Text>Это экранированный параметр [[ text ]] [Virtual]</Text>
+        </TextContent>
+      </Cell>
+      <Cell>
+        <TextContent>
+          <Text>Это не установленный витуальный параметр [Virtual1]</Text>
+        </TextContent>
+      </Cell>
+      <Cell>
+        <TextContent>
+          <Param Name="Новый" Target="Text" Value="Значение со скобками [Скобки]" />
+        </TextContent>
+      </Cell>
+      <Cell>
+        <TextContent>
+          <Param Name="Новый2" Target="Text" Value="" />
+        </TextContent>
+      </Cell>
+    </Row>
+  </Table>
+  <Styles>
+    <ExternalStyle Uri="file://DefaultStyles.xml" />
+  </Styles>
+  <Expressions />
+</CellReportTemplate>

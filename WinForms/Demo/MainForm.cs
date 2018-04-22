@@ -222,5 +222,16 @@ namespace Demo
 			template.Load(@"Templates\ShowHideColumn.tcrp");
 			template.Show(null).ShowResizers = true;
 		}
+
+		private void button2_Click(object sender, EventArgs e)
+		{
+			var rep = new ReportDocument(@"Templates\Params.tcr");
+
+			rep.AddSection("Section");
+			rep.SetParameter("Virtual", "Лук Желтый");
+			rep.SetParameter("Новый2", "Значение со скобками [Скобки]");
+
+			rep.Show();
+		}
 	}
 }

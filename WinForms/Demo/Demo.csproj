@@ -124,6 +124,9 @@
     <None Include="Templates\op05.tcr">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Templates\Params.tcr">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Templates\ShowHideColumn.tcrp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

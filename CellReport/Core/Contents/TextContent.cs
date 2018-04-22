@@ -269,7 +269,6 @@ namespace CellReport.Core.Contents
 	{
 		private string _text;
 		private bool _autoSizeFont;
-		private string _template;
 
 		public TextContent(CellManager manager)
 				: base(manager)
@@ -320,14 +319,28 @@ namespace CellReport.Core.Contents
 			if (element.Element("Template") != null)
 				textContent.Text = element.Element("Template")?.Value;
 
+			if (!string.IsNullOrEmpty(textContent.Text))
+			{
+				var reg = new Regex(@"\[(?=[^\[]*\]).*?\]");
+				var matches = reg.Matches(textContent.Text);
+				foreach (Match match in matches)
+				{
+					if (textContent.Text.Contains($"[{match.ToString()}]"))
+						continue;
+
+					var paramName = match.ToString().Replace("]", string.Empty).Replace("[", string.Empty);
+					textContent.AddParam(new Param(manager, textContent) { Name = paramName, IsVirtual = true });
+				}
+			}
+
 			return textContent;
 		}
 
 		public override string GetText()
 		{
 			string result;
-			var text = (GetParamValueByTarget("Text") as string ?? Text) ?? string.Empty;
-			if (!text.Contains("[") && !text.Contains("]"))
+			var text = Text ?? string.Empty;
+			if (string.IsNullOrEmpty(Text))
 			{
 				var paramName = GetParamNameByTarget("Text");
 				if (paramName == null)
@@ -345,6 +358,12 @@ namespace CellReport.Core.Contents
 				var matches = reg.Matches(text);
 				foreach (Match match in matches)
 				{
+					if (text.Contains($"[{match.ToString()}]"))
+					{
+						text = text.Replace($"[{match.ToString()}]", match.ToString());
+						continue;
+					}
+
 					var paramName = match.ToString().Replace("]", string.Empty).Replace("[", string.Empty);
 					var value = GetFormattedParamValueByName(paramName);
 					if (CellManager.IsDesignMode && !string.IsNullOrEmpty(value))
@@ -353,6 +372,7 @@ namespace CellReport.Core.Contents
 					if (!CellManager.IsDesignMode)
 						text = text.Replace(match.ToString(), value ?? string.Empty);
 				}
+
 				result = text;
 			}
 

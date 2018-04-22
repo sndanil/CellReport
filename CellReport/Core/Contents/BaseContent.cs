@@ -83,6 +83,10 @@ namespace CellReport.Core.Contents
 			if (_params != null)
 				tempParams.AddRange(_params);
 
+			var sameParam = tempParams.FirstOrDefault(p => p.Name == param.Name && !string.IsNullOrEmpty(param.Name));
+			if (sameParam != null)
+				tempParams.Remove(sameParam);
+
 			tempParams.Add(param);
 			_params = tempParams.ToArray();
 			OnPropertyChanged("Params");
@@ -317,7 +321,7 @@ namespace CellReport.Core.Contents
 			var result = new XElement(contentName ?? "BaseContent");
 			if (!string.IsNullOrEmpty(StyleID))
 				result.Add(new XAttribute("Style", StyleID));
-			foreach (var param in GetParams())
+			foreach (var param in GetParams().Where(p => !p.IsVirtual))
 				result.Add(param.Serialize());
 
 			return result;

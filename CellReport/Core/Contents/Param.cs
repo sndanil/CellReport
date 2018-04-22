@@ -40,6 +40,8 @@ namespace CellReport.Core.Contents
 			_owner = owner;
 		}
 
+		public bool IsVirtual { get; set; }
+
 		public string Name
 		{
 			get => _name;
@@ -105,7 +107,6 @@ namespace CellReport.Core.Contents
 			}
 		}
 
-		// ReSharper disable once InconsistentNaming
 		public string ExpressionID
 		{
 			get => _expressionId;
