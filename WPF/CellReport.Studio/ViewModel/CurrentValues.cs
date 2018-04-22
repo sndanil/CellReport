@@ -381,10 +381,10 @@ namespace CellReport.Studio.ViewModel
 
 		public string CurrentColumnMarker
 		{
-			get { return _manager.GetColumnMarker(_presenter.CurrentCell.Column); }
+			get { return _manager.GetColumnMarkerForShow(_presenter.CurrentCell.Column); }
 			set
 			{
-				_manager.SetColumnMarker(_presenter.CurrentCell.Column, value);
+				_manager.SetColumnMarkerForShow(_presenter.CurrentCell.Column, value);
 				OnPropertyChanged("CurrentColumnMarker");
 				_presenter.Update();
 			}
