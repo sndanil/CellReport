@@ -162,7 +162,14 @@ namespace CellReport.Editor.ViewModel
 				OnPropertyChanged(nameof(CurrentDecimalStyle));
 				OnPropertyChanged(nameof(CurrentDateTimeStyle));
 				OnPropertyChanged(nameof(CurrentText));
+				OnPropertyChanged(nameof(CurrentCustomFontSize));
+				OnPropertyChanged(nameof(CurrentCustomFontFamily));
+				OnPropertyChanged(nameof(CurrentCustomFontBold));
+				OnPropertyChanged(nameof(CurrentCustomFontItalic));
+				OnPropertyChanged(nameof(CurrentCustomFontUnderline));
+				OnPropertyChanged(nameof(CurrentCustomFontStrikeout));
 				OnPropertyChanged(nameof(HasStyledContent));
+				OnPropertyChanged(nameof(IsTextableContent));
 				OnPropertyChanged(nameof(IsTextContent));
 				OnPropertyChanged(nameof(IsDecimalContent));
 				OnPropertyChanged(nameof(IsDateTimeContent));
@@ -414,6 +421,18 @@ namespace CellReport.Editor.ViewModel
 			return content as T;
 		}
 
+		private T GetBaseContent<T>(Cell cell) where T : BaseContent
+		{
+			if (cell == null)
+				return null;
+
+			var content = cell.Content;
+			if (content is CollectionContent)
+				content = ((CollectionContent)content).GetContents().FirstOrDefault(c => c.GetType().IsSubclassOf(typeof(T)));
+
+			return content as T;
+		}
+
 		public string CurrentText
 		{
 			get
@@ -436,6 +455,286 @@ namespace CellReport.Editor.ViewModel
 					Presenter.Update();
 				}
 			}
+		}
+
+		public string CurrentCustomFontSize
+		{
+			get
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return null;
+
+				var content = GetBaseContent<TextBasedContent>(Manager?.GetCell(CurrentCell));
+				if (content != null)
+				{
+					var param = content.GetParams().FirstOrDefault(p => p.Target == "Style.Font.Size");
+					if (param != null)
+						return param.Value as string;
+
+					return Convert.ToInt32(((TextContentStyle)content.GetStyle()).Font.Size).ToString();
+				}
+
+				return "";
+			}
+			set
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return;
+
+				var content = GetBaseContent<TextBasedContent>(Manager?.GetCell(CurrentCell));
+				if (content != null)
+				{
+
+					var param = ContentParams?.FirstOrDefault(p => p.Target == "Style.Font.Size");
+					if (value == "" || value == Convert.ToInt32(((TextContentStyle)content.GetStyle()).Font.Size).ToString())
+					{
+						if (param != null)
+						{
+							content.RemoveParam(param);
+							ContentParams = ContentParams;
+						}
+					}
+					else
+					{
+						if (param != null)
+						{
+							param.Value = value;
+						}
+						else
+						{
+							param = new Param(EditorModel.State.Manager, content) { Name = "Шрифт.Размер", Target = "Style.Font.Size", Value = value };
+							content.AddParam(param);
+							ContentParams = ContentParams;
+						}
+					}
+				}
+
+				OnPropertyChanged();
+				Presenter.Update();
+			}
+		}
+
+		public string CurrentCustomFontFamily
+		{
+			get
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return null;
+
+				var content = GetBaseContent<TextBasedContent>(Manager?.GetCell(CurrentCell));
+				if (content != null)
+				{
+					var param = content.GetParams().FirstOrDefault(p => p.Target == "Style.Font.Family");
+					if (param != null)
+						return param.Value as string;
+
+					return ((TextContentStyle)content.GetStyle()).Font.Family;
+				}
+
+				return "";
+			}
+			set
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return;
+
+				var content = GetBaseContent<TextBasedContent>(Manager?.GetCell(CurrentCell));
+				if (content != null)
+				{
+
+					var param = ContentParams?.FirstOrDefault(p => p.Target == "Style.Font.Family");
+					if (value == "" || value == ((TextContentStyle)content.GetStyle()).Font.Family)
+					{
+						if (param != null)
+						{
+							content.RemoveParam(param);
+							ContentParams = ContentParams;
+						}
+					}
+					else
+					{
+						if (param != null)
+						{
+							param.Value = value;
+						}
+						else
+						{
+							param = new Param(EditorModel.State.Manager, content) { Name = "Шрифт", Target = "Style.Font.Family", Value = value };
+							content.AddParam(param);
+							ContentParams = ContentParams;
+						}
+					}
+				}
+
+				OnPropertyChanged();
+				Presenter.Update();
+			}
+		}
+
+		public bool CurrentCustomFontBold
+		{
+			get
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return false;
+
+				return GetFontStylePartState(nameof(FontStyle.Bold), FontStyle.Bold);
+			}
+			set
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return;
+
+				SetFontStylePartState(value, nameof(FontStyle.Bold), FontStyle.Bold);
+
+				OnPropertyChanged();
+				Presenter.Update();
+			}
+		}
+
+		public bool CurrentCustomFontItalic
+		{
+			get
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return false;
+
+				return GetFontStylePartState(nameof(FontStyle.Italic), FontStyle.Italic);
+			}
+			set
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return;
+
+				SetFontStylePartState(value, nameof(FontStyle.Italic), FontStyle.Italic);
+
+				OnPropertyChanged();
+				Presenter.Update();
+			}
+		}
+
+		public bool CurrentCustomFontUnderline
+		{
+			get
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return false;
+
+				return GetFontStylePartState(nameof(FontStyle.Underline), FontStyle.Underline);
+			}
+			set
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return;
+
+				SetFontStylePartState(value, nameof(FontStyle.Underline), FontStyle.Underline);
+
+				OnPropertyChanged();
+				Presenter.Update();
+			}
+		}
+
+		public bool CurrentCustomFontStrikeout
+		{
+			get
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return false;
+
+				return GetFontStylePartState(nameof(FontStyle.Strikeout), FontStyle.Strikeout);
+			}
+			set
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return;
+
+				SetFontStylePartState(value, nameof(FontStyle.Strikeout), FontStyle.Strikeout);
+
+				OnPropertyChanged();
+				Presenter.Update();
+			}
+		}
+
+		private void SetFontStylePartState(bool value, string name, FontStyle part)
+		{
+			var content = GetBaseContent<TextBasedContent>(Manager?.GetCell(CurrentCell));
+			if (content != null)
+			{
+
+				var param = ContentParams?.FirstOrDefault(p => p.Target == "Style.Font.Style");
+				if (value == ((TextContentStyle)content.GetStyle()).Font.Style.HasFlag(part))
+				{
+					if (param != null)
+					{
+						var paramValue = param.Value as string;
+						if (paramValue?.Contains(name) == true)
+						{
+							paramValue = paramValue?.Replace($",{name}", "").Trim();
+							if (Enum.TryParse(paramValue, out FontStyle style) && style == ((TextContentStyle)content.GetStyle()).Font.Style
+								|| string.IsNullOrEmpty(paramValue) || paramValue == nameof(FontStyle.Regular))
+							{
+								content.RemoveParam(param);
+								ContentParams = ContentParams;
+							}
+							else
+							{
+								param.Value = paramValue;
+							}
+						}
+						else
+						{
+							param.Value = param.Value + $",{name}";
+						}
+					}
+				}
+				else
+				{
+					if (param != null)
+					{
+						if (value)
+							param.Value = param.Value + $",{name}";
+						else
+						{
+							var paramValue = param.Value as string;
+							paramValue = paramValue?.Replace($",{name}", "").Trim();
+							param.Value = paramValue;
+						}
+					}
+					else
+					{
+						param = new Param(EditorModel.State.Manager, content) { Name = "Шрифт.Стиль", Target = "Style.Font.Style" };
+						param.Value = ((TextContentStyle)content.GetStyle()).Font.Style == FontStyle.Regular ? 
+							((TextContentStyle)content.GetStyle()).Font.Style.ToString()
+							: $"{nameof(FontStyle.Regular)},{((TextContentStyle)content.GetStyle()).Font.Style}";
+						if (value)
+							param.Value = param.Value + $",{name}";
+						else
+						{
+							var paramValue = param.Value as string;
+							paramValue = paramValue?.Replace($",{name}", "").Trim();
+							param.Value = paramValue;
+						}
+
+						content.AddParam(param);
+						ContentParams = ContentParams;
+					}
+				}
+			}
+		}
+
+		private bool GetFontStylePartState(string name, FontStyle part)
+		{
+			var content = GetBaseContent<TextBasedContent>(Manager?.GetCell(CurrentCell));
+			if (content != null)
+			{
+				var param = content.GetParams().FirstOrDefault(p => p.Target == "Style.Font.Style");
+				if (param != null)
+					return (param.Value as string)?.Contains(name) == true;
+
+				return ((TextContentStyle)content.GetStyle()).Font.Style.HasFlag(part);
+			}
+
+			return false;
 		}
 
 		public bool HasStyledContent
@@ -537,6 +836,24 @@ namespace CellReport.Editor.ViewModel
 		{
 			get => _currentParam;
 			set => SetProperty(ref _currentParam, value);
+		}
+
+		public bool IsTextableContent
+		{
+			get
+			{
+				if (_presenter == null)
+					return false;
+
+				return IsTextContent || IsDateTimeContent || IsDecimalContent;
+			}
+			set
+			{
+				if (_presenter == null)
+					return;
+
+				OnPropertyChanged();
+			}
 		}
 
 		public bool IsTextContent
@@ -893,6 +1210,8 @@ namespace CellReport.Editor.ViewModel
 				OnPropertyChanged();
 			}
 		}
+
+		public ObservableCollection<string> Fonts { get; } = new ObservableCollection<string>(new[] { "" }.Concat(System.Windows.Media.Fonts.SystemFontFamilies.Select(fontFamily => fontFamily.ToString())));
 
 		#region Undo Redo
 		public void Clear()

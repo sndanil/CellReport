@@ -198,6 +198,85 @@
 												Command="local:EditorCommands.FindInCode"
 					/>
 				</fluent:RibbonGroupBox>
+				<fluent:RibbonGroupBox Header="Шрифт">
+					<fluent:RibbonToolBar>
+
+						<fluent:RibbonToolBar.LayoutDefinitions>
+							<fluent:RibbonToolBarLayoutDefinition Size="Large">
+								<fluent:RibbonToolBarRow>
+									<fluent:RibbonToolBarControlDefinition Target="comboBoxFontName" Width="95" />
+									<fluent:RibbonToolBarControlDefinition Target="comboBoxFontSize" Width="45" />
+								</fluent:RibbonToolBarRow>
+								<fluent:RibbonToolBarRow>
+									<fluent:RibbonToolBarControlGroupDefinition>
+										<fluent:RibbonToolBarControlDefinition Target="buttonBold" />
+										<fluent:RibbonToolBarControlDefinition Target="buttonItalic" />
+										<fluent:RibbonToolBarControlDefinition Target="buttonUnderline" />
+										<fluent:RibbonToolBarControlDefinition Target="buttonStrikethrough" />
+									</fluent:RibbonToolBarControlGroupDefinition>
+								</fluent:RibbonToolBarRow>
+							</fluent:RibbonToolBarLayoutDefinition>
+						</fluent:RibbonToolBar.LayoutDefinitions>
+
+						<fluent:ComboBox x:Name="comboBoxFontName"
+														IsEnabled="{Binding IsTextableContent}"
+														ItemsSource="{Binding Fonts}"
+														SelectedValue="{Binding CurrentCustomFontFamily, Mode=TwoWay}"
+                            MinWidth="40"
+                            Height="22"
+                            BorderBrush="Gainsboro"
+                            Foreground="#FF222222"
+                            IsTextSearchEnabled="True"
+                            ResizeMode="Vertical"
+                            KeyTip="FF"
+                            SizeDefinition="Small"
+                            ScrollViewer.CanContentScroll="False"
+                            >
+							<fluent:ComboBox.ItemTemplate>
+								<DataTemplate>
+									<TextBlock Text="{Binding}" FontFamily="{Binding}" />
+								</DataTemplate>
+							</fluent:ComboBox.ItemTemplate>
+						</fluent:ComboBox>
+						<fluent:ComboBox x:Name="comboBoxFontSize"
+														 IsEnabled="{Binding IsTextableContent}"
+														 SelectedValuePath="Text"
+														 SelectedValue="{Binding CurrentCustomFontSize, Mode=TwoWay}"
+                                         Height="22"
+                                         BorderBrush="Gainsboro"
+                                         Foreground="#FF222222"
+                                         Text="12"
+                                         DisplayMemberPath="Text"
+                                         IsEditable="False"
+                                         SizeDefinition="Small"
+                                         ResizeMode="Vertical"
+                                         KeyTip="FS">
+							<TextBlock Text="" />
+							<TextBlock Text="7" />
+							<TextBlock Text="8" />
+							<TextBlock Text="9" />
+							<TextBlock Text="10" />
+							<TextBlock Text="11" />
+							<TextBlock Text="12" />
+							<TextBlock Text="14" />
+							<TextBlock Text="16" />
+							<TextBlock Text="18" />
+							<TextBlock Text="20" />
+							<TextBlock Text="22" />
+							<TextBlock Text="24" />
+							<TextBlock Text="28" />
+							<TextBlock Text="32" />
+							<TextBlock Text="36" />
+							<TextBlock Text="48" />
+							<TextBlock Text="72" />
+						</fluent:ComboBox>
+						<fluent:ToggleButton x:Name="buttonBold" Icon="Images/16/Bold.png" IsChecked="{Binding CurrentCustomFontBold}" SizeDefinition="Small" IsEnabled="{Binding IsTextableContent}"/>
+						<fluent:ToggleButton x:Name="buttonItalic" Icon="Images/16/Italic.png" IsChecked="{Binding CurrentCustomFontItalic}" SizeDefinition="Small" IsEnabled="{Binding IsTextableContent}"/>
+						<fluent:ToggleButton x:Name="buttonUnderline" Icon="Images/16/Underline.png" IsChecked="{Binding CurrentCustomFontUnderline}" SizeDefinition="Small" IsEnabled="{Binding IsTextableContent}"/>
+						<fluent:ToggleButton x:Name="buttonStrikethrough" Icon="Images/16/Strikethrough.png" IsChecked="{Binding CurrentCustomFontStrikeout}" SizeDefinition="Small" IsEnabled="{Binding IsTextableContent}"/>
+
+					</fluent:RibbonToolBar>
+				</fluent:RibbonGroupBox>
 			</fluent:RibbonTabItem>
 			<fluent:RibbonTabItem Header="Ячейки">
 				<fluent:RibbonGroupBox Header="Строки и столбцы">
@@ -528,7 +607,7 @@
 			<fluent:StatusBarItem HorizontalAlignment="Left" Value="{Binding SelectionHeight, StringFormat={}{0}}" 
 					Visibility="{Binding HaveSelection, Converter={StaticResource BooleanToVisibilityConverter}}" />
 			<fluent:StatusBarItem HorizontalAlignment="Left" Value=" мм) " Visibility="{Binding HaveSelection, Converter={StaticResource BooleanToVisibilityConverter}}" />
-			
+
 			<fluent:StatusBarItem Title="Масштаб" HorizontalAlignment="Right">
 				<Slider Minimum="0"
 				        Maximum="200"

@@ -233,6 +233,12 @@
   <ItemGroup>
     <Resource Include="Images\32\delete.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\16\Bold.png" />
+    <Resource Include="Images\16\Italic.png" />
+    <Resource Include="Images\16\Strikethrough.png" />
+    <Resource Include="Images\16\Underline.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>$(SolutionDir)buildnumerator.exe $(ProjectDir) $(ConfigurationName)</PreBuildEvent>
