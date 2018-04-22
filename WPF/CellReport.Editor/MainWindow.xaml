@@ -456,6 +456,10 @@
 									<Grid.RowDefinitions>
 										<RowDefinition Height="30"></RowDefinition>
 										<RowDefinition Height="30"></RowDefinition>
+										<RowDefinition Height="30"></RowDefinition>
+										<RowDefinition Height="30"></RowDefinition>
+										<RowDefinition Height="30"></RowDefinition>
+										<RowDefinition Height="30"></RowDefinition>
 									</Grid.RowDefinitions>
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -467,6 +471,16 @@
 
 									<Label Grid.Row="1" Grid.Column="0">Высота</Label>
 									<TextBox Grid.Row="1" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentCellHeight, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+									<CheckBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" MaxHeight="20" IsChecked="{Binding CurrentCellAutoHeight}">Автовысота</CheckBox>
+
+									<Label Grid.Row="3" Grid.Column="0">Маркеры</Label>
+
+									<Label Grid.Row="4" Grid.Column="0">Отображения</Label>
+									<TextBox Grid.Row="4" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentCellMarkerForShow, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+									<Label Grid.Row="5" Grid.Column="0">Сокрытия</Label>
+									<TextBox Grid.Row="5" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentCellMarkerForHide, UpdateSourceTrigger=PropertyChanged}"></TextBox>
 								</Grid>
 							</ScrollViewer>
 						</TabItem>

@@ -154,6 +154,9 @@ namespace CellReport.Editor.ViewModel
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(CurrentCellWidth));
 				OnPropertyChanged(nameof(CurrentCellHeight));
+				OnPropertyChanged(nameof(CurrentCellAutoHeight));
+				OnPropertyChanged(nameof(CurrentCellMarkerForShow));
+				OnPropertyChanged(nameof(CurrentCellMarkerForHide));
 				OnPropertyChanged(nameof(CurrentCellStyle));
 				OnPropertyChanged(nameof(CurrentTextStyle));
 				OnPropertyChanged(nameof(CurrentDecimalStyle));
@@ -220,6 +223,69 @@ namespace CellReport.Editor.ViewModel
 
 				OnPropertyChanged(nameof(SelectionHeight));
 				Manager.SetRowHeight(Presenter.CurrentCell.Row, value);
+				Presenter.Update();
+				OnPropertyChanged();
+			}
+		}
+
+		public bool CurrentCellAutoHeight
+		{
+			get
+			{
+				if (_presenter == null)
+					return false;
+
+				return Manager.GetAutoFitRows().Any(r => r == CurrentCell.Row);
+			}
+			set
+			{
+				if (_presenter == null)
+					return;
+
+				OnPropertyChanged(nameof(CurrentCellAutoHeight));
+				Manager.SetAutoFitRow(Presenter.CurrentCell.Row, value);
+				Presenter.Update();
+				OnPropertyChanged();
+			}
+		}
+
+		public string CurrentCellMarkerForShow
+		{
+			get
+			{
+				if (_presenter == null)
+					return null;
+
+				return Manager.GetColumnMarkerForShow(CurrentCell.Column);
+			}
+			set
+			{
+				if (_presenter == null)
+					return;
+
+				OnPropertyChanged(nameof(CurrentCellMarkerForShow));
+				Manager.SetColumnMarkerForShow(Presenter.CurrentCell.Column, string.IsNullOrEmpty(value) ? null : value);
+				Presenter.Update();
+				OnPropertyChanged();
+			}
+		}
+
+		public string CurrentCellMarkerForHide
+		{
+			get
+			{
+				if (_presenter == null)
+					return null;
+
+				return Manager.GetColumnMarkerForHide(CurrentCell.Column);
+			}
+			set
+			{
+				if (_presenter == null)
+					return;
+
+				OnPropertyChanged(nameof(CurrentCellMarkerForHide));
+				Manager.SetColumnMarkerForHide(Presenter.CurrentCell.Column, string.IsNullOrEmpty(value) ? null : value);
 				Presenter.Update();
 				OnPropertyChanged();
 			}
