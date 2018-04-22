@@ -191,7 +191,7 @@ namespace CellReport.Core.Contents
 
 					return value.ToString(param.Format, CultureInfo.GetCultureInfo(param.Culture));
 				}
-				if (param.Value is Decimal || param.Type == nameof(Decimal))
+				if (param.Value is Decimal || param.Value is Int32 || param.Value is Int64 || param.Type == nameof(Decimal))
 				{
 					var value = 0m;
 					if (param.Value is string)
