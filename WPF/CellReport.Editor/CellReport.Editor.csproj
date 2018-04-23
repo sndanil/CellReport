@@ -239,6 +239,9 @@
     <Resource Include="Images\16\Strikethrough.png" />
     <Resource Include="Images\16\Underline.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\16\ShrinkFont.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>$(SolutionDir)buildnumerator.exe $(ProjectDir) $(ConfigurationName)</PreBuildEvent>

@@ -162,6 +162,7 @@ namespace CellReport.Editor.ViewModel
 				OnPropertyChanged(nameof(CurrentDecimalStyle));
 				OnPropertyChanged(nameof(CurrentDateTimeStyle));
 				OnPropertyChanged(nameof(CurrentText));
+				OnPropertyChanged(nameof(CurrentAutoFitFont));
 				OnPropertyChanged(nameof(CurrentCustomFontSize));
 				OnPropertyChanged(nameof(CurrentCustomFontFamily));
 				OnPropertyChanged(nameof(CurrentCustomFontBold));
@@ -451,6 +452,30 @@ namespace CellReport.Editor.ViewModel
 				if (content != null)
 				{
 					content.Text = value;
+					OnPropertyChanged();
+					Presenter.Update();
+				}
+			}
+		}
+
+		public bool CurrentAutoFitFont
+		{
+			get
+			{
+				if (_presenter == null)
+					return false;
+
+				return GetContent<TextContent>()?.AutoSizeFont == true;
+			}
+			set
+			{
+				if (_presenter == null)
+					return;
+
+				var content = GetContent<TextContent>();
+				if (content != null)
+				{
+					content.AutoSizeFont = value;
 					OnPropertyChanged();
 					Presenter.Update();
 				}

@@ -213,6 +213,7 @@
 										<fluent:RibbonToolBarControlDefinition Target="buttonItalic" />
 										<fluent:RibbonToolBarControlDefinition Target="buttonUnderline" />
 										<fluent:RibbonToolBarControlDefinition Target="buttonStrikethrough" />
+										<fluent:RibbonToolBarControlDefinition Target="buttonShrinkFont" />
 									</fluent:RibbonToolBarControlGroupDefinition>
 								</fluent:RibbonToolBarRow>
 							</fluent:RibbonToolBarLayoutDefinition>
@@ -274,6 +275,7 @@
 						<fluent:ToggleButton x:Name="buttonItalic" Icon="Images/16/Italic.png" IsChecked="{Binding CurrentCustomFontItalic}" SizeDefinition="Small" IsEnabled="{Binding IsTextableContent}"/>
 						<fluent:ToggleButton x:Name="buttonUnderline" Icon="Images/16/Underline.png" IsChecked="{Binding CurrentCustomFontUnderline}" SizeDefinition="Small" IsEnabled="{Binding IsTextableContent}"/>
 						<fluent:ToggleButton x:Name="buttonStrikethrough" Icon="Images/16/Strikethrough.png" IsChecked="{Binding CurrentCustomFontStrikeout}" SizeDefinition="Small" IsEnabled="{Binding IsTextableContent}"/>
+						<fluent:ToggleButton x:Name="buttonShrinkFont" Icon="Images/16/ShrinkFont.png" IsChecked="{Binding CurrentAutoFitFont}" ToolTip="Автоматический размер шрифта" SizeDefinition="Small" IsEnabled="{Binding IsTextContent}"/>
 
 					</fluent:RibbonToolBar>
 				</fluent:RibbonGroupBox>
@@ -551,7 +553,7 @@
 									<Label Grid.Row="1" Grid.Column="0">Высота</Label>
 									<TextBox Grid.Row="1" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentCellHeight, UpdateSourceTrigger=PropertyChanged}"></TextBox>
 
-									<CheckBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" MaxHeight="20" IsChecked="{Binding CurrentCellAutoHeight}">Автовысота</CheckBox>
+									<CheckBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" MaxHeight="20" IsChecked="{Binding CurrentCellAutoHeight}">Автовысота строки</CheckBox>
 
 									<Label Grid.Row="3" Grid.Column="0">Маркеры</Label>
 
