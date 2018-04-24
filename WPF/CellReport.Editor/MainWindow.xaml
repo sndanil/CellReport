@@ -279,6 +279,45 @@
 
 					</fluent:RibbonToolBar>
 				</fluent:RibbonGroupBox>
+				<fluent:RibbonGroupBox Header="Выравнивание">
+					<fluent:RibbonToolBar>
+
+						<fluent:RibbonToolBar.LayoutDefinitions>
+							<fluent:RibbonToolBarLayoutDefinition Size="Large">
+								<fluent:RibbonToolBarRow>
+									<fluent:RibbonToolBarControlDefinition Target="buttonHack" Width="0" />
+									<fluent:RibbonToolBarControlDefinition Target="buttonTop" />
+									<fluent:RibbonToolBarControlDefinition Target="buttonMiddle" />
+									<fluent:RibbonToolBarControlDefinition Target="buttonBottom" />
+								</fluent:RibbonToolBarRow>
+								<fluent:RibbonToolBarRow>
+									<fluent:RibbonToolBarControlGroupDefinition>
+										<fluent:RibbonToolBarControlDefinition Target="buttonLeft" />
+										<fluent:RibbonToolBarControlDefinition Target="buttonCenter" />
+										<fluent:RibbonToolBarControlDefinition Target="buttonRight" />
+									</fluent:RibbonToolBarControlGroupDefinition>
+								</fluent:RibbonToolBarRow>
+							</fluent:RibbonToolBarLayoutDefinition>
+						</fluent:RibbonToolBar.LayoutDefinitions>
+
+						<fluent:ToggleButton x:Name="buttonHack" />
+						<fluent:ToggleButton x:Name="buttonTop" Icon="Images/16/AlignTop.png" IsChecked="{Binding CurrentAlignTop}" SizeDefinition="Small" IsEnabled="{Binding IsTextableContent}"/>
+						<fluent:ToggleButton x:Name="buttonMiddle" Icon="Images/16/AlignMiddle.png" IsChecked="{Binding CurrentAlignMiddle}" SizeDefinition="Small" IsEnabled="{Binding IsTextableContent}"/>
+						<fluent:ToggleButton x:Name="buttonBottom" Icon="Images/16/AlignBottom.png" IsChecked="{Binding CurrentAlignBottom}" SizeDefinition="Small" IsEnabled="{Binding IsTextableContent}"/>
+						<fluent:ToggleButton x:Name="buttonLeft" Icon="Images/16/AlignLeft.png" IsChecked="{Binding CurrentAlignLeft}" SizeDefinition="Small" IsEnabled="{Binding IsTextableContent}"/>
+						<fluent:ToggleButton x:Name="buttonCenter" Icon="Images/16/AlignCenter.png" IsChecked="{Binding CurrentAlignCenter}" SizeDefinition="Small" IsEnabled="{Binding IsTextableContent}"/>
+						<fluent:ToggleButton x:Name="buttonRight" Icon="Images/16/AlignRight.png" IsChecked="{Binding CurrentAlignRight}" SizeDefinition="Small" IsEnabled="{Binding IsTextableContent}"/>
+
+					</fluent:RibbonToolBar>
+
+					<fluent:Button Header="Объединить ячейки"
+												Icon="Images\16\merge.png" 
+												KeyTip="M"
+												Size="Middle"
+												Margin="5 8"
+												Command="local:EditorCommands.MergeCells"
+						/>
+				</fluent:RibbonGroupBox>
 			</fluent:RibbonTabItem>
 			<fluent:RibbonTabItem Header="Ячейки">
 				<fluent:RibbonGroupBox Header="Строки и столбцы">
@@ -300,14 +339,6 @@
 					<fluent:Button Header="Удалить столбец"
 												Icon="Images\32\column_delete.png"
 												LargeIcon="Images\32\column_delete.png" Command="local:EditorCommands.DeleteColumns" />
-				</fluent:RibbonGroupBox>
-				<fluent:RibbonGroupBox Header="Ячейки">
-					<fluent:Button Header="Объединить ячейки"
-												Icon="Images\16\merge.png" 
-												KeyTip="M"
-												Size="Middle"
-												Command="local:EditorCommands.MergeCells"
-					/>
 				</fluent:RibbonGroupBox>
 				<fluent:RibbonGroupBox Header="Стиль">
 					<fluent:InRibbonGallery ItemsSource="{Binding CellStyles}" ItemTemplate="{StaticResource cellStyleTemplate}" SelectedItem="{Binding CurrentCellStyle}"

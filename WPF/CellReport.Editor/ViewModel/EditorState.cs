@@ -169,6 +169,12 @@ namespace CellReport.Editor.ViewModel
 				OnPropertyChanged(nameof(CurrentCustomFontItalic));
 				OnPropertyChanged(nameof(CurrentCustomFontUnderline));
 				OnPropertyChanged(nameof(CurrentCustomFontStrikeout));
+				OnPropertyChanged(nameof(CurrentAlignTop));
+				OnPropertyChanged(nameof(CurrentAlignMiddle));
+				OnPropertyChanged(nameof(CurrentAlignBottom));
+				OnPropertyChanged(nameof(CurrentAlignLeft));
+				OnPropertyChanged(nameof(CurrentAlignCenter));
+				OnPropertyChanged(nameof(CurrentAlignRight));
 				OnPropertyChanged(nameof(HasStyledContent));
 				OnPropertyChanged(nameof(IsTextableContent));
 				OnPropertyChanged(nameof(IsTextContent));
@@ -760,6 +766,230 @@ namespace CellReport.Editor.ViewModel
 			}
 
 			return false;
+		}
+
+		public bool CurrentAlignTop
+		{
+			get
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return false;
+
+				return HaveVerticalAlignment(VerticalAlignment.Top);
+			}
+			set
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return;
+
+				SetVerticalAlignment(VerticalAlignment.Top, value);
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(CurrentAlignMiddle));
+				OnPropertyChanged(nameof(CurrentAlignBottom));
+				Presenter.Update();
+			}
+		}
+
+		public bool CurrentAlignMiddle
+		{
+			get
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return false;
+
+				return HaveVerticalAlignment(VerticalAlignment.Middle);
+			}
+			set
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return;
+
+				SetVerticalAlignment(VerticalAlignment.Middle, value);
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(CurrentAlignTop));
+				OnPropertyChanged(nameof(CurrentAlignBottom));
+				Presenter.Update();
+			}
+		}
+
+		public bool CurrentAlignBottom
+		{
+			get
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return false;
+
+				return HaveVerticalAlignment(VerticalAlignment.Bottom);
+			}
+			set
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return;
+
+				SetVerticalAlignment(VerticalAlignment.Bottom, value);
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(CurrentAlignTop));
+				OnPropertyChanged(nameof(CurrentAlignMiddle));
+				Presenter.Update();
+			}
+		}
+
+		public bool CurrentAlignLeft
+		{
+			get
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return false;
+
+				return HaveHorizontalAlignment(HorizontalAlignment.Left);
+			}
+			set
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return;
+
+				SetHorizontalAlignment(HorizontalAlignment.Left, value);
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(CurrentAlignCenter));
+				OnPropertyChanged(nameof(CurrentAlignRight));
+				Presenter.Update();
+			}
+		}
+
+		public bool CurrentAlignCenter
+		{
+			get
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return false;
+
+				return HaveHorizontalAlignment(HorizontalAlignment.Center);
+			}
+			set
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return;
+
+				SetHorizontalAlignment(HorizontalAlignment.Center, value);
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(CurrentAlignLeft));
+				OnPropertyChanged(nameof(CurrentAlignRight));
+				Presenter.Update();
+			}
+		}
+
+		public bool CurrentAlignRight
+		{
+			get
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return false;
+
+				return HaveHorizontalAlignment(HorizontalAlignment.Right);
+			}
+			set
+			{
+				if (_presenter == null || Manager?.GetCell(CurrentCell)?.Content == null)
+					return;
+
+				SetHorizontalAlignment(HorizontalAlignment.Right, value);
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(CurrentAlignLeft));
+				OnPropertyChanged(nameof(CurrentAlignCenter));
+				Presenter.Update();
+			}
+		}
+
+		private bool HaveVerticalAlignment(VerticalAlignment alignment)
+		{
+			var content = GetBaseContent<TextBasedContent>(Manager?.GetCell(CurrentCell));
+			if (content != null)
+			{
+				var param = content.GetParams().FirstOrDefault(p => p.Target == "Style.VAlignment");
+				if (Enum.TryParse(param?.Value as string, out VerticalAlignment align))
+					return align == alignment;
+
+				return ((TextContentStyle)content.GetStyle()).VAlignment == alignment;
+			}
+
+			return false;
+		}
+
+		private void SetVerticalAlignment(VerticalAlignment alignment, bool value)
+		{
+			var content = GetBaseContent<TextBasedContent>(Manager?.GetCell(CurrentCell));
+			if (content != null)
+			{
+
+				var param = ContentParams?.FirstOrDefault(p => p.Target == "Style.VAlignment");
+				if ((((TextContentStyle)content.GetStyle()).VAlignment == alignment) == value)
+				{
+					if (param != null)
+					{
+						content.RemoveParam(param);
+						ContentParams = ContentParams;
+					}
+				}
+				else
+				{
+					if (param != null)
+					{
+						param.Value = alignment.ToString();
+					}
+					else
+					{
+						param = new Param(EditorModel.State.Manager, content) { Name = "Верт.Выравнивание", Target = "Style.VAlignment", Value = alignment.ToString() };
+						content.AddParam(param);
+						ContentParams = ContentParams;
+					}
+				}
+			}
+		}
+
+		private bool HaveHorizontalAlignment(HorizontalAlignment alignment)
+		{
+			var content = GetBaseContent<TextBasedContent>(Manager?.GetCell(CurrentCell));
+			if (content != null)
+			{
+				var param = content.GetParams().FirstOrDefault(p => p.Target == "Style.HAlignment");
+				if (Enum.TryParse(param?.Value as string, out HorizontalAlignment align))
+					return align == alignment;
+
+				return ((TextContentStyle)content.GetStyle()).HAlignment == alignment;
+			}
+
+			return false;
+		}
+
+		private void SetHorizontalAlignment(HorizontalAlignment alignment, bool value)
+		{
+			var content = GetBaseContent<TextBasedContent>(Manager?.GetCell(CurrentCell));
+			if (content != null)
+			{
+
+				var param = ContentParams?.FirstOrDefault(p => p.Target == "Style.HAlignment");
+				if ((((TextContentStyle)content.GetStyle()).HAlignment == alignment) == value)
+				{
+					if (param != null)
+					{
+						content.RemoveParam(param);
+						ContentParams = ContentParams;
+					}
+				}
+				else
+				{
+					if (param != null)
+					{
+						param.Value = alignment.ToString();
+					}
+					else
+					{
+						param = new Param(EditorModel.State.Manager, content) { Name = "Гор.Выравнивание", Target = "Style.HAlignment", Value = alignment.ToString() };
+						content.AddParam(param);
+						ContentParams = ContentParams;
+					}
+				}
+			}
 		}
 
 		public bool HasStyledContent

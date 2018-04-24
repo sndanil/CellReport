@@ -242,6 +242,14 @@
   <ItemGroup>
     <Resource Include="Images\16\ShrinkFont.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\16\AlignBottom.png" />
+    <Resource Include="Images\16\AlignCenter.png" />
+    <Resource Include="Images\16\AlignLeft.png" />
+    <Resource Include="Images\16\AlignMiddle.png" />
+    <Resource Include="Images\16\AlignRight.png" />
+    <Resource Include="Images\16\AlignTop.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>$(SolutionDir)buildnumerator.exe $(ProjectDir) $(ConfigurationName)</PreBuildEvent>
