@@ -992,6 +992,22 @@ namespace CellReport.Editor.ViewModel
 			}
 		}
 
+		private void UpdateFontAndAlignStates()
+		{
+			OnPropertyChanged(nameof(CurrentCustomFontSize));
+			OnPropertyChanged(nameof(CurrentCustomFontFamily));
+			OnPropertyChanged(nameof(CurrentCustomFontBold));
+			OnPropertyChanged(nameof(CurrentCustomFontItalic));
+			OnPropertyChanged(nameof(CurrentCustomFontUnderline));
+			OnPropertyChanged(nameof(CurrentCustomFontStrikeout));
+			OnPropertyChanged(nameof(CurrentAlignTop));
+			OnPropertyChanged(nameof(CurrentAlignMiddle));
+			OnPropertyChanged(nameof(CurrentAlignBottom));
+			OnPropertyChanged(nameof(CurrentAlignLeft));
+			OnPropertyChanged(nameof(CurrentAlignCenter));
+			OnPropertyChanged(nameof(CurrentAlignRight));
+		}
+
 		public bool HasStyledContent
 		{
 			get
@@ -1401,6 +1417,7 @@ namespace CellReport.Editor.ViewModel
 				}
 				Presenter.Update();
 				OnPropertyChanged();
+				UpdateFontAndAlignStates();
 			}
 		}
 
@@ -1432,6 +1449,7 @@ namespace CellReport.Editor.ViewModel
 				}
 				Presenter.Update();
 				OnPropertyChanged();
+				UpdateFontAndAlignStates();
 			}
 		}
 
@@ -1463,6 +1481,7 @@ namespace CellReport.Editor.ViewModel
 				}
 				Presenter.Update();
 				OnPropertyChanged();
+				UpdateFontAndAlignStates();
 			}
 		}
 

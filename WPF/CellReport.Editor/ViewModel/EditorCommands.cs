@@ -779,10 +779,19 @@ namespace CellReport.Editor.ViewModel
 
 						if (EditorModel.State.CurrentSection != null)
 						{
-							EditorModel.State.CurrentSection.Left = Math.Min(EditorModel.State.Presenter.StartSelection.Column, EditorModel.State.Presenter.EndSelection.Column);
-							EditorModel.State.CurrentSection.Top = Math.Min(EditorModel.State.Presenter.StartSelection.Row, EditorModel.State.Presenter.EndSelection.Row);
-							EditorModel.State.CurrentSection.Right = Math.Max(EditorModel.State.Presenter.StartSelection.Column, EditorModel.State.Presenter.EndSelection.Column);
-							EditorModel.State.CurrentSection.Bottom = Math.Max(EditorModel.State.Presenter.StartSelection.Row, EditorModel.State.Presenter.EndSelection.Row);
+							var left = Math.Min(EditorModel.State.Presenter.StartSelection.Column, EditorModel.State.Presenter.EndSelection.Column);
+							var top = Math.Min(EditorModel.State.Presenter.StartSelection.Row, EditorModel.State.Presenter.EndSelection.Row);
+							var right = Math.Max(EditorModel.State.Presenter.StartSelection.Column, EditorModel.State.Presenter.EndSelection.Column);
+							var bottom = Math.Max(EditorModel.State.Presenter.StartSelection.Row, EditorModel.State.Presenter.EndSelection.Row);
+
+							EditorModel.State.CurrentSection.Left = left;
+							EditorModel.State.CurrentSection.Top = top;
+							EditorModel.State.CurrentSection.Right = right;
+							EditorModel.State.CurrentSection.Bottom = bottom;
+
+							var section = EditorModel.State.CurrentSection;
+							EditorModel.State.CurrentSection = null;
+							EditorModel.State.CurrentSection = section;
 						}
 
 						EditorModel.State.EndUpdate();
