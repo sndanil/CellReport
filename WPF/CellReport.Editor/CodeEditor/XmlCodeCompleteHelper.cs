@@ -273,6 +273,7 @@ namespace CellReport.Editor.CodeEditor
 											new Tuple<string, string>("currencyString|RUR", string.Empty),
 											new Tuple<string, string>("currencyString|UAH", string.Empty),
 											new Tuple<string, string>("currencyString|KZT", string.Empty),
+											new Tuple<string, string>("currencyString|TJS", string.Empty),
 											new Tuple<string, string>("currencyString|USD", string.Empty),
 											new Tuple<string, string>("currencyString|EUR", string.Empty),
 											new Tuple<string, string>("numberString", string.Empty),
