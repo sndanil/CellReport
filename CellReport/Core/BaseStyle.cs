@@ -161,6 +161,9 @@ namespace CellReport.Core
 				case "LineContentStyle": style = LineContentStyle.Parse(element); break;
 			}
 
+			if (element.Attribute("ID") == null && element.Name.LocalName != nameof(ExternalStyle))
+				throw new ApplicationException("Элемент стиля не содержит атрибут ID");
+
 			if (style != null)
 				style.ID = element.Attribute("ID").Value;
 

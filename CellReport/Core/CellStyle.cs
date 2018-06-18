@@ -89,14 +89,21 @@ namespace CellReport.Core
 				var all = Border.Empty;
 				foreach (var borderElement in bordersElement.Elements("Border"))
 				{
-					if (borderElement.Attribute("Position") == null)
-						continue;
+					var borderPosition = "All";
+					if (borderElement.Attribute("Position") != null)
+						borderPosition = borderElement.Attribute("Position").Value;
 					var style = LineStyle.Solid;
 					if (borderElement.Attribute("Style") != null)
 						style = (LineStyle)Enum.Parse(typeof(LineStyle), borderElement.Attribute("Style").Value);
-					var border = new Border(UnitsConverter.ParseUnit(borderElement.Attribute("Weight").Value, GraphicsUnit.Millimeter),
-											borderElement.Attribute("Color").Value, style);
-					switch (borderElement.Attribute("Position").Value)
+					var borderColor = "Black";
+					if (borderElement.Attribute("Color") != null)
+						borderColor = borderElement.Attribute("Color").Value;
+					var borderWeight = 0.3f;
+					if (borderElement.Attribute("Weight") != null)
+						borderWeight = UnitsConverter.ParseUnit(borderElement.Attribute("Weight").Value, GraphicsUnit.Millimeter);
+
+					var border = new Border(borderWeight, borderColor, style);
+					switch (borderPosition)
 					{
 						case "All": all = border; break;
 						case "Top": top = border; break;
@@ -200,9 +207,11 @@ namespace CellReport.Core
 				var all = 0f;
 				foreach (var paddingElement in element.Elements("Padding"))
 				{
-					if (paddingElement.Attribute("Position") == null)
-						continue;
-					switch (paddingElement.Attribute("Position").Value)
+					var position = "All";
+					if (paddingElement.Attribute("Position") != null)
+						position = paddingElement.Attribute("Position").Value;
+
+					switch (position)
 					{
 						case "All": all = UnitsConverter.ParseUnit(paddingElement.Value, GraphicsUnit.Millimeter); break;
 						case "Top": top = UnitsConverter.ParseUnit(paddingElement.Value, GraphicsUnit.Millimeter); break;
