@@ -176,6 +176,7 @@ namespace CellReport.Core
 			Register("RUR", true, "рубль", "рубля", "рублей", "копейка", "копейки", "копеек");
 			Register("UAH", false, "гривня", "гривні", "гривень", "копійка", "копійки", "копійок");
 			Register("KZT", false, "тенге", "тенге", "тенге", "тиын", "тиын", "тиын");
+			Register("TJS", false, "сомони", "сомони", "сомони", "дирамов", "дирамов", "дирамов");
 			Register("EUR", true, "евро", "евро", "евро", "евроцент", "евроцента", "евроцентов");
 			Register("USD", true, "доллар", "доллара", "долларов", "цент", "цента", "центов");
 		}
@@ -199,6 +200,9 @@ namespace CellReport.Core
 			if (NumberToString.CurrentCulture.Value == "kk-KZ")
 				return GetString(val, "KZT");
 
+			if (NumberToString.CurrentCulture.Value == "tg-Cyrl-TJ")
+				return GetString(val, "TJS");
+
 			return GetString(val, "RUR");
 		}
 
@@ -209,6 +213,9 @@ namespace CellReport.Core
 
 			if (NumberToString.CurrentCulture.Value == "kk-KZ")
 				return "тг.";
+
+			if (NumberToString.CurrentCulture.Value == "tg-Cyrl-TJ")
+				return "смн.";
 
 			return "руб.";
 		}
