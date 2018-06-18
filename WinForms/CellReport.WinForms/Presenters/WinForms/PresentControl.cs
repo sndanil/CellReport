@@ -35,20 +35,23 @@ namespace CellReport.Presenters.WinForms
 			_paintPanel.ProcessKey += PaintPanelProcessKey;
 			_paintPanel.DoubleClick += PaintPanelDoubleClick;
 
-			_gesture = new GestureListener(_paintPanel);
-			_gesture.Zoom += (sender, e) =>
+			if (!CellManager.IsDesignMode)
 			{
-				_presenter.Scale = Math.Max(0.25f, Math.Min(300, Convert.ToSingle(_presenter.Scale * e.PercentChange)));
-			};
-			_gesture.TwoFingerTap += (sender, e) =>
-			{
-				_presenter.Scale = 1;
-			};
-			_gesture.Pan += (sender, e) =>
-			{
-				_presenter.TopRow -= e.PanOffset.Y / 3;
-				_presenter.LeftColumn -= e.PanOffset.X / 3;
-			};
+				_gesture = new GestureListener(_paintPanel);
+				_gesture.Zoom += (sender, e) =>
+				{
+					_presenter.Scale = Math.Max(0.25f, Math.Min(300, Convert.ToSingle(_presenter.Scale * e.PercentChange)));
+				};
+				_gesture.TwoFingerTap += (sender, e) =>
+				{
+					_presenter.Scale = 1;
+				};
+				_gesture.Pan += (sender, e) =>
+				{
+					_presenter.TopRow -= e.PanOffset.Y / 3;
+					_presenter.LeftColumn -= e.PanOffset.X / 3;
+				};
+			}
 
 			Application.Idle += Application_Idle;
 			_moveTimer.Interval = 100;
