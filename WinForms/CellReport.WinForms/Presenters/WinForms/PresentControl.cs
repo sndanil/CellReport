@@ -9,11 +9,13 @@ using CellReport.WinForms.Presenters.WinForms;
 using CellReport.Export.Excel;
 using CellReport.Export;
 using CellReport.Export.Html;
+using Alteridem.WinTouch;
 
 namespace CellReport.Presenters.WinForms
 {
 	public partial class PresentControl : UserControl
 	{
+		private GestureListener _gesture;
 		private BaseDisplayPresenter _presenter;
 		private readonly Dictionary<string, int> _bookMarkImages = new Dictionary<string, int>();
 		private bool ShowResizers => Manager.DisplaySettings.ShowResizers && !CellManager.IsDesignMode;
@@ -32,6 +34,21 @@ namespace CellReport.Presenters.WinForms
 			_paintPanel.MouseClick += PaintPanelMouseClick;
 			_paintPanel.ProcessKey += PaintPanelProcessKey;
 			_paintPanel.DoubleClick += PaintPanelDoubleClick;
+
+			_gesture = new GestureListener(_paintPanel);
+			_gesture.Zoom += (sender, e) =>
+			{
+				_presenter.Scale = Math.Max(0.25f, Math.Min(300, Convert.ToSingle(_presenter.Scale * e.PercentChange)));
+			};
+			_gesture.TwoFingerTap += (sender, e) =>
+			{
+				_presenter.Scale = 1;
+			};
+			_gesture.Pan += (sender, e) =>
+			{
+				_presenter.TopRow -= e.PanOffset.Y / 3;
+				_presenter.LeftColumn -= e.PanOffset.X / 3;
+			};
 
 			Application.Idle += Application_Idle;
 			_moveTimer.Interval = 100;
