@@ -36,9 +36,22 @@ namespace CellReport.Presenters.WinForms
 			_paintPanel.DoubleClick += PaintPanelDoubleClick;
 
 			_gesture = new GestureListener(_paintPanel);
+			long zoomDistance = 0;
+			var startScale = 0f;
 			_gesture.Zoom += (sender, e) =>
 			{
-				_presenter.Scale = Math.Max(0.25f, Math.Min(300, Convert.ToSingle(_presenter.Scale * e.PercentChange)));
+				if (e.Begin)
+				{
+					zoomDistance = e.Distance;
+					startScale = _presenter.Scale;
+				}
+
+				var alfa = e.Distance - zoomDistance;
+				var step = 200f;
+				var newScale = startScale + alfa / step;
+				_presenter.Scale = Math.Max(0.25f, Math.Min(300, newScale));
+				if (e.End)
+					zoomDistance = 0;
 			};
 			_gesture.TwoFingerTap += (sender, e) =>
 			{
