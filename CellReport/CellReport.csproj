@@ -76,6 +76,7 @@
     <Compile Include="Core\CellTemplate.cs" />
     <Compile Include="Core\Column.cs" />
     <Compile Include="Core\ColorTable.cs" />
+    <Compile Include="Core\CommandLineHelper.cs" />
     <Compile Include="Core\Contents\ActionContent.cs" />
     <Compile Include="Core\Contents\BarCodeContent.cs" />
     <Compile Include="Core\Contents\BaseContent.cs" />

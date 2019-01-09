@@ -733,9 +733,9 @@ namespace CellReport.Core
 		public float GetColumnWidth(int index)
 		{
 			var col = _columns[index];
-			if (!string.IsNullOrEmpty(col.MarkerForShow))
+			if (!string.IsNullOrEmpty(col.MarkerForShow) && !IsDesignMode)
 				return MarkerResolver.Resolve(col.MarkerForShow) ? col.Width : 0;
-			if (!string.IsNullOrEmpty(col.MarkerForHide))
+			if (!string.IsNullOrEmpty(col.MarkerForHide) && !IsDesignMode)
 				return MarkerResolver.Resolve(col.MarkerForHide) ? 0 : col.Width;
 
 			return col.Width;
@@ -746,9 +746,9 @@ namespace CellReport.Core
 			ResizeIfNeed(0, index);
 			if (_columns[index].Width != width)
 			{
-				if (!string.IsNullOrEmpty(_columns[index].MarkerForShow) && !MarkerResolver.Resolve(_columns[index].MarkerForShow))
+				if (!string.IsNullOrEmpty(_columns[index].MarkerForShow) && !IsDesignMode && !MarkerResolver.Resolve(_columns[index].MarkerForShow))
 					return;
-				if (!string.IsNullOrEmpty(_columns[index].MarkerForHide) && !MarkerResolver.Resolve(_columns[index].MarkerForHide))
+				if (!string.IsNullOrEmpty(_columns[index].MarkerForHide) && !IsDesignMode && !MarkerResolver.Resolve(_columns[index].MarkerForHide))
 					return;
 
 				_columns[index].Width = width < 0 ? 0 : width;

@@ -441,5 +441,72 @@ namespace CellReportTests
 				report = (ReportDocument) formatter.Deserialize(stream);
 			}
 		}
+
+		[Test]
+		public void Test10()
+		{
+			var templateContent = @"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?>
+<CellReportTemplate>
+  <Properties>
+    <DocumentName></DocumentName>
+  </Properties>
+  <ExportSettings RunExcelAfterExport=""true"" />
+  <DisplaySettings FrozenColumns=""0"" FrozenRows=""0"" ShowGridLines=""false"" ShowDesignerGridLines=""true"" ShowCurrentRows=""true"" ShowBookMarks=""false"" ShowResizers=""false"" ShowDesignerResizers=""true"" Scale=""1"" />
+  <PrintSettings Landscape=""false"" AutoFitWidthPages=""1"" Scale=""1"">
+    <Margins Top=""10"" Left=""10"" Right=""10"" Bottom=""10"" />
+  </PrintSettings>
+  <Sections>
+    <Section ID=""Test"">
+      <LeftTop Row=""0"" Column=""0"" />
+      <RightBottom Row=""0"" Column=""2"" />
+    </Section>
+  </Sections>
+  <BookMarks />
+  <Table RowsCount=""1"" ColumnsCount=""5"">
+    <Column Width=""23.0125"" />
+    <Column Width=""123.5542"" />
+    <Column Width=""146.5729"" />
+    <Column Width=""10.84167"" />
+    <Column Width=""8.460415"" />
+    <Row Height=""6.241667"">
+      <Cell>
+        <TextContent>
+          <Param Name=""Число"" Target=""Text"" />
+        </TextContent>
+      </Cell>
+      <Cell>
+        <TextContent>
+          <Param Name=""Число"" Target=""Text"" Value=""1"" Type=""Decimal"" Format=""currencyString|RUR"" />
+          <Param Name=""Гор.Выравнивание"" Target=""Style.HAlignment"" Value=""Left"" />
+        </TextContent>
+      </Cell>
+      <Cell>
+        <TextContent>
+          <Param Name=""Число"" Target=""Text"" Value=""1"" Type=""Decimal"" Format=""currencyString|RUR"" Culture=""az"" />
+          <Param Name=""Гор.Выравнивание"" Target=""Style.HAlignment"" Value=""Left"" />
+        </TextContent>
+      </Cell>
+    </Row>
+  </Table>
+  <Styles>
+    <ExternalStyle Uri=""file://DefaultStyles.xml"" />
+  </Styles>
+  <Expressions />
+</CellReportTemplate>";
+
+			var cellTemplate = new CellTemplate();
+			cellTemplate.Load(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(templateContent)));
+			var report = new ReportDocument(cellTemplate);
+			for (int i = 0; i < 1000; i++)
+			{
+				report.AddSection("Test");
+				report.SetParameter("Число", i + 0.23m);
+			}
+
+			var excel = new CellReport.Export.Excel.ExcelExporter(report.Manager);
+			using (var file = System.IO.File.Create("..\\..\\..\\temp\\test10.xlsx"))
+				excel.ExportTo(file);
+		}
+
 	}
 }

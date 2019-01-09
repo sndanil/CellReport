@@ -34,6 +34,43 @@ namespace CellReport.Core
 
 		public NumberToString()
 		{
+			if (CurrentCulture.Value == "az")
+			{
+				Hunds = new[]
+				{
+					"", "yüz ", "iki yüz ", "üç yüz ", "dörd yüz ",
+					"beş yüz ", "altı yüz ", "yeddi yüz ", "səksən yüz ", "doqquz yüz "
+				};
+
+				Tens = new[]
+				{
+					"", "on ", "iyirmi ", "otuz ", "qırx ", "əlli ",
+					"altmış ", "yetmiş ", "səksən ", "doxsan "
+				};
+
+				Frac = new[]
+				{
+					"", "bir ", "iki ", "üç ", "dörd ", "beş ", "altı ", "yeddi ", "səkkiz ", "doqquz ", "on ",
+					"on bir ", "on iki ", "on üç ", "on dörd ", "on beş ", "on altı ", "on yeddi ", "on səkkiz ", "on doqquz "
+				};
+
+				Female = new[]
+				{
+					"", "iki "
+				};
+
+				Zero = "Sıfır ";
+				Minus = "Minus ";
+
+				Thausand = new[] { "min", "min", "min" };
+				Million = new[] { "milyon", "milyon", "milyon" };
+				Milliard = new[] { "milyard", "milyard", "milyard" };
+				Trillion = new[] { "trilyon", "trilyon", "trilyon" };
+				Trilliard = new[] { "trilyon", "trilyon", "trilyon" };
+
+				return;
+			}
+
 			if (CurrentCulture.Value == "uk-UA")
 			{
 				Hunds = new[]
@@ -177,6 +214,7 @@ namespace CellReport.Core
 			Register("UAH", false, "гривня", "гривні", "гривень", "копійка", "копійки", "копійок");
 			Register("KZT", false, "тенге", "тенге", "тенге", "тиын", "тиын", "тиын");
 			Register("TJS", false, "сомони", "сомони", "сомони", "дирамов", "дирамов", "дирамов");
+			Register("AZN", true, "manat", "manat", "manat", "qəpik", "qəpik", "qəpik");
 			Register("EUR", true, "евро", "евро", "евро", "евроцент", "евроцента", "евроцентов");
 			Register("USD", true, "доллар", "доллара", "долларов", "цент", "цента", "центов");
 		}
@@ -202,6 +240,9 @@ namespace CellReport.Core
 
 			if (NumberToString.CurrentCulture.Value == "tg-Cyrl-TJ")
 				return GetString(val, "TJS");
+
+			if (NumberToString.CurrentCulture.Value == "az")
+				return GetString(val, "AZN");
 
 			return GetString(val, "RUR");
 		}

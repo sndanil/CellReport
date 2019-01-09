@@ -35,46 +35,49 @@ namespace CellReport.Presenters.WinForms
 			_paintPanel.ProcessKey += PaintPanelProcessKey;
 			_paintPanel.DoubleClick += PaintPanelDoubleClick;
 
-			_gesture = new GestureListener(_paintPanel);
-			long zoomDistance = 0;
-			var startScale = 0f;
-			_gesture.Zoom += (sender, e) =>
+			if (Core.CommandLineHelper.HaveCommandLineArgument("touch"))
 			{
-				if (e.Begin)
+				_gesture = new GestureListener(_paintPanel);
+				long zoomDistance = 0;
+				var startScale = 0f;
+				_gesture.Zoom += (sender, e) =>
 				{
-					zoomDistance = e.Distance;
-					startScale = _presenter.Scale;
-				}
+					if (e.Begin)
+					{
+						zoomDistance = e.Distance;
+						startScale = _presenter.Scale;
+					}
 
-				var alfa = e.Distance - zoomDistance;
-				var step = 200f;
-				var newScale = startScale + alfa / step;
-				_presenter.Scale = Math.Max(0.25f, Math.Min(300, newScale));
-				if (e.End)
-					zoomDistance = 0;
-			};
-			_gesture.TwoFingerTap += (sender, e) =>
-			{
-				_presenter.Scale = 1;
-			};
-			var gestureShiftX = 0;
-			var gestureShiftY = 0;
-			_gesture.Pan += (sender, e) =>
-			{
-				gestureShiftY += e.PanOffset.Y;
-				if (Math.Abs(gestureShiftY) > Presenter.GetRowHeight(Presenter.TopRow))
+					var alfa = e.Distance - zoomDistance;
+					var step = 200f;
+					var newScale = startScale + alfa / step;
+					_presenter.Scale = Math.Max(0.25f, Math.Min(300, newScale));
+					if (e.End)
+						zoomDistance = 0;
+				};
+				_gesture.TwoFingerTap += (sender, e) =>
 				{
-					_presenter.TopRow -= Convert.ToInt32(gestureShiftY / Presenter.GetRowHeight(Presenter.TopRow));
-					gestureShiftY = gestureShiftY % Convert.ToInt32(Presenter.GetRowHeight(Presenter.TopRow));
-				}
-				gestureShiftX += e.PanOffset.X;
-				if (Math.Abs(gestureShiftX) > Presenter.GetColumnWidth(Presenter.LeftColumn))
+					_presenter.Scale = 1;
+				};
+				var gestureShiftX = 0;
+				var gestureShiftY = 0;
+				_gesture.Pan += (sender, e) =>
 				{
-					_presenter.TopRow -= Convert.ToInt32(gestureShiftX / Presenter.GetColumnWidth(Presenter.LeftColumn));
-					gestureShiftX = gestureShiftX % Convert.ToInt32(Presenter.GetColumnWidth(Presenter.LeftColumn));
-				}
-				_presenter.LeftColumn -= e.PanOffset.X / 3;
-			};
+					gestureShiftY += e.PanOffset.Y;
+					if (Math.Abs(gestureShiftY) > Presenter.GetRowHeight(Presenter.TopRow))
+					{
+						_presenter.TopRow -= Convert.ToInt32(gestureShiftY / Presenter.GetRowHeight(Presenter.TopRow));
+						gestureShiftY = gestureShiftY % Convert.ToInt32(Presenter.GetRowHeight(Presenter.TopRow));
+					}
+					gestureShiftX += e.PanOffset.X;
+					if (Math.Abs(gestureShiftX) > Presenter.GetColumnWidth(Presenter.LeftColumn))
+					{
+						_presenter.TopRow -= Convert.ToInt32(gestureShiftX / Presenter.GetColumnWidth(Presenter.LeftColumn));
+						gestureShiftX = gestureShiftX % Convert.ToInt32(Presenter.GetColumnWidth(Presenter.LeftColumn));
+					}
+					_presenter.LeftColumn -= e.PanOffset.X / 3;
+				};
+			}
 
 			Application.Idle += Application_Idle;
 			_moveTimer.Interval = 100;
