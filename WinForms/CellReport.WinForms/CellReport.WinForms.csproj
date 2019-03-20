@@ -76,9 +76,6 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WinTouch">
-      <HintPath>..\..\Libs\WinTouch.dll</HintPath>
-    </Reference>
     <Reference Include="zxing, Version=0.16.2.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
       <HintPath>..\..\packages\ZXing.Net.0.16.2\lib\net45\zxing.dll</HintPath>
     </Reference>
@@ -107,6 +104,12 @@
       <DependentUpon>FindForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Presenters\WinForms\GdiPlusRenderer.cs" />
+    <Compile Include="Presenters\WinForms\GestureControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Presenters\WinForms\GestureControl.Designer.cs">
+      <DependentUpon>GestureControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Presenters\WinForms\GoToRowForm.cs">
       <SubType>Form</SubType>
     </Compile>

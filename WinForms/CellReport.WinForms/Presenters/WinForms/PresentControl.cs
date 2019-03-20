@@ -9,13 +9,11 @@ using CellReport.WinForms.Presenters.WinForms;
 using CellReport.Export.Excel;
 using CellReport.Export;
 using CellReport.Export.Html;
-using Alteridem.WinTouch;
 
 namespace CellReport.Presenters.WinForms
 {
-	public partial class PresentControl : UserControl
+	public partial class PresentControl : GestureControl
 	{
-		private GestureListener _gesture;
 		private BaseDisplayPresenter _presenter;
 		private readonly Dictionary<string, int> _bookMarkImages = new Dictionary<string, int>();
 		private bool ShowResizers => Manager.DisplaySettings.ShowResizers && !CellManager.IsDesignMode;
@@ -35,50 +33,6 @@ namespace CellReport.Presenters.WinForms
 			_paintPanel.ProcessKey += PaintPanelProcessKey;
 			_paintPanel.DoubleClick += PaintPanelDoubleClick;
 
-			if (Core.CommandLineHelper.HaveCommandLineArgument("touch"))
-			{
-				_gesture = new GestureListener(_paintPanel);
-				long zoomDistance = 0;
-				var startScale = 0f;
-				_gesture.Zoom += (sender, e) =>
-				{
-					if (e.Begin)
-					{
-						zoomDistance = e.Distance;
-						startScale = _presenter.Scale;
-					}
-
-					var alfa = e.Distance - zoomDistance;
-					var step = 200f;
-					var newScale = startScale + alfa / step;
-					_presenter.Scale = Math.Max(0.25f, Math.Min(300, newScale));
-					if (e.End)
-						zoomDistance = 0;
-				};
-				_gesture.TwoFingerTap += (sender, e) =>
-				{
-					_presenter.Scale = 1;
-				};
-				var gestureShiftX = 0;
-				var gestureShiftY = 0;
-				_gesture.Pan += (sender, e) =>
-				{
-					gestureShiftY += e.PanOffset.Y;
-					if (Math.Abs(gestureShiftY) > Presenter.GetRowHeight(Presenter.TopRow))
-					{
-						_presenter.TopRow -= Convert.ToInt32(gestureShiftY / Presenter.GetRowHeight(Presenter.TopRow));
-						gestureShiftY = gestureShiftY % Convert.ToInt32(Presenter.GetRowHeight(Presenter.TopRow));
-					}
-					gestureShiftX += e.PanOffset.X;
-					if (Math.Abs(gestureShiftX) > Presenter.GetColumnWidth(Presenter.LeftColumn))
-					{
-						_presenter.TopRow -= Convert.ToInt32(gestureShiftX / Presenter.GetColumnWidth(Presenter.LeftColumn));
-						gestureShiftX = gestureShiftX % Convert.ToInt32(Presenter.GetColumnWidth(Presenter.LeftColumn));
-					}
-					_presenter.LeftColumn -= e.PanOffset.X / 3;
-				};
-			}
-
 			Application.Idle += Application_Idle;
 			_moveTimer.Interval = 100;
 			_moveTimer.Tick += MoveTimerOnTick;
@@ -97,6 +51,60 @@ namespace CellReport.Presenters.WinForms
 			Localization.LocalizationManager.AddDefaultString("Report/BookMarks", "Закладки");
 
 			LocalHelper.LocalizeControl(this);
+		}
+
+		private long _zoomDistance = 0;
+		private float _startScale = 0f;
+		private int _gestureShiftX = 0;
+		private int _gestureShiftY = 0;
+
+		protected override void OnTwoFingerTap(TwoFingerTapEventArgs e)
+		{
+			base.OnTwoFingerTap(e);
+			_presenter.Scale = 1;
+		}
+
+		protected override void OnPan(PanEventArgs e)
+		{
+			base.OnPan(e);
+
+			_gestureShiftY += e.PanOffset.Y;
+			var topRow = _presenter.TopRow;
+			while (topRow >= 0 && topRow < _presenter.Manager.RowsCount && Math.Abs(_gestureShiftY) > Presenter.GetRowHeight(topRow))
+			{
+				var shift = _gestureShiftY > 0 ? 1 : -1;
+				_gestureShiftY -= Convert.ToInt32(Presenter.GetRowHeight(topRow)) * shift;
+				topRow -= shift;
+			}
+			_presenter.TopRow = topRow;
+
+			_gestureShiftX += e.PanOffset.X;
+			var leftColumn = _presenter.LeftColumn;
+			while(leftColumn >= 0 && leftColumn < _presenter.Manager.ColumnsCount && Math.Abs(_gestureShiftX) > Presenter.GetColumnWidth(leftColumn))
+			{
+				var shift = _gestureShiftX > 0 ? 1 : -1;
+				_gestureShiftX -= Convert.ToInt32(Presenter.GetColumnWidth(leftColumn)) * shift;
+				leftColumn -=  shift;
+			}
+			_presenter.LeftColumn = leftColumn;
+		}
+
+		protected override void OnZoom(ZoomEventArgs e)
+		{
+			base.OnZoom(e);
+
+			if (e.Begin)
+			{
+				_zoomDistance = e.Distance;
+				_startScale = _presenter.Scale;
+			}
+
+			var alfa = e.Distance - _zoomDistance;
+			var step = 200f;
+			var newScale = _startScale + alfa / step;
+			_presenter.Scale = Math.Max(0.25f, Math.Min(300, newScale));
+			if (e.End)
+				_zoomDistance = 0;
 		}
 
 		private void MoveTimerOnTick(object sender, EventArgs eventArgs)
