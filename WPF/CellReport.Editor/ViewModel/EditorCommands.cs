@@ -637,6 +637,28 @@ namespace CellReport.Editor.ViewModel
 			}
 		}
 
+		public static DelegateCommand DeleteCell
+		{
+			get
+			{
+				if (!Commands.TryGetValue(nameof(DeleteCell), out var command))
+				{
+					void Action()
+					{
+						EditorModel.State.BeginUpdate();
+						EditorModel.State.Manager.DeleteCell(EditorModel.State.CurrentCell);
+						EditorModel.State.CurrentCell = EditorModel.State.CurrentCell;
+						EditorModel.State.EndUpdate();
+					}
+
+					command = new DelegateCommand(Action, IsDefaultEnabled);
+					Commands.Add(nameof(DeleteCell), command);
+				}
+
+				return command;
+			}
+		}
+
 		public static DelegateCommand DeleteContent
 		{
 			get

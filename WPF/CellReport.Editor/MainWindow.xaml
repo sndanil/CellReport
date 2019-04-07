@@ -321,6 +321,10 @@
 			</fluent:RibbonTabItem>
 			<fluent:RibbonTabItem Header="Ячейки">
 				<fluent:RibbonGroupBox Header="Строки и столбцы">
+					<fluent:Button Header="Удалить" Size="Large" LargeIcon="Images/32/delete.png" Command="local:EditorCommands.DeleteCell"></fluent:Button>
+				</fluent:RibbonGroupBox>
+
+				<fluent:RibbonGroupBox Header="Строки и столбцы">
 					<fluent:DropDownButton Header="Добавить строку"
 																Icon="Images\32\row_add.png"
 																LargeIcon="Images\32\row_add.png" >
@@ -413,7 +417,7 @@
 						</Grid.ColumnDefinitions>
 
 						<TextBlock Grid.Column="0" Margin="3">Текст</TextBlock>
-						<TextBox Grid.Column="1" Margin="3" Height="35" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" Text="{Binding CurrentText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsTextContent}" TextWrapping="Wrap" AcceptsReturn="True"></TextBox>
+						<TextBox Grid.Column="1" Margin="3" Height="55" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" Text="{Binding CurrentText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsTextContent}" TextWrapping="Wrap" AcceptsReturn="True"></TextBox>
 					</Grid>
 					<TabControl Grid.Row="1" Grid.Column="0" Width="200">
 						<TabItem Header="Параметры">
