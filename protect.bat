@@ -12,3 +12,15 @@ copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\IC
 copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\Schema.xsd" "D:\Projects\Kayala-soft\CellReport\Release\Editor\Schema.xsd"
 copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\System.Windows.Interactivity.dll" "D:\Projects\Kayala-soft\CellReport\Release\Editor\System.Windows.Interactivity.dll"
 copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\zxing.dll" "D:\Projects\Kayala-soft\CellReport\Release\Editor\zxing.dll"
+
+copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\CellReport.dll" "D:\Projects\Kayala-soft\Base\Components\CellReport.dll"
+copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\CellReport.WinForms.dll" "D:\Projects\Kayala-soft\Base\Components\CellReport.WinForms.dll"
+copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\CellReport.dll" "D:\Projects\Kayala-soft\Base\Components\Host\CellReport.dll"
+copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\CellReport.WinForms.dll" "D:\Projects\Kayala-soft\Base\Components\Host\CellReport.WinForms.dll"
+copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\CellReport.dll" "D:\Projects\Kayala-soft\Base\Components\Client\CellReport.dll"
+copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\CellReport.WinForms.dll" "D:\Projects\Kayala-soft\Base\Components\Client\CellReport.WinForms.dll"
+
+copy /Y "D:\Projects\Kayala-soft\CellReport\Release\CellReport.dll" "D:\Projects\Kayala-soft\Kayala\Libs\CellReport.dll"
+copy /Y "D:\Projects\Kayala-soft\CellReport\Release\CellReport.WinForms.dll" "D:\Projects\Kayala-soft\Kayala\Libs\CellReport.WinForms.dll"
+copy /Y "D:\Projects\Kayala-soft\CellReport\Release\CellReport.pdb" "D:\Projects\Kayala-soft\Kayala\Libs\CellReport.pdb"
+copy /Y "D:\Projects\Kayala-soft\CellReport\Release\CellReport.WinForms.pdb" "D:\Projects\Kayala-soft\Kayala\Libs\CellReport.WinForms.pdb"
