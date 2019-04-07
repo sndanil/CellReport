@@ -2,6 +2,9 @@
 using System.Xml.Linq;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Mustache;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CellReport.Core.Contents
 {
@@ -336,6 +339,14 @@ namespace CellReport.Core.Contents
 			return textContent;
 		}
 
+		protected class FormatParameter
+		{
+			public string Name { get; set; }
+
+			public string Format { get; set; }
+		}
+
+
 		public override string GetText()
 		{
 			string result;
@@ -371,6 +382,37 @@ namespace CellReport.Core.Contents
 
 					if (!CellManager.IsDesignMode)
 						text = text.Replace(match.ToString(), value ?? string.Empty);
+				}
+
+				if (Text.Contains("{{"))
+				{
+					var parameters = new List<FormatParameter>();
+					var compiler = new FormatCompiler();
+					compiler.PlaceholderFound += (sender, args) =>
+					{
+						parameters.Add(new FormatParameter
+						{
+							Name = args.Key,
+							Format = args.Formatting == string.Empty ? null : args.Formatting
+						});
+					};
+					try
+					{
+						var formatGenerator = compiler.Compile(text);
+						formatGenerator.KeyNotFound += (sender, args) =>
+						{
+							args.Handled = true;
+							var parameter = parameters.FirstOrDefault(p => p.Name == args.Key);
+							if (parameter == null)
+								return;
+
+							args.Substitute = GetFormattedParamValueByName(parameter.Name, parameter.Format);
+						};
+						text = formatGenerator.Render(null);
+					}
+					catch (FormatException)
+					{
+					}
 				}
 
 				result = text;

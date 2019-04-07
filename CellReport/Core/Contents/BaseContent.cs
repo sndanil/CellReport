@@ -167,9 +167,10 @@ namespace CellReport.Core.Contents
 			return param?.Value;
 		}
 
-		public string GetFormattedParamValueByName(string name)
+		public string GetFormattedParamValueByName(string name, string format = null)
 		{
 			var param = _params?.FirstOrDefault(p => p.Name == name);
+			format = format ?? param?.Format;
 			if (param?.Value != null)
 			{
 				if (param.Value is DateTime || param.Type == nameof(DateTime))
@@ -178,18 +179,18 @@ namespace CellReport.Core.Contents
 					if (param.Value is string)
 					{
 						if (!DateTime.TryParseExact(param.Value?.ToString(), "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out value)
-							&& !DateTime.TryParseExact(param.Value?.ToString(), param.Format ?? "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out value))
+							&& !DateTime.TryParseExact(param.Value?.ToString(), format ?? "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out value))
 							return string.Empty;
 					}
 					else
 						value = Convert.ToDateTime(param.Value);
 
-					if (string.IsNullOrEmpty(param.Format))
+					if (string.IsNullOrEmpty(format))
 						return value.ToString(CultureInfo.CurrentCulture);
 					if (string.IsNullOrEmpty(param.Culture))
-						return value.ToString(param.Format);
+						return value.ToString(format);
 
-					return value.ToString(param.Format, CultureInfo.GetCultureInfo(param.Culture));
+					return value.ToString(format, CultureInfo.GetCultureInfo(param.Culture));
 				}
 				if (param.Value is Decimal || param.Value is Int32 || param.Value is Int64 || param.Type == nameof(Decimal))
 				{
@@ -202,20 +203,20 @@ namespace CellReport.Core.Contents
 					else
 						value = Convert.ToDecimal(param.Value);
 
-					if (string.IsNullOrEmpty(param.Format))
+					if (string.IsNullOrEmpty(format))
 						return value.ToString(CultureInfo.CurrentCulture);
 
-					if (param.Format.StartsWith("currency", StringComparison.OrdinalIgnoreCase) || param.Format.StartsWith("number", StringComparison.InvariantCultureIgnoreCase))
+					if (format.StartsWith("currency", StringComparison.OrdinalIgnoreCase) || format.StartsWith("number", StringComparison.InvariantCultureIgnoreCase))
 					{
 						if (!string.IsNullOrEmpty(param.Culture))
 							NumberToString.CurrentCulture.Value = param.Culture;
 
 						try
 						{
-							if (param.Format.Equals("numberString", StringComparison.OrdinalIgnoreCase))
+							if (format.Equals("numberString", StringComparison.OrdinalIgnoreCase))
 								return CurrencyToString.GetString(value, true, "", "", "", "", "", "", true);
 
-							var parts = param.Format.Split('|');
+							var parts = format.Split('|');
 							if (parts.Length == 1)
 								return CurrencyToString.GetString(value);
 
@@ -228,9 +229,9 @@ namespace CellReport.Core.Contents
 					}
 
 					if (string.IsNullOrEmpty(param.Culture))
-						return value.ToString(param.Format);
+						return value.ToString(format);
 
-					return value.ToString(param.Format, CultureInfo.GetCultureInfo(param.Culture));
+					return value.ToString(format, CultureInfo.GetCultureInfo(param.Culture));
 
 				}
 
