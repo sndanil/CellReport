@@ -214,6 +214,7 @@ namespace CellReport.Core
 			Register("UAH", false, "гривня", "гривні", "гривень", "копійка", "копійки", "копійок");
 			Register("KZT", false, "тенге", "тенге", "тенге", "тиын", "тиын", "тиын");
 			Register("TJS", false, "сомони", "сомони", "сомони", "дирамов", "дирамов", "дирамов");
+			Register("UZS", false, "сум", "сум", "сум", "тийин", "тийин", "тийин");
 			Register("AZN", true, "manat", "manat", "manat", "qəpik", "qəpik", "qəpik");
 			Register("EUR", true, "евро", "евро", "евро", "евроцент", "евроцента", "евроцентов");
 			Register("USD", true, "доллар", "доллара", "долларов", "цент", "цента", "центов");
@@ -263,13 +264,15 @@ namespace CellReport.Core
 
 		public static string GetString(decimal val, string currency)
 		{
-			if (!Currencies.ContainsKey(currency))
+			if (Currencies.TryGetValue(currency, out var info))
+			{
+				return GetString(val, info.Male,
+						info.SeniorOne, info.SeniorTwo, info.SeniorFive,
+						info.JuniorOne, info.JuniorTwo, info.JuniorFive);
+			}
+			else
 				throw new ArgumentOutOfRangeException("currency", "Currency \"" + currency + "\" does not register");
 
-			var info = Currencies[currency];
-			return GetString(val, info.Male,
-					info.SeniorOne, info.SeniorTwo, info.SeniorFive,
-					info.JuniorOne, info.JuniorTwo, info.JuniorFive);
 		}
 
 		public static string GetString(decimal val, bool male,
