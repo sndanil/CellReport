@@ -72,6 +72,8 @@ namespace CellReport
 				Manager.AddExpression(expr.Clone());
 			foreach (var style in _template.Manager.GetStyles())
 				Manager.AddStyle(style);
+			//foreach (var style in _template.Manager.GetExtStyles())
+			//	Manager.AddExternalStyle(style);
 		}
 
 		private void CreateBookMarks()

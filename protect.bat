@@ -1,6 +1,7 @@
-"D:\Tools\.NET Reactor\dotNET_Reactor.exe" -project "D:\Projects\Kayala-soft\CellReport\CellReport.Editor.nrproj"
+rem "D:\Tools\.NET Reactor\dotNET_Reactor.exe" -project "D:\Projects\Kayala-soft\CellReport\CellReport.Editor.nrproj"
+rem copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\CellReport.Editor_Secure\CellReport.Editor.exe" "D:\Projects\Kayala-soft\CellReport\Release\Editor\CellReport.Editor.exe"
 
-copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\CellReport.Editor_Secure\CellReport.Editor.exe" "D:\Projects\Kayala-soft\CellReport\Release\Editor\CellReport.Editor.exe"
+copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\CellReport.Editor.exe" "D:\Projects\Kayala-soft\CellReport\Release\Editor\CellReport.Editor.exe"
 copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\CellReport.Editor.exe.config" "D:\Projects\Kayala-soft\CellReport\Release\CellReport.Editor\Editor.exe.config"
 copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\CellReport.dll" "D:\Projects\Kayala-soft\CellReport\Release\Editor\CellReport.dll"
 copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\CellReport.WinForms.dll" "D:\Projects\Kayala-soft\CellReport\Release\Editor\CellReport.WinForms.dll"
@@ -20,7 +21,7 @@ copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\Ce
 copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\CellReport.dll" "D:\Projects\Kayala-soft\Base\Components\Client\CellReport.dll"
 copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\CellReport.WinForms.dll" "D:\Projects\Kayala-soft\Base\Components\Client\CellReport.WinForms.dll"
 
-copy /Y "D:\Projects\Kayala-soft\CellReport\Release\CellReport.dll" "D:\Projects\Kayala-soft\Kayala\Libs\CellReport.dll"
-copy /Y "D:\Projects\Kayala-soft\CellReport\Release\CellReport.WinForms.dll" "D:\Projects\Kayala-soft\Kayala\Libs\CellReport.WinForms.dll"
-copy /Y "D:\Projects\Kayala-soft\CellReport\Release\CellReport.pdb" "D:\Projects\Kayala-soft\Kayala\Libs\CellReport.pdb"
-copy /Y "D:\Projects\Kayala-soft\CellReport\Release\CellReport.WinForms.pdb" "D:\Projects\Kayala-soft\Kayala\Libs\CellReport.WinForms.pdb"
+copy /Y "D:\Projects\Kayala-soft\CellReport\WinForms\CellReport.WinForms\bin\Debug\CellReport.dll" "D:\Projects\Kayala-soft\Kayala\Libs\CellReport.dll"
+copy /Y "D:\Projects\Kayala-soft\CellReport\WinForms\CellReport.WinForms\bin\Debug\CellReport.WinForms.dll" "D:\Projects\Kayala-soft\Kayala\Libs\CellReport.WinForms.dll"
+copy /Y "D:\Projects\Kayala-soft\CellReport\WinForms\CellReport.WinForms\bin\Debug\CellReport.pdb" "D:\Projects\Kayala-soft\Kayala\Libs\CellReport.pdb"
+copy /Y "D:\Projects\Kayala-soft\CellReport\WinForms\CellReport.WinForms\bin\Debug\CellReport.WinForms.pdb" "D:\Projects\Kayala-soft\Kayala\Libs\CellReport.WinForms.pdb"
