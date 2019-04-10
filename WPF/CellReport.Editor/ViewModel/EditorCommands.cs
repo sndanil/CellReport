@@ -646,7 +646,23 @@ namespace CellReport.Editor.ViewModel
 					void Action()
 					{
 						EditorModel.State.BeginUpdate();
-						EditorModel.State.Manager.DeleteCell(EditorModel.State.CurrentCell);
+						var start = EditorModel.State.CurrentCell;
+						var end = EditorModel.State.CurrentCell;
+						if (EditorModel.State.Presenter.HaveSelection())
+						{
+							start = EditorModel.State.Presenter.GetStartSelection();
+							end = EditorModel.State.Presenter.GetEndSelection();
+							EditorModel.State.Presenter.ClearSelection();
+						}
+
+						for (int i = start.Column; i <= end.Column; i++)
+						{
+							for (int j = start.Row; j <= end.Row; j++)
+							{
+								EditorModel.State.Manager.DeleteCell(j, i);
+							}
+						}
+
 						EditorModel.State.CurrentCell = EditorModel.State.CurrentCell;
 						EditorModel.State.EndUpdate();
 					}
@@ -668,10 +684,26 @@ namespace CellReport.Editor.ViewModel
 					void Action()
 					{
 						EditorModel.State.BeginUpdate();
-						var cell = EditorModel.State.Manager.GetCell(EditorModel.State.CurrentCell);
 
-						if (cell?.Content != null)
-								cell.Content = null;
+						var start = EditorModel.State.CurrentCell;
+						var end = EditorModel.State.CurrentCell;
+						if (EditorModel.State.Presenter.HaveSelection())
+						{
+							start = EditorModel.State.Presenter.GetStartSelection();
+							end = EditorModel.State.Presenter.GetEndSelection();
+							EditorModel.State.Presenter.ClearSelection();
+						}
+
+						for (int i = start.Column; i <= end.Column; i++)
+						{
+							for (int j = start.Row; j <= end.Row; j++)
+							{
+								var cell = EditorModel.State.Manager.GetCell(j, i);
+								if (cell?.Content != null)
+									cell.Content = null;
+							}
+						}
+
 						EditorModel.State.CurrentCell = EditorModel.State.CurrentCell;
 						EditorModel.State.EndUpdate();
 					}
