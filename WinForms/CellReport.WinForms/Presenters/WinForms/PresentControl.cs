@@ -80,11 +80,11 @@ namespace CellReport.Presenters.WinForms
 
 			_gestureShiftX += e.PanOffset.X;
 			var leftColumn = _presenter.LeftColumn;
-			while(leftColumn >= 0 && leftColumn < _presenter.Manager.ColumnsCount && Math.Abs(_gestureShiftX) > Presenter.GetColumnWidth(leftColumn))
+			while (leftColumn >= 0 && leftColumn < _presenter.Manager.ColumnsCount && Math.Abs(_gestureShiftX) > Presenter.GetColumnWidth(leftColumn))
 			{
 				var shift = _gestureShiftX > 0 ? 1 : -1;
 				_gestureShiftX -= Convert.ToInt32(Presenter.GetColumnWidth(leftColumn)) * shift;
-				leftColumn -=  shift;
+				leftColumn -= shift;
 			}
 			_presenter.LeftColumn = leftColumn;
 		}
@@ -304,20 +304,41 @@ namespace CellReport.Presenters.WinForms
 
 		private void CustomPrintMenuItemClick(object sender, EventArgs e)
 		{
-			var printPresenter = new PrintPresenter(_presenter.Manager);
-			printPresenter.CustomPrint();
+			try
+			{
+				var printPresenter = new PrintPresenter(_presenter.Manager);
+				printPresenter.CustomPrint();
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message);
+			}
 		}
 
 		private void PageSetupMenuItemClick(object sender, EventArgs e)
 		{
-			var printPresenter = new PrintPresenter(_presenter.Manager);
-			printPresenter.ShowCustomPage();
+			try
+			{
+				var printPresenter = new PrintPresenter(_presenter.Manager);
+				printPresenter.ShowCustomPage();
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message);
+			}
 		}
 
 		private void PrintPreviewMenuItemClick(object sender, EventArgs e)
 		{
-			var printPresenter = new PrintPresenter(_presenter.Manager);
-			printPresenter.ShowPreviewDialog();
+			try
+			{
+				var printPresenter = new PrintPresenter(_presenter.Manager);
+				printPresenter.ShowPreviewDialog();
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message);
+			}
 		}
 
 		private void AutoWidthMenuItemClick(object sender, EventArgs e)
