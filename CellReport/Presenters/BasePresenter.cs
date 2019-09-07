@@ -115,7 +115,7 @@ namespace CellReport.Presenters
 			BeginUpdate();
 			var text = content.GetTextForRender();
 			var style = (TextContentStyle)content.GetActualStyle();
-			if (Math.Abs(style.Font.Size - 1) <= float.Epsilon)
+			if (style.Font.Size - 1 <= 0)
 				return;
 
 			var outerCellRect = GetCellRect(_manager.GetCell(row, col));
