@@ -13,6 +13,9 @@ copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\IC
 copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\Schema.xsd" "D:\Projects\Kayala-soft\CellReport\Release\Editor\Schema.xsd"
 copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\System.Windows.Interactivity.dll" "D:\Projects\Kayala-soft\CellReport\Release\Editor\System.Windows.Interactivity.dll"
 copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\zxing.dll" "D:\Projects\Kayala-soft\CellReport\Release\Editor\zxing.dll"
+copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\mustache-sharp.dll" "D:\Projects\Kayala-soft\CellReport\Release\Editor\mustache-sharp.dll"
+
+copy /Y "D:\Projects\Kayala-soft\CellReport\Release\Editor\*.*" "D:\Projects\Kayala-soft\Base\CellReportEditor\"
 
 copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\CellReport.dll" "D:\Projects\Kayala-soft\Base\Components\CellReport.dll"
 copy /Y "D:\Projects\Kayala-soft\CellReport\WPF\CellReport.Editor\bin\Release\CellReport.WinForms.dll" "D:\Projects\Kayala-soft\Base\Components\CellReport.WinForms.dll"
