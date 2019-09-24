@@ -149,6 +149,13 @@ namespace CellReport.Core.Contents
 				param.Value = value;
 		}
 
+		public virtual void SetContentParamByTarget(string target, object value)
+		{
+			var param = _params?.FirstOrDefault(p => p.Target == target);
+			if (param != null)
+				param.Value = value;
+		}
+
 		public string GetParamNameByTarget(string target)
 		{
 			var param = _params?.FirstOrDefault(p => p.Target == target);

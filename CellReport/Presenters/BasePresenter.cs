@@ -126,7 +126,7 @@ namespace CellReport.Presenters
 			{
 				if (content.GetParamValueByTarget("Style.Font.Size") == null)
 					content.AddParam(new Param(_manager, content) { Target = "Style.Font.Size", Name = "Style.Font.Size" });
-				content.SetContentParam("Style.Font.Size", style.Font.Size - 1);
+				content.SetContentParamByTarget("Style.Font.Size", style.Font.Size - 1);
 				FitCellFontSize(row, col, content);
 			}
 			EndUpdate();
