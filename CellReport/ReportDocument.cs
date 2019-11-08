@@ -187,6 +187,34 @@ namespace CellReport
 			SectionAttached?.Invoke(sectionName);
 		}
 
+		public ReportDocument AddSection(string sectionName, object obj)
+		{
+			AddSection(sectionName);
+			ProcessSection(obj);
+
+			return this;
+		}
+
+		private void ProcessSection(object obj)
+		{
+			if (obj != null)
+			{
+				if (obj is ISectionObject sectionObject)
+					SetSectionObject(sectionObject);
+				else
+				{
+					foreach (var property in obj.GetType().GetProperties())
+					{
+						var value = property.GetValue(obj, null);
+						if (value is ISectionObject sectionObject2)
+							SetSectionObject(sectionObject2);
+						else
+							SetParameter(property.Name, value);
+					}
+				}
+			}
+		}
+
 		public void JoinSection(string sectionName)
 		{
 			CreateBookMarks();
@@ -196,6 +224,14 @@ namespace CellReport
 			_colNumberForJoinSection += section.Width;
 
 			SectionAttached?.Invoke(sectionName);
+		}
+
+		public ReportDocument JoinSection(string sectionName, object obj)
+		{
+			JoinSection(sectionName);
+			ProcessSection(obj);
+
+			return this;
 		}
 
 		public void SetParameter(string paramName, object value)
