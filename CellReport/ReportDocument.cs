@@ -226,6 +226,17 @@ namespace CellReport
 			SectionAttached?.Invoke(sectionName);
 		}
 
+		public ReportDocument JoinSection(string sectionName, int count, object obj)
+		{
+			for (int i = 0; i < count; i++)
+			{
+				JoinSection(sectionName);
+				ProcessSection(obj);
+			}
+
+			return this;
+		}
+
 		public ReportDocument JoinSection(string sectionName, object obj)
 		{
 			JoinSection(sectionName);
