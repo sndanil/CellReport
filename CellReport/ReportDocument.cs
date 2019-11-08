@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using CellReport.Core;
@@ -189,8 +190,19 @@ namespace CellReport
 
 		public ReportDocument AddSection(string sectionName, object obj)
 		{
-			AddSection(sectionName);
-			ProcessSection(obj);
+			if (obj is IEnumerable enumerable)
+			{
+				foreach (var item in enumerable)
+				{
+					AddSection(sectionName);
+					ProcessSection(item);
+				}
+			}
+			else
+			{
+				AddSection(sectionName);
+				ProcessSection(obj);
+			}
 
 			return this;
 		}
@@ -226,21 +238,21 @@ namespace CellReport
 			SectionAttached?.Invoke(sectionName);
 		}
 
-		public ReportDocument JoinSection(string sectionName, int count, object obj)
+		public ReportDocument JoinSection(string sectionName, object obj)
 		{
-			for (int i = 0; i < count; i++)
+			if (obj is IEnumerable enumerable)
+			{
+				foreach (var item in enumerable)
+				{
+					JoinSection(sectionName);
+					ProcessSection(item);
+				}
+			}
+			else
 			{
 				JoinSection(sectionName);
 				ProcessSection(obj);
 			}
-
-			return this;
-		}
-
-		public ReportDocument JoinSection(string sectionName, object obj)
-		{
-			JoinSection(sectionName);
-			ProcessSection(obj);
 
 			return this;
 		}
