@@ -54,6 +54,18 @@ namespace CellReport.Core.Expressions
 		public override object GetValue(CellManager manager)
 		{
 			var sum = 0m;
+			var cells = new HashSet<Cell>();
+
+			Func<Cell, decimal> func = (cell) =>
+			{
+				if (cell != null && cell.Content != null && !cells.Contains(cell))
+				{
+					cells.Add(cell);
+					return cell.Content.GetParams().Where(p => p.Name == ParamName).Select(p => Convert.ToDecimal(p.Value)).Sum();
+				}
+
+				return 0m;
+			};
 			if (PrintMode && PerPage)
 			{
 				for (int row = _start.Row; row <= _end.Row; row++)
@@ -61,8 +73,7 @@ namespace CellReport.Core.Expressions
 					for (int col = _start.Column; col <= _end.Column; col++)
 					{
 						var cell = manager.GetCell(row, col);
-						if (cell != null && cell.Content != null)
-							sum += cell.Content.GetParams().Where(p => p.Name == ParamName).Select(p => Convert.ToDecimal(p.Value)).Sum();
+						sum += func(cell);
 					}
 				}
 			}
@@ -73,11 +84,11 @@ namespace CellReport.Core.Expressions
 					for (int col = 0; col < manager.ColumnsCount; col++)
 					{
 						var cell = manager.GetCell(row, col);
-						if (cell != null && cell.Content != null)
-							sum += cell.Content.GetParams().Where(p => p.Name == ParamName).Select(p => Convert.ToDecimal(p.Value)).Sum();
+						sum += func(cell);
 					}
 				}
 			}
+
 			return sum;
 		}
 

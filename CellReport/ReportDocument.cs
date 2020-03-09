@@ -315,9 +315,9 @@ namespace CellReport
 			if (Manager.RowsCount < (rowOffset + section.Height))
 			{
 				if (Manager.RowsCount < 5000)
-					Manager.RowsCount = Manager.RowsCount*2; // rowOffset + section.Height;
+					Manager.RowsCount = Manager.RowsCount * 2; // rowOffset + section.Height;
 				else
-					Manager.RowsCount = Manager.RowsCount + section.Height*100;
+					Manager.RowsCount = Manager.RowsCount + section.Height * 100;
 			}
 			if (Manager.ColumnsCount < (colOffset + section.Width))
 				Manager.ColumnsCount = colOffset + section.Width;
