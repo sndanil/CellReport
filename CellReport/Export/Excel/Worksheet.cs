@@ -69,7 +69,7 @@ namespace CellReport.Export.Excel
 			var data = new XElement(ExcelExporter.schemaMain + "sheetData");
 			var mergeCells = new XElement(ExcelExporter.schemaMain + "mergeCells");
 			int mergeCount = 0;
-			var exportedCells = new Dictionary<Cell, bool>();
+			var exportedCells = new HashSet<Cell>();
 			for (int rowIndex = 0; rowIndex < _manager.RowsCount; rowIndex++)
 			{
 				var height = UnitsConverter.ConvertValue(_manager.GetRowHeight(rowIndex),
@@ -93,7 +93,7 @@ namespace CellReport.Export.Excel
 					var c = new XElement(ExcelExporter.schemaMain + "c",
 						new XAttribute("r", GetColumnName(actualColIndex) + (rowIndex + 1)));
 					row.Add(c);
-					if (exportedCells.ContainsKey(cell))
+					if (exportedCells.Contains(cell))
 					{
 						c.Add(new XAttribute("s", _styles.AddStyles(cell.Style)));
 						continue;
@@ -122,7 +122,7 @@ namespace CellReport.Export.Excel
 								new XAttribute("ref", mergeRef))
 						);
 					}
-					exportedCells.Add(cell, true);
+					exportedCells.Add(cell);
 				}
 				data.Add(row);
 			}
@@ -172,8 +172,7 @@ namespace CellReport.Export.Excel
 			return result;
 		}
 
-		private BaseStyle WriteContent(CellLocation loc, CellSpan span, Size size,
-	BaseContent content, XElement c)
+		private BaseStyle WriteContent(CellLocation loc, CellSpan span, Size size, BaseContent content, XElement contentElement)
 		{
 			if (content == null)
 				return null;
@@ -182,24 +181,26 @@ namespace CellReport.Export.Excel
 			{
 				foreach (var item in ((CollectionContent)content).GetContents())
 				{
-					var result = WriteContent(loc, span, size, item, c);
+					var result = WriteContent(loc, span, size, item, contentElement);
 					if (result != null)
 						return result;
 				}
 			}
 			else if (content is TextContent)
 			{
-				c.Add(new XAttribute("t", "inlineStr"),
-						new XElement(ExcelExporter.schemaMain + "is",
-								new XElement(ExcelExporter.schemaMain + "t", ((TextContent)content).GetTextForRender())
-								)
-						);
+				var text = ((TextContent)content).GetTextForRender();
+				if (text.Any(c => !System.Xml.XmlConvert.IsXmlChar(c)))
+					text = new string(text.Where(System.Xml.XmlConvert.IsXmlChar).ToArray());
+
+				contentElement.Add(new XAttribute("t", "inlineStr"), 
+					new XElement(ExcelExporter.schemaMain + "is", new XElement(ExcelExporter.schemaMain + "t", text))
+					);
 				return content.GetActualStyle();
 			}
 			else if (content is DecimalContent)
 			{
 				var decContent = (DecimalContent)content;
-				c.Add(new XElement(ExcelExporter.schemaMain + "v",
+				contentElement.Add(new XElement(ExcelExporter.schemaMain + "v",
 								decContent.GetValue().ToString(CultureInfo.InvariantCulture))
 						);
 				// Excel в качестве цвета отрицательных чисел понимает только набор предопределенных цветов
@@ -229,7 +230,7 @@ namespace CellReport.Export.Excel
 			}
 			else if (content is DateTimeContent)
 			{
-				c.Add(new XElement(ExcelExporter.schemaMain + "v",
+				contentElement.Add(new XElement(ExcelExporter.schemaMain + "v",
 								((DateTimeContent)content).GetValue().ToOADate().ToString(CultureInfo.InvariantCulture))
 						);
 				return content.GetActualStyle();

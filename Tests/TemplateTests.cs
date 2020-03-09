@@ -558,5 +558,58 @@ namespace CellReportTests
 			var value = (decimal) ((CellReport.Core.Expressions.SumExpression)report.Manager.GetExpressionByID("КоличествоВсего")).GetValue(report.Manager);
 			Assert.AreEqual(1m, value);
 		}
+
+		[TestMethod]
+		public void Test12()
+		{
+			var templateContent = @"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?>
+<CellReportTemplate>
+  <Properties>
+    <DocumentName></DocumentName>
+  </Properties>
+  <ExportSettings RunExcelAfterExport=""true"" />
+  <DisplaySettings FrozenColumns=""0"" FrozenRows=""0"" ShowGridLines=""false"" ShowDesignerGridLines=""true"" ShowCurrentRows=""true"" ShowBookMarks=""false"" ShowResizers=""false"" ShowDesignerResizers=""true"" Scale=""1"" />
+  <PrintSettings Landscape=""false"" AutoFitWidthPages=""1"" Scale=""1"">
+    <Margins Top=""10"" Left=""10"" Right=""10"" Bottom=""10"" />
+  </PrintSettings>
+  <Sections>
+    <Section ID=""Test"">
+      <LeftTop Row=""0"" Column=""0"" />
+      <RightBottom Row=""0"" Column=""2"" />
+    </Section>
+  </Sections>
+  <BookMarks />
+  <Table RowsCount=""1"" ColumnsCount=""5"">
+    <Column Width=""23.0125"" />
+    <Column Width=""123.5542"" />
+    <Column Width=""146.5729"" />
+    <Column Width=""10.84167"" />
+    <Column Width=""8.460415"" />
+    <Row Height=""6.241667"">
+      <Cell>
+      </Cell>
+      <Cell>
+        <TextContent>
+          <Param Name=""Text"" Target=""Text"" />
+        </TextContent>
+      </Cell>
+    </Row>
+  </Table>
+  <Styles>
+    <ExternalStyle Uri=""file://DefaultStyles.xml"" />
+  </Styles>
+  <Expressions />
+</CellReportTemplate>";
+
+			var cellTemplate = new CellTemplate();
+			cellTemplate.Load(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(templateContent)));
+			var report = new ReportDocument(cellTemplate);
+			report.AddSection("Test");
+			report.SetParameter("Text", "System.ArgumentException: \"\", шестнадцатеричное значение 0x01, является недопустимым знаком.");
+
+			var excel = new CellReport.Export.Excel.ExcelExporter(report.Manager);
+			using (var file = System.IO.File.Create("..\\..\\..\\temp\\test12.xlsx"))
+				excel.ExportTo(file);
+		}
 	}
 }
