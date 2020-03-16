@@ -89,7 +89,11 @@ namespace CellReport.Core.Contents
 			}
 			set
 			{
-				_value = value;
+				if (Expression is DecimalExpression)
+					_value = Expression.GetValue(_manager, value);
+				else
+					_value = value;
+
 				OnPropertyChanged("Value");
 			}
 		}

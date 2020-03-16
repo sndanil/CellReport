@@ -94,6 +94,7 @@
     <Compile Include="Core\ExportSettings.cs" />
     <Compile Include="Core\DisplaySettings.cs" />
     <Compile Include="Core\Expressions\BaseExpression.cs" />
+    <Compile Include="Core\Expressions\DecimalExpression.cs" />
     <Compile Include="Core\Expressions\SumExpression.cs" />
     <Compile Include="Core\Expressions\DocumentNameExpression.cs" />
     <Compile Include="Core\Expressions\PagesCountExpression.cs" />

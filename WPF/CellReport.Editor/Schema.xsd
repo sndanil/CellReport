@@ -351,7 +351,8 @@
 			<xs:element name='PagesCountExpression' type='PagesCountExpressionType' minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name='DocumentNameExpression' type='DocumentNameExpressionType' minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name='SumExpression' type='SumExpressionType' minOccurs="0" maxOccurs="unbounded" />
-		</xs:choice>
+      <xs:element name='DecimalExpression' type='DecimalExpressionType' minOccurs="0" maxOccurs="unbounded" />
+    </xs:choice>
 	</xs:complexType>
 
 	<xs:complexType name='CountExpressionType'>
@@ -378,4 +379,11 @@
 		<xs:attribute name='ParamName' type='xs:string'/>
 		<xs:attribute name='PerPage' type='xs:boolean'/>
 	</xs:complexType>
+
+  <xs:complexType name='DecimalExpressionType'>
+    <xs:attribute name='ID' type='xs:string'/>
+    <xs:attribute name='Operation' type='xs:string'/>
+    <xs:attribute name='PrevExpression' type='xs:string'/>
+    <xs:attribute name='SecondValue' type='xs:decimal'/>
+  </xs:complexType>
 </xs:schema>
