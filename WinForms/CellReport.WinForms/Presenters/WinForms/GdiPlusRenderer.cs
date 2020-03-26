@@ -52,7 +52,7 @@ namespace CellReport.Presenters.WinForms
 		public static Core.Size GetTextSize(Core.Rectangle rect, string text, string fontFamily, float fontSize, Core.FontStyle fontStyle)
 		{
 			SizeF result = new SizeF(rect.Width, rect.Height);
-			if (rect.Width > 0)
+			if ((int)rect.Width > 0)
 			{
 				var stringFormat = new StringFormat
 				{
@@ -70,29 +70,29 @@ namespace CellReport.Presenters.WinForms
 
 				if (result.Width > rect.Width)
 				{
-					var imageRect = new RectangleF(0, 0, rect.Width, Math.Max(rect.Height, 1) * 10);
-					Bitmap bmp = new Bitmap((int)imageRect.Width, (int)imageRect.Height);
-					using (var font = new Font(fontFamily, fontSize, (System.Drawing.FontStyle)fontStyle))
-					using (Graphics gfx = Graphics.FromImage(bmp))
-					{
-						gfx.DrawString(text, font, Brushes.Black, imageRect, stringFormat);
-					}
-					//bmp.Save("D:\\temp\\MeasureString\\" + Guid.NewGuid() + ".png", ImageFormat.Png);
-
-					//var lastHeight = GetTextHeight(bmp);
 					var lastHeight = 0;
-					for (int y = 0; y < bmp.Height; y++)
+					var imageRect = new RectangleF(0, 0, rect.Width, Math.Max(rect.Height, 1) * 10);
+					using (var bmp = new Bitmap((int)imageRect.Width, (int)imageRect.Height))
 					{
-						for (int x = 0; x < bmp.Width; x++)
+						using (var font = new Font(fontFamily, fontSize, (System.Drawing.FontStyle)fontStyle))
+						using (Graphics gfx = Graphics.FromImage(bmp))
 						{
-							if (bmp.GetPixel(x, y).Name != "0")
+							gfx.DrawString(text, font, Brushes.Black, imageRect, stringFormat);
+						}
+
+						for (int y = 0; y < bmp.Height; y++)
+						{
+							for (int x = 0; x < bmp.Width; x++)
 							{
-								lastHeight = y;
-								break;
+								if (bmp.GetPixel(x, y).Name != "0")
+								{
+									lastHeight = y;
+									break;
+								}
 							}
 						}
 					}
-					bmp.Dispose();
+
 					return new Core.Size(rect.Width, lastHeight > 0 ? lastHeight + 1 : 0);
 				}
 			}

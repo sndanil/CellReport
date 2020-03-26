@@ -9,6 +9,7 @@ namespace Tests
 		[TestMethod]
 		public void TestMethod1()
 		{
+			var bmp = new System.Drawing.Bitmap(1, 10);
 		}
 	}
 }
