@@ -611,5 +611,56 @@ namespace CellReportTests
 			using (var file = System.IO.File.Create("..\\..\\..\\temp\\test12.xlsx"))
 				excel.ExportTo(file);
 		}
+
+		[TestMethod]
+		public void Test13()
+		{
+			var templateContent = @"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?>
+<CellReportTemplate>
+  <Properties>
+    <DocumentName></DocumentName>
+  </Properties>
+  <ExportSettings RunExcelAfterExport=""false"" />
+  <DisplaySettings FrozenColumns=""0"" FrozenRows=""0"" ShowGridLines=""true"" ShowBookMarks=""false"" ShowResizers=""true"" Scale=""1"" />
+  <PrintSettings Landscape=""false"" AutoFitWidthPages=""1"" Scale=""1"">
+    <Margins Top=""0"" Left=""0"" Right=""0"" Bottom=""0"" />
+  </PrintSettings>
+  <Sections>
+    <Section ID=""Секция 0"">
+      <LeftTop Row=""0"" Column=""0"" />
+      <RightBottom Row=""0"" Column=""4"" />
+    </Section>
+    <Section ID=""Секция 0"" ObjectName=""Склады,Товары,Контрагенты,String"">
+      <LeftTop Row=""0"" Column=""0"" />
+      <RightBottom Row=""0"" Column=""4"" />
+    </Section>
+  </Sections>
+  <BookMarks />
+  <Table RowsCount=""10"" ColumnsCount=""5"">
+    <Row Height=""6.770833"" />
+    <Row Height=""6.50625"" />
+    <Row Height=""5.977083"" />
+    <Row Height=""5.183334"" />
+    <Row Height=""7.3"" />
+    <Row Height=""8.09375"" />
+    <Row Height=""8.622917"" />
+    <Row Height=""8.358334"" />
+    <Row Height=""6.241667"" />
+    <Row Height=""4.125"" />
+  </Table>
+  <Styles>
+    <ExternalStyle Uri=""file://DefaultStyles.xml"" />
+  </Styles>
+  <Expressions />
+</CellReportTemplate>";
+
+			var cellTemplate = new CellTemplate();
+			cellTemplate.Load(new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(templateContent)));
+			var report = new CellReport.ReportDocument(cellTemplate);
+			report.AddSection("Секция 0");
+			report.AddSection("Секция 0", "Test");
+			var section = cellTemplate.Manager.GetSection("Секция 0", "Товары");
+		}
+
 	}
 }

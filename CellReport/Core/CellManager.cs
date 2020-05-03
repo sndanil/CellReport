@@ -181,7 +181,7 @@ namespace CellReport.Core
 
 		public void AddSection(TemplateSection section)
 		{
-			var foundSection = _sections.FirstOrDefault(s => s.Name == section.Name);
+			var foundSection = GetSectionInternal(section.Name, section.ObjectName, true);
 			if (foundSection != null)
 				_sections.Remove(foundSection);
 
@@ -197,12 +197,18 @@ namespace CellReport.Core
 			OnPropertyChanged("Sections");
 		}
 
-		public TemplateSection GetSectionByName(string name, string objectName)
+		private TemplateSection GetSectionInternal(string name, string objectName, bool strict = false)
 		{
 			var foundSection = _sections.FirstOrDefault(s => s.Name == name && (s.ObjectName == objectName || s.ObjectName?.Split(new[] { ',', ';' }).Contains(objectName) == true));
-			if (foundSection == null)
+			if (foundSection == null && !strict)
 				foundSection = _sections.FirstOrDefault(s => s.Name == name && string.IsNullOrEmpty(s.ObjectName));
-	
+
+			return foundSection;
+		}
+
+		public TemplateSection GetSection(string name, string objectName)
+		{
+			var foundSection = GetSectionInternal(name, objectName);
 			if (foundSection == null)
 				throw new ApplicationException("Section not found");
 

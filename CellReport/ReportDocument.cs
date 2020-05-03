@@ -177,7 +177,7 @@ namespace CellReport
 			if (obj is ISectionObject sectionObject)
 				objectName = sectionObject.GetObjectName();
 
-			if (obj != null)
+			if (obj != null && objectName == null)
 				objectName = (new DefaultSectionObject(obj)).GetObjectName();
 
 			return objectName;
