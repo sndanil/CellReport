@@ -406,9 +406,9 @@ namespace CellReport.Core
 			}
 		}
 
-		public TemplateSection GetSectionByName(string name)
+		public TemplateSection GetSectionByName(string name, string objectName)
 		{
-			return _manager.GetSectionByName(name);
+			return _manager.GetSectionByName(name, objectName);
 		}
 
 		public int GetMaxColumnsCountInSections()

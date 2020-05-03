@@ -44,7 +44,21 @@ namespace CellReport.Core
 				if (_name != value)
 				{
 					_name = value;
-					OnPropertyChanged("Name");
+					OnPropertyChanged(nameof(Name));
+				}
+			}
+		}
+
+		private string _objectName = string.Empty;
+		public string ObjectName
+		{
+			get => _objectName;
+			set
+			{
+				if (_objectName != value)
+				{
+					_objectName = value;
+					OnPropertyChanged(nameof(ObjectName));
 				}
 			}
 		}
@@ -203,11 +217,19 @@ namespace CellReport.Core
 		internal XElement Serialize()
 		{
 			var result = new XElement("Section",
-							new XAttribute("ID", Name), LeftTop.Serialize("LeftTop"), RightBottom.Serialize("RightBottom"));
+							new XAttribute("ID", Name),
+							LeftTop.Serialize("LeftTop"), 
+							RightBottom.Serialize("RightBottom"));
+
+			if (!string.IsNullOrEmpty(ObjectName))
+				result.Add(new XAttribute("ObjectName", ObjectName));
+
 			if (IsHeaderFixed)
 				result.Add(new XAttribute("IsHeaderFixed", IsHeaderFixed));
+
 			if (IsFooterFixed)
 				result.Add(new XAttribute("IsFooterFixed", IsFooterFixed));
+
 			return result;
 		}
 
@@ -219,8 +241,12 @@ namespace CellReport.Core
 			section.LeftTop = CellLocation.Parse(element.Element("LeftTop"));
 			section.RightBottom = CellLocation.Parse(element.Element("RightBottom"));
 
+			if (element.Attribute("ObjectName") != null)
+				section.ObjectName = element.Attribute("ObjectName").Value;
+
 			if (element.Attribute("IsHeaderFixed") != null)
 				section.IsHeaderFixed = bool.Parse(element.Attribute("IsHeaderFixed").Value);
+
 			if (element.Attribute("IsFooterFixed") != null)
 				section.IsFooterFixed = bool.Parse(element.Attribute("IsFooterFixed").Value);
 

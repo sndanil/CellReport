@@ -197,9 +197,12 @@ namespace CellReport.Core
 			OnPropertyChanged("Sections");
 		}
 
-		public TemplateSection GetSectionByName(string name)
+		public TemplateSection GetSectionByName(string name, string objectName)
 		{
-			var foundSection = _sections.FirstOrDefault(s => s.Name == name);
+			var foundSection = _sections.FirstOrDefault(s => s.Name == name && (s.ObjectName == objectName || s.ObjectName?.Split(new[] { ',', ';' }).Contains(objectName) == true));
+			if (foundSection == null)
+				foundSection = _sections.FirstOrDefault(s => s.Name == name && string.IsNullOrEmpty(s.ObjectName));
+	
 			if (foundSection == null)
 				throw new ApplicationException("Section not found");
 

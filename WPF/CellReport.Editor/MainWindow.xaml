@@ -417,7 +417,7 @@
 						</Grid.ColumnDefinitions>
 
 						<TextBlock Grid.Column="0" Margin="3">Текст</TextBlock>
-						<TextBox Grid.Column="1" Margin="3" Height="55" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" Text="{Binding CurrentText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsTextContent}" TextWrapping="Wrap" AcceptsReturn="True"></TextBox>
+                        <TextBox Grid.Column="1" Margin="3" Height="55" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" FontFamily="Consolas" Text="{Binding CurrentText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsTextContent}" TextWrapping="Wrap" AcceptsReturn="True"></TextBox>
 					</Grid>
 					<TabControl Grid.Row="1" Grid.Column="0" Width="200">
 						<TabItem Header="Параметры">
@@ -528,7 +528,20 @@
 											<ColumnDefinition></ColumnDefinition>
 											<ColumnDefinition></ColumnDefinition>
 										</Grid.ColumnDefinitions>
-										<ListBox Grid.Row="1" Grid.Column="0" Height="200" Margin="2" Grid.ColumnSpan="2" ItemsSource="{Binding Sections}" SelectedItem="{Binding CurrentSection}" DisplayMemberPath="Name"></ListBox>
+										<ListBox Grid.Row="1" Grid.Column="0" Height="200" Margin="2" Grid.ColumnSpan="2" ItemsSource="{Binding Sections}" SelectedItem="{Binding CurrentSection}">
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock>
+                                                        <TextBlock.Text>
+                                                            <MultiBinding StringFormat="{}{0} {1}">
+                                                                <Binding Path="Name" />
+                                                                <Binding Path="ObjectName" />
+                                                            </MultiBinding>
+                                                        </TextBlock.Text>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
 										<Button Grid.Row="2" Grid.Column="0" Margin="2" Command="local:EditorCommands.AddSection">Добавить</Button>
 										<Button Grid.Row="2" Grid.Column="1" Margin="2" Command="local:EditorCommands.DeleteSection" IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}">Удалить</Button>
 									</Grid>
@@ -544,24 +557,28 @@
 											<RowDefinition Height="30"></RowDefinition>
 											<RowDefinition Height="30"></RowDefinition>
 											<RowDefinition Height="30"></RowDefinition>
-										</Grid.RowDefinitions>
+                                            <RowDefinition Height="30"></RowDefinition>
+                                        </Grid.RowDefinitions>
 
 										<Label Grid.Row="0" Grid.Column="0">Имя</Label>
 										<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="0" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.Name, UpdateSourceTrigger=PropertyChanged}"></TextBox>
 
-										<Label Grid.Row="1" Grid.Column="0">Лево</Label>
-										<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="1" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.LeftDesign, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                        <Label Grid.Row="1" Grid.Column="0">Имя объекта</Label>
+                                        <TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="1" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.ObjectName, UpdateSourceTrigger=PropertyChanged}"></TextBox>
 
-										<Label Grid.Row="2" Grid.Column="0">Верх</Label>
-										<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="2" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.TopDesign, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                        <Label Grid.Row="2" Grid.Column="0">Лево</Label>
+										<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="2" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.LeftDesign, UpdateSourceTrigger=PropertyChanged}"></TextBox>
 
-										<Label Grid.Row="3" Grid.Column="0">Право</Label>
-										<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="3" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.RightDesign, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+										<Label Grid.Row="3" Grid.Column="0">Верх</Label>
+										<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="3" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.TopDesign, UpdateSourceTrigger=PropertyChanged}"></TextBox>
 
-										<Label Grid.Row="4" Grid.Column="0">Низ</Label>
-										<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="4" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.BottomDesign, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+										<Label Grid.Row="4" Grid.Column="0">Право</Label>
+										<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="4" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.RightDesign, UpdateSourceTrigger=PropertyChanged}"></TextBox>
 
-										<Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="2 2 0 2" Command="local:EditorCommands.SetSectionBounds" IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}">Установить</Button>
+										<Label Grid.Row="5" Grid.Column="0">Низ</Label>
+										<TextBox IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}" Grid.Row="5" Grid.Column="1" MaxHeight="20" Text="{Binding CurrentSection.BottomDesign, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+										<Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Margin="2 2 0 2" Command="local:EditorCommands.SetSectionBounds" IsEnabled="{Binding CurrentSection, Converter={StaticResource IsNotNullConverter}}">Установить</Button>
 									</Grid>
 								</StackPanel>
 							</ScrollViewer>

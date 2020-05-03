@@ -19,7 +19,7 @@ namespace CellReport
 		[NonSerialized] private string _lastSectionName;
 		[NonSerialized] private BookMark _lastBookMark;
 
-		[field:NonSerialized]
+		[field: NonSerialized]
 		public event Action<string> SectionAttached;
 
 		[field: NonSerialized]
@@ -171,11 +171,28 @@ namespace CellReport
 				Manager.AddPageBreakRow(_rowNumberForAddSection - 1);
 		}
 
+		private string GetObjectName(object obj)
+		{
+			string objectName = null;
+			if (obj is ISectionObject sectionObject)
+				objectName = sectionObject.GetObjectName();
+
+			if (obj != null)
+				objectName = (new DefaultSectionObject(obj)).GetObjectName();
+
+			return objectName;
+		}
+
 		public void AddSection(string sectionName)
+		{
+			AddSection(sectionName, null);
+		}
+
+		protected void AddSection(string sectionName, string objectName)
 		{
 			CreateBookMarks();
 			_lastSectionName = sectionName;
-			var section = _template.GetSectionByName(sectionName);
+			var section = _template.GetSectionByName(sectionName, objectName);
 			CreateCells(_rowNumberForAddSection, 0, section);
 			_rowNumberForJoinSection = _rowNumberForAddSection;
 			_rowNumberForAddSection += section.Height;
@@ -190,17 +207,19 @@ namespace CellReport
 
 		public ReportDocument AddSection(string sectionName, object obj)
 		{
+			var objectName = GetObjectName(obj);
+
 			if (obj is IEnumerable enumerable)
 			{
 				foreach (var item in enumerable)
 				{
-					AddSection(sectionName);
+					AddSection(sectionName, objectName);
 					ProcessSection(item);
 				}
 			}
 			else
 			{
-				AddSection(sectionName);
+				AddSection(sectionName, objectName);
 				ProcessSection(obj);
 			}
 
@@ -214,24 +233,20 @@ namespace CellReport
 				if (obj is ISectionObject sectionObject)
 					SetSectionObject(sectionObject);
 				else
-				{
-					foreach (var property in obj.GetType().GetProperties())
-					{
-						var value = property.GetValue(obj, null);
-						if (value is ISectionObject sectionObject2)
-							SetSectionObject(sectionObject2);
-						else
-							SetParameter(property.Name, value);
-					}
-				}
+					SetSectionObject(new DefaultSectionObject(obj));
 			}
 		}
 
 		public void JoinSection(string sectionName)
 		{
+			JoinSection(sectionName, null);
+		}
+
+		protected void JoinSection(string sectionName, string objectName)
+		{
 			CreateBookMarks();
 			_lastSectionName = sectionName;
-			var section = _template.GetSectionByName(sectionName);
+			var section = _template.GetSectionByName(sectionName, objectName);
 			CreateCells(_rowNumberForJoinSection, _colNumberForJoinSection, section);
 			_colNumberForJoinSection += section.Width;
 
@@ -240,17 +255,19 @@ namespace CellReport
 
 		public ReportDocument JoinSection(string sectionName, object obj)
 		{
+			var objectName = GetObjectName(obj);
+
 			if (obj is IEnumerable enumerable)
 			{
 				foreach (var item in enumerable)
 				{
-					JoinSection(sectionName);
+					JoinSection(sectionName, objectName);
 					ProcessSection(item);
 				}
 			}
 			else
 			{
-				JoinSection(sectionName);
+				JoinSection(sectionName, objectName);
 				ProcessSection(obj);
 			}
 

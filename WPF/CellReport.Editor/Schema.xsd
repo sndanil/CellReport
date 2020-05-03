@@ -42,8 +42,10 @@
 			<xs:element name='RightBottom' type='CellLocationType' minOccurs='1' maxOccurs='1'/>
 		</xs:sequence>
 		<xs:attribute name='IsHeaderFixed' type='xs:boolean' />
-		<xs:attribute name='ID' type='xs:string' />
-	</xs:complexType>
+    <xs:attribute name='IsFooterFixed' type='xs:boolean' />
+    <xs:attribute name='ID' type='xs:string' />
+    <xs:attribute name='ObjectName' type='xs:string' />
+  </xs:complexType>
 
 	<xs:complexType name='BookMarksType'>
 	</xs:complexType>
