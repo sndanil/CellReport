@@ -209,7 +209,7 @@ namespace CellReport
 		{
 			var objectName = GetObjectName(obj);
 
-			if (obj is IEnumerable enumerable)
+			if (!(obj is string) && obj is IEnumerable enumerable)
 			{
 				foreach (var item in enumerable)
 				{
@@ -257,7 +257,7 @@ namespace CellReport
 		{
 			var objectName = GetObjectName(obj);
 
-			if (obj is IEnumerable enumerable)
+			if (!(obj is string) && obj is IEnumerable enumerable)
 			{
 				foreach (var item in enumerable)
 				{

@@ -34,7 +34,7 @@ namespace CellReport
 					switch (parts[1])
 					{
 						case "ToString()":
-							return this.ToString();
+							return _obj.ToString();
 						default:
 							return GetParamValue(parts[1]);
 					}
