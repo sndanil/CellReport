@@ -188,7 +188,14 @@ namespace CellReport.Editor.ViewModel
 					return;
 			}
 			CellTemplate template = new CellTemplate(EditorModel.State.Manager);
-			template.Save(EditorModel.State.FileName, Path.GetExtension(EditorModel.State.FileName)?.ToUpper() == ".TCRP" ? TemplateType.Package : TemplateType.Xml);
+			try
+			{
+				template.Save(EditorModel.State.FileName, Path.GetExtension(EditorModel.State.FileName)?.ToUpper() == ".TCRP" ? TemplateType.Package : TemplateType.Xml);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("При сохранении произошла ошибка." + Environment.NewLine + ex.Message);
+			}
 		}
 
 		public static DelegateCommand Print
