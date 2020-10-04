@@ -201,7 +201,9 @@
 			<xs:element name='Param' type='ParamType' minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name='Uri' type='xs:string'/>
-	</xs:complexType>
+    <xs:attribute name='ColSpan' type='xs:int'/>
+    <xs:attribute name='RowSpan' type='xs:int'/>
+  </xs:complexType>
 
 	<xs:complexType name='ChartContentType'>
 		<xs:sequence>

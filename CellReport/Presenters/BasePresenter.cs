@@ -285,16 +285,18 @@ namespace CellReport.Presenters
 
 			return rect;
 		}
+		public Rectangle GetRect(CellLocation location)
+		{
+			return new Rectangle(GetLeftOffset(location.Column), GetTopOffset(location.Row),
+					GetColumnWidth(location.Column), GetRowHeight(location.Row));
+		}
 
 		public Rectangle GetCellRect(CellLocation location)
 		{
 			if (Manager.GetCell(location) != null)
 				return GetCellRect(Manager.GetCell(location));
-			else
-			{
-				return new Rectangle(GetLeftOffset(location.Column), GetTopOffset(location.Row),
-						GetColumnWidth(location.Column), GetRowHeight(location.Row));
-			}
+
+			return GetRect(location);
 		}
 
 		public Rectangle GetInnerCellRect(Cell cell)
@@ -541,10 +543,26 @@ namespace CellReport.Presenters
 				var barCode = (BarCodeContent)content;
 				Renderer.RenderBarCode(context, cellRect, barCode, "Black", "Arial", 10f, FontStyle.Regular, barCode.Orientation);
 			}
-			else if (content is ImageContent)
+			else if (content is ImageContent imageContent)
 			{
-				var image = (ImageContent)content;
-				Renderer.RenderImage(context, cellRect, image.GetImageData());
+				if (imageContent.ColSpan > 0 || imageContent.RowSpan > 0)
+				{
+					for (int i = 0; i < imageContent.RowSpan; i++)
+					{
+						var rect = GetRect(new CellLocation { Row = cell.Location.Row + i + 1, Column = cell.Location.Column });
+						cellRect.Height += rect.Height;
+					}
+					for (int i = 0; i < imageContent.ColSpan; i++)
+					{
+						var rect = GetRect(new CellLocation { Row = cell.Location.Row, Column = cell.Location.Column + i + 1 });
+						cellRect.Width += rect.Width;
+					}
+					Renderer.RenderImage(context, cellRect, imageContent.GetImageData());
+				}
+				else
+				{
+					Renderer.RenderImage(context, cellRect, imageContent.GetImageData());
+				}
 			}
 			else if (content is ChartContent)
 			{

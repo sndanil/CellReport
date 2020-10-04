@@ -58,6 +58,10 @@ namespace CellReport.Core.Contents
 
 		public string Uri { get; set; }
 
+		public int ColSpan { get; set; }
+
+		public int RowSpan { get; set; }
+
 		public string ActualUri => (string) GetParamValueByTarget("Uri") ?? Uri;
 
 		public byte[] GetImageData()
@@ -75,6 +79,12 @@ namespace CellReport.Core.Contents
 			if (element.Attribute("Uri") != null)
 				content.Uri = element.Attribute("Uri").Value;
 
+			if (element.Attribute("ColSpan") != null)
+				content.ColSpan = int.Parse(element.Attribute("ColSpan").Value, NumberStyles.Number, CultureInfo.InvariantCulture);
+
+			if (element.Attribute("RowSpan") != null)
+				content.RowSpan = int.Parse(element.Attribute("RowSpan").Value, NumberStyles.Number, CultureInfo.InvariantCulture);
+
 			return content;
 		}
 
@@ -83,6 +93,13 @@ namespace CellReport.Core.Contents
 			var result = base.OnSerialize(contentName ?? "ImageContent");
 			if (!string.IsNullOrEmpty(Uri))
 				result.Add(new XAttribute("Uri", Uri));
+
+			if (ColSpan != 0)
+				result.Add(new XAttribute("ColSpan", ColSpan.ToString(CultureInfo.InvariantCulture)));
+
+			if (RowSpan != 0)
+				result.Add(new XAttribute("RowSpan", RowSpan.ToString(CultureInfo.InvariantCulture)));
+
 			return result;
 		}
 
