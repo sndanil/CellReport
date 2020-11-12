@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Xml.Linq;
 
 using CellReport.Core.Expressions;
@@ -223,13 +224,37 @@ namespace CellReport.Core.Contents
 			return new XElement("Param",
 							string.IsNullOrEmpty(Name) ? null : new XAttribute("Name", Name),
 							string.IsNullOrEmpty(Target) ? null : new XAttribute("Target", Target),
-							Value == null ? null : new XAttribute("Value", Value),
+							Value == null ? null : new XAttribute("Value", GetValueForSerialization()),
 							string.IsNullOrEmpty(Assign) ? null : new XAttribute("Assign", Assign),
 							Expression == null ? null : new XAttribute("Expression", ExpressionID),
 							string.IsNullOrEmpty(Type) ? null : new XAttribute("Type", Type),
 							string.IsNullOrEmpty(Format) ? null : new XAttribute("Format", Format),
 							string.IsNullOrEmpty(Culture) ? null : new XAttribute("Culture", Culture)
 							);
+		}
+
+		private string GetValueForSerialization()
+		{
+			if (Value is DateTime date)
+			{
+				return date.ToString(CultureInfo.InvariantCulture);
+			}
+			else if (Value is Decimal || Value is Int32 || Value is Int64 || Type == nameof(Decimal))
+			{
+				var value = 0m;
+				if (Value is string str)
+				{
+					return str;
+				}
+				else
+					value = Convert.ToDecimal(Value);
+
+				return value.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
+			}
+			else
+			{
+				return Value?.ToString();
+			}
 		}
 
 		internal static Param Parse(XElement element, CellManager manager, BaseContent owner)
@@ -243,18 +268,41 @@ namespace CellReport.Core.Contents
 				param.Target = element.Attribute("Target")?.Value;
 			if (element.Attribute("Expression") != null)
 				param.ExpressionID = element.Attribute("Expression")?.Value;
+			if (element.Attribute("Type") != null)
+				param.Type = element.Attribute("Type")?.Value;
 			if (element.Attribute("Value") != null)
-				param.Value = element.Attribute("Value")?.Value;
+				param.Value = GetValueForDeserialization(param, element.Attribute("Value")?.Value);
 			if (element.Attribute("Culture") != null)
 				param.Culture = element.Attribute("Culture")?.Value;
 			if (element.Attribute("Format") != null)
 				param.Format = element.Attribute("Format")?.Value;
-			if (element.Attribute("Type") != null)
-				param.Type = element.Attribute("Type")?.Value;
 			if (element.Attribute("Assign") != null)
 				param.Assign = element.Attribute("Assign")?.Value;
 
 			return param;
+		}
+
+		private static object GetValueForDeserialization(Param param, string value)
+		{
+			if (param.Type == nameof(DateTime))
+			{
+				var formats = new[] 
+				{
+					"yyyy-MM-ddTHH:mm:ss",
+					"yyyy-MM-ddTHH:mm:sszzz"
+				};
+				DateTime.TryParseExact(value, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out var date);
+				return date;
+			}
+			else if (param.Type == nameof(Decimal))
+			{
+				if (!decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out var number))
+					return value;
+
+				return number;
+			}
+
+			return value;
 		}
 
 		public override string ToString()
