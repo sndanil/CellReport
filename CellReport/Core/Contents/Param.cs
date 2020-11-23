@@ -237,7 +237,7 @@ namespace CellReport.Core.Contents
 		{
 			if (Value is DateTime date)
 			{
-				return date.ToString(CultureInfo.InvariantCulture);
+				return date.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
 			}
 			else if (Value is Decimal || Value is Int32 || Value is Int64 || Type == nameof(Decimal))
 			{
@@ -249,7 +249,7 @@ namespace CellReport.Core.Contents
 				else
 					value = Convert.ToDecimal(Value);
 
-				return value.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
+				return value.ToString(CultureInfo.InvariantCulture);
 			}
 			else
 			{
