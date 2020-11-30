@@ -23,6 +23,7 @@ namespace CellReport.Presenters.WinForms
 			BeforePrinting();
 			PrintDocument doc = new PrintDocument();
 			doc.BeginPrint += DocBeginPrint;
+			doc.DefaultPageSettings.PrinterSettings.Copies = Manager.PrintSettings.Copies;
 			doc.DefaultPageSettings.Landscape = Manager.PrintSettings.Landscape;
 			doc.DefaultPageSettings.Margins = new System.Drawing.Printing.Margins()
 			{

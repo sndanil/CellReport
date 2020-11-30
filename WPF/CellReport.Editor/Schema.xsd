@@ -73,8 +73,9 @@
 			<xs:element name='Margins' type='MarginTypes' minOccurs='1' maxOccurs='1' />
 		</xs:sequence>
 		<xs:attribute name='Landscape' type='xs:boolean' default='false'/>
-		<xs:attribute name='AutoFitWidthPages' type='xs:int' default='1'/>
-		<xs:attribute name='Scale' type='xs:double' default='1'/>
+    <xs:attribute name='Copies' type='xs:int' default='1'/>
+    <xs:attribute name='AutoFitWidthPages' type='xs:int' default='1'/>
+    <xs:attribute name='Scale' type='xs:double' default='1'/>
 	</xs:complexType>
 
 	<xs:complexType name='MarginTypes'>
