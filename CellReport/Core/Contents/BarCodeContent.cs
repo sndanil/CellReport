@@ -71,7 +71,7 @@ namespace CellReport.Core.Contents
 
 		public string GetCode()
 		{
-			return (GetParamValueByTarget("Code") as string ?? Code) ?? string.Empty;
+			return (GetParamValueByTarget("Code")?.ToString() ?? Code) ?? string.Empty;
 		}
 
 		public BarCodeType GetBarCodeType()

@@ -25,6 +25,7 @@ namespace CellReportTests
 			Assert.AreEqual(20, manager.ColumnsCount);
 		}
 
+
 		[TestMethod]
 		public void Test2()
 		{
@@ -662,5 +663,14 @@ namespace CellReportTests
 			var section = cellTemplate.Manager.GetSection("Секция 0", "Товары");
 		}
 
+		[TestMethod]
+		public void Test14()
+		{
+			var template = new CellTemplate();
+			template.Load("D:\\Projects\\Мегадон\\Исходники\\Config\\Services\\PrintForms\\ОстаткиТоваров.tcrp");
+			var document = new ReportDocument(template);
+
+			document.AddSection("Шапка");
+		}
 	}
 }

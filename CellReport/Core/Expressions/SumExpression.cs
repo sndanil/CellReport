@@ -61,7 +61,7 @@ namespace CellReport.Core.Expressions
 				if (cell != null && cell.Content != null && !cells.Contains(cell))
 				{
 					cells.Add(cell);
-					return cell.Content.GetParams().Where(p => p.Name == ParamName).Select(p => Convert.ToDecimal(p.Value)).Sum();
+					return cell.Content.GetParams().Where(p => p.Name == ParamName).Select(p => Convert.ToDecimal(p.Value, CultureInfo.InvariantCulture)).Sum();
 				}
 
 				return 0m;

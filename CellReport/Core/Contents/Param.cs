@@ -78,22 +78,31 @@ namespace CellReport.Core.Contents
 			get
 			{
 				if (Expression is SumExpression)
+				{
 					return Expression.GetValue(_manager);
+				}
 
 				if (!string.IsNullOrEmpty(Type) && _value != null)
 				{
-					var type = System.Type.GetType(Type);
+					var type = System.Type.GetType("System." + Type);
 					if (type != null)
+					{
 						return Convert.ChangeType(_value, type);
+					}
 				}
+
 				return _value;
 			}
 			set
 			{
 				if (Expression is DecimalExpression)
+				{
 					_value = Expression.GetValue(_manager, value);
+				}
 				else
+				{
 					_value = value;
+				}
 
 				OnPropertyChanged("Value");
 			}
