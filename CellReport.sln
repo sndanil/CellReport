@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{596FCA3B-4
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{C9AC1DFD-88B8-4A2A-8771-0402BFC5D3FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CellReportTests", "CellReportTests\CellReportTests.csproj", "{ABF7598C-36B5-4E65-81A9-E7AD79006A68}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CellReport.WinForms", "WinForms\CellReport.WinForms\CellReport.WinForms.csproj", "{64568AE2-E2F6-4AEA-B692-9955481BFC64}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CellReport.WPF", "WPF\CellReport.WPF\CellReport.WPF.csproj", "{16BB71BC-A27E-49B8-91F0-3FD31B8CD76F}"
@@ -27,7 +25,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CellReport.Editor", "WPF\Ce
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{C8C0E49C-5AEC-40FF-9F72-CB616A3E9750}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CellReport", "CellReport\CellReport.csproj", "{1DC37075-C57A-4987-B34B-64D73DC1D09F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CellReport", "CellReport\CellReport.csproj", "{1DC37075-C57A-4987-B34B-64D73DC1D09F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,15 +37,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{ABF7598C-36B5-4E65-81A9-E7AD79006A68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ABF7598C-36B5-4E65-81A9-E7AD79006A68}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ABF7598C-36B5-4E65-81A9-E7AD79006A68}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{ABF7598C-36B5-4E65-81A9-E7AD79006A68}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{ABF7598C-36B5-4E65-81A9-E7AD79006A68}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{ABF7598C-36B5-4E65-81A9-E7AD79006A68}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ABF7598C-36B5-4E65-81A9-E7AD79006A68}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ABF7598C-36B5-4E65-81A9-E7AD79006A68}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{ABF7598C-36B5-4E65-81A9-E7AD79006A68}.Release|x86.ActiveCfg = Release|Any CPU
 		{64568AE2-E2F6-4AEA-B692-9955481BFC64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{64568AE2-E2F6-4AEA-B692-9955481BFC64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{64568AE2-E2F6-4AEA-B692-9955481BFC64}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -128,7 +117,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{ABF7598C-36B5-4E65-81A9-E7AD79006A68} = {596FCA3B-4AD8-4DA8-A71F-C8AC30C93EC3}
 		{64568AE2-E2F6-4AEA-B692-9955481BFC64} = {AE75A9B2-CFFD-4F9F-8A42-A0151690010B}
 		{16BB71BC-A27E-49B8-91F0-3FD31B8CD76F} = {98E36795-2917-4AEF-9D5C-364660A2B54D}
 		{1A3218DC-5DA1-4AAC-8AA6-2F95515873F5} = {AE75A9B2-CFFD-4F9F-8A42-A0151690010B}
