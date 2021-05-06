@@ -139,7 +139,6 @@
 						<fluent:Button Header="Печать" Command="local:EditorCommands.Print" />
 						<fluent:SeparatorTabItem Header="" />
 						<fluent:Button Header="Выход"
-					                   Icon="pack://application:,,,/Fluent.Ribbon.Showcase;component/Images/Exit.png"
 					                   KeyTip="X"
 					                   Command="local:EditorCommands.Exit" />
 					</fluent:BackstageTabControl>
