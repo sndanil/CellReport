@@ -59,9 +59,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CellReport\CellReport.csproj">
-      <Project>{86c6272d-efcf-41f7-9006-fb90fc6388a9}</Project>
-      <Name>CellReport</Name>
+    <ProjectReference Include="..\CellReport.Core\CellReport.Core.csproj">
+      <Project>{1dc37075-c57a-4987-b34b-64d73dc1d09f}</Project>
+      <Name>CellReport.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

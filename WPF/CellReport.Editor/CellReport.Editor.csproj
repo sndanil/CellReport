@@ -186,9 +186,9 @@
     <Resource Include="Logo.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\CellReport\CellReport.csproj">
-      <Project>{86c6272d-efcf-41f7-9006-fb90fc6388a9}</Project>
-      <Name>CellReport</Name>
+    <ProjectReference Include="..\..\CellReport.Core\CellReport.Core.csproj">
+      <Project>{1dc37075-c57a-4987-b34b-64d73dc1d09f}</Project>
+      <Name>CellReport.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\WinForms\CellReport.WinForms\CellReport.WinForms.csproj">
       <Project>{64568ae2-e2f6-4aea-b692-9955481bfc64}</Project>

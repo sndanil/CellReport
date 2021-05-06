@@ -152,12 +152,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\CellReport\CellReport.csproj">
-      <Project>{86C6272D-EFCF-41F7-9006-FB90FC6388A9}</Project>
-      <Name>CellReport</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Presenters\WinForms\ColumnResizerControl.resx">
       <DependentUpon>ColumnResizerControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -240,6 +234,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\nav_blue_right.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CellReport.Core\CellReport.Core.csproj">
+      <Project>{1dc37075-c57a-4987-b34b-64d73dc1d09f}</Project>
+      <Name>CellReport.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
