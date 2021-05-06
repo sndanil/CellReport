@@ -178,7 +178,7 @@ namespace CellReport.Core.Contents
 			{
 				return Convert.ToSingle(value);
 			}
-			catch (Exception e)
+			catch
 			{
 				return defaultValue;
 			}		
@@ -193,7 +193,7 @@ namespace CellReport.Core.Contents
 			{
 				return Convert.ToInt32(value);
 			}
-			catch (Exception e)
+			catch
 			{
 				return defaultValue;
 			}
@@ -211,7 +211,7 @@ namespace CellReport.Core.Contents
 
 				return Convert.ToInt32(value);
 			}
-			catch (Exception e)
+			catch
 			{
 				return defaultValue;
 			}
@@ -246,7 +246,7 @@ namespace CellReport.Core.Contents
 				var font = new FontInfo(fontFamily, fontSize, fontStyle);
 				return new TextContentStyle(hAlign, vAlign, font, color, angle, direction);
 			}
-			catch (Exception e)
+			catch
 			{
 				return style;
 			}

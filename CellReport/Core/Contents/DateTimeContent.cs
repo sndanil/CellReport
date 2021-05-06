@@ -160,7 +160,7 @@ namespace CellReport.Core.Contents
 					text = GetValue().ToString(style.Format, CultureInfo.GetCultureInfo(style.Culture));
 				return text;
 			}
-			catch (FormatException e)
+			catch (FormatException)
 			{
 				return GetValue().ToString(CultureInfo.CurrentCulture);
 			}

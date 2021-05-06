@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{596FCA3B-4
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{C9AC1DFD-88B8-4A2A-8771-0402BFC5D3FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CellReport", "CellReport\CellReport.csproj", "{86C6272D-EFCF-41F7-9006-FB90FC6388A9}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CellReportTests", "CellReportTests\CellReportTests.csproj", "{ABF7598C-36B5-4E65-81A9-E7AD79006A68}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CellReport.WinForms", "WinForms\CellReport.WinForms\CellReport.WinForms.csproj", "{64568AE2-E2F6-4AEA-B692-9955481BFC64}"
@@ -29,7 +27,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CellReport.Editor", "WPF\Ce
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{C8C0E49C-5AEC-40FF-9F72-CB616A3E9750}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CellReport.Core", "CellReport.Core\CellReport.Core.csproj", "{1DC37075-C57A-4987-B34B-64D73DC1D09F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CellReport", "CellReport\CellReport.csproj", "{1DC37075-C57A-4987-B34B-64D73DC1D09F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,16 +39,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{86C6272D-EFCF-41F7-9006-FB90FC6388A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{86C6272D-EFCF-41F7-9006-FB90FC6388A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{86C6272D-EFCF-41F7-9006-FB90FC6388A9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{86C6272D-EFCF-41F7-9006-FB90FC6388A9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{86C6272D-EFCF-41F7-9006-FB90FC6388A9}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{86C6272D-EFCF-41F7-9006-FB90FC6388A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{86C6272D-EFCF-41F7-9006-FB90FC6388A9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{86C6272D-EFCF-41F7-9006-FB90FC6388A9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{86C6272D-EFCF-41F7-9006-FB90FC6388A9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{86C6272D-EFCF-41F7-9006-FB90FC6388A9}.Release|x86.ActiveCfg = Release|Any CPU
 		{ABF7598C-36B5-4E65-81A9-E7AD79006A68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ABF7598C-36B5-4E65-81A9-E7AD79006A68}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABF7598C-36B5-4E65-81A9-E7AD79006A68}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

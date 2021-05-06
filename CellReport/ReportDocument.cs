@@ -198,9 +198,9 @@ namespace CellReport
 			_rowNumberForAddSection += section.Height;
 			_colNumberForJoinSection = section.Width;
 			if (section.IsHeaderFixed)
-				Manager.PrintSettings.HeaderFixedRows.Add(new Range(_rowNumberForAddSection - section.Height, _rowNumberForAddSection - 1));
+				Manager.PrintSettings.HeaderFixedRows.Add(new Core.Range(_rowNumberForAddSection - section.Height, _rowNumberForAddSection - 1));
 			if (section.IsFooterFixed)
-				Manager.PrintSettings.FooterFixedRows.Add(new Range(_rowNumberForAddSection - section.Height, _rowNumberForAddSection - 1));
+				Manager.PrintSettings.FooterFixedRows.Add(new Core.Range(_rowNumberForAddSection - section.Height, _rowNumberForAddSection - 1));
 
 			SectionAttached?.Invoke(sectionName);
 		}

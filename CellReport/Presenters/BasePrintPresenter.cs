@@ -301,7 +301,7 @@ namespace CellReport.Presenters
 				startRow = Math.Min(e.Row, startRow);
 				endRow = Math.Max(e.Row, endRow);
 			});
-			var pageRange = new Range(startRow, endRow);
+			var pageRange = new Core.Range(startRow, endRow);
 			foreach (var range in Manager.PrintSettings.HeaderFixedRows)
 			{
 				if (!pageRange.IsIn(range))
@@ -340,7 +340,7 @@ namespace CellReport.Presenters
 				startRow = Math.Min(e.Row, startRow);
 				endRow = Math.Max(e.Row, endRow);
 			});
-			var pageRange = new Range(startRow, endRow);
+			var pageRange = new Core.Range(startRow, endRow);
 			float startPoint = bounds.Bottom;
 			foreach (var range in Manager.PrintSettings.FooterFixedRows)
 				if (!pageRange.IsIn(range))

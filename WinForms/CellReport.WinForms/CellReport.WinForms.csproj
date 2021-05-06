@@ -236,9 +236,9 @@
     <None Include="Resources\nav_blue_right.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\CellReport.Core\CellReport.Core.csproj">
+    <ProjectReference Include="..\..\CellReport\CellReport.csproj">
       <Project>{1dc37075-c57a-4987-b34b-64d73dc1d09f}</Project>
-      <Name>CellReport.Core</Name>
+      <Name>CellReport</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
