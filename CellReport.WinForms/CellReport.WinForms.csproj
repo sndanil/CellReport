@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyVersion>0.11.2105.0613</AssemblyVersion>
+    <FileVersion>0.11.2105.0613</FileVersion>
+    <Copyright>Copyright © Daniil Safonov 2011-2021</Copyright>
+    <Company>Daniil Safonov</Company>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ZXing.Net" Version="0.16.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CellReport\CellReport.csproj" />
+  </ItemGroup>
+  
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="$(SolutionDir)buildnumerator.exe $(ProjectDir) $(ConfigurationName)" />
+  </Target>
+  
+</Project>

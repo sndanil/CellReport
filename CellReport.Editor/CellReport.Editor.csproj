@@ -1,0 +1,106 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyVersion>0.11.2105.0613</AssemblyVersion>
+    <FileVersion>0.11.2105.0613</FileVersion>
+    <Copyright>Copyright © Daniil Safonov 2011-2021</Copyright>
+    <Company>Daniil Safonov</Company>
+    <ApplicationIcon>Logo.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Images\16\AlignBottom.png" />
+    <None Remove="Images\16\AlignCenter.png" />
+    <None Remove="Images\16\AlignLeft.png" />
+    <None Remove="Images\16\AlignMiddle.png" />
+    <None Remove="Images\16\AlignRight.png" />
+    <None Remove="Images\16\AlignTop.png" />
+    <None Remove="Images\16\Bold.png" />
+    <None Remove="Images\16\clipboard_copy.png" />
+    <None Remove="Images\16\clipboard_cut.png" />
+    <None Remove="Images\16\clipboard_paste.png" />
+    <None Remove="Images\16\find.png" />
+    <None Remove="Images\16\Italic.png" />
+    <None Remove="Images\16\merge.png" />
+    <None Remove="Images\16\redo.png" />
+    <None Remove="Images\16\replace-find.png" />
+    <None Remove="Images\16\save.png" />
+    <None Remove="Images\16\script-find.png" />
+    <None Remove="Images\16\ShrinkFont.png" />
+    <None Remove="Images\16\Strikethrough.png" />
+    <None Remove="Images\16\Underline.png" />
+    <None Remove="Images\16\undo.png" />
+    <None Remove="Images\32\add_button.png" />
+    <None Remove="Images\32\clipboard_copy.png" />
+    <None Remove="Images\32\clipboard_cut.png" />
+    <None Remove="Images\32\clipboard_paste.png" />
+    <None Remove="Images\32\column_add.png" />
+    <None Remove="Images\32\column_delete.png" />
+    <None Remove="Images\32\delete.png" />
+    <None Remove="Images\32\row_add.png" />
+    <None Remove="Images\32\row_delete.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AvalonEdit" Version="6.1.1" />
+    <PackageReference Include="ControlzEx" Version="5.0.0" />
+    <PackageReference Include="EPPlus" Version="4.5.3.3" />
+    <PackageReference Include="Fluent.Ribbon" Version="8.0.3" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+  </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="$(SolutionDir)buildnumerator.exe $(ProjectDir) $(ConfigurationName)" />
+  </Target>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CellReport.WPF\CellReport.WPF.csproj" />
+    <ProjectReference Include="..\CellReport\CellReport.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\16\AlignBottom.png" />
+    <Resource Include="Images\16\AlignCenter.png" />
+    <Resource Include="Images\16\AlignLeft.png" />
+    <Resource Include="Images\16\AlignMiddle.png" />
+    <Resource Include="Images\16\AlignRight.png" />
+    <Resource Include="Images\16\AlignTop.png" />
+    <Resource Include="Images\16\Bold.png" />
+    <Resource Include="Images\16\clipboard_copy.png" />
+    <Resource Include="Images\16\clipboard_cut.png" />
+    <Resource Include="Images\16\clipboard_paste.png" />
+    <Resource Include="Images\16\find.png" />
+    <Resource Include="Images\16\Italic.png" />
+    <Resource Include="Images\16\merge.png" />
+    <Resource Include="Images\16\redo.png" />
+    <Resource Include="Images\16\replace-find.png" />
+    <Resource Include="Images\16\save.png" />
+    <Resource Include="Images\16\script-find.png" />
+    <Resource Include="Images\16\ShrinkFont.png" />
+    <Resource Include="Images\16\Strikethrough.png" />
+    <Resource Include="Images\16\Underline.png" />
+    <Resource Include="Images\16\undo.png" />
+    <Resource Include="Images\32\add_button.png" />
+    <Resource Include="Images\32\clipboard_copy.png" />
+    <Resource Include="Images\32\clipboard_cut.png" />
+    <Resource Include="Images\32\clipboard_paste.png" />
+    <Resource Include="Images\32\column_add.png" />
+    <Resource Include="Images\32\column_delete.png" />
+    <Resource Include="Images\32\delete.png" />
+    <Resource Include="Images\32\row_add.png" />
+    <Resource Include="Images\32\row_delete.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Schema.xsd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
+</Project>
