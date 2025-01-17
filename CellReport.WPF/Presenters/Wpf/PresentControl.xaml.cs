@@ -34,6 +34,7 @@ namespace CellReport.Presenters.Wpf
 
 			_columnResizerHost.Visibility = ShowResizers ? Visibility.Visible : Visibility.Collapsed;
 			_rowResizerHost.Visibility = ShowResizers ? Visibility.Visible : Visibility.Collapsed;
+			_rowResizer.TopOffset = _columnResizer.Height;
 			_columnResizer.Invalidate(true);
 			_rowResizer.Invalidate(true);
 			_cellControl.Invalidate(true);

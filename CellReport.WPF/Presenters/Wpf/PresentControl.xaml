@@ -26,8 +26,8 @@
 		<WindowsFormsHost Name="_columnResizerHost" Grid.Column="1" Grid.Row="0" Height="18">
 			<wf:ColumnResizerControl x:Name="_columnResizer" />
 		</WindowsFormsHost>
-		<WindowsFormsHost Name="_rowResizerHost" Grid.Column="0" Grid.RowSpan="2" Width="30">
-			<wf:RowResizerControl x:Name="_rowResizer" TopOffset="18" />
+        <WindowsFormsHost Name="_rowResizerHost" Margin="0 0.5 0 0" Grid.Column="0" Grid.RowSpan="2" Width="30">
+			<wf:RowResizerControl x:Name="_rowResizer" />
 		</WindowsFormsHost>
         <WindowsFormsHost Grid.Column="1" Grid.Row="1" ClipToBounds="True" Background="White">
             <wf:PresentControl x:Name="_cellControl" ></wf:PresentControl>

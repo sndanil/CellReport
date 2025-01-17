@@ -24,10 +24,10 @@ namespace CellReport.Presenters.Wpf
 			_control = control;
 			Control = _presentControl.GetWinFormsControl();
 
-			Matrix m = PresentationSource.FromVisual(Application.Current.MainWindow).CompositionTarget.TransformToDevice;
-			DeviceDpiX = Convert.ToSingle(m.M11);
-			DeviceDpiY = Convert.ToSingle(m.M22);
-			CurrentUnit = GraphicsUnit.WpfPoint;
+			//Matrix m = PresentationSource.FromVisual(Application.Current.MainWindow).CompositionTarget.TransformToDevice;
+			//DeviceDpiX = Convert.ToSingle(m.M11);
+			//DeviceDpiY = Convert.ToSingle(m.M22);
+			//CurrentUnit = GraphicsUnit.WpfPoint;
 
 			if (control != null)
 				_control.Children.Add(_presentControl);
