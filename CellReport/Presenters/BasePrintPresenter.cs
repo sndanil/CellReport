@@ -130,12 +130,12 @@ namespace CellReport.Presenters
 			}
 		}
 
-		protected abstract void OnPrint(bool useCustom);
+		protected abstract void OnPrint(bool useCustom, string printerName = null);
 
-		public virtual void Print()
+		public virtual void Print(string printerName = null)
 		{
 			BeforePrinting();
-			OnPrint(false);
+			OnPrint(false, printerName);
 		}
 
 		public virtual void CustomPrint()

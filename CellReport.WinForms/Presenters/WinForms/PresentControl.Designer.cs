@@ -249,7 +249,7 @@ namespace CellReport.Presenters.WinForms
 			this._bookMarksTreeView.Size = new System.Drawing.Size(170, 432);
 			this._bookMarksTreeView.TabIndex = 6;
 			this._bookMarksTreeView.Visible = false;
-			this._bookMarksTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this._bookMarksTreeView_AfterSelect);
+			this._bookMarksTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.BookMarksTreeViewAfterSelect);
 			// 
 			// _bookMarksImageList
 			// 

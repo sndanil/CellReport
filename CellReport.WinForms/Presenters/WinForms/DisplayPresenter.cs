@@ -11,13 +11,15 @@ namespace CellReport.Presenters.WinForms
 		private Control _control;
 		private PresentControl _presentControl;
 
-		public DisplayPresenter(CellManager manager, Control control)
+		public PresentControl PresentControl { get => _presentControl; }
+
+		public DisplayPresenter(CellManager manager, Control control, string defaultPrinterName = null)
 				: base(manager)
 		{
 			if (manager == null)
 				throw new ArgumentNullException(nameof(manager));
 
-			_presentControl = new PresentControl(this) { Dock = DockStyle.Fill };
+			_presentControl = new PresentControl(this) { Dock = DockStyle.Fill, DefaultPrinterName = defaultPrinterName };
 
 			_control = control;
 			using (var g = _presentControl.CreateGraphics())

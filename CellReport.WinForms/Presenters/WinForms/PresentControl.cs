@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -9,6 +10,7 @@ using CellReport.WinForms.Presenters.WinForms;
 using CellReport.Export.Excel;
 using CellReport.Export;
 using CellReport.Export.Html;
+using System.Drawing.Printing;
 
 namespace CellReport.Presenters.WinForms
 {
@@ -21,7 +23,22 @@ namespace CellReport.Presenters.WinForms
 
 		private readonly Timer _moveTimer = new Timer();
 
-		public PresentControl()
+        private long _zoomDistance = 0;
+        private float _startScale = 0f;
+        private int _gestureShiftX = 0;
+        private int _gestureShiftY = 0;
+
+        public BaseDisplayPresenter Presenter
+        {
+            get => _presenter;
+            set => _presenter = value;
+        }
+
+        public string DefaultPrinterName { get; set; }
+
+		public event EventHandler DefaultPrinterNameChanged;
+
+        public PresentControl()
 		{
 			InitializeComponent();
 
@@ -37,7 +54,7 @@ namespace CellReport.Presenters.WinForms
 			_moveTimer.Interval = 100;
 			_moveTimer.Tick += MoveTimerOnTick;
 
-			Localization.LocalizationManager.AddDefaultString("Report/Print", "Печать");
+            Localization.LocalizationManager.AddDefaultString("Report/Print", "Печать");
 			Localization.LocalizationManager.AddDefaultString("Report/CustomPrint", "Выборочная печать");
 			Localization.LocalizationManager.AddDefaultString("Report/Preview", "Предварительный просмотр");
 			Localization.LocalizationManager.AddDefaultString("Report/PageSettings", "Параметры страницы");
@@ -53,12 +70,56 @@ namespace CellReport.Presenters.WinForms
 			LocalHelper.LocalizeControl(this);
 		}
 
-		private long _zoomDistance = 0;
-		private float _startScale = 0f;
-		private int _gestureShiftX = 0;
-		private int _gestureShiftY = 0;
+        public PresentControl(DisplayPresenter presenter)
+                : this()
+        {
+            _presenter = presenter;
+        }
 
-		protected override void OnTwoFingerTap(TwoFingerTapEventArgs e)
+        protected override void OnLoad(EventArgs e)
+        {
+            if (PrinterSettings.InstalledPrinters.Count > 0)
+            {
+                //PrinterSettings.InstalledPrinters.OfType<string>().Contains(DefaultPrinterName)
+                var checkedPrinter = DefaultPrinterName ?? (new PrinterSettings()).PrinterName;
+				var printersMenuList = new List<ToolStripMenuItem>();
+                foreach (string printerName in PrinterSettings.InstalledPrinters)
+                {
+                    var menuItem = new ToolStripMenuItem(printerName) 
+					{ 
+						Checked = checkedPrinter == printerName 
+					};
+                    menuItem.Click += (s, _) => 
+					{
+						var currentMenu = (ToolStripMenuItem)s;
+                        printersMenuList.ForEach(i => i.Checked = false);
+                        DefaultPrinterName = currentMenu.Text;
+                        currentMenu.Checked = true;
+                        DefaultPrinterNameChanged?.Invoke(this, new EventArgs());
+                        Print(DefaultPrinterName);
+					};
+
+                    _printButton.DropDownItems.Insert(printersMenuList.Count, menuItem);
+                    printersMenuList.Add(menuItem);
+                }
+                _printButton.DropDownItems.Insert(printersMenuList.Count, new ToolStripSeparator());
+            }
+
+            _scaleComboBox.SelectedIndex = _scaleComboBox.Items.IndexOf("100%");
+            _columnResizer.Presenter = _presenter;
+            _rowsResizer.TopOffset = _columnResizer.Height;
+            _rowsResizer.Presenter = _presenter;
+            _presenter.ShowToolBarChanged += TopRowLeftColumnChanged;
+            _paintPanel.Paint += (s, c) => _presenter.Render(s, c);
+            _paintPanel.Focus();
+
+            foreach (var bookMark in _presenter.Manager.GetBookMarks())
+                AddBookMark(bookMark, null);
+
+            Update(false);
+        }
+
+        protected override void OnTwoFingerTap(TwoFingerTapEventArgs e)
 		{
 			base.OnTwoFingerTap(e);
 			_presenter.Scale = 1;
@@ -177,12 +238,6 @@ namespace CellReport.Presenters.WinForms
 					_paintPanel.PointToClient(MousePosition).Y);
 		}
 
-		public BaseDisplayPresenter Presenter
-		{
-			get => _presenter;
-			set => _presenter = value;
-		}
-
 		void Application_Idle(object sender, EventArgs e)
 		{
 			_showGridButton.Checked = _showGridMenuItem.Checked = _presenter.ShowGridLines;
@@ -191,28 +246,6 @@ namespace CellReport.Presenters.WinForms
 			_bookMarksStripButton.Checked = _presenter.ShowBookMarks;
 			_bookMarksSplitter.Visible = _presenter.ShowBookMarks;
 			_bookMarksTreeView.Visible = _presenter.ShowBookMarks;
-		}
-
-		public PresentControl(DisplayPresenter presenter)
-				: this()
-		{
-			_presenter = presenter;
-		}
-
-		protected override void OnLoad(EventArgs e)
-		{
-			_scaleComboBox.SelectedIndex = _scaleComboBox.Items.IndexOf("100%");
-			_columnResizer.Presenter = _presenter;
-			_rowsResizer.TopOffset = _columnResizer.Height;
-			_rowsResizer.Presenter = _presenter;
-			_presenter.ShowToolBarChanged += TopRowLeftColumnChanged;
-			_paintPanel.Paint += (s, c) => _presenter.Render(s, c);
-			_paintPanel.Focus();
-
-			foreach (var bookMark in _presenter.Manager.GetBookMarks())
-				AddBookMark(bookMark, null);
-
-			Update(false);
 		}
 
 		private void AddBookMark(Core.BookMarks.BookMark bookMark, TreeNode parent)
@@ -291,16 +324,21 @@ namespace CellReport.Presenters.WinForms
 
 		private void PrintButtonClick(object sender, EventArgs e)
 		{
-			try
-			{
-				var printPresenter = new PrintPresenter(_presenter.Manager);
-				printPresenter.Print();
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show(ex.Message);
-			}
+			Print();
 		}
+
+		private void Print(string printerName =  null)
+		{
+            try
+            {
+                var printPresenter = new PrintPresenter(_presenter.Manager);
+                printPresenter.Print(printerName);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
 
 		private void CustomPrintMenuItemClick(object sender, EventArgs e)
 		{
@@ -478,7 +516,7 @@ namespace CellReport.Presenters.WinForms
 			_presenter.ShowBookMarks = !_presenter.ShowBookMarks;
 		}
 
-		private void _bookMarksTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+		private void BookMarksTreeViewAfterSelect(object sender, TreeViewEventArgs e)
 		{
 			if (e.Node != null && e.Node.Tag != null)
 			{

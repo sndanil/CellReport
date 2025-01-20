@@ -2,6 +2,7 @@
 using CellReport.Core;
 using System.Drawing.Printing;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace CellReport.Presenters.WinForms
 {
@@ -43,7 +44,7 @@ namespace CellReport.Presenters.WinForms
 			_action = e.PrintAction;
 		}
 
-		protected override void OnPrint(bool useCustom)
+		protected override void OnPrint(bool useCustom, string printerName = null)
 		{
 			PrintDocument doc = GetDocument();
 			if (useCustom)
@@ -57,6 +58,11 @@ namespace CellReport.Presenters.WinForms
 						return;
 				}
 			}
+			else if (printerName != null && PrinterSettings.InstalledPrinters.OfType<string>().Any(p => p == printerName))
+			{
+				doc.PrinterSettings.PrinterName = printerName;
+			}
+
 			doc.Print();
 		}
 
