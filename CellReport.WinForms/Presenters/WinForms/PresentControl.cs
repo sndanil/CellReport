@@ -324,7 +324,7 @@ namespace CellReport.Presenters.WinForms
 
 		private void PrintButtonClick(object sender, EventArgs e)
 		{
-			Print();
+			Print(DefaultPrinterName);
 		}
 
 		private void Print(string printerName =  null)
