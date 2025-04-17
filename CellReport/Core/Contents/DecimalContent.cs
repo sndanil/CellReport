@@ -97,7 +97,7 @@ namespace CellReport.Core.Contents
 			{
 				return valueAsObject != null ? Convert.ToDecimal(valueAsObject) : Value;
 			}
-			catch (FormatException)
+			catch (Exception)
 			{
 				return 0;
 			}
