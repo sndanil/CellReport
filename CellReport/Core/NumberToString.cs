@@ -8,7 +8,7 @@ namespace CellReport.Core
 {
 	public class NumberToString
 	{
-		public static ThreadLocal<string> CurrentCulture = new ThreadLocal<string>(() => null);
+		public static AsyncLocal<string> CurrentCulture = new AsyncLocal<string>();
 
 		public string[] Hunds;
 
