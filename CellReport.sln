@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31205.134
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113 d17.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WinForms", "WinForms", "{AE75A9B2-CFFD-4F9F-8A42-A0151690010B}"
 EndProject
@@ -20,6 +20,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CellReport.Editor", "CellReport.Editor\CellReport.Editor.csproj", "{840F17B3-B7C9-4F35-B31D-84B57A0924E4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{8A5BCB58-6290-491D-848E-3DEBAB2321A0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Avalonia", "Avalonia", "{6BEE3DE5-DC33-4369-9CE2-DAD7B248241E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CellReport.Avalonia", "CellReport.Avalonia\CellReport.Avalonia.csproj", "{557DBA53-A693-4F5E-82F8-87B9886AA3AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CellReport.Avalonia.Viewer", "CellReport.Avalonia.Viewer\CellReport.Avalonia.Viewer.csproj", "{D4A58C70-C36B-4E24-A573-9916BDE3731A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +57,14 @@ Global
 		{8A5BCB58-6290-491D-848E-3DEBAB2321A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A5BCB58-6290-491D-848E-3DEBAB2321A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A5BCB58-6290-491D-848E-3DEBAB2321A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{557DBA53-A693-4F5E-82F8-87B9886AA3AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{557DBA53-A693-4F5E-82F8-87B9886AA3AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{557DBA53-A693-4F5E-82F8-87B9886AA3AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{557DBA53-A693-4F5E-82F8-87B9886AA3AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4A58C70-C36B-4E24-A573-9916BDE3731A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4A58C70-C36B-4E24-A573-9916BDE3731A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4A58C70-C36B-4E24-A573-9916BDE3731A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4A58C70-C36B-4E24-A573-9916BDE3731A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +74,8 @@ Global
 		{54470CA9-7F52-4E7D-B5AE-55AC63F9DEA0} = {AE75A9B2-CFFD-4F9F-8A42-A0151690010B}
 		{4A199FE6-0A61-4668-8341-309919670486} = {98E36795-2917-4AEF-9D5C-364660A2B54D}
 		{840F17B3-B7C9-4F35-B31D-84B57A0924E4} = {98E36795-2917-4AEF-9D5C-364660A2B54D}
+		{557DBA53-A693-4F5E-82F8-87B9886AA3AC} = {6BEE3DE5-DC33-4369-9CE2-DAD7B248241E}
+		{D4A58C70-C36B-4E24-A573-9916BDE3731A} = {6BEE3DE5-DC33-4369-9CE2-DAD7B248241E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {65CF1218-46E5-46FA-B578-7A452DFB3670}
