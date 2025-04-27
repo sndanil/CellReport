@@ -1,90 +1,61 @@
-﻿using Avalonia.Controls;
-using Avalonia.Input;
+﻿using Avalonia.Input;
 using Avalonia.Media;
-using CellReport.Presenters;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using AvaloniaPoint = global::Avalonia.Point;
+using AvaloniaRect = global::Avalonia.Rect;
 
 namespace CellReport.Avalonia
 {
-    public class RowResizerControl : Control
+    public class RowResizerControl : BaseResizerControl
     {
-        private static SolidColorBrush _lineBrush = new SolidColorBrush(Color.FromRgb(0xB1, 0xB5, 0xBA));
-        private static SolidColorBrush _backBrush = new SolidColorBrush(Color.FromRgb(0xDF, 0xE3, 0xE8));
-        private static SolidColorBrush _textBrush = new SolidColorBrush(Color.FromRgb(0x36, 0x36, 0x36));
-
-        private bool _isPreresize = false;
-        private int _resizeColumn = -1;
-        private int _startSelectionColumn = -1;
-        private double _lastX = 0;
-
-        public BaseDisplayPresenter Presenter
-        {
-            get;
-            set;
-        }
-
-        private void RenderCell(DrawingContext dc, float left, float right, string text)
-        {
-            var formattedText = new FormattedText(text,
-                System.Globalization.CultureInfo.CurrentCulture,
-                FlowDirection.LeftToRight,
-                new Typeface("Microsoft Sans Serif"),
-                10,
-                _textBrush
-            );
-
-            formattedText.MaxTextHeight = Height;
-            formattedText.MaxTextWidth = (right - left) > 0 ? (right - left) : 0.01;
-            formattedText.TextAlignment = TextAlignment.Center;
-            var position = new global::Avalonia.Point(left, (this.Bounds.Height - formattedText.LineHeight) / 2);
-            dc.DrawText(formattedText, position);
-            var pen = new Pen(_lineBrush, 1);
-            dc.DrawLine(pen, new global::Avalonia.Point(right, 0), new global::Avalonia.Point(right, this.Bounds.Height));
-        }
+        private int _resizeRow = -1;
+        private int _startSelectionRow = -1;
+        private double _lastY = 0;
 
         public override void Render(DrawingContext drawingContext)
         {
-            drawingContext.FillRectangle(_backBrush, this.Bounds);
-            var pen = new Pen(_lineBrush, 1);
-            drawingContext.DrawLine(pen, this.Bounds.TopLeft, this.Bounds.TopRight);
-            drawingContext.DrawLine(pen, this.Bounds.BottomLeft, this.Bounds.BottomRight);
+            base.Render(drawingContext);
+            drawingContext.DrawLine(CreatePen(), new AvaloniaPoint(0, 0), new AvaloniaPoint(this.Bounds.Width, 0));
             if (Presenter != null)
             {
-                foreach (var column in GetColumnIndexes())
+                IterateByRows((row, top, bottom) =>
                 {
-                    var left = Presenter.GetLeftOffset(column);
-                    var right = left + Presenter.GetColumnWidth(column);
-
-                    if (CellReport.Core.CellManager.IsDesignMode)
-                        RenderCell(drawingContext, left, right, column.ToString());
-                    else
-                        RenderCell(drawingContext, left, right, (column + 1).ToString());
-                }
+                    var rowName = CellReport.Core.CellManager.IsDesignMode ? row.ToString() : (row + 1).ToString();
+                    RenderText(drawingContext, rowName, new AvaloniaRect(0, top, Bounds.Width, bottom - top));
+                    drawingContext.DrawLine(CreatePen(), new AvaloniaPoint(0, bottom), new AvaloniaPoint(this.Bounds.Width, bottom));
+                });
             }
         }
 
-        private IEnumerable<int> GetColumnIndexes()
+        private void IterateByRows(Action<int, float, float> action)
+        {
+            foreach (var row in GetRowIndexes())
+            {
+                var top = Presenter.GetTopOffset(row);
+                var bottom = top + Presenter.GetRowHeight(row);
+
+                action?.Invoke(row, top, bottom);
+            }
+
+        }
+
+        private IEnumerable<int> GetRowIndexes()
         {
             if (Presenter != null)
             {
-                for (int column = 0; column < Presenter.FrozenColumnsCount; column++)
+                var allRows = Enumerable.Range(0, Presenter.FrozenRowsCount)
+                    .Union(Enumerable.Range(Presenter.TopNoFrozenRow, Presenter.Manager.RowsCount - Presenter.TopNoFrozenRow))
+                    .Distinct();
+                foreach (var rowIndex in allRows)
                 {
-                    var left = Presenter.GetLeftOffset(column);
-                    var right = left + Presenter.GetColumnWidth(column);
-                    if (right > this.Bounds.Width)
+                    var top = Presenter.GetTopOffset(rowIndex);
+                    var bottom = top + Presenter.GetRowHeight(rowIndex);
+                    if (bottom > this.Bounds.Height)
                         break;
 
-                    yield return column;
-                }
-                for (int column = Presenter.LeftNoFrozenColumn; column < Presenter.Manager.ColumnsCount; column++)
-                {
-                    var left = Presenter.GetLeftOffset(column);
-                    var right = left + Presenter.GetColumnWidth(column);
-                    if (right > this.Bounds.Width)
-                        break;
-
-                    yield return column;
+                    yield return rowIndex;
                 }
             }
         }
@@ -93,51 +64,48 @@ namespace CellReport.Avalonia
         {
             if (Presenter != null)
             {
-                var x = e.GetPosition(this).X;
-                if (_resizeColumn < 0 && _startSelectionColumn < 0)
+                var y = e.GetPosition(this).Y;
+                if (_resizeRow < 0 && _startSelectionRow < 0)
                 {
                     Cursor = global::Avalonia.Input.Cursor.Default;
                     _isPreresize = false;
-                    foreach (var column in GetColumnIndexes())
+                    IterateByRows((row, top, bottom) =>
                     {
-                        var left = Presenter.GetLeftOffset(column);
-                        var right = left + Presenter.GetColumnWidth(column);
-
-                        if (x <= right + 3 && x >= right - 3)
+                        if (y <= bottom + 3 && y >= bottom - 3)
                         {
-                            this.Cursor = new global::Avalonia.Input.Cursor(global::Avalonia.Input.StandardCursorType.SizeWestEast);
+                            this.Cursor = new global::Avalonia.Input.Cursor(global::Avalonia.Input.StandardCursorType.SizeNorthSouth);
                             _isPreresize = true;
                         }
-                    }
+                    });
                 }
-                else if (_resizeColumn >= 0 && _lastX != x)
+                else if (_resizeRow >= 0 && _lastY != y)
                 {
-                    var oldWidth = Presenter.GetColumnWidth(_resizeColumn);
-                    var width = oldWidth + (x - _lastX);
-                    Presenter.SetColumnWidth(_resizeColumn, Convert.ToSingle(width));
+                    var oldHeight = Presenter.GetRowHeight(_resizeRow);
+                    var height = oldHeight + (y - _lastY);
+                    Presenter.SetRowHeight(_resizeRow, Convert.ToSingle(height));
                     Presenter.Update();
                 }
-                else if (_startSelectionColumn >= 0 && _lastX != x)
+                else if (_startSelectionRow >= 0 && _lastY != y)
                 {
-                    var findCol = -1;
-                    foreach (var col in GetColumnIndexes())
+                    var findRow = -1;
+                    foreach (var row in GetRowIndexes())
                     {
-                        var left = Presenter.GetLeftOffset(col);
-                        if (left <= x && x <= left + Presenter.GetColumnWidth(col))
+                        var top = Presenter.GetTopOffset(row);
+                        if (top <= y && y <= top + Presenter.GetRowHeight(row))
                         {
-                            findCol = col;
+                            findRow = row;
                             break;
                         }
                     }
-                    if (findCol >= 0)
+                    if (findRow >= 0)
                     {
                         Presenter.BeginUpdate();
-                        Presenter.StartSelection = new Core.CellLocation() { Row = 0, Column = _startSelectionColumn };
-                        Presenter.EndSelection = new Core.CellLocation() { Row = Presenter.Manager.RowsCount - 1, Column = findCol };
+                        Presenter.StartSelection = new Core.CellLocation() { Row = _startSelectionRow, Column = 0 };
+                        Presenter.EndSelection = new Core.CellLocation() { Row = findRow, Column = Presenter.Manager.ColumnsCount - 1 };
                         Presenter.EndUpdate();
                     }
                 }
-                _lastX = x;
+                _lastY = y;
             }
         }
 
@@ -150,42 +118,34 @@ namespace CellReport.Avalonia
                 return;
             }
 
-            var x = e.GetPosition(this).X;
+            var y = e.GetPosition(this).Y;
             if (_isPreresize)
             {
-                _resizeColumn = -1;
-                foreach (var column in GetColumnIndexes())
+                _resizeRow = -1;
+                IterateByRows((row, top, bottom) =>
                 {
-                    var left = Presenter.GetLeftOffset(column);
-                    var right = left + Presenter.GetColumnWidth(column);
-
-                    if ((x <= right + 3) && (x >= right - 3) && (left < right)
-                        && Core.MarkerResolver.Resolve(Presenter.Manager.GetColumnMarkerForShow(column))
-                        && (string.IsNullOrEmpty(Presenter.Manager.GetColumnMarkerForHide(column)) || !Core.MarkerResolver.Resolve(Presenter.Manager.GetColumnMarkerForHide(column))))
-                        _resizeColumn = column;
-                }
-                //if (_resizeColumn >= 0)
-                //	 Mouse.Capture(this);
+                    if ((y <= bottom + 3) && (y >= bottom - 3) && (top < bottom))
+                        _resizeRow = row;
+                });
             }
             else
             {
-                _startSelectionColumn = -1;
-                foreach (var col in GetColumnIndexes())
+                _startSelectionRow = -1;
+                foreach (var row in GetRowIndexes())
                 {
-                    var left = Presenter.GetLeftOffset(col);
-                    if (left <= x && x <= left + Presenter.GetColumnWidth(col))
+                    var top = Presenter.GetTopOffset(row);
+                    if (top <= y && y <= top + Presenter.GetRowHeight(row))
                     {
-                        _startSelectionColumn = col;
+                        _startSelectionRow = row;
                         break;
                     }
                 }
-                if (_startSelectionColumn >= 0)
+                if (_startSelectionRow >= 0)
                 {
                     Presenter.BeginUpdate();
-                    Presenter.StartSelection = new Core.CellLocation() { Row = 0, Column = _startSelectionColumn };
-                    Presenter.EndSelection = new Core.CellLocation() { Row = Presenter.Manager.RowsCount - 1, Column = _startSelectionColumn };
+                    Presenter.StartSelection = new Core.CellLocation() { Row = _startSelectionRow, Column = 0 };
+                    Presenter.EndSelection = new Core.CellLocation() { Row = _startSelectionRow, Column = Presenter.Manager.ColumnsCount - 1 };
                     Presenter.EndUpdate();
-                    //Mouse.Capture(this);
                 }
             }
         }
@@ -195,9 +155,8 @@ namespace CellReport.Avalonia
             base.OnPointerReleased(e);
 
             _isPreresize = false;
-            _resizeColumn = -1;
-            _startSelectionColumn = -1;
-            //Mouse.Capture(null);
+            _resizeRow = -1;
+            _startSelectionRow = -1;
         }
     }
 }

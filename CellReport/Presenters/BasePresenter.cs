@@ -353,7 +353,7 @@ namespace CellReport.Presenters
 					offset -= Manager.GetRowHeight(rowIndex);
 
 				if (_topOffsets != null)
-					_topOffsets.Add(row, offset);
+					_topOffsets[row] = offset;
 			}
 			if (DefaultUnit != unit)
 				offset = UnitsConverter.ConvertValue(offset, DefaultUnit, CurrentUnit, DeviceDpiY);
@@ -379,7 +379,7 @@ namespace CellReport.Presenters
 					offset -= Manager.GetColumnWidth(columnIndex);
 
 				if (_leftOffsets != null)
-					_leftOffsets.Add(column, offset);
+					_leftOffsets[column] = offset;
 			}
 
 			if (DefaultUnit != unit)
