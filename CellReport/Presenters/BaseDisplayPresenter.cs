@@ -522,14 +522,13 @@ namespace CellReport.Presenters
 
 			Renderer.RenderLines(context, "#DC0000FF", 3, LineStyle.Solid,
 					new[] {
-										new Point(rect.Right - 3, rect.Bottom),
-										new Point(rect.Left, rect.Bottom),
-										new Point(rect.Left, rect.Top),
-										new Point(rect.Right, rect.Top),
-										new Point(rect.Right, rect.Bottom - 3)
+						new Point(rect.Right - 3, rect.Bottom),
+						new Point(rect.Left, rect.Bottom),
+						new Point(rect.Left, rect.Top),
+						new Point(rect.Right, rect.Top),
+						new Point(rect.Right, rect.Bottom - 3)
 					});
 
-			//Renderer.RenderRect(context, rect, "#DC0000FF", LineStyle.Solid, 3);
 			Renderer.RenderRect(context, new Rectangle(rect.Right - 1, rect.Bottom - 1, 3, 3), "#DC0000FF", LineStyle.Solid, 2);
 		}
 

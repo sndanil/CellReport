@@ -12,6 +12,9 @@ using Avalonia.Skia;
 using SkiaSharp;
 using Topten.RichTextKit;
 using Avalonia.Media.TextFormatting;
+using Avalonia.Media.Imaging;
+using System.Net.NetworkInformation;
+using ZXing;
 
 namespace CellReport.Avalonia
 {
@@ -157,7 +160,117 @@ namespace CellReport.Avalonia
 			//dc.DrawImage(image.PlatformImpl, 1, new Rect(0, 0, image.Size.Width, image.Size.Height), cellRect.ToRect());
 		}
 
-		public override void RenderText(object context,
+        public override void RenderBarCode(object context, 
+			Rectangle cellRect, 
+			BarCodeContent barcode, 
+			string color, 
+			string fontFamily, 
+			float fontSize, 
+			CellReport.Core.FontStyle fontStyle, 
+			Orientation orientation)
+        {
+            if (cellRect.Width < 1 || cellRect.Height < 1)
+                return;
+
+            var writer = new ZXing.SkiaSharp.BarcodeWriter();
+            var options = new ZXing.Common.EncodingOptions
+            {
+                Width = Convert.ToInt32(cellRect.Width),
+                Height = Convert.ToInt32(cellRect.Height),
+                Margin = 0,
+                PureBarcode = true
+            };
+
+            switch (barcode.GetBarCodeType())
+            {
+                case BarCodeType.EAN13:
+                    writer.Format = BarcodeFormat.EAN_13;
+                    break;
+                case BarCodeType.EAN8:
+                    writer.Format = BarcodeFormat.EAN_8;
+                    break;
+                case BarCodeType.Code128:
+                    writer.Format = BarcodeFormat.CODE_128;
+                    options = new ZXing.OneD.Code128EncodingOptions
+                    {
+                        Width = Convert.ToInt32(cellRect.Width),
+                        Height = Convert.ToInt32(cellRect.Height),
+                        Margin = 0,
+                        PureBarcode = true
+                    };
+                    break;
+                case BarCodeType.QR:
+                    writer.Format = BarcodeFormat.QR_CODE;
+                    options = new ZXing.QrCode.QrCodeEncodingOptions
+                    {
+                        Width = Convert.ToInt32(cellRect.Width),
+                        Height = Convert.ToInt32(cellRect.Height),
+                        Margin = 0,
+                        PureBarcode = true,
+                        CharacterSet = "utf-8"
+                    };
+                    break;
+                case BarCodeType.PDF417:
+                    writer.Format = BarcodeFormat.PDF_417;
+                    options = new ZXing.PDF417.PDF417EncodingOptions
+                    {
+                        Width = Convert.ToInt32(cellRect.Width),
+                        Height = Convert.ToInt32(cellRect.Height),
+                        Margin = 0,
+                        PureBarcode = true,
+                        CharacterSet = "utf-8"
+                    };
+                    break;
+                case BarCodeType.UPCA:
+                    writer.Format = BarcodeFormat.UPC_A;
+                    break;
+                case BarCodeType.UPCE:
+                    writer.Format = BarcodeFormat.UPC_E;
+                    break;
+                case BarCodeType.Code39:
+                    writer.Format = BarcodeFormat.CODE_39;
+                    break;
+                case BarCodeType.UCC12:
+                    writer.Format = BarcodeFormat.QR_CODE;
+                    break;
+                case BarCodeType.Auto:
+                    switch (barcode.GetCode().Length)
+                    {
+                        case 8:
+                            writer.Format = BarcodeFormat.EAN_8;
+                            break;
+                        case 13:
+                            writer.Format = BarcodeFormat.EAN_13;
+                            break;
+                        default:
+                            writer.Format = BarcodeFormat.QR_CODE;
+                            options = new ZXing.QrCode.QrCodeEncodingOptions
+                            {
+                                Width = Convert.ToInt32(cellRect.Width),
+                                Height = Convert.ToInt32(cellRect.Height),
+                                Margin = 0,
+                                PureBarcode = true,
+                                CharacterSet = "utf-8"
+                            };
+                            break;
+                    }
+                    break;
+            }
+            writer.Options = options;
+
+            try
+            {
+                var result = (SKBitmap)writer.Write(barcode.GetCode());
+
+                var dc = (SKCanvas)context;
+                dc.DrawBitmap(result, cellRect.ToRect());
+            }
+            catch
+            {
+            }
+        }
+
+        public override void RenderText(object context,
 			Rectangle textRect,
 			string text,
 			string color,

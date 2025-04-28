@@ -13,11 +13,6 @@ namespace CellReport.Avalonia
 		//private readonly Panel _control;
 		private readonly PresentControl _presentControl;
 
-		public override float Scale { get; set; }
-		public override bool ShowGridLines { get; set; }
-		public override bool ShowBookMarks { get; set; }
-		public override string GridColor { get; set; }
-
 		public DisplayPresenter(CellManager manager, PresentControl control): base(manager)
 		{
 			_presentControl = control;
