@@ -1,5 +1,6 @@
 ﻿using Avalonia.Input;
 using Avalonia.Media;
+using CellReport.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -99,10 +100,8 @@ namespace CellReport.Avalonia
                     }
                     if (findCol >= 0)
                     {
-                        Presenter.BeginUpdate();
-                        Presenter.StartSelection = new Core.CellLocation() { Row = 0, Column = _startSelectionColumn };
-                        Presenter.EndSelection = new Core.CellLocation() { Row = Presenter.Manager.RowsCount - 1, Column = findCol };
-                        Presenter.EndUpdate();
+                        Select(new CellLocation() { Row = 0, Column = _startSelectionColumn },
+                                new CellLocation() { Row = Presenter.Manager.RowsCount - 1, Column = findCol });
                     }
                 }
                 _lastX = x;
@@ -144,10 +143,8 @@ namespace CellReport.Avalonia
                 }
                 if (_startSelectionColumn >= 0)
                 {
-                    Presenter.BeginUpdate();
-                    Presenter.StartSelection = new Core.CellLocation() { Row = 0, Column = _startSelectionColumn };
-                    Presenter.EndSelection = new Core.CellLocation() { Row = Presenter.Manager.RowsCount - 1, Column = _startSelectionColumn };
-                    Presenter.EndUpdate();
+                    Select(new CellLocation { Row = 0, Column = _startSelectionColumn },
+                        new CellLocation { Row = Presenter.Manager.RowsCount - 1, Column = _startSelectionColumn });
                 }
             }
         }
