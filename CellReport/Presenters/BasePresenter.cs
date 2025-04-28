@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,8 +25,8 @@ namespace CellReport.Presenters
 		private int _frozenColumnsCount = 0;
 		private bool _updateMode = false;
 
-		private Dictionary<int, float> _topOffsets = new Dictionary<int, float>();
-		private Dictionary<int, float> _leftOffsets = new Dictionary<int, float>();
+		private ConcurrentDictionary<int, float> _topOffsets = new ConcurrentDictionary<int, float>();
+		private ConcurrentDictionary<int, float> _leftOffsets = new ConcurrentDictionary<int, float>();
 
 		public BasePresenter(CellManager manager)
 		{
@@ -492,8 +493,8 @@ namespace CellReport.Presenters
 
 		protected void BeginRender()
 		{
-			_topOffsets = new Dictionary<int, float>();
-			_leftOffsets = new Dictionary<int, float>();
+			_topOffsets = new ConcurrentDictionary<int, float>();
+			_leftOffsets = new ConcurrentDictionary<int, float>();
 		}
 
 		protected void EndRender()

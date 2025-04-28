@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Input;
 using CellReport.Core;
 using CellReport.Presenters;
 using System;
@@ -45,7 +46,17 @@ namespace CellReport.Avalonia
 			}
 		}
 
-		public override void Render(object sender, object context)
+        protected override void OnClick(object sender, EventArgs e)
+        {
+            if (e is PointerPressedEventArgs args && sender is Control ctrl)
+            {
+                var position = args.GetPosition(ctrl);
+                var location = GetCellByDevicePoint(Convert.ToSingle(position.X), Convert.ToSingle(position.Y), false);
+                CurrentCell = location;
+            }
+        }
+
+        public override void Render(object sender, object context)
 		{
 			this.BeginRender();
 			var control = sender as Control;

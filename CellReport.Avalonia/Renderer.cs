@@ -39,9 +39,6 @@ namespace CellReport.Avalonia
 
 	public class Renderer : BaseRenderer
 	{
-		Dictionary<string, Brush> _brushes = new Dictionary<string, Brush>();
-		Dictionary<PaintInfo, SKPaint> _paints = new Dictionary<PaintInfo, SKPaint>();
-
 		class PaintInfo
 		{
 			public string Color { get; set; }
@@ -64,18 +61,6 @@ namespace CellReport.Avalonia
 			byte a = 0, r = 0, g = 0, b = 0;
 			BaseStyle.ParseColor(color, out a, out r, out g, out b);
 			return new SKColor(r, g, b, a);
-		}
-
-		private Brush GetBrush(string color)
-		{
-			Brush brush = null;
-			if (!_brushes.TryGetValue(color, out brush))
-			{
-				//brush = new SolidColorBrush(GetColor(color));
-				//_brushes.Add(color, brush);
-			}
-
-			return brush;
 		}
 
 		private SKPaint GetPaint(string color, float thickness, LineStyle style = LineStyle.Solid)
@@ -113,7 +98,26 @@ namespace CellReport.Avalonia
 				var dc = (SKCanvas)context;
 				using (var paint = GetPaint(color, lineWidth, style))
 				{
-					dc.DrawPoints(SKPointMode.Polygon, points.Select(p => new SKPoint(p.X, p.Y)).ToArray(), paint);
+					if (points.Length == 2)
+					{
+                        dc.DrawPoints(SKPointMode.Polygon, points.Select(p => new SKPoint(p.X, p.Y)).ToArray(), paint);
+                    }
+                    else
+					{
+						var path = new SKPath();
+						path.MoveTo(points[0].X, points[0].Y);
+						foreach (var point in points)
+						{
+							path.LineTo(point.X, point.Y);
+						}
+
+						if (points.Length == 4)
+						{
+							path.Close();
+						}
+
+						dc.DrawPath(path, paint);
+					}
 				}
 			}
 		}

@@ -33,6 +33,11 @@ namespace CellReport.Avalonia
 
         protected void RenderText(DrawingContext dc, string text, AvaloniaRect bounds)
         {
+            if (bounds.Height <= 0.1 || bounds.Width <= 0.1)
+            {
+                return;
+            }
+
             this.TryFindResource("ResizersTextBrush", this.ActualThemeVariant, out var textBrush);
             this.TryFindResource("ResizersFont", this.ActualThemeVariant, out var fontFamily);
 
