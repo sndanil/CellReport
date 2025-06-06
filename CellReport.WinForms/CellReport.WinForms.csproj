@@ -1,24 +1,31 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net5.0-windows;net48</TargetFrameworks>
-    <UseWindowsForms>true</UseWindowsForms>
-    <AssemblyVersion>0.11.2504.1710</AssemblyVersion>
-    <FileVersion>0.11.2504.1710</FileVersion>
-    <Copyright>Copyright © Daniil Safonov 2011-2021</Copyright>
-    <Company>Daniil Safonov</Company>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net5.0-windows;net48</TargetFrameworks>
+		<UseWindowsForms>true</UseWindowsForms>
+		<AssemblyVersion>0.11.2506.0612</AssemblyVersion>
+		<FileVersion>0.11.2506.0612</FileVersion>
+		<Copyright>Copyright © Daniil Safonov 2011-2021</Copyright>
+		<Company>Daniil Safonov</Company>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="ZXing.Net" Version="0.16.6" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="ZXing.Net" Version="0.16.6" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\CellReport\CellReport.csproj" />
-  </ItemGroup>
-  
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="$(SolutionDir)buildnumerator.exe $(ProjectDir) $(ConfigurationName)" />
-  </Target>
-  
+	<ItemGroup>
+		<ProjectReference Include="..\CellReport\CellReport.csproj" />
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net48'">
+		<Reference Include="System.Windows.Forms.DataVisualization">
+			<HintPath>..\System.Windows.Forms.DataVisualization.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+	</ItemGroup>
+
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+		<Exec Command="$(SolutionDir)buildnumerator.exe $(ProjectDir) $(ConfigurationName)" />
+	</Target>
+
 </Project>

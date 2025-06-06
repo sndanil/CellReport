@@ -4,7 +4,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
-
+using System.Linq;
 using CellReport.Core;
 using CellReport.Core.Contents;
 using ZXing;
@@ -98,38 +98,6 @@ namespace CellReport.Presenters.WinForms
 			return new Core.Size(result.Width, result.Height);
 		}
 
-		//public static unsafe int GetTextHeight(Bitmap bmp)
-		//{
-		//	BitmapData bData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
-
-		//	byte bitsPerPixel = 32;
-
-		//	byte* scan0 = (byte*)bData.Scan0.ToPointer();
-
-		//	var lastHeight = 0;
-		//	for (int i = 0; i < bData.Height; ++i)
-		//	{
-		//		for (int j = 0; j < bData.Width; ++j)
-		//		{
-		//			byte* data1 = scan0 + i * bData.Stride + j * bitsPerPixel / 8;
-		//			byte* data2 = scan0 + i * bData.Stride + j * bitsPerPixel / 8 + 1;
-		//			byte* data3 = scan0 + i * bData.Stride + j * bitsPerPixel / 8 + 2;
-		//			byte* data4 = scan0 + i * bData.Stride + j * bitsPerPixel / 8 + 3;
-
-		//			if (*data1 != 0 || *data2 != 0 || *data3 != 0 || *data4 != 0)
-		//			{
-		//				lastHeight = i;
-		//				break;
-		//			}
-		//			//data is a pointer to the first byte of the 3-byte color data
-		//		}
-		//	}
-
-		//	bmp.UnlockBits(bData);
-
-		//	return lastHeight;
-		//}
-
 		public override void RenderFillRect(object context, Core.Rectangle rect, float angle, params string[] colors)
 		{
 			if (rect.Width < 1 || rect.Height < 1)
@@ -165,7 +133,6 @@ namespace CellReport.Presenters.WinForms
 				Alignment = StringAlignment.Center,
 				LineAlignment = StringAlignment.Center
 			};
-			//stringFormat.FormatFlags = StringFormatFlags.DirectionVertical;
 			var transformPoint = new PointF(textRect.X + textRect.Width / 2, textRect.Y + textRect.Height / 2);
 			switch (h)
 			{
@@ -263,8 +230,20 @@ namespace CellReport.Presenters.WinForms
 				var g = (Graphics)context;
 				using (var pen = new Pen(GetColor(color), lineWidth))
 				{
-					pen.DashStyle = (DashStyle)style;
-					g.DrawLines(pen, Array.ConvertAll(points, p => new PointF(p.X, p.Y)));
+                    pen.DashStyle = (DashStyle)style;
+					if (points.Length == 5)
+					{
+						var path = new GraphicsPath();
+
+						path.StartFigure();
+						path.AddLines(Array.ConvertAll(points, p => new PointF(p.X, p.Y)));
+						path.CloseFigure();
+						g.DrawPath(pen, path);
+					}
+					else
+					{
+						g.DrawLines(pen, Array.ConvertAll(points, p => new PointF(p.X, p.Y)));
+					}
 				}
 			}
 		}
@@ -284,34 +263,36 @@ namespace CellReport.Presenters.WinForms
 
 		public override void RenderChart(object context, Core.Rectangle rect, ChartContent content)
 		{
-			//var g = (Graphics)context;
-			//System.Windows.Forms.DataVisualization.Charting.Chart chart;
-			//if (content.ChartObject == null)
-			//{
-			//	chart = new System.Windows.Forms.DataVisualization.Charting.Chart
-			//	{
-			//		AntiAliasing = System.Windows.Forms.DataVisualization.Charting.AntiAliasingStyles.All,
-			//		TextAntiAliasingQuality = System.Windows.Forms.DataVisualization.Charting.TextAntiAliasingQuality.High
-			//	};
-			//	var area = chart.ChartAreas.Add("Default");
-			//	area.Area3DStyle.Enable3D = content.Use3D;
-			//	if (content.ShowLegend)
-			//		chart.Legends.Add("Default");
-			//	foreach (var series in content.GetSeries())
-			//	{
-			//		var chartSeries = chart.Series.Add(series.Name);
-			//		chartSeries.ChartType = (System.Windows.Forms.DataVisualization.Charting.SeriesChartType)series.Type;
-			//		var xval = content.GetXDataBySeries(series);
-			//		var yval = content.GetYDataBySeries(series);
-			//		chartSeries.Points.DataBindXY(xval, yval);
-			//	}
+#if NET48
+			var g = (Graphics)context;
+			System.Windows.Forms.DataVisualization.Charting.Chart chart;
+			if (content.ChartObject == null)
+			{
+				chart = new System.Windows.Forms.DataVisualization.Charting.Chart
+				{
+					AntiAliasing = System.Windows.Forms.DataVisualization.Charting.AntiAliasingStyles.All,
+					TextAntiAliasingQuality = System.Windows.Forms.DataVisualization.Charting.TextAntiAliasingQuality.High
+				};
+				var area = chart.ChartAreas.Add("Default");
+				area.Area3DStyle.Enable3D = content.Use3D;
+				if (content.ShowLegend)
+					chart.Legends.Add("Default");
+				foreach (var series in content.GetSeries())
+				{
+					var chartSeries = chart.Series.Add(series.Name);
+					chartSeries.ChartType = (System.Windows.Forms.DataVisualization.Charting.SeriesChartType)series.Type;
+					var xval = content.GetXDataBySeries(series);
+					var yval = content.GetYDataBySeries(series);
+					chartSeries.Points.DataBindXY(xval, yval);
+				}
 
-			//	content.ChartObject = chart;
-			//}
-			//else
-			//	chart = (System.Windows.Forms.DataVisualization.Charting.Chart)content.ChartObject;
+				content.ChartObject = chart;
+			}
+			else
+				chart = (System.Windows.Forms.DataVisualization.Charting.Chart)content.ChartObject;
 
-			//chart.Printing.PrintPaint(g, rect.ToRectangle());
+			chart.Printing.PrintPaint(g, rect.ToRectangle());
+#endif
 		}
 
 		protected Color GetColor(string color)
