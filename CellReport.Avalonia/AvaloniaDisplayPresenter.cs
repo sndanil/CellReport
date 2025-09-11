@@ -8,15 +8,15 @@ using System.Text;
 
 namespace CellReport.Avalonia
 {
-	public class DisplayPresenter : BaseDisplayPresenter
+	public class AvaloniaDisplayPresenter : BaseDisplayPresenter
 	{
 		//private readonly Panel _control;
 		private readonly PresentControl _presentControl;
 
-		public DisplayPresenter(CellManager manager, PresentControl control): base(manager)
+		public AvaloniaDisplayPresenter(CellManager manager, PresentControl control): base(manager)
 		{
 			_presentControl = control;
-			Renderer = new Renderer();
+			Renderer = new AvaloniaRenderer();
 
 			DeviceDpiX = 96;
 			DeviceDpiY = 96;

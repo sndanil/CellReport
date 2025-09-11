@@ -1,23 +1,30 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net8.0;net5.0;net48</TargetFrameworks>
-    <AssemblyVersion>0.11.2506.0612</AssemblyVersion>
-    <FileVersion>0.11.2506.0612</FileVersion>
-    <Copyright>Copyright © Daniil Safonov 2011-2021</Copyright>
-    <Company>Daniil Safonov</Company>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net8.0;net48</TargetFrameworks>
+		<AssemblyVersion>0.11.2509.1122</AssemblyVersion>
+		<FileVersion>0.11.2509.1122</FileVersion>
+		<Copyright>Copyright © Daniil Safonov 2011-2025</Copyright>
+		<Company>Daniil Safonov</Company>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="mustache-sharp" Version="1.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="mustache-sharp" Version="1.0.0" />
+	</ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' != 'net45' ">
-    <PackageReference Include="System.IO.Packaging" Version="9.0.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="System.IO.Packaging" Version="9.0.1" />
+	</ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="$(SolutionDir)buildnumerator.exe $(ProjectDir) $(ConfigurationName)" />
-  </Target>
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net48' ">
+		<Reference Include="System.Net.Http">
+			<HintPath>{GAC}</HintPath>
+			<Private>false</Private>
+		</Reference>
+	</ItemGroup>
+
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+		<Exec Command="$(SolutionDir)buildnumerator.exe $(ProjectDir) $(ConfigurationName)" />
+	</Target>
 
 </Project>

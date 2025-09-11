@@ -12,13 +12,13 @@ namespace CellReport.Avalonia
     {
         private readonly IImmutableGlyphRunReference _noSkia;
         private readonly Control _control;
-        private readonly DisplayPresenter _presenter;
+        private readonly AvaloniaDisplayPresenter _presenter;
 
         public Rect Bounds { get; }
         public bool HitTest(global::Avalonia.Point p) => false;
         public bool Equals(ICustomDrawOperation other) => false;
 
-        public CustomDrawOp(Rect bounds, GlyphRun noSkia, Control control, DisplayPresenter presenter)
+        public CustomDrawOp(Rect bounds, GlyphRun noSkia, Control control, AvaloniaDisplayPresenter presenter)
         {
             _control = control;
             _presenter = presenter;

@@ -20,7 +20,7 @@ namespace CellReport.Avalonia
 			//cellTemplate.Load("D:\\Projects\\Kayala-soft\\Base\\Modules\\Torg12Form\\Торг12.tcr");
             cellTemplate.Load("D:\\Projects\\Kayala-soft\\Base\\Config\\PrintForms\\Ценник.tcr");
 			
-            cellControl.Presenter = new DisplayPresenter(cellTemplate.Manager, this);
+            cellControl.Presenter = new AvaloniaDisplayPresenter(cellTemplate.Manager, this);
             columnsResizer.Presenter = cellControl.Presenter;
             rowsResizer.Presenter = cellControl.Presenter;
         }

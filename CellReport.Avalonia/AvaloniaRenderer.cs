@@ -40,7 +40,7 @@ namespace CellReport.Avalonia
 		}
 	}
 
-	public class Renderer : BaseRenderer
+	public class AvaloniaRenderer : BaseRenderer
 	{
 		class PaintInfo
 		{
@@ -114,7 +114,7 @@ namespace CellReport.Avalonia
 							path.LineTo(point.X, point.Y);
 						}
 
-						if (points.Length == 4)
+						if (points.Length == 5)
 						{
 							path.Close();
 						}

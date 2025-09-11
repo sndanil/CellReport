@@ -328,7 +328,7 @@ namespace CellReport.Presenters.WinForms
 			if (cellRect.Width < 1 || cellRect.Height < 1)
 				return;
 
-			var writer = new ZXing.BarcodeWriter();
+			var writer = new ZXing.Windows.Compatibility.BarcodeWriter();
 			var options = new ZXing.Common.EncodingOptions
 			{
 				Width = Convert.ToInt32(cellRect.Width),

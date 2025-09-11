@@ -265,8 +265,13 @@ namespace CellReport.Core
 				}
 				else if (uri.ToUpper().StartsWith("HTTP"))
 				{
-					using (System.Net.WebClient client = new System.Net.WebClient())
-						return client.DownloadData(uri);
+					using (var client = new System.Net.Http.HttpClient())
+					{
+						var result = client.GetAsync(uri).GetAwaiter().GetResult();
+						
+						return result.IsSuccessStatusCode ? result.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult()
+							: Array.Empty<byte>();
+					}
 				}
 
 				return null;

@@ -1,16 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net5.0-windows;net48</TargetFrameworks>
+		<TargetFrameworks>net8.0-windows;net48</TargetFrameworks>
 		<UseWindowsForms>true</UseWindowsForms>
-		<AssemblyVersion>0.11.2506.0612</AssemblyVersion>
-		<FileVersion>0.11.2506.0612</FileVersion>
-		<Copyright>Copyright © Daniil Safonov 2011-2021</Copyright>
+		<AssemblyVersion>0.11.2509.1122</AssemblyVersion>
+		<FileVersion>0.11.2509.1122</FileVersion>
+		<Copyright>Copyright © Daniil Safonov 2011-2025</Copyright>
 		<Company>Daniil Safonov</Company>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="ZXing.Net" Version="0.16.6" />
+		<PackageReference Include="ZXing.Net" Version="0.16.10" />
+		<PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" Version="0.16.13" />
 	</ItemGroup>
 
 	<ItemGroup>

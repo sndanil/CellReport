@@ -18,7 +18,7 @@ namespace CellReport.Avalonia
     {
         private readonly GlyphRun _noSkia;
 
-        public DisplayPresenter Presenter
+        public AvaloniaDisplayPresenter Presenter
         {
             get;
             set;
