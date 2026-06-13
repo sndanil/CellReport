@@ -4,6 +4,8 @@ using CellReport.Core;
 using CellReport.Presenters;
 using SkiaSharp;
 using System;
+using System.Threading.Tasks;
+using AvaloniaInput = Avalonia.Input;
 
 namespace CellReport.Avalonia
 {
@@ -64,7 +66,7 @@ namespace CellReport.Avalonia
 		public override void Update()
 		{
 			if (!IsInUpdateMode())
-				_presentControl.Invalidate();
+				_presentControl.Update();
 		}
 
 		protected override void OnClick(object sender, EventArgs e)
@@ -77,6 +79,84 @@ namespace CellReport.Avalonia
 			}
 		}
 
+		protected override bool OnProcessKey(object sender, EventArgs e)
+		{
+			if (e is not KeyEventArgs args)
+				return false;
+
+			var key = args.Key;
+			var modifiers = args.KeyModifiers;
+
+			if (modifiers == AvaloniaInput.KeyModifiers.None)
+			{
+				switch (key)
+				{
+					case Key.Up:
+						MoveCursorUp();
+						return true;
+					case Key.Down:
+						MoveCursorDown();
+						return true;
+					case Key.Left:
+						MoveCursorLeft();
+						return true;
+					case Key.Right:
+						MoveCursotRight();
+						return true;
+					case Key.PageUp:
+						MovePageUp();
+						return true;
+					case Key.PageDown:
+						MovePageDown();
+						return true;
+					case Key.Home:
+						MoveToFirstColumn();
+						return true;
+					case Key.End:
+						MoveToLastColumn();
+						return true;
+				}
+			}
+
+			if (modifiers == AvaloniaInput.KeyModifiers.Control)
+			{
+				switch (key)
+				{
+					case Key.Home:
+						MoveToFirstRow();
+						return true;
+					case Key.End:
+						MoveToLastRow();
+						return true;
+					case Key.C:
+					case Key.Insert:
+						CopySelectionToClipboard();
+						return true;
+				}
+			}
+
+			return false;
+		}
+
+		private void CopySelectionToClipboard()
+		{
+			var data = CellManager.IsDesignMode ? GetCurrentForClipBoard() : GetSelectionForClipboard();
+			if (data == null)
+				return;
+
+			_ = CopyToClipboardAsync(_cellControl, data);
+		}
+
+		private static async Task CopyToClipboardAsync(Control control, object data)
+		{
+			var clipboard = TopLevel.GetTopLevel(control)?.Clipboard;
+			if (clipboard == null)
+				return;
+
+			if (data is string text)
+				await clipboard.SetTextAsync(text);
+		}
+
 		public override void Render(object sender, object context)
 		{
 			if (context is not SKCanvas canvas)
@@ -86,6 +166,9 @@ namespace CellReport.Avalonia
 			BeginRender();
 
 			var control = sender as Control;
+			if (control == null)
+				return;
+
 			var bounds = control.Bounds.ToRecttangle();
 			RenderFrozenCells(context, bounds);
 

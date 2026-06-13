@@ -1,6 +1,8 @@
 ﻿using CellReport.Avalonia.ViewModels;
 using CellReport.Core;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Markup.Xaml;
 using System.ComponentModel;
 
@@ -11,8 +13,11 @@ namespace CellReport.Avalonia
 		private CellControl _cellControl;
 		private ColumnResizerControl _columnsResizer;
 		private RowResizerControl _rowsResizer;
-		private AvaloniaDisplayPresenter _presenter;
-		private PresentControlViewModel _viewModel;
+		private ScrollBar _hScrollBar;
+		private ScrollBar _vScrollBar;
+		private AvaloniaDisplayPresenter? _presenter;
+		private PresentControlViewModel? _viewModel;
+		private bool _updatingScrollBars;
 
 		public PresentControl()
 		{
@@ -20,13 +25,18 @@ namespace CellReport.Avalonia
 			_cellControl = this.Find<CellControl>("cellControl");
 			_columnsResizer = this.Find<ColumnResizerControl>("columnsResizer");
 			_rowsResizer = this.Find<RowResizerControl>("rowsResizer");
+			_hScrollBar = this.Find<ScrollBar>("hScrollBar");
+			_vScrollBar = this.Find<ScrollBar>("vScrollBar");
+
+			_hScrollBar.PropertyChanged += OnHorizontalScrollBarChanged;
+			_vScrollBar.PropertyChanged += OnVerticalScrollBarChanged;
 
 			DataContextChanged += OnPresentControlDataContextChanged;
 		}
 
-		public new AvaloniaDisplayPresenter Presenter => _presenter;
+		public new AvaloniaDisplayPresenter? Presenter => _presenter;
 
-		private void OnPresentControlDataContextChanged(object sender, System.EventArgs e)
+		private void OnPresentControlDataContextChanged(object? sender, System.EventArgs e)
 		{
 			if (_viewModel != null)
 				_viewModel.PropertyChanged -= OnViewModelPropertyChanged;
@@ -40,7 +50,7 @@ namespace CellReport.Avalonia
 				AttachManager(_viewModel.Manager);
 		}
 
-		private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+		private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == nameof(PresentControlViewModel.Manager) && _viewModel?.Manager != null)
 				AttachManager(_viewModel.Manager);
@@ -56,12 +66,49 @@ namespace CellReport.Avalonia
 			_cellControl.Presenter = _presenter;
 			_columnsResizer.Presenter = _presenter;
 			_rowsResizer.Presenter = _presenter;
-			Invalidate();
+			Update();
+		}
+
+		private void OnHorizontalScrollBarChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+		{
+			if (_updatingScrollBars || _presenter == null || e.Property != ScrollBar.ValueProperty)
+				return;
+
+			_presenter.LeftColumn = (int)_hScrollBar.Value;
+		}
+
+		private void OnVerticalScrollBarChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+		{
+			if (_updatingScrollBars || _presenter == null || e.Property != ScrollBar.ValueProperty)
+				return;
+
+			_presenter.TopRow = (int)_vScrollBar.Value;
 		}
 
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
+		}
+
+		internal void Update()
+		{
+			if (_presenter == null)
+				return;
+
+			_updatingScrollBars = true;
+			try
+			{
+				_hScrollBar.Maximum = _presenter.Manager.ColumnsCount;
+				_vScrollBar.Maximum = _presenter.Manager.RowsCount;
+				_hScrollBar.Value = _presenter.LeftColumn;
+				_vScrollBar.Value = _presenter.TopRow;
+			}
+			finally
+			{
+				_updatingScrollBars = false;
+			}
+
+			Invalidate();
 		}
 
 		internal void Invalidate()
