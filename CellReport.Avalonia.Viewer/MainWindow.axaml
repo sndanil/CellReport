@@ -3,10 +3,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:CellReport.Avalonia;assembly=CellReport.Avalonia"
+		xmlns:vm="clr-namespace:CellReport.Avalonia.Viewer.ViewModels"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="CellReport.Avalonia.Viewer.MainWindow"
-        Title="CellReport.Avalonia.Viewer">
+		x:DataType="vm:MainWindowViewModel"
+        Title="{Binding Title}"
+        Width="1024"
+        Height="768">
 
-	<local:PresentControl Name="presentControl" />
+	<local:PresentControl DataContext="{Binding PresentControl}" />
 
 </Window>

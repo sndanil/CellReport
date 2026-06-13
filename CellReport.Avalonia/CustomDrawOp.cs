@@ -2,55 +2,49 @@
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Platform;
-using Avalonia.Rendering.SceneGraph;
 using Avalonia.Skia;
+using Avalonia.Rendering.SceneGraph;
 using SkiaSharp;
 
 namespace CellReport.Avalonia
 {
-    internal class CustomDrawOp : ICustomDrawOperation
-    {
-        private readonly IImmutableGlyphRunReference _noSkia;
-        private readonly Control _control;
-        private readonly AvaloniaDisplayPresenter _presenter;
+	internal class CustomDrawOp : ICustomDrawOperation
+	{
+		private readonly Control _control;
+		private readonly AvaloniaDisplayPresenter _presenter;
 
-        public Rect Bounds { get; }
-        public bool HitTest(global::Avalonia.Point p) => false;
-        public bool Equals(ICustomDrawOperation other) => false;
+		public Rect Bounds { get; }
 
-        public CustomDrawOp(Rect bounds, GlyphRun noSkia, Control control, AvaloniaDisplayPresenter presenter)
-        {
-            _control = control;
-            _presenter = presenter;
-            Bounds = bounds;
-        }
+		public CustomDrawOp(Rect bounds, Control control, AvaloniaDisplayPresenter presenter)
+		{
+			_control = control;
+			_presenter = presenter;
+			Bounds = bounds;
+		}
 
-        public void Dispose()
-        {
-            // No-op
-        }
+		public bool HitTest(global::Avalonia.Point p) => false;
 
-        public void Render(ImmediateDrawingContext context)
-        {
-            var leaseFeature = context.TryGetFeature<ISkiaSharpApiLeaseFeature>();
-            if (leaseFeature == null)
-                context.DrawGlyphRun(Brushes.Black, _noSkia);
-            else
-            {
-                using var lease = leaseFeature.Lease();
-                var canvas = lease.SkCanvas;
-                canvas.Save();
+		public bool Equals(ICustomDrawOperation other) => false;
 
-                using (var paint = new SKPaint() { Color = SKColors.White, Style = SKPaintStyle.StrokeAndFill })
-                {
-                    canvas.DrawRect(_control.Bounds.WithX(0).WithY(0).ToSKRect(), paint);
-                }
+		public void Dispose()
+		{
+		}
 
-                if (_presenter != null)
-                    _presenter.Render(_control, canvas);
+		public void Render(ImmediateDrawingContext context)
+		{
+			var leaseFeature = context.TryGetFeature<ISkiaSharpApiLeaseFeature>();
+			if (leaseFeature == null)
+				return;
 
-                canvas.Restore();
-            }
-        }
-    }
+			using var lease = leaseFeature.Lease();
+			var canvas = lease.SkCanvas;
+			canvas.Save();
+
+			using (var paint = new SKPaint { Color = SKColors.White, Style = SKPaintStyle.Fill })
+				canvas.DrawRect(_control.Bounds.WithX(0).WithY(0).ToSKRect(), paint);
+
+			_presenter?.Render(_control, canvas);
+			canvas.Restore();
+		}
+	}
 }
