@@ -3,8 +3,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:local="clr-namespace:CellReport.Avalonia"
+             xmlns:vm="clr-namespace:CellReport.Avalonia.ViewModels"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="CellReport.Avalonia.PresentControl">
+             x:Class="CellReport.Avalonia.PresentControl"
+             x:DataType="vm:PresentControlViewModel">
 	<UserControl.Resources>
 		<SolidColorBrush x:Key="ResizersBackBrush" Color="#DFE3E8" />
 		<SolidColorBrush x:Key="ResizersTextBrush" Color="#363636" />
@@ -12,19 +15,163 @@
 		<FontFamily x:Key="ResizersFont">Microsoft Sans Serif</FontFamily>
 	</UserControl.Resources>
 
-	<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,*,Auto" Background="{DynamicResource ResizersBackBrush}">
-		<local:ColumnResizerControl Grid.Column="1" Grid.Row="0" Height="20" Name="columnsResizer" />
-		<local:RowResizerControl Grid.Column="0" Grid.Row="1" Width="30" Name="rowsResizer" />
-		<local:CellControl Grid.Column="1" Grid.Row="1" Name="cellControl" />
-		<ScrollBar Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"
-		           Name="vScrollBar"
-		           Orientation="Vertical"
-		           SmallChange="1"
-		           LargeChange="5" />
-		<ScrollBar Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"
-		           Name="hScrollBar"
-		           Orientation="Horizontal"
-		           SmallChange="1"
-		           LargeChange="5" />
+	<UserControl.Styles>
+		<Style Selector="Button.toolbar-icon /template/ ContentPresenter">
+			<Setter Property="RecognizesAccessKey" Value="False" />
+		</Style>
+		<Style Selector="ToggleButton.toolbar-icon /template/ ContentPresenter">
+			<Setter Property="RecognizesAccessKey" Value="False" />
+		</Style>
+
+		<Style Selector="Button.toolbar-icon">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Padding" Value="6" />
+			<Setter Property="CornerRadius" Value="4" />
+			<Setter Property="MinWidth" Value="32" />
+			<Setter Property="MinHeight" Value="32" />
+			<Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+		</Style>
+		<Style Selector="Button.toolbar-icon:pointerover">
+			<Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListLowBrush}" />
+		</Style>
+		<Style Selector="Button.toolbar-icon:pressed">
+			<Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListMediumBrush}" />
+		</Style>
+
+		<Style Selector="ToggleButton.toolbar-icon">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Padding" Value="6" />
+			<Setter Property="CornerRadius" Value="4" />
+			<Setter Property="MinWidth" Value="32" />
+			<Setter Property="MinHeight" Value="32" />
+			<Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+		</Style>
+		<Style Selector="ToggleButton.toolbar-icon:pointerover">
+			<Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListLowBrush}" />
+		</Style>
+		<Style Selector="ToggleButton.toolbar-icon:pressed">
+			<Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListMediumBrush}" />
+		</Style>
+		<Style Selector="ToggleButton.toolbar-icon:checked">
+			<Setter Property="Background" Value="{DynamicResource SystemAccentColorLight2}" />
+			<Setter Property="Foreground" Value="{DynamicResource SystemAccentColorDark1}" />
+		</Style>
+		<Style Selector="ToggleButton.toolbar-icon:checked:pointerover">
+			<Setter Property="Background" Value="{DynamicResource SystemAccentColorLight1}" />
+		</Style>
+	</UserControl.Styles>
+
+	<Grid RowDefinitions="Auto,*">
+		<Border Grid.Row="0"
+		        Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+		        BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+		        BorderThickness="0,0,0,1"
+		        IsVisible="{Binding ShowToolBar}">
+			<StackPanel Orientation="Horizontal" Margin="4,2" Spacing="2">
+				<ToggleButton Classes="toolbar-icon"
+				              IsChecked="{Binding ShowGridLines}"
+				              ToolTip.Tip="{Binding ShowGridLabel}">
+					<materialIcons:MaterialIcon Kind="Grid" Width="20" Height="20" />
+				</ToggleButton>
+				<ToggleButton Classes="toolbar-icon"
+				              IsChecked="{Binding ShowResizers}"
+				              ToolTip.Tip="{Binding ShowResizersLabel}">
+					<materialIcons:MaterialIcon Kind="TableHeadersEye" Width="20" Height="20" />
+				</ToggleButton>
+
+				<Border Width="1"
+				        Margin="6,4"
+				        Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+
+				<materialIcons:MaterialIcon Kind="FitToScreen"
+				                            Width="18"
+				                            Height="18"
+				                            Margin="4,0,2,0"
+				                            VerticalAlignment="Center"
+				                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+				<ComboBox Width="80"
+				          Margin="0,0,4,0"
+				          VerticalAlignment="Center"
+				          ItemsSource="{Binding ScaleOptions}"
+				          SelectedIndex="{Binding SelectedScaleIndex}" />
+
+				<Border Width="1"
+				        Margin="6,4"
+				        Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+
+				<Button Classes="toolbar-icon"
+				        Command="{Binding ExportExcelCommand}"
+				        ToolTip.Tip="{Binding ExportExcelLabel}">
+					<materialIcons:MaterialIcon Kind="FileExcelBox" Width="20" Height="20" />
+				</Button>
+				<Button Classes="toolbar-icon"
+				        Command="{Binding SaveCommand}"
+				        ToolTip.Tip="{Binding SaveLabel}">
+					<materialIcons:MaterialIcon Kind="ContentSave" Width="20" Height="20" />
+				</Button>
+
+				<Border Width="1"
+				        Margin="6,4"
+				        Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+
+				<Button Classes="toolbar-icon"
+				        Command="{Binding FindCommand}"
+				        ToolTip.Tip="{Binding FindLabel}">
+					<materialIcons:MaterialIcon Kind="Magnify" Width="20" Height="20" />
+				</Button>
+				<Button Classes="toolbar-icon"
+				        Command="{Binding GoToRowCommand}"
+				        ToolTip.Tip="{Binding GoToRowLabel}">
+					<materialIcons:MaterialIcon Kind="FormatListNumbered" Width="20" Height="20" />
+				</Button>
+
+				<Border Width="1"
+				        Margin="6,4"
+				        Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+
+				<ToggleButton Classes="toolbar-icon"
+				              IsChecked="{Binding ShowBookMarks}"
+				              ToolTip.Tip="{Binding BookMarksLabel}">
+					<materialIcons:MaterialIcon Kind="BookmarkOutline" Width="20" Height="20" />
+				</ToggleButton>
+			</StackPanel>
+		</Border>
+
+		<Grid Grid.Row="1" ColumnDefinitions="Auto,*">
+			<TreeView Grid.Column="0"
+			          Name="bookMarksTree"
+			          Width="220"
+			          Margin="0,0,4,0"
+			          IsVisible="{Binding ShowBookMarks}"
+			          ItemsSource="{Binding BookMarks}"
+			          SelectedItem="{Binding SelectedBookMark}">
+				<TreeView.ItemTemplate>
+					<TreeDataTemplate DataType="vm:BookMarkItemViewModel" ItemsSource="{Binding Children}">
+						<TextBlock Text="{Binding Header}" TextTrimming="CharacterEllipsis" />
+					</TreeDataTemplate>
+				</TreeView.ItemTemplate>
+			</TreeView>
+
+			<Grid Grid.Column="1"
+			      ColumnDefinitions="Auto,*,Auto"
+			      RowDefinitions="Auto,*,Auto"
+			      Background="{DynamicResource ResizersBackBrush}">
+				<local:ColumnResizerControl Grid.Column="1" Grid.Row="0" Height="20" Name="columnsResizer" />
+				<local:RowResizerControl Grid.Column="0" Grid.Row="1" Width="30" Name="rowsResizer" />
+				<local:CellControl Grid.Column="1" Grid.Row="1" Name="cellControl" />
+				<ScrollBar Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"
+				           Name="vScrollBar"
+				           Orientation="Vertical"
+				           SmallChange="1"
+				           LargeChange="5" />
+				<ScrollBar Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"
+				           Name="hScrollBar"
+				           Orientation="Horizontal"
+				           SmallChange="1"
+				           LargeChange="5" />
+			</Grid>
+		</Grid>
 	</Grid>
 </UserControl>

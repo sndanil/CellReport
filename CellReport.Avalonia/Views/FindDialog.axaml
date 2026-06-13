@@ -1,0 +1,121 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:CellReport.Avalonia.ViewModels"
+        xmlns:services="clr-namespace:CellReport.Avalonia.Services"
+        x:Class="CellReport.Avalonia.Views.FindDialog"
+        x:DataType="vm:FindDialogViewModel"
+        Title="{Binding Title}"
+        Width="480"
+        Height="360"
+        MinWidth="460"
+        MinHeight="320"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True">
+	<DockPanel Margin="12" LastChildFill="True">
+		<StackPanel DockPanel.Dock="Top" Spacing="10">
+			<Grid ColumnDefinitions="110,*" ColumnSpacing="8">
+				<TextBlock Grid.Column="0"
+				           Text="{Binding FindWhatLabel}"
+				           VerticalAlignment="Center" />
+				<ComboBox Grid.Column="1"
+				          MinHeight="28"
+				          HorizontalAlignment="Stretch"
+				          ItemsSource="{Binding SearchHistory}"
+				          Text="{Binding SearchText}"
+				          IsEditable="True" />
+			</Grid>
+
+			<Grid ColumnDefinitions="110,140,*" ColumnSpacing="8">
+				<TextBlock Grid.Column="0"
+				           Text="{Binding DirectionLabel}"
+				           VerticalAlignment="Center" />
+				<ComboBox Grid.Column="1"
+				          MinHeight="28"
+				          ItemsSource="{Binding DirectionOptions}"
+				          SelectedIndex="{Binding DirectionIndex}" />
+				<CheckBox Grid.Column="2"
+				          Content="{Binding MatchCaseLabel}"
+				          IsChecked="{Binding MatchCase}"
+				          VerticalAlignment="Center"
+				          Margin="8,0,0,0" />
+			</Grid>
+
+			<Grid ColumnDefinitions="110,140,*" ColumnSpacing="8">
+				<TextBlock Grid.Column="0"
+				           Text="{Binding LookOverLabel}"
+				           VerticalAlignment="Center" />
+				<ComboBox Grid.Column="1"
+				          MinHeight="28"
+				          ItemsSource="{Binding LookOverOptions}"
+				          SelectedIndex="{Binding LookOverIndex}" />
+			</Grid>
+
+			<StackPanel Orientation="Horizontal"
+			            HorizontalAlignment="Right"
+			            Spacing="8"
+			            Margin="0,4,0,8">
+				<Button MinWidth="100"
+				        Content="{Binding FindAllLabel}"
+				        Command="{Binding FindAllCommand}" />
+				<Button MinWidth="100"
+				        Content="{Binding FindNextLabel}"
+				        Command="{Binding FindNextCommand}"
+				        IsDefault="True" />
+				<Button MinWidth="80"
+				        Content="{Binding CloseLabel}"
+				        IsCancel="True" />
+			</StackPanel>
+		</StackPanel>
+
+		<TextBlock DockPanel.Dock="Bottom"
+		           Margin="0,6,0,0"
+		           Text="{Binding StatusMessage}"
+		           Foreground="DarkRed"
+		           IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+		<Grid RowDefinitions="Auto,*" Margin="0,4,0,0">
+			<Grid Grid.Row="0"
+			      ColumnDefinitions="*,56,56"
+			      Margin="4,0,4,4"
+			      ColumnSpacing="4">
+				<TextBlock Grid.Column="0"
+				           Text="{Binding ResultContentLabel}"
+				           FontWeight="SemiBold" />
+				<TextBlock Grid.Column="1"
+				           Text="{Binding ResultRowLabel}"
+				           FontWeight="SemiBold"
+				           HorizontalAlignment="Right" />
+				<TextBlock Grid.Column="2"
+				           Text="{Binding ResultColumnLabel}"
+				           FontWeight="SemiBold"
+				           HorizontalAlignment="Right" />
+			</Grid>
+
+			<Border Grid.Row="1"
+			        BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+			        BorderThickness="1">
+				<ListBox ItemsSource="{Binding Results}"
+				         SelectedItem="{Binding SelectedResult}">
+					<ListBox.ItemTemplate>
+						<DataTemplate DataType="services:FindResultItem">
+							<Grid ColumnDefinitions="*,56,56" ColumnSpacing="4" Margin="4,2">
+								<TextBlock Grid.Column="0"
+								           Text="{Binding Text}"
+								           TextTrimming="CharacterEllipsis"
+								           VerticalAlignment="Center" />
+								<TextBlock Grid.Column="1"
+								           Text="{Binding Row}"
+								           HorizontalAlignment="Right"
+								           VerticalAlignment="Center" />
+								<TextBlock Grid.Column="2"
+								           Text="{Binding Column}"
+								           HorizontalAlignment="Right"
+								           VerticalAlignment="Center" />
+							</Grid>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</Border>
+		</Grid>
+	</DockPanel>
+</Window>

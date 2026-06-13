@@ -54,6 +54,9 @@ namespace CellReport.Avalonia
 		{
 			if (e.PropertyName == nameof(PresentControlViewModel.Manager) && _viewModel?.Manager != null)
 				AttachManager(_viewModel.Manager);
+			else if (e.PropertyName is nameof(PresentControlViewModel.ShowResizers)
+			         or nameof(PresentControlViewModel.ShowToolBar))
+				UpdateResizerVisibility();
 		}
 
 		public void AttachManager(CellManager manager)
@@ -66,7 +69,16 @@ namespace CellReport.Avalonia
 			_cellControl.Presenter = _presenter;
 			_columnsResizer.Presenter = _presenter;
 			_rowsResizer.Presenter = _presenter;
+
+			_viewModel?.AttachPresenter(_presenter, this);
 			Update();
+		}
+
+		private void UpdateResizerVisibility()
+		{
+			var showResizers = _presenter != null && _presenter.ShowResizers && !CellManager.IsDesignMode;
+			_columnsResizer.IsVisible = showResizers;
+			_rowsResizer.IsVisible = showResizers;
 		}
 
 		private void OnHorizontalScrollBarChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
@@ -94,6 +106,9 @@ namespace CellReport.Avalonia
 		{
 			if (_presenter == null)
 				return;
+
+			_viewModel?.SyncFromPresenter();
+			UpdateResizerVisibility();
 
 			_updatingScrollBars = true;
 			try

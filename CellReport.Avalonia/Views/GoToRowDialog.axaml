@@ -1,0 +1,26 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:CellReport.Avalonia.ViewModels"
+        x:Class="CellReport.Avalonia.Views.GoToRowDialog"
+        x:DataType="vm:GoToRowDialogViewModel"
+        Title="{Binding Title}"
+        Width="280"
+        Height="160"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+	<Grid Margin="12" RowDefinitions="Auto,Auto" RowSpacing="12">
+		<StackPanel Spacing="4">
+			<TextBlock Text="{Binding RowNumberLabel}" />
+			<NumericUpDown Minimum="1"
+			               Maximum="{Binding MaxRow}"
+			               Value="{Binding SelectedRow}"
+			               FormatString="0"
+			               ParsingNumberStyle="Integer" />
+		</StackPanel>
+
+		<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+			<Button Content="{Binding OkLabel}" Command="{Binding ConfirmCommand}" IsDefault="True" Click="OnOkClick" />
+			<Button Content="{Binding CancelLabel}" IsCancel="True" Click="OnCancelClick" />
+		</StackPanel>
+	</Grid>
+</Window>
