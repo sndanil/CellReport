@@ -1,9 +1,12 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Input.Platform;
+using Avalonia.Media.Imaging;
 using CellReport.Core;
 using CellReport.Presenters;
 using SkiaSharp;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using AvaloniaInput = Avalonia.Input;
 
@@ -153,8 +156,19 @@ namespace CellReport.Avalonia
 			if (clipboard == null)
 				return;
 
-			if (data is string text)
-				await clipboard.SetTextAsync(text);
+			switch (data)
+			{
+				case string text:
+					await clipboard.SetTextAsync(text);
+					break;
+				case byte[] bytes when bytes.Length > 0:
+					using (var stream = new MemoryStream(bytes))
+					{
+						var bitmap = new Bitmap(stream);
+						await clipboard.SetBitmapAsync(bitmap);
+					}
+					break;
+			}
 		}
 
 		public override void Render(object sender, object context)
