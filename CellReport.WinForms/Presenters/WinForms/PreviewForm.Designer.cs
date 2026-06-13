@@ -28,159 +28,152 @@
         /// </summary>
         private void InitializeComponent()
         {
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PreviewForm));
-			this._previewToolStrip = new System.Windows.Forms.ToolStrip();
-			this._printButton = new System.Windows.Forms.ToolStripButton();
-			this._customPageButton = new System.Windows.Forms.ToolStripButton();
-			this._autoWidthButton = new System.Windows.Forms.ToolStripButton();
-			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this._firstPageButton = new System.Windows.Forms.ToolStripButton();
-			this._prevPageButton = new System.Windows.Forms.ToolStripButton();
-			this._currentPageTextBox = new System.Windows.Forms.ToolStripTextBox();
-			this._nextPageButton = new System.Windows.Forms.ToolStripButton();
-			this._lastPageButton = new System.Windows.Forms.ToolStripButton();
-			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-			this._previewControl = new System.Windows.Forms.PrintPreviewControl();
-			this._previewToolStrip.SuspendLayout();
-			this.SuspendLayout();
-			// 
-			// _previewToolStrip
-			// 
-			this._previewToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-			this._previewToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this._printButton,
-            this._customPageButton,
-            this._autoWidthButton,
-            this.toolStripSeparator1,
-            this._firstPageButton,
-            this._prevPageButton,
-            this._currentPageTextBox,
-            this._nextPageButton,
-            this._lastPageButton,
-            this.toolStripSeparator2});
-			this._previewToolStrip.Location = new System.Drawing.Point(0, 0);
-			this._previewToolStrip.Name = "_previewToolStrip";
-			this._previewToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-			this._previewToolStrip.Size = new System.Drawing.Size(510, 25);
-			this._previewToolStrip.TabIndex = 0;
-			// 
-			// _printButton
-			// 
-			this._printButton.Image = global::CellReport.WinForms.Properties.Resources.print;
-			this._printButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this._printButton.Name = "_printButton";
-			this._printButton.Size = new System.Drawing.Size(66, 22);
-			this._printButton.Text = "Печать";
-			this._printButton.ToolTipText = "Быстрая печать";
-			this._printButton.Click += new System.EventHandler(this._printButton_Click);
-			// 
-			// _customPageButton
-			// 
-			this._customPageButton.Image = global::CellReport.WinForms.Properties.Resources.print_setup;
-			this._customPageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this._customPageButton.Name = "_customPageButton";
-			this._customPageButton.Size = new System.Drawing.Size(148, 22);
-			this._customPageButton.Text = "Параметры страницы";
-			this._customPageButton.ToolTipText = "Параметры страницы";
-			this._customPageButton.Click += new System.EventHandler(this._customPageButton_Click);
-			// 
-			// _autoWidthButton
-			// 
-			this._autoWidthButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this._autoWidthButton.Image = global::CellReport.WinForms.Properties.Resources.document_arrow_leftright;
-			this._autoWidthButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this._autoWidthButton.Name = "_autoWidthButton";
-			this._autoWidthButton.Size = new System.Drawing.Size(23, 22);
-			this._autoWidthButton.ToolTipText = "Автоширина по странице";
-			this._autoWidthButton.Click += new System.EventHandler(this._autoWidthButton_Click);
-			// 
-			// toolStripSeparator1
-			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-			// 
-			// _firstPageButton
-			// 
-			this._firstPageButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this._firstPageButton.Image = global::CellReport.WinForms.Properties.Resources.nav_blue_left;
-			this._firstPageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this._firstPageButton.Name = "_firstPageButton";
-			this._firstPageButton.Size = new System.Drawing.Size(23, 22);
-			this._firstPageButton.ToolTipText = "Первая страница";
-			this._firstPageButton.Click += new System.EventHandler(this._firstPageButton_Click);
-			// 
-			// _prevPageButton
-			// 
-			this._prevPageButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this._prevPageButton.Image = global::CellReport.WinForms.Properties.Resources.arrow_left;
-			this._prevPageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this._prevPageButton.Name = "_prevPageButton";
-			this._prevPageButton.Size = new System.Drawing.Size(23, 22);
-			this._prevPageButton.Text = "toolStripButton2";
-			this._prevPageButton.ToolTipText = "Предыдущая страница";
-			this._prevPageButton.Click += new System.EventHandler(this._prevPageButton_Click);
-			// 
-			// _currentPageTextBox
-			// 
-			this._currentPageTextBox.Enabled = false;
-			this._currentPageTextBox.MaxLength = 3;
-			this._currentPageTextBox.Name = "_currentPageTextBox";
-			this._currentPageTextBox.Size = new System.Drawing.Size(30, 25);
-			this._currentPageTextBox.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			// 
-			// _nextPageButton
-			// 
-			this._nextPageButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this._nextPageButton.Image = global::CellReport.WinForms.Properties.Resources.arrow_right;
-			this._nextPageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this._nextPageButton.Name = "_nextPageButton";
-			this._nextPageButton.Size = new System.Drawing.Size(23, 22);
-			this._nextPageButton.Text = "toolStripButton3";
-			this._nextPageButton.ToolTipText = "Следующая страница";
-			this._nextPageButton.Click += new System.EventHandler(this._nextPageButton_Click);
-			// 
-			// _lastPageButton
-			// 
-			this._lastPageButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this._lastPageButton.Image = global::CellReport.WinForms.Properties.Resources.nav_blue_right;
-			this._lastPageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this._lastPageButton.Name = "_lastPageButton";
-			this._lastPageButton.Size = new System.Drawing.Size(23, 22);
-			this._lastPageButton.Text = "toolStripButton4";
-			this._lastPageButton.ToolTipText = "Последняя страница";
-			this._lastPageButton.Click += new System.EventHandler(this._lastPageButton_Click);
-			// 
-			// toolStripSeparator2
-			// 
-			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-			// 
-			// _previewControl
-			// 
-			this._previewControl.Columns = 3;
-			this._previewControl.Dock = System.Windows.Forms.DockStyle.Fill;
-			this._previewControl.Location = new System.Drawing.Point(0, 25);
-			this._previewControl.Name = "_previewControl";
-			this._previewControl.Rows = 3;
-			this._previewControl.Size = new System.Drawing.Size(510, 411);
-			this._previewControl.TabIndex = 5;
-			// 
-			// PreviewForm
-			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(510, 436);
-			this.Controls.Add(this._previewControl);
-			this.Controls.Add(this._previewToolStrip);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-			this.Name = "PreviewForm";
-			this.ShowInTaskbar = false;
-			this.Text = "Предварительный просмотр";
-			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-			this._previewToolStrip.ResumeLayout(false);
-			this._previewToolStrip.PerformLayout();
-			this.ResumeLayout(false);
-			this.PerformLayout();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PreviewForm));
+            _previewToolStrip = new System.Windows.Forms.ToolStrip();
+            _printButton = new System.Windows.Forms.ToolStripButton();
+            _customPageButton = new System.Windows.Forms.ToolStripButton();
+            _autoWidthButton = new System.Windows.Forms.ToolStripButton();
+            toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            _firstPageButton = new System.Windows.Forms.ToolStripButton();
+            _prevPageButton = new System.Windows.Forms.ToolStripButton();
+            _currentPageTextBox = new System.Windows.Forms.ToolStripTextBox();
+            _nextPageButton = new System.Windows.Forms.ToolStripButton();
+            _lastPageButton = new System.Windows.Forms.ToolStripButton();
+            toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            _previewControl = new System.Windows.Forms.PrintPreviewControl();
+            _previewToolStrip.SuspendLayout();
+            SuspendLayout();
+            // 
+            // _previewToolStrip
+            // 
+            _previewToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            _previewToolStrip.ImageScalingSize = new System.Drawing.Size(28, 28);
+            _previewToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { _printButton, _customPageButton, _autoWidthButton, toolStripSeparator1, _firstPageButton, _prevPageButton, _currentPageTextBox, _nextPageButton, _lastPageButton, toolStripSeparator2 });
+            _previewToolStrip.Location = new System.Drawing.Point(0, 0);
+            _previewToolStrip.Name = "_previewToolStrip";
+            _previewToolStrip.Padding = new System.Windows.Forms.Padding(0, 0, 4, 0);
+            _previewToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+            _previewToolStrip.Size = new System.Drawing.Size(1020, 40);
+            _previewToolStrip.TabIndex = 0;
+            // 
+            // _printButton
+            // 
+            _printButton.Image = CellReport.WinForms.Properties.Resources.print;
+            _printButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            _printButton.Name = "_printButton";
+            _printButton.Size = new System.Drawing.Size(114, 34);
+            _printButton.Text = "Печать";
+            _printButton.ToolTipText = "Быстрая печать";
+            _printButton.Click += _printButton_Click;
+            // 
+            // _customPageButton
+            // 
+            _customPageButton.Image = CellReport.WinForms.Properties.Resources.print_setup;
+            _customPageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            _customPageButton.Name = "_customPageButton";
+            _customPageButton.Size = new System.Drawing.Size(256, 34);
+            _customPageButton.Text = "Параметры страницы";
+            _customPageButton.ToolTipText = "Параметры страницы";
+            _customPageButton.Click += _customPageButton_Click;
+            // 
+            // _autoWidthButton
+            // 
+            _autoWidthButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            _autoWidthButton.Image = CellReport.WinForms.Properties.Resources.document_arrow_leftright;
+            _autoWidthButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            _autoWidthButton.Name = "_autoWidthButton";
+            _autoWidthButton.Size = new System.Drawing.Size(40, 34);
+            _autoWidthButton.ToolTipText = "Автоширина по странице";
+            _autoWidthButton.Click += _autoWidthButton_Click;
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new System.Drawing.Size(6, 40);
+            // 
+            // _firstPageButton
+            // 
+            _firstPageButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            _firstPageButton.Image = CellReport.WinForms.Properties.Resources.nav_blue_left;
+            _firstPageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            _firstPageButton.Name = "_firstPageButton";
+            _firstPageButton.Size = new System.Drawing.Size(40, 34);
+            _firstPageButton.ToolTipText = "Первая страница";
+            _firstPageButton.Click += _firstPageButton_Click;
+            // 
+            // _prevPageButton
+            // 
+            _prevPageButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            _prevPageButton.Image = CellReport.WinForms.Properties.Resources.arrow_left;
+            _prevPageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            _prevPageButton.Name = "_prevPageButton";
+            _prevPageButton.Size = new System.Drawing.Size(40, 34);
+            _prevPageButton.Text = "toolStripButton2";
+            _prevPageButton.ToolTipText = "Предыдущая страница";
+            _prevPageButton.Click += _prevPageButton_Click;
+            // 
+            // _currentPageTextBox
+            // 
+            _currentPageTextBox.Enabled = false;
+            _currentPageTextBox.MaxLength = 3;
+            _currentPageTextBox.Name = "_currentPageTextBox";
+            _currentPageTextBox.Size = new System.Drawing.Size(30, 40);
+            _currentPageTextBox.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // _nextPageButton
+            // 
+            _nextPageButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            _nextPageButton.Image = CellReport.WinForms.Properties.Resources.arrow_right;
+            _nextPageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            _nextPageButton.Name = "_nextPageButton";
+            _nextPageButton.Size = new System.Drawing.Size(40, 34);
+            _nextPageButton.Text = "toolStripButton3";
+            _nextPageButton.ToolTipText = "Следующая страница";
+            _nextPageButton.Click += _nextPageButton_Click;
+            // 
+            // _lastPageButton
+            // 
+            _lastPageButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            _lastPageButton.Image = CellReport.WinForms.Properties.Resources.nav_blue_right;
+            _lastPageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            _lastPageButton.Name = "_lastPageButton";
+            _lastPageButton.Size = new System.Drawing.Size(40, 34);
+            _lastPageButton.Text = "toolStripButton4";
+            _lastPageButton.ToolTipText = "Последняя страница";
+            _lastPageButton.Click += _lastPageButton_Click;
+            // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new System.Drawing.Size(6, 40);
+            // 
+            // _previewControl
+            // 
+            _previewControl.Columns = 3;
+            _previewControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            _previewControl.Location = new System.Drawing.Point(0, 40);
+            _previewControl.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
+            _previewControl.Name = "_previewControl";
+            _previewControl.Rows = 3;
+            _previewControl.Size = new System.Drawing.Size(1020, 966);
+            _previewControl.TabIndex = 5;
+            // 
+            // PreviewForm
+            // 
+            AutoScaleDimensions = new System.Drawing.SizeF(12F, 30F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(1020, 1006);
+            Controls.Add(_previewControl);
+            Controls.Add(_previewToolStrip);
+            Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
+            Name = "PreviewForm";
+            ShowInTaskbar = false;
+            Text = "Предварительный просмотр";
+            WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            _previewToolStrip.ResumeLayout(false);
+            _previewToolStrip.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
 
         }
 

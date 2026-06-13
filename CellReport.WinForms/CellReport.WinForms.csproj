@@ -3,8 +3,8 @@
 	<PropertyGroup>
 		<TargetFrameworks>net8.0-windows;net48</TargetFrameworks>
 		<UseWindowsForms>true</UseWindowsForms>
-		<AssemblyVersion>0.11.2509.1122</AssemblyVersion>
-		<FileVersion>0.11.2509.1122</FileVersion>
+		<AssemblyVersion>0.11.2605.0311</AssemblyVersion>
+		<FileVersion>0.11.2605.0311</FileVersion>
 		<Copyright>Copyright © Daniil Safonov 2011-2025</Copyright>
 		<Company>Daniil Safonov</Company>
 	</PropertyGroup>
