@@ -9,6 +9,7 @@ namespace CellReport.Avalonia.Services
 			LocalizationManager.AddDefaultString("Report/ExportToExcel", "Экспорт в Excel");
 			LocalizationManager.AddDefaultString("Report/ExportToHtml", "Экспорт в HTML");
 			LocalizationManager.AddDefaultString("Report/ExportToImage", "Экспорт в изображение");
+			LocalizationManager.AddDefaultString("Report/ExportToPdf", "Экспорт в PDF");
 			LocalizationManager.AddDefaultString("Report/Search", "Поиск");
 			LocalizationManager.AddDefaultString("Report/GoToLine", "Перейти к строке");
 			LocalizationManager.AddDefaultString("Report/Save", "Сохранить");

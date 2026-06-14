@@ -6,6 +6,7 @@ using CellReport.Export;
 using CellReport.Export.Excel;
 using CellReport.Export.Html;
 using CellReport.Export.Image;
+using CellReport.Export.Pdf;
 using CellReport.Presenters;
 using System;
 using System.ComponentModel;
@@ -41,6 +42,14 @@ namespace CellReport.Avalonia.Services
 				new[] { new FilePickerFileType("PNG") { Patterns = new[] { "*.png" } } },
 				openAfterExport);
 
+		public static Task ExportPdfAsync(Visual host, BaseDisplayPresenter presenter, bool openAfterExport)
+			=> ExportAsync(host, presenter,
+				() => new PdfExporter(presenter.Manager, presenter.Renderer, AvaloniaRenderer.GetTextSize),
+				ReportLocalization.Get("Report/ExportToPdf"),
+				presenter.Manager.Properties.DocumentName + ".pdf",
+				new[] { new FilePickerFileType("PDF") { Patterns = new[] { "*.pdf" } } },
+				openAfterExport);
+
 		public static async Task SaveAsync(Visual host, BaseDisplayPresenter presenter)
 		{
 			if (presenter?.Renderer == null)
@@ -59,6 +68,7 @@ namespace CellReport.Avalonia.Services
 					new FilePickerFileType("Excel") { Patterns = new[] { "*.xlsx" } },
 					new FilePickerFileType("HTML") { Patterns = new[] { "*.html" } },
 					new FilePickerFileType("PNG") { Patterns = new[] { "*.png" } },
+					new FilePickerFileType("PDF") { Patterns = new[] { "*.pdf" } },
 					new FilePickerFileType("CellReport template") { Patterns = new[] { "*.tcr" } },
 					new FilePickerFileType("CellReport package") { Patterns = new[] { "*.tcrp" } }
 				}
@@ -81,6 +91,10 @@ namespace CellReport.Avalonia.Services
 				else if (path.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
 				{
 					await ExportToFileAsync(new ImageExporter(presenter.Manager, presenter.Renderer), path, false);
+				}
+				else if (path.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+				{
+					await ExportToFileAsync(new PdfExporter(presenter.Manager, presenter.Renderer, AvaloniaRenderer.GetTextSize), path, false);
 				}
 				else
 				{

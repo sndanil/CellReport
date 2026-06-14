@@ -10,6 +10,7 @@ using CellReport.WinForms.Presenters.WinForms;
 using CellReport.Export.Excel;
 using CellReport.Export;
 using CellReport.Export.Html;
+using CellReport.Export.Pdf;
 using System.Drawing.Printing;
 
 namespace CellReport.Presenters.WinForms
@@ -62,6 +63,7 @@ namespace CellReport.Presenters.WinForms
 			Localization.LocalizationManager.AddDefaultString("Report/ShowHideGrid", "Отобразить или скрыть сетку");
 			Localization.LocalizationManager.AddDefaultString("Report/ShowHideHeaders", "Отобразить или скрыть заголовки строк и столбцов");
 			Localization.LocalizationManager.AddDefaultString("Report/ExportToExcel", "Экспорт в Excel");
+			Localization.LocalizationManager.AddDefaultString("Report/ExportToPdf", "Экспорт в PDF");
 			Localization.LocalizationManager.AddDefaultString("Report/Search", "Поиск");
 			Localization.LocalizationManager.AddDefaultString("Report/GoToLine", "Перейти к строке");
 			Localization.LocalizationManager.AddDefaultString("Report/Save", "Сохранить");
@@ -450,11 +452,17 @@ namespace CellReport.Presenters.WinForms
 			Export(exp, true);
 		}
 
+		private void ExportPdfButtonClick(object sender, EventArgs e)
+		{
+			var exp = PdfExporter.CreateVectorExporter(_presenter.Manager);
+			Export(exp, true);
+		}
+
 		private void SaveMenuItemClick(object sender, EventArgs e)
 		{
 			using (var dialog = new SaveFileDialog())
 			{
-				dialog.Filter = "Excel (*.xlsx)|*.xlsx|HTML (*.html)|*.html|CellReport шаблон (*.tcr)|*.tcr|CellReport шаблон пакетный (*.tcrp)|*.tcrp|All files (*.*)|*.*";
+				dialog.Filter = "Excel (*.xlsx)|*.xlsx|HTML (*.html)|*.html|PDF (*.pdf)|*.pdf|CellReport шаблон (*.tcr)|*.tcr|CellReport шаблон пакетный (*.tcrp)|*.tcrp|All files (*.*)|*.*";
 				dialog.FileName = _presenter.Manager.Properties.DocumentName + ".xlsx";
 				dialog.FilterIndex = 1;
 				if (dialog.ShowDialog() == DialogResult.OK)
@@ -466,6 +474,8 @@ namespace CellReport.Presenters.WinForms
 							exp = new ExcelExporter(_presenter.Manager, _presenter.Renderer);
 						else if (dialog.FileName.EndsWith(".html"))
 							exp = new HtmlExporter(_presenter.Manager, _presenter.Renderer);
+						else if (dialog.FileName.EndsWith(".pdf"))
+							exp = PdfExporter.CreateVectorExporter(_presenter.Manager);
 						if (exp != null)
 						{
 							using (var file = System.IO.File.Create(dialog.FileName))

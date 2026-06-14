@@ -131,6 +131,11 @@
 					<materialIcons:MaterialIcon Kind="LanguageHtml5" Width="20" Height="20" />
 				</Button>
 				<Button Classes="toolbar-icon"
+				        Command="{Binding ExportPdfCommand}"
+				        ToolTip.Tip="{Binding ExportPdfLabel}">
+					<materialIcons:MaterialIcon Kind="FilePdfBox" Width="20" Height="20" />
+				</Button>
+				<Button Classes="toolbar-icon"
 				        Command="{Binding SaveCommand}"
 				        ToolTip.Tip="{Binding SaveLabel}">
 					<materialIcons:MaterialIcon Kind="ContentSave" Width="20" Height="20" />
@@ -226,6 +231,8 @@
 							          Command="{Binding ExportExcelCommand}" />
 							<MenuItem Header="{Binding ExportHtmlLabel}"
 							          Command="{Binding ExportHtmlCommand}" />
+							<MenuItem Header="{Binding ExportPdfLabel}"
+							          Command="{Binding ExportPdfCommand}" />
 							<MenuItem Header="{Binding ExportImageLabel}"
 							          Command="{Binding ExportImageCommand}" />
 							<MenuItem Header="{Binding SaveLabel}"

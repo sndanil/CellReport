@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace CellReport.Avalonia
+namespace CellReport.Presenters.Skia
 {
 	internal static class SkiaChartRenderer
 	{
@@ -77,14 +77,17 @@ namespace CellReport.Avalonia
 
 		private static void DrawLegend(SKCanvas canvas, SKRect rect, List<ChartContent.Series> seriesList)
 		{
-			using var textPaint = CreateTextPaint(10);
+			using (var textPaint = CreateTextPaint(10))
+			{
 			var x = rect.Left + 4;
 			var y = rect.Top + 12;
 
 			for (int i = 0; i < seriesList.Count; i++)
 			{
-				using var colorPaint = new SKPaint { Style = SKPaintStyle.Fill, Color = Palette[i % Palette.Length] };
+				using (var colorPaint = new SKPaint { Style = SKPaintStyle.Fill, Color = Palette[i % Palette.Length] })
+				{
 				canvas.DrawRect(new SKRect(x, y - 8, x + 10, y + 2), colorPaint);
+				}
 				canvas.DrawText(seriesList[i].Name ?? string.Empty, x + 14, y, textPaint);
 				x += 80;
 				if (x > rect.Right - 60)
@@ -92,6 +95,7 @@ namespace CellReport.Avalonia
 					x = rect.Left + 4;
 					y += 14;
 				}
+			}
 			}
 		}
 
@@ -188,10 +192,10 @@ namespace CellReport.Avalonia
 			List<string> categories,
 			bool isHorizontal)
 		{
-			using var axisPaint = new SKPaint { Style = SKPaintStyle.Stroke, Color = SKColors.Gray, StrokeWidth = 1 };
-			using var gridPaint = new SKPaint { Style = SKPaintStyle.Stroke, Color = new SKColor(220, 220, 220), StrokeWidth = 1 };
-			using var textPaint = CreateTextPaint(9);
-
+			using (var axisPaint = new SKPaint { Style = SKPaintStyle.Stroke, Color = SKColors.Gray, StrokeWidth = 1 })
+			using (var gridPaint = new SKPaint { Style = SKPaintStyle.Stroke, Color = new SKColor(220, 220, 220), StrokeWidth = 1 })
+			using (var textPaint = CreateTextPaint(9))
+			{
 			canvas.DrawLine(chartArea.Left, chartArea.Top, chartArea.Left, chartArea.Bottom, axisPaint);
 			canvas.DrawLine(chartArea.Left, chartArea.Bottom, chartArea.Right, chartArea.Bottom, axisPaint);
 
@@ -234,6 +238,7 @@ namespace CellReport.Avalonia
 					canvas.DrawText(label, x - 8, chartArea.Bottom + 14, textPaint);
 				}
 			}
+			}
 		}
 
 		private static void DrawColumnSeries(
@@ -248,7 +253,8 @@ namespace CellReport.Avalonia
 			bool isHorizontal,
 			bool isStacked)
 		{
-			using var paint = new SKPaint { Style = SKPaintStyle.Fill, Color = color, IsAntialias = true };
+			using (var paint = new SKPaint { Style = SKPaintStyle.Fill, Color = color, IsAntialias = true })
+			{
 			var seriesCount = values.Length;
 			var slot = isHorizontal ? chartArea.Height / categoryCount : chartArea.Width / categoryCount;
 			var barSize = slot / (isStacked ? 1 : seriesCount) * 0.7f;
@@ -293,6 +299,7 @@ namespace CellReport.Avalonia
 					canvas.DrawRect(SKRect.Create(x, Math.Min(y0, y1), barSize, Math.Abs(y1 - y0)), paint);
 				}
 			}
+			}
 		}
 
 		private static void DrawBarSeries(
@@ -320,8 +327,9 @@ namespace CellReport.Avalonia
 			SKColor color,
 			bool isHorizontal)
 		{
-			using var paint = new SKPaint { Style = SKPaintStyle.Stroke, Color = color, StrokeWidth = 2, IsAntialias = true };
-			using var path = new SKPath();
+			using (var paint = new SKPaint { Style = SKPaintStyle.Stroke, Color = color, StrokeWidth = 2, IsAntialias = true })
+			using (var path = new SKPath())
+			{
 			var range = maxValue - minValue;
 			var count = Math.Max(categoryCount, 1);
 
@@ -349,6 +357,7 @@ namespace CellReport.Avalonia
 			}
 
 			canvas.DrawPath(path, paint);
+			}
 		}
 
 		private static void DrawAreaSeries(
@@ -361,8 +370,9 @@ namespace CellReport.Avalonia
 			SKColor color,
 			bool isHorizontal)
 		{
-			using var fillPaint = new SKPaint { Style = SKPaintStyle.Fill, Color = color.WithAlpha(120), IsAntialias = true };
-			using var path = new SKPath();
+			using (var fillPaint = new SKPaint { Style = SKPaintStyle.Fill, Color = color.WithAlpha(120), IsAntialias = true })
+			using (var path = new SKPath())
+			{
 			var range = maxValue - minValue;
 			var count = Math.Max(categoryCount, 1);
 
@@ -391,6 +401,7 @@ namespace CellReport.Avalonia
 
 			path.Close();
 			canvas.DrawPath(path, fillPaint);
+			}
 			DrawLineSeries(canvas, chartArea, values, categoryCount, minValue, maxValue, color, isHorizontal);
 		}
 
@@ -404,7 +415,8 @@ namespace CellReport.Avalonia
 			SKColor color,
 			bool isHorizontal)
 		{
-			using var paint = new SKPaint { Style = SKPaintStyle.Fill, Color = color, IsAntialias = true };
+			using (var paint = new SKPaint { Style = SKPaintStyle.Fill, Color = color, IsAntialias = true })
+			{
 			var range = maxValue - minValue;
 			var count = Math.Max(categoryCount, 1);
 
@@ -426,6 +438,7 @@ namespace CellReport.Avalonia
 				}
 
 				canvas.DrawCircle(x, y, 3, paint);
+			}
 			}
 		}
 
@@ -462,8 +475,9 @@ namespace CellReport.Avalonia
 			for (int i = 0; i < count; i++)
 			{
 				var sweep = (float)(values[i] / total * 360);
-				using var paint = new SKPaint { Style = SKPaintStyle.Fill, Color = Palette[i % Palette.Length], IsAntialias = true };
-				using var path = new SKPath();
+				using (var paint = new SKPaint { Style = SKPaintStyle.Fill, Color = Palette[i % Palette.Length], IsAntialias = true })
+				using (var path = new SKPath())
+				{
 				var rect = new SKRect(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
 
 				if (innerRadius > 0)
@@ -481,6 +495,7 @@ namespace CellReport.Avalonia
 				}
 
 				canvas.DrawPath(path, paint);
+				}
 				startAngle += sweep;
 			}
 		}

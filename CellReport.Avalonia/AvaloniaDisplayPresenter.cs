@@ -4,6 +4,7 @@ using Avalonia.Input.Platform;
 using Avalonia.Media.Imaging;
 using CellReport.Core;
 using CellReport.Presenters;
+using CellReport.Presenters.Skia;
 using SkiaSharp;
 using System;
 using System.IO;
