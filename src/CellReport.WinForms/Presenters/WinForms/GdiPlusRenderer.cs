@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using CellReport.Core;
 using CellReport.Core.Contents;
+using CellReport.Presenters.Skia;
+using SkiaSharp;
 using ZXing;
 using ZXing.OneD;
 using ZXing.PDF417;
@@ -263,36 +265,24 @@ namespace CellReport.Presenters.WinForms
 
 		public override void RenderChart(object context, Core.Rectangle rect, ChartContent content)
 		{
-#if NET48
+			if (context == null || content == null || rect.Width < 1 || rect.Height < 1)
+				return;
+
 			var g = (Graphics)context;
-			System.Windows.Forms.DataVisualization.Charting.Chart chart;
-			if (content.ChartObject == null)
+			var width = Math.Max(1, (int)Math.Ceiling(rect.Width));
+			var height = Math.Max(1, (int)Math.Ceiling(rect.Height));
+			var localRect = new Core.Rectangle(0, 0, width, height);
+
+			using (var surface = SKSurface.Create(new SKImageInfo(width, height)))
 			{
-				chart = new System.Windows.Forms.DataVisualization.Charting.Chart
-				{
-					AntiAliasing = System.Windows.Forms.DataVisualization.Charting.AntiAliasingStyles.All,
-					TextAntiAliasingQuality = System.Windows.Forms.DataVisualization.Charting.TextAntiAliasingQuality.High
-				};
-				var area = chart.ChartAreas.Add("Default");
-				area.Area3DStyle.Enable3D = content.Use3D;
-				if (content.ShowLegend)
-					chart.Legends.Add("Default");
-				foreach (var series in content.GetSeries())
-				{
-					var chartSeries = chart.Series.Add(series.Name);
-					chartSeries.ChartType = (System.Windows.Forms.DataVisualization.Charting.SeriesChartType)series.Type;
-					var xval = content.GetXDataBySeries(series);
-					var yval = content.GetYDataBySeries(series);
-					chartSeries.Points.DataBindXY(xval, yval);
-				}
+				SkiaChartRenderer.Render(surface.Canvas, localRect, content);
 
-				content.ChartObject = chart;
+				using (var image = surface.Snapshot())
+				using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
+				using (var stream = new MemoryStream(data.ToArray()))
+				using (var img = Image.FromStream(stream))
+					g.DrawImage(img, rect.ToRectangle());
 			}
-			else
-				chart = (System.Windows.Forms.DataVisualization.Charting.Chart)content.ChartObject;
-
-			chart.Printing.PrintPaint(g, rect.ToRectangle());
-#endif
 		}
 
 		protected Color GetColor(string color)

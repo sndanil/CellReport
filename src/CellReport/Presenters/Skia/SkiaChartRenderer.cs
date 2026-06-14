@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace CellReport.Presenters.Skia
 {
-	internal static class SkiaChartRenderer
+	public static class SkiaChartRenderer
 	{
 		private static readonly SKColor[] Palette =
 		{
