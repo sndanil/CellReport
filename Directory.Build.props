@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <Authors>Daniil Safonov</Authors>
+    <Company>Daniil Safonov</Company>
+    <Copyright>Copyright © Daniil Safonov 2011-2026</Copyright>
+    <RepositoryUrl>https://github.com/sndanil/CellReport</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <LangVersion>latest</LangVersion>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+</Project>

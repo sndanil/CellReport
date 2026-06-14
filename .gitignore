@@ -1,35 +1,57 @@
 
 #ignore thumbnails created by windows
 Thumbs.db
-#Ignore files build by Visual Studio
-Secure
-packages
-.vs
-.svn
-*.obj
-*.exe
-*.pdb
+
+# Visual Studio / Rider
+.vs/
+.idea/
 *.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Dd]ebug*/
+[Rr]elease*/
+_ReSharper*/
+*.cache
+*.ilk
+*.log
+*.lib
+*.sbr
+*.pdb
+*.ncb
 *.aps
 *.pch
 *.vspscc
 *_i.c
 *_p.c
 *.ncb
-*.suo
 *.tlb
 *.tlh
 *.bak
-*.cache
-*.ilk
-*.log
-[Bb]in
-[Dd]ebug*/
-*.lib
-*.sbr
-obj/
-[Rr]elease*/
-_ReSharper*/
-[Tt]est[Rr]esult*
+
+# NuGet
+packages/
+*.nupkg
+
+# Local / temp
+Temp/
+Release/
+Secure/
+.svn/
 Local.testsettings
 Performance.psess
+[Tt]est[Rr]esult*
+
+# OS
+.DS_Store
+
+# Keep build tools tracked (override *.exe rule below)
+!BuildNumerator.exe
+
+# Other binaries
+*.exe
+*.obj

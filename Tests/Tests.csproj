@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CellReport\CellReport.csproj" />
+    <ProjectReference Include="..\src\CellReport\CellReport.csproj" />
   </ItemGroup>
 
 </Project>
