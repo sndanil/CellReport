@@ -1,7 +1,6 @@
 <Project>
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
-    <SkipBuildNumerator>true</SkipBuildNumerator>
     <PackageOutputPath>$(MSBuildThisFileDirectory)artifacts\packages</PackageOutputPath>
   </PropertyGroup>
 
@@ -16,6 +15,6 @@
     <MSBuild
       Projects="@(PackProject)"
       Targets="Pack"
-      Properties="Configuration=$(Configuration);SkipBuildNumerator=$(SkipBuildNumerator);PackageOutputPath=$(PackageOutputPath)" />
+      Properties="Configuration=$(Configuration);PackageOutputPath=$(PackageOutputPath)" />
   </Target>
 </Project>

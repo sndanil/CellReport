@@ -51,9 +51,6 @@ Performance.psess
 # OS
 .DS_Store
 
-# Keep build tools tracked (override *.exe rule below)
-!BuildNumerator.exe
-
 # Other binaries
 *.exe
 *.obj

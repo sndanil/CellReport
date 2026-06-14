@@ -30,8 +30,4 @@
 		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 	</PropertyGroup>
 
-	<Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(SkipBuildNumerator)' != 'true'">
-		<Exec Command="$(SolutionDir)buildnumerator.exe $(ProjectDir) $(ConfigurationName)" />
-	</Target>
-
 </Project>

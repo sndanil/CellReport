@@ -21,7 +21,6 @@ $packArgs = @(
     'msbuild', (Join-Path $Root 'pack.proj')
     '-t:PackAll'
     "/p:Configuration=$Configuration"
-    '/p:SkipBuildNumerator=true'
     "/p:PackageOutputPath=$OutputPath"
 )
 

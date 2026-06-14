@@ -56,10 +56,6 @@
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(SkipBuildNumerator)' != 'true'">
-    <Exec Command="$(SolutionDir)buildnumerator.exe $(ProjectDir) $(ConfigurationName)" />
-  </Target>
-
   <ItemGroup>
     <ProjectReference Include="..\CellReport.WPF\CellReport.WPF.csproj" />
     <ProjectReference Include="..\CellReport\CellReport.csproj" />

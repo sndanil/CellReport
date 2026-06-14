@@ -11,10 +11,6 @@
     <Company>Daniil Safonov</Company>
   </PropertyGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(SkipBuildNumerator)' != 'true'">
-    <Exec Command="$(SolutionDir)buildnumerator.exe $(ProjectDir) $(ConfigurationName)" />
-  </Target>
-
   <ItemGroup>
     <ProjectReference Include="..\CellReport.WinForms\CellReport.WinForms.csproj" />
     <ProjectReference Include="..\CellReport\CellReport.csproj" />
