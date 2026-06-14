@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using CellReport.Core;
+﻿using CellReport.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CellReportTests
@@ -11,25 +7,21 @@ namespace CellReportTests
 	public class ManagerTests
 	{
 		[TestMethod]
-		public void Test1()
+		public void RowsAndColumns_CanBeExpanded()
 		{
-			CellManager manager = new CellManager(5, 5);
-
+			var manager = new CellManager(5, 5);
 			manager.RowsCount = 30;
 			manager.ColumnsCount = 20;
 
 			Assert.AreEqual(30, manager.RowsCount);
 			Assert.AreEqual(20, manager.ColumnsCount);
-
-			var cell = manager.CreateCell(29, 19);
-			Assert.IsNotNull(cell);
+			Assert.IsNotNull(manager.CreateCell(29, 19));
 		}
 
 		[TestMethod]
-		public void Test2()
+		public void CreateCell_SetsLocation()
 		{
-			CellManager manager = new CellManager(10, 10);
-
+			var manager = new CellManager(10, 10);
 			var cell = manager.CreateCell(2, 3);
 
 			Assert.AreEqual(2, cell.Location.Row);
@@ -37,45 +29,38 @@ namespace CellReportTests
 		}
 
 		[TestMethod]
-		public void Test3()
+		public void CellSpan_CoversMergedArea()
 		{
-			CellManager manager = new CellManager(10, 10);
-
+			var manager = new CellManager(10, 10);
 			var cell = manager.CreateCell(2, 3);
-			cell.Span = new CellSpan() { RowSpan = 2, ColSpan = 3 };
-
-			Assert.AreEqual(2, cell.Location.Row);
-			Assert.AreEqual(3, cell.Location.Column);
+			cell.Span = new CellSpan { RowSpan = 2, ColSpan = 3 };
 
 			Assert.AreEqual(2, cell.Span.RowSpan);
 			Assert.AreEqual(3, cell.Span.ColSpan);
-
-			Assert.IsTrue(object.ReferenceEquals(cell, manager.GetCell(2, 3)));
+			Assert.AreSame(cell, manager.GetCell(2, 3));
 
 			cell = manager.CreateCell(0, 0);
-			cell.Span = new CellSpan() { RowSpan = 1, ColSpan = 1 };
+			cell.Span = new CellSpan { RowSpan = 1, ColSpan = 1 };
 
-			Assert.IsTrue(object.ReferenceEquals(cell, manager.GetCell(0, 0)));
-			Assert.IsTrue(object.ReferenceEquals(cell, manager.GetCell(1, 1)));
-			Assert.IsTrue(object.ReferenceEquals(cell, manager.GetCell(0, 1)));
-			Assert.IsTrue(object.ReferenceEquals(cell, manager.GetCell(1, 0)));
+			Assert.AreSame(cell, manager.GetCell(0, 0));
+			Assert.AreSame(cell, manager.GetCell(1, 1));
+			Assert.AreSame(cell, manager.GetCell(0, 1));
+			Assert.AreSame(cell, manager.GetCell(1, 0));
 		}
 
 		[TestMethod]
-		public void Test4()
+		public void RowHeightAndColumnWidth_AffectCellSize()
 		{
-			CellManager manager = new CellManager(10, 10, 50, new Column());
-
+			var defaultColumn = new Column { Width = 50 };
+			var manager = new CellManager(10, 10, 50, defaultColumn);
 			var cell = manager.CreateCell(2, 3);
 			manager.SetRowHeight(2, 100);
 			manager.SetColumnWidth(3, 120);
 
 			Assert.AreEqual(100, cell.Size.Height);
 			Assert.AreEqual(120, cell.Size.Width);
-
 			Assert.AreEqual(100, manager.GetRowHeight(2));
 			Assert.AreEqual(120, manager.GetColumnWidth(3));
-
 			Assert.AreEqual(50, manager.GetRowHeight(1));
 			Assert.AreEqual(50, manager.GetColumnWidth(1));
 
@@ -86,60 +71,50 @@ namespace CellReportTests
 		}
 
 		[TestMethod]
-		public void Test5()
+		public void IdenticalStyles_AreInterned()
 		{
-			CellManager manager = new CellManager();
-
-			var style = new CellStyle("#FFFFFF");
+			var manager = new CellManager();
 			var cell = manager.CreateCell(2, 3);
-			cell.Style = style;
+			cell.Style = new CellStyle("#FFFFFF");
 
-			var style2 = new CellStyle("#FFFFFF");
 			var cell2 = manager.CreateCell(3, 3);
-			cell2.Style = style2;
+			cell2.Style = new CellStyle("#FFFFFF");
 
-			Assert.IsTrue(object.ReferenceEquals(cell.Style, cell2.Style));
+			Assert.AreSame(cell.Style, cell2.Style);
 		}
 
 		[TestMethod]
-		public void Test6()
+		public void RowsCount_CanGrowWithoutChangingColumns()
 		{
-			CellManager manager = new CellManager(5, 5);
-
+			var manager = new CellManager(5, 5);
 			manager.RowsCount = 30;
 
 			Assert.AreEqual(30, manager.RowsCount);
 			Assert.AreEqual(5, manager.ColumnsCount);
-
-			var cell = manager.CreateCell(29, 1);
-			Assert.IsNotNull(cell);
+			Assert.IsNotNull(manager.CreateCell(29, 1));
 		}
 
 		[TestMethod]
-		public void Test7()
+		public void ColumnsCount_CanGrowWithoutChangingRows()
 		{
-			CellManager manager = new CellManager(5, 5);
-
+			var manager = new CellManager(5, 5);
 			manager.ColumnsCount = 30;
 
 			Assert.AreEqual(5, manager.RowsCount);
 			Assert.AreEqual(30, manager.ColumnsCount);
-
-			var cell = manager.CreateCell(1, 29);
-			Assert.IsNotNull(cell);
+			Assert.IsNotNull(manager.CreateCell(1, 29));
 		}
 
 		[TestMethod]
-		public void Test8()
+		public void ActualDimensions_ReflectUsedCells()
 		{
-			CellManager manager = new CellManager(5, 5);
-
+			var manager = new CellManager(5, 5);
 			manager.ColumnsCount = 30;
 
 			Assert.AreEqual(0, manager.ActualColumnsCount);
 			Assert.AreEqual(0, manager.ActualRowsCount);
 
-			var cell = manager.CreateCell(1, 29);
+			manager.CreateCell(1, 29);
 
 			Assert.AreEqual(30, manager.ActualColumnsCount);
 			Assert.AreEqual(2, manager.ActualRowsCount);
