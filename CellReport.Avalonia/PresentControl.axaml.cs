@@ -48,6 +48,14 @@ namespace CellReport.Avalonia
 			_viewModel.PropertyChanged += OnViewModelPropertyChanged;
 			if (_viewModel.Manager != null)
 				AttachManager(_viewModel.Manager);
+
+			UpdateContextMenuDataContext();
+		}
+
+		private void UpdateContextMenuDataContext()
+		{
+			if (_cellControl.ContextMenu != null)
+				_cellControl.ContextMenu.DataContext = _viewModel;
 		}
 
 		private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)

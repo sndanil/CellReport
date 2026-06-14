@@ -5,8 +5,10 @@ using CellReport.Core;
 using CellReport.Export;
 using CellReport.Export.Excel;
 using CellReport.Export.Html;
+using CellReport.Export.Image;
 using CellReport.Presenters;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -15,30 +17,29 @@ namespace CellReport.Avalonia.Services
 {
 	public static class ReportExportService
 	{
-		public static async Task ExportExcelAsync(Visual host, BaseDisplayPresenter presenter, bool openAfterExport)
-		{
-			if (presenter?.Renderer == null)
-				return;
+		public static Task ExportExcelAsync(Visual host, BaseDisplayPresenter presenter, bool openAfterExport)
+			=> ExportAsync(host, presenter,
+				() => new ExcelExporter(presenter.Manager, presenter.Renderer),
+				ReportLocalization.Get("Report/ExportToExcel"),
+				presenter.Manager.Properties.DocumentName + ".xlsx",
+				new[] { new FilePickerFileType("Excel") { Patterns = new[] { "*.xlsx" } } },
+				openAfterExport);
 
-			var topLevel = TopLevel.GetTopLevel(host);
-			if (topLevel?.StorageProvider == null)
-				return;
+		public static Task ExportHtmlAsync(Visual host, BaseDisplayPresenter presenter, bool openAfterExport)
+			=> ExportAsync(host, presenter,
+				() => new HtmlExporter(presenter.Manager, presenter.Renderer),
+				ReportLocalization.Get("Report/ExportToHtml"),
+				presenter.Manager.Properties.DocumentName + ".html",
+				new[] { new FilePickerFileType("HTML") { Patterns = new[] { "*.html" } } },
+				openAfterExport);
 
-			var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
-			{
-				Title = ReportLocalization.Get("Report/ExportToExcel"),
-				SuggestedFileName = presenter.Manager.Properties.DocumentName + ".xlsx",
-				FileTypeChoices = new[]
-				{
-					new FilePickerFileType("Excel") { Patterns = new[] { "*.xlsx" } }
-				}
-			});
-
-			if (file == null)
-				return;
-
-			await ExportToFileAsync(new ExcelExporter(presenter.Manager, presenter.Renderer), file.Path.LocalPath, openAfterExport);
-		}
+		public static Task ExportImageAsync(Visual host, BaseDisplayPresenter presenter, bool openAfterExport)
+			=> ExportAsync(host, presenter,
+				() => new ImageExporter(presenter.Manager, presenter.Renderer),
+				ReportLocalization.Get("Report/ExportToImage"),
+				presenter.Manager.Properties.DocumentName + ".png",
+				new[] { new FilePickerFileType("PNG") { Patterns = new[] { "*.png" } } },
+				openAfterExport);
 
 		public static async Task SaveAsync(Visual host, BaseDisplayPresenter presenter)
 		{
@@ -57,6 +58,7 @@ namespace CellReport.Avalonia.Services
 				{
 					new FilePickerFileType("Excel") { Patterns = new[] { "*.xlsx" } },
 					new FilePickerFileType("HTML") { Patterns = new[] { "*.html" } },
+					new FilePickerFileType("PNG") { Patterns = new[] { "*.png" } },
 					new FilePickerFileType("CellReport template") { Patterns = new[] { "*.tcr" } },
 					new FilePickerFileType("CellReport package") { Patterns = new[] { "*.tcrp" } }
 				}
@@ -76,6 +78,10 @@ namespace CellReport.Avalonia.Services
 				{
 					await ExportToFileAsync(new HtmlExporter(presenter.Manager, presenter.Renderer), path, false);
 				}
+				else if (path.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+				{
+					await ExportToFileAsync(new ImageExporter(presenter.Manager, presenter.Renderer), path, false);
+				}
 				else
 				{
 					var template = new CellTemplate(presenter.Manager);
@@ -86,13 +92,57 @@ namespace CellReport.Avalonia.Services
 			{
 				await ShowMessageAsync(host, ReportLocalization.Get("Report/Export/Error"));
 			}
+			catch (Win32Exception)
+			{
+				await ShowMessageAsync(host, ReportLocalization.Get("Report/Export/OpenError"));
+			}
 		}
 
-		private static async Task ExportToFileAsync(BaseExporter exporter, string path, bool openAfterExport)
+		private static async Task ExportAsync(
+			Visual host,
+			BaseDisplayPresenter presenter,
+			Func<BaseExporter> createExporter,
+			string title,
+			string suggestedFileName,
+			FilePickerFileType[] fileTypes,
+			bool openAfterExport)
 		{
+			if (presenter?.Renderer == null)
+				return;
+
+			var topLevel = TopLevel.GetTopLevel(host);
+			if (topLevel?.StorageProvider == null)
+				return;
+
+			var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+			{
+				Title = title,
+				SuggestedFileName = suggestedFileName,
+				FileTypeChoices = fileTypes
+			});
+
+			if (file == null)
+				return;
+
 			try
 			{
-				await using var stream = File.Create(path);
+				await ExportToFileAsync(createExporter(), file.Path.LocalPath, openAfterExport);
+			}
+			catch (IOException)
+			{
+				await ShowMessageAsync(host, ReportLocalization.Get("Report/Export/Error"));
+			}
+			catch (Win32Exception)
+			{
+				await ShowMessageAsync(host, ReportLocalization.Get("Report/Export/OpenError"));
+			}
+		}
+
+		private static Task ExportToFileAsync(BaseExporter exporter, string path, bool openAfterExport)
+		{
+			return Task.Run(() =>
+			{
+				using var stream = File.Create(path);
 				exporter.ExportTo(stream);
 
 				if (openAfterExport)
@@ -101,16 +151,16 @@ namespace CellReport.Avalonia.Services
 					{
 						Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
 					}
+					catch (Win32Exception)
+					{
+						throw;
+					}
 					catch
 					{
-						// ignore open errors
+						// ignore other open errors
 					}
 				}
-			}
-			catch (IOException)
-			{
-				throw;
-			}
+			});
 		}
 
 		public static async Task ShowMessageAsync(Visual host, string message)

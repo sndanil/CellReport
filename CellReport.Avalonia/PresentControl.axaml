@@ -107,6 +107,11 @@
 					<materialIcons:MaterialIcon Kind="FileExcelBox" Width="20" Height="20" />
 				</Button>
 				<Button Classes="toolbar-icon"
+				        Command="{Binding ExportHtmlCommand}"
+				        ToolTip.Tip="{Binding ExportHtmlLabel}">
+					<materialIcons:MaterialIcon Kind="LanguageHtml5" Width="20" Height="20" />
+				</Button>
+				<Button Classes="toolbar-icon"
 				        Command="{Binding SaveCommand}"
 				        ToolTip.Tip="{Binding SaveLabel}">
 					<materialIcons:MaterialIcon Kind="ContentSave" Width="20" Height="20" />
@@ -160,7 +165,34 @@
 			      Background="{DynamicResource ResizersBackBrush}">
 				<local:ColumnResizerControl Grid.Column="1" Grid.Row="0" Height="20" Name="columnsResizer" />
 				<local:RowResizerControl Grid.Column="0" Grid.Row="1" Width="30" Name="rowsResizer" />
-				<local:CellControl Grid.Column="1" Grid.Row="1" Name="cellControl" />
+				<local:CellControl Grid.Column="1" Grid.Row="1" 
+								   Grid.ColumnSpan="2" Grid.RowSpan="2"
+								   Name="cellControl">
+					<local:CellControl.ContextMenu>
+						<ContextMenu x:DataType="vm:PresentControlViewModel">
+							<MenuItem Header="{Binding ShowGridLabel}"
+							          ToggleType="CheckBox"
+							          IsChecked="{Binding ShowGridLines}" />
+							<MenuItem Header="{Binding ShowResizersLabel}"
+							          ToggleType="CheckBox"
+							          IsChecked="{Binding ShowResizers}" />
+							<Separator />
+							<MenuItem Header="{Binding GoToRowLabel}"
+							          Command="{Binding GoToRowCommand}" />
+							<MenuItem Header="{Binding FindLabel}"
+							          Command="{Binding FindCommand}" />
+							<Separator />
+							<MenuItem Header="{Binding ExportExcelLabel}"
+							          Command="{Binding ExportExcelCommand}" />
+							<MenuItem Header="{Binding ExportHtmlLabel}"
+							          Command="{Binding ExportHtmlCommand}" />
+							<MenuItem Header="{Binding ExportImageLabel}"
+							          Command="{Binding ExportImageCommand}" />
+							<MenuItem Header="{Binding SaveLabel}"
+							          Command="{Binding SaveCommand}" />
+						</ContextMenu>
+					</local:CellControl.ContextMenu>
+				</local:CellControl>
 				<ScrollBar Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"
 				           Name="vScrollBar"
 				           Orientation="Vertical"

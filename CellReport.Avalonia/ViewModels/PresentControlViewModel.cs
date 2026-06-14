@@ -27,6 +27,10 @@ namespace CellReport.Avalonia.ViewModels
 
 		public string ExportExcelLabel => ReportLocalization.Get("Report/ExportToExcel");
 
+		public string ExportHtmlLabel => ReportLocalization.Get("Report/ExportToHtml");
+
+		public string ExportImageLabel => ReportLocalization.Get("Report/ExportToImage");
+
 		public string SaveLabel => ReportLocalization.Get("Report/Save");
 
 		public string FindLabel => ReportLocalization.Get("Report/Search");
@@ -194,6 +198,24 @@ namespace CellReport.Avalonia.ViewModels
 				return;
 
 			await ReportExportService.ExportExcelAsync(_host, _presenter, openAfterExport: true);
+		}
+
+		[RelayCommand]
+		private async Task ExportHtmlAsync()
+		{
+			if (_presenter == null || _host == null)
+				return;
+
+			await ReportExportService.ExportHtmlAsync(_host, _presenter, openAfterExport: true);
+		}
+
+		[RelayCommand]
+		private async Task ExportImageAsync()
+		{
+			if (_presenter == null || _host == null)
+				return;
+
+			await ReportExportService.ExportImageAsync(_host, _presenter, openAfterExport: true);
 		}
 
 		[RelayCommand]
