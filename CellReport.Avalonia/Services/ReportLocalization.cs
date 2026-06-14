@@ -39,6 +39,25 @@ namespace CellReport.Avalonia.Services
 			LocalizationManager.AddDefaultString("Report/GoToRow/Cancel", "Отмена");
 			LocalizationManager.AddDefaultString("Report/Export/Error", "Невозможно сохранить файл. Возможно, файл занят другим приложением.");
 			LocalizationManager.AddDefaultString("Report/Export/OpenError", "Не удалось запустить приложение, ассоциированное с файлом.");
+
+			LocalizationManager.AddDefaultString("Report/Print", "Печать");
+			LocalizationManager.AddDefaultString("Report/CustomPrint", "Выборочная печать");
+			LocalizationManager.AddDefaultString("Report/Preview", "Предварительный просмотр");
+			LocalizationManager.AddDefaultString("Report/PageSettings", "Параметры страницы");
+			LocalizationManager.AddDefaultString("Report/AutoFitPage", "Автоширина по странице");
+			LocalizationManager.AddDefaultString("Report/Print/NotSupported", "Печать поддерживается только в Windows.");
+			LocalizationManager.AddDefaultString("Report/Print/Printer", "Принтер");
+			LocalizationManager.AddDefaultString("Report/Print/PageRange", "Диапазон страниц");
+			LocalizationManager.AddDefaultString("Report/Print/From", "с");
+			LocalizationManager.AddDefaultString("Report/Print/To", "по");
+			LocalizationManager.AddDefaultString("Report/Print/OfPages", "из {0}");
+			LocalizationManager.AddDefaultString("Report/PageSetup/Margins", "Поля (мм)");
+			LocalizationManager.AddDefaultString("Report/PageSetup/Left", "Слева");
+			LocalizationManager.AddDefaultString("Report/PageSetup/Right", "Справа");
+			LocalizationManager.AddDefaultString("Report/PageSetup/Top", "Сверху");
+			LocalizationManager.AddDefaultString("Report/PageSetup/Bottom", "Снизу");
+			LocalizationManager.AddDefaultString("Report/PageSetup/Landscape", "Альбомная ориентация");
+			LocalizationManager.AddDefaultString("Report/PageSetup/Copies", "Копии");
 		}
 
 		public static string Get(string id) => LocalizationManager.GetLocalString(id);

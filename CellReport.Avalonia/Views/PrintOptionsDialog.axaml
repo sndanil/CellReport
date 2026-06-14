@@ -1,0 +1,54 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:CellReport.Avalonia.ViewModels"
+        x:Class="CellReport.Avalonia.Views.PrintOptionsDialog"
+        x:DataType="vm:PrintOptionsDialogViewModel"
+        Title="{Binding Title}"
+		SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+	<StackPanel Margin="16" Spacing="12">
+		<TextBlock Text="{Binding PrinterLabel}" FontWeight="SemiBold" />
+		<ComboBox ItemsSource="{Binding Printers}"
+		          SelectedItem="{Binding SelectedPrinter}"
+		          HorizontalAlignment="Stretch"
+		          MinHeight="28" />
+
+		<TextBlock Text="{Binding PageRangeLabel}" FontWeight="SemiBold" />
+		<Grid ColumnDefinitions="Auto,*,Auto,*,*,Auto" ColumnSpacing="8">
+			<TextBlock Grid.Column="0" Text="{Binding FromLabel}" VerticalAlignment="Center" />
+			<NumericUpDown Grid.Column="1"
+			                 Minimum="1"
+			                 Maximum="{Binding TotalPages}"
+			                 Value="{Binding FromPage}"
+			                 FormatString="0" />
+			<TextBlock Grid.Column="2" Text="{Binding ToLabel}" VerticalAlignment="Center" />
+			<NumericUpDown Grid.Column="3"
+			                 Minimum="1"
+			                 Maximum="{Binding TotalPages}"
+			                 Value="{Binding ToPage}"
+			                 FormatString="0" />
+			<TextBlock Grid.Column="5"
+			           Text="{Binding PageCountHint}"
+			           VerticalAlignment="Center"
+			           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+		</Grid>
+
+		<Grid ColumnDefinitions="Auto,150">
+			<TextBlock Text="{Binding CopiesLabel}" VerticalAlignment="Center" />
+			<NumericUpDown Minimum="1"
+			               Maximum="99"
+						   Grid.Column="1"
+			               Value="{Binding Copies}"
+			               FormatString="0" />
+		</Grid>
+
+		<StackPanel Orientation="Horizontal"
+		            HorizontalAlignment="Right"
+		            Spacing="8"
+		            Margin="0,8,0,0">
+			<Button Content="{Binding PrintLabel}" Click="OnPrintClick" IsDefault="True" MinWidth="100" />
+			<Button Content="{Binding CancelLabel}" Click="OnCancelClick" IsCancel="True" MinWidth="100" />
+		</StackPanel>
+	</StackPanel>
+</Window>

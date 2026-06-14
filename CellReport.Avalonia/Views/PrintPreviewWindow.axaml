@@ -1,0 +1,76 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:CellReport.Avalonia.ViewModels"
+        xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        x:Class="CellReport.Avalonia.Views.PrintPreviewWindow"
+        x:DataType="vm:PrintPreviewViewModel"
+        Title="{Binding Title}"
+        Width="900"
+        Height="700"
+        WindowStartupLocation="CenterOwner"
+        WindowState="Maximized">
+	<Grid RowDefinitions="Auto,*">
+		<Border Grid.Row="0"
+		        Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+		        BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+		        BorderThickness="0,0,0,1">
+			<StackPanel Orientation="Horizontal" Margin="6,4" Spacing="4">
+				<Button Command="{Binding PrintCommand}" ToolTip.Tip="{Binding PrintLabel}" Padding="8,4">
+					<StackPanel Orientation="Horizontal" Spacing="6">
+						<materialIcons:MaterialIcon Kind="Printer" Width="18" Height="18" />
+						<TextBlock Text="{Binding PrintLabel}" VerticalAlignment="Center" />
+					</StackPanel>
+				</Button>
+				<Button Command="{Binding PageSetupCommand}" ToolTip.Tip="{Binding PageSetupLabel}" Padding="8,4">
+					<StackPanel Orientation="Horizontal" Spacing="6">
+						<materialIcons:MaterialIcon Kind="FileSettingsOutline" Width="18" Height="18" />
+						<TextBlock Text="{Binding PageSetupLabel}" VerticalAlignment="Center" />
+					</StackPanel>
+				</Button>
+				<ToggleButton IsChecked="{Binding AutoFitWidth}" ToolTip.Tip="{Binding AutoFitLabel}" Padding="8,4">
+					<materialIcons:MaterialIcon Kind="FitToPageOutline" Width="18" Height="18" />
+				</ToggleButton>
+
+				<Border Width="1" Margin="6,2" Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+
+				<Button Command="{Binding FirstPageCommand}" ToolTip.Tip="Первая страница" Classes="toolbar-icon">
+					<materialIcons:MaterialIcon Kind="SkipPrevious" Width="20" Height="20" />
+				</Button>
+				<Button Command="{Binding PreviousPageCommand}" IsEnabled="{Binding CanGoPrevious}" ToolTip.Tip="Предыдущая" Classes="toolbar-icon">
+					<materialIcons:MaterialIcon Kind="ChevronLeft" Width="20" Height="20" />
+				</Button>
+				<TextBlock VerticalAlignment="Center" Margin="4,0">
+					<Run Text="{Binding CurrentPage}" />
+					<Run Text="/" />
+					<Run Text="{Binding TotalPages}" />
+				</TextBlock>
+				<Button Command="{Binding NextPageCommand}" IsEnabled="{Binding CanGoNext}" ToolTip.Tip="Следующая" Classes="toolbar-icon">
+					<materialIcons:MaterialIcon Kind="ChevronRight" Width="20" Height="20" />
+				</Button>
+				<Button Command="{Binding LastPageCommand}" ToolTip.Tip="Последняя страница" Classes="toolbar-icon">
+					<materialIcons:MaterialIcon Kind="SkipNext" Width="20" Height="20" />
+				</Button>
+
+				<Border Width="1" Margin="6,2" Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+
+				<ComboBox Width="90"
+				          ItemsSource="{Binding ZoomOptions}"
+				          SelectedIndex="{Binding SelectedZoomIndex}" />
+			</StackPanel>
+		</Border>
+
+		<ScrollViewer Grid.Row="1"
+		              HorizontalScrollBarVisibility="Auto"
+		              VerticalScrollBarVisibility="Auto"
+		              Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
+			<LayoutTransformControl HorizontalAlignment="Center" VerticalAlignment="Center" Margin="24">
+				<LayoutTransformControl.LayoutTransform>
+					<ScaleTransform ScaleX="{Binding ZoomScale}" ScaleY="{Binding ZoomScale}" />
+				</LayoutTransformControl.LayoutTransform>
+				<Image Source="{Binding PageImage}"
+				       Stretch="None"
+				       Margin="8" />
+			</LayoutTransformControl>
+		</ScrollViewer>
+	</Grid>
+</Window>

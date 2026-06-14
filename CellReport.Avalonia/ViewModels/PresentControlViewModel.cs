@@ -1,4 +1,5 @@
-using CellReport.Avalonia.Services;
+﻿using CellReport.Avalonia.Services;
+using CellReport.Avalonia.Views;
 using CellReport.Avalonia.Views;
 using CellReport.Core;
 using CellReport.Presenters;
@@ -44,6 +45,16 @@ namespace CellReport.Avalonia.ViewModels
 		public string ShowResizersLabel => ReportLocalization.Get("Report/ShowHideHeaders");
 
 		public string ScaleLabel => ReportLocalization.Get("Report/Scale");
+
+		public string PrintLabel => ReportLocalization.Get("Report/Print");
+
+		public string CustomPrintLabel => ReportLocalization.Get("Report/CustomPrint");
+
+		public string PreviewLabel => ReportLocalization.Get("Report/Preview");
+
+		public string PageSetupLabel => ReportLocalization.Get("Report/PageSettings");
+
+		public string AutoFitPageLabel => ReportLocalization.Get("Report/AutoFitPage");
 
 		public ObservableCollection<BookMarkItemViewModel> BookMarks { get; } = new();
 
@@ -225,6 +236,42 @@ namespace CellReport.Avalonia.ViewModels
 				return;
 
 			await ReportExportService.SaveAsync(_host, _presenter);
+		}
+
+		[RelayCommand]
+		private async Task PrintAsync()
+		{
+			if (_presenter == null || _host == null)
+				return;
+
+			await ReportPrintService.PrintAsync(_host, _presenter.Manager, custom: false);
+		}
+
+		[RelayCommand]
+		private async Task CustomPrintAsync()
+		{
+			if (_presenter == null || _host == null)
+				return;
+
+			await ReportPrintService.PrintAsync(_host, _presenter.Manager, custom: true);
+		}
+
+		[RelayCommand]
+		private async Task PrintPreviewAsync()
+		{
+			if (_presenter == null || _host == null)
+				return;
+
+			await ReportPrintService.ShowPreviewAsync(_host, _presenter.Manager);
+		}
+
+		[RelayCommand]
+		private async Task PageSetupAsync()
+		{
+			if (_presenter == null || _host == null)
+				return;
+
+			await ReportPrintService.ShowPageSetupAsync(_host, _presenter.Manager);
 		}
 
 		[RelayCommand]

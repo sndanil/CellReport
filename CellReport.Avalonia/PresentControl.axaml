@@ -70,6 +70,31 @@
 		        BorderThickness="0,0,0,1"
 		        IsVisible="{Binding ShowToolBar}">
 			<StackPanel Orientation="Horizontal" Margin="4,2" Spacing="2">
+				<Button Classes="toolbar-icon"
+				        Command="{Binding PrintCommand}"
+				        ToolTip.Tip="{Binding PrintLabel}">
+					<materialIcons:MaterialIcon Kind="Printer" Width="20" Height="20" />
+				</Button>
+				<Button Classes="toolbar-icon"
+				        Command="{Binding CustomPrintCommand}"
+				        ToolTip.Tip="{Binding CustomPrintLabel}">
+					<materialIcons:MaterialIcon Kind="PrinterSettings" Width="20" Height="20" />
+				</Button>
+				<Button Classes="toolbar-icon"
+				        Command="{Binding PrintPreviewCommand}"
+				        ToolTip.Tip="{Binding PreviewLabel}">
+					<materialIcons:MaterialIcon Kind="FileEyeOutline" Width="20" Height="20" />
+				</Button>
+				<Button Classes="toolbar-icon"
+				        Command="{Binding PageSetupCommand}"
+				        ToolTip.Tip="{Binding PageSetupLabel}">
+					<materialIcons:MaterialIcon Kind="FileSettingsOutline" Width="20" Height="20" />
+				</Button>
+
+				<Border Width="1"
+				        Margin="6,4"
+				        Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+
 				<ToggleButton Classes="toolbar-icon"
 				              IsChecked="{Binding ShowGridLines}"
 				              ToolTip.Tip="{Binding ShowGridLabel}">
@@ -85,12 +110,6 @@
 				        Margin="6,4"
 				        Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
 
-				<materialIcons:MaterialIcon Kind="FitToScreen"
-				                            Width="18"
-				                            Height="18"
-				                            Margin="4,0,2,0"
-				                            VerticalAlignment="Center"
-				                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
 				<ComboBox Width="80"
 				          Margin="0,0,4,0"
 				          VerticalAlignment="Center"
@@ -170,6 +189,11 @@
 								   Name="cellControl">
 					<local:CellControl.ContextMenu>
 						<ContextMenu x:DataType="vm:PresentControlViewModel">
+							<MenuItem Header="{Binding PrintLabel}" Command="{Binding PrintCommand}" />
+							<MenuItem Header="{Binding CustomPrintLabel}" Command="{Binding CustomPrintCommand}" />
+							<MenuItem Header="{Binding PreviewLabel}" Command="{Binding PrintPreviewCommand}" />
+							<MenuItem Header="{Binding PageSetupLabel}" Command="{Binding PageSetupCommand}" />
+							<Separator />
 							<MenuItem Header="{Binding ShowGridLabel}"
 							          ToggleType="CheckBox"
 							          IsChecked="{Binding ShowGridLines}" />
