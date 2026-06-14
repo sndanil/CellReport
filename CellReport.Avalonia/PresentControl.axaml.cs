@@ -30,6 +30,7 @@ namespace CellReport.Avalonia
 
 			_hScrollBar.PropertyChanged += OnHorizontalScrollBarChanged;
 			_vScrollBar.PropertyChanged += OnVerticalScrollBarChanged;
+			_columnsResizer.LayoutUpdated += OnColumnsResizerLayoutUpdated;
 
 			DataContextChanged += OnPresentControlDataContextChanged;
 		}
@@ -87,6 +88,17 @@ namespace CellReport.Avalonia
 			var showResizers = _presenter != null && _presenter.ShowResizers && !CellManager.IsDesignMode;
 			_columnsResizer.IsVisible = showResizers;
 			_rowsResizer.IsVisible = showResizers;
+			UpdateRowResizerTopOffset();
+		}
+
+		private void OnColumnsResizerLayoutUpdated(object? sender, System.EventArgs e)
+		{
+			UpdateRowResizerTopOffset();
+		}
+
+		private void UpdateRowResizerTopOffset()
+		{
+			_rowsResizer.TopOffset = _columnsResizer.IsVisible ? _columnsResizer.Bounds.Height : 0;
 		}
 
 		private void OnHorizontalScrollBarChanged(object? sender, AvaloniaPropertyChangedEventArgs e)

@@ -192,9 +192,18 @@ namespace CellReport.Avalonia
 
 			SetClip(context, clip);
 			RenderCellsRange(context, bounds, TopNoFrozenRow, Manager.RowsCount, LeftNoFrozenColumn, Manager.ColumnsCount);
-			ResetClipState(canvas);
 
-			RenderCurrentCell(context, bounds);
+			if (IsCurreCellInFrozen())
+			{
+				ResetClipState(canvas);
+				RenderCurrentCell(context, bounds);
+			}
+			else
+			{
+				RenderCurrentCell(context, bounds);
+				ResetClipState(canvas);
+			}
+
 			RenderSelection(context);
 			EndRender();
 		}
