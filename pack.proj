@@ -1,0 +1,21 @@
+<Project>
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+    <SkipBuildNumerator>true</SkipBuildNumerator>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)artifacts\packages</PackageOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackProject Include="src\CellReport\CellReport.csproj" />
+    <PackProject Include="src\CellReport.WinForms\CellReport.WinForms.csproj" />
+    <PackProject Include="src\CellReport.Avalonia\CellReport.Avalonia.csproj" />
+  </ItemGroup>
+
+  <Target Name="PackAll">
+    <MakeDir Directories="$(PackageOutputPath)" />
+    <MSBuild
+      Projects="@(PackProject)"
+      Targets="Pack"
+      Properties="Configuration=$(Configuration);SkipBuildNumerator=$(SkipBuildNumerator);PackageOutputPath=$(PackageOutputPath)" />
+  </Target>
+</Project>

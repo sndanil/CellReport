@@ -7,6 +7,10 @@
 		<FileVersion>0.11.2605.0311</FileVersion>
 		<Copyright>Copyright © Daniil Safonov 2011-2025</Copyright>
 		<Company>Daniil Safonov</Company>
+
+		<IsPackable>true</IsPackable>
+		<Description>Ядро CellReport: шаблоны, ReportDocument, экспорт, Skia-рендерер</Description>
+		<PackageTags>reporting;excel;pdf;html;skia;barcode;net48;net8</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -28,7 +32,7 @@
 		</Reference>
 	</ItemGroup>
 
-	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(SkipBuildNumerator)' != 'true'">
 		<Exec Command="$(SolutionDir)buildnumerator.exe $(ProjectDir) $(ConfigurationName)" />
 	</Target>
 

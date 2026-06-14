@@ -36,6 +36,8 @@ _ReSharper*/
 # NuGet
 packages/
 *.nupkg
+*.snupkg
+artifacts/
 
 # Local / temp
 Temp/

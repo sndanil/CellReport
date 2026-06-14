@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <Version Condition="'$(Version)' == '' and '$(AssemblyVersion)' != ''">$(AssemblyVersion)</Version>
+    <PackageOutputPath Condition="'$(PackageOutputPath)' == ''">$(MSBuildThisFileDirectory)artifacts\packages</PackageOutputPath>
+  </PropertyGroup>
+</Project>
