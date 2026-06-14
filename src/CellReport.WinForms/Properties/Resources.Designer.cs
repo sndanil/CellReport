@@ -109,7 +109,16 @@ namespace CellReport.WinForms.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-        
+
+        internal static System.Drawing.Bitmap pdf_2616_32
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("pdf-2616_32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
