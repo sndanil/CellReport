@@ -307,6 +307,14 @@ namespace CellReport.Avalonia
 			dc.Restore();
 		}
 
+		public override void RenderChart(object context, Rectangle rect, ChartContent content)
+		{
+			if (context is not SKCanvas canvas || rect.Width < 1 || rect.Height < 1 || content == null)
+				return;
+
+			SkiaChartRenderer.Render(canvas, rect, content);
+		}
+
 		public override void SetClip(object context, Rectangle rect)
 		{
 			if (context is not SKCanvas canvas)
