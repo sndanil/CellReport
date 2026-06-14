@@ -8,6 +8,7 @@
 		<Copyright>Copyright © Daniil Safonov 2011-2025</Copyright>
 		<Company>Daniil Safonov</Company>
 
+		<PackageId>KCellReport</PackageId>
 		<IsPackable>true</IsPackable>
 		<Description>Ядро CellReport: шаблоны, ReportDocument, экспорт, Skia-рендерер</Description>
 		<PackageTags>reporting;excel;pdf;html;skia;barcode;net48;net8</PackageTags>

@@ -8,6 +8,7 @@
 		<Copyright>Copyright © Daniil Safonov 2011-2025</Copyright>
 		<Company>Daniil Safonov</Company>
 
+		<PackageId>KCellReport.WinForms</PackageId>
 		<IsPackable>true</IsPackable>
 		<Description>CellReport для WinForms: просмотр, печать и GDI+-рендерер</Description>
 		<PackageTags>reporting;winforms;printing;net48;net8</PackageTags>
