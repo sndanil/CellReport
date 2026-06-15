@@ -8,10 +8,9 @@
 
 | Пакет | Назначение |
 |-------|------------|
-| [CellReport](https://www.nuget.org/packages/CellReport) | Ядро: шаблоны, `ReportDocument`, экспорт, Skia-рендерер |
-| [CellReport.WinForms](https://www.nuget.org/packages/CellReport.WinForms) | Просмотр и печать в WinForms |
-| [CellReport.WPF](https://www.nuget.org/packages/CellReport.WPF) | Элементы управления для WPF |
-| [CellReport.Avalonia](https://www.nuget.org/packages/CellReport.Avalonia) | MVVM-компоненты для Avalonia 12 |
+| [CellReport](https://www.nuget.org/packages/KCellReport) | Ядро: шаблоны, `ReportDocument`, экспорт, Skia-рендерер |
+| [CellReport.WinForms](https://www.nuget.org/packages/KCellReport.WinForms) | Просмотр и печать в WinForms |
+| [CellReport.Avalonia](https://www.nuget.org/packages/KCellReport.Avalonia) | MVVM-компоненты для Avalonia 12 |
 
 ## Структура репозитория
 
