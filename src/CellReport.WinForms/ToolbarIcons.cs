@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -6,15 +6,11 @@ using System.Reflection;
 
 namespace CellReport.WinForms
 {
-    internal static class ToolbarIcons
+    public static class ToolbarIcons
     {
         private const string ResourcePrefix = "CellReport.WinForms.Assets.Icons.";
 
         private static readonly Assembly Assembly = typeof(ToolbarIcons).Assembly;
-        private static readonly Dictionary<string, Bitmap> BitmapCache =
-            new Dictionary<string, Bitmap>(StringComparer.OrdinalIgnoreCase);
-
-        private static Icon _appIcon;
 
         public static Bitmap ArrowLeft => GetBitmap("arrow_left.png");
         public static Bitmap ArrowRight => GetBitmap("arrow_right.png");
@@ -32,18 +28,12 @@ namespace CellReport.WinForms
         public static Bitmap ShowColumns16x16 => GetBitmap("show_columns_16x16.png");
         public static Bitmap ShowGrid16x16 => GetBitmap("show_grid_16x16.png");
 
-        public static Icon App => _appIcon ?? (_appIcon = LoadIcon("app.ico"));
+        public static Icon App => LoadIcon("app.ico");
 
         private static Bitmap GetBitmap(string fileName)
         {
-            if (!BitmapCache.TryGetValue(fileName, out var bitmap))
-            {
-                using (var stream = OpenStream(fileName))
-                    bitmap = new Bitmap(stream);
-                BitmapCache[fileName] = bitmap;
-            }
-
-            return bitmap;
+            using (var stream = OpenStream(fileName))
+                return new Bitmap(stream);
         }
 
         private static Icon LoadIcon(string fileName)
