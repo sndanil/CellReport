@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net8.0-windows;net48</TargetFrameworks>
+		<TargetFrameworks>net48</TargetFrameworks>
 		<UseWindowsForms>true</UseWindowsForms>
 		<AssemblyVersion>0.11.2605.0311</AssemblyVersion>
 		<FileVersion>0.11.2605.0311</FileVersion>
@@ -22,13 +22,5 @@
 	<ItemGroup>
 		<ProjectReference Include="..\CellReport\CellReport.csproj" />
 	</ItemGroup>
-
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net48'">
-		<PackageReference Include="System.Resources.Extensions" Version="9.0.1" />
-	</ItemGroup>
-
-	<PropertyGroup Condition=" '$(TargetFramework)' == 'net48' ">
-		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
-	</PropertyGroup>
 
 </Project>
