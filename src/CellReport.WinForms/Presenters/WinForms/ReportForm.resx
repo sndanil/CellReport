@@ -117,29 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAD/////////////////////////////////////////////////////////////////////////////
-        /////////////++kAP/vpAD/76QA/++kAP//////ALp//wC6f/8Aun//ALp///////8Aun//ALp//wC6
-        f/8Aun/////////////vpAD/76QA/++kAP/vpAD//////wC6f/8Aun//ALp//wC6f///////ALp//wC6
-        f/8Aun//ALp/////////////76QA/++kAP/vpAD/76QA//////8Aun//ALp//wC6f/8Aun///////wC6
-        f/8Aun//ALp//wC6f////////////++kAP/vpAD/76QA/++kAP//////ALp//wC6f/8Aun//ALp/////
-        //8Aun//ALp//wC6f/8Aun//////////////////////////////////////////////////////////
-        ////////////////////////////////////////IlDy/yJQ8v8iUPL/IlDy///////vpAD/76QA/++k
-        AP/vpAD//////wC6f/8Aun//ALp//wC6f////////////yJQ8v8iUPL/IlDy/yJQ8v//////76QA/++k
-        AP/vpAD/76QA//////8Aun//ALp//wC6f/8Aun////////////8iUPL/IlDy/yJQ8v8iUPL//////++k
-        AP/vpAD/76QA/++kAP//////ALp//wC6f/8Aun//ALp/////////////IlDy/yJQ8v8iUPL/IlDy////
-        ///vpAD/76QA/++kAP/vpAD//////wC6f/8Aun//ALp//wC6f///////////////////////////////
-        //////////////////////////////////////////////////////////////////8iUPL/IlDy/yJQ
-        8v8iUPL//////yJQ8v8iUPL/IlDy/yJQ8v//////76QA/++kAP/vpAD/76QA////////////IlDy/yJQ
-        8v8iUPL/IlDy//////8iUPL/IlDy/yJQ8v8iUPL//////++kAP/vpAD/76QA/++kAP///////////yJQ
-        8v8iUPL/IlDy/yJQ8v//////IlDy/yJQ8v8iUPL/IlDy///////vpAD/76QA/++kAP/vpAD/////////
-        //8iUPL/IlDy/yJQ8v8iUPL//////yJQ8v8iUPL/IlDy/yJQ8v//////76QA/++kAP/vpAD/76QA////
-        ////////////////////////////////////////////////////////////////////////////////
-        ////////AACsQQAArEEAAKxBAACsQQAArEEAAKxBAACsQQAArEEAAKxBAACsQQAArEEAAKxBAACsQQAA
-        rEEAAKxBAACsQQ==
-</value>
-  </data>
 </root>

@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PreviewForm));
             _previewToolStrip = new System.Windows.Forms.ToolStrip();
             _printButton = new System.Windows.Forms.ToolStripButton();
             _customPageButton = new System.Windows.Forms.ToolStripButton();
@@ -58,7 +57,7 @@
             // 
             // _printButton
             // 
-            _printButton.Image = CellReport.WinForms.Properties.Resources.print;
+            _printButton.Image = CellReport.WinForms.ToolbarIcons.Print;
             _printButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             _printButton.Name = "_printButton";
             _printButton.Size = new System.Drawing.Size(114, 34);
@@ -68,7 +67,7 @@
             // 
             // _customPageButton
             // 
-            _customPageButton.Image = CellReport.WinForms.Properties.Resources.print_setup;
+            _customPageButton.Image = CellReport.WinForms.ToolbarIcons.PrintSetup;
             _customPageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             _customPageButton.Name = "_customPageButton";
             _customPageButton.Size = new System.Drawing.Size(256, 34);
@@ -79,7 +78,7 @@
             // _autoWidthButton
             // 
             _autoWidthButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            _autoWidthButton.Image = CellReport.WinForms.Properties.Resources.document_arrow_leftright;
+            _autoWidthButton.Image = CellReport.WinForms.ToolbarIcons.DocumentArrowLeftright;
             _autoWidthButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             _autoWidthButton.Name = "_autoWidthButton";
             _autoWidthButton.Size = new System.Drawing.Size(40, 34);
@@ -94,7 +93,7 @@
             // _firstPageButton
             // 
             _firstPageButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            _firstPageButton.Image = CellReport.WinForms.Properties.Resources.nav_blue_left;
+            _firstPageButton.Image = CellReport.WinForms.ToolbarIcons.NavBlueLeft;
             _firstPageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             _firstPageButton.Name = "_firstPageButton";
             _firstPageButton.Size = new System.Drawing.Size(40, 34);
@@ -104,7 +103,7 @@
             // _prevPageButton
             // 
             _prevPageButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            _prevPageButton.Image = CellReport.WinForms.Properties.Resources.arrow_left;
+            _prevPageButton.Image = CellReport.WinForms.ToolbarIcons.ArrowLeft;
             _prevPageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             _prevPageButton.Name = "_prevPageButton";
             _prevPageButton.Size = new System.Drawing.Size(40, 34);
@@ -123,7 +122,7 @@
             // _nextPageButton
             // 
             _nextPageButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            _nextPageButton.Image = CellReport.WinForms.Properties.Resources.arrow_right;
+            _nextPageButton.Image = CellReport.WinForms.ToolbarIcons.ArrowRight;
             _nextPageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             _nextPageButton.Name = "_nextPageButton";
             _nextPageButton.Size = new System.Drawing.Size(40, 34);
@@ -134,7 +133,7 @@
             // _lastPageButton
             // 
             _lastPageButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            _lastPageButton.Image = CellReport.WinForms.Properties.Resources.nav_blue_right;
+            _lastPageButton.Image = CellReport.WinForms.ToolbarIcons.NavBlueRight;
             _lastPageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             _lastPageButton.Name = "_lastPageButton";
             _lastPageButton.Size = new System.Drawing.Size(40, 34);
@@ -167,6 +166,7 @@
             Controls.Add(_previewToolStrip);
             Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             Name = "PreviewForm";
+            Icon = CellReport.WinForms.ToolbarIcons.App;
             ShowInTaskbar = false;
             Text = "Предварительный просмотр";
             WindowState = System.Windows.Forms.FormWindowState.Maximized;

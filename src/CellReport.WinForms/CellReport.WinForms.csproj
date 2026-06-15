@@ -23,4 +23,8 @@
 		<ProjectReference Include="..\CellReport\CellReport.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<EmbeddedResource Include="Assets\Icons\**\*" />
+	</ItemGroup>
+
 </Project>

@@ -135,7 +135,7 @@ namespace CellReport.Presenters.WinForms
             // _printCntxMenuItem
             // 
             _printCntxMenuItem.DropDownItems.AddRange(new ToolStripItem[] { _customPrintCntxMenuItem, _previewCntxMenuItem, _customPageCntxMenuItem, _autoWidthCntxMenuItem });
-            _printCntxMenuItem.Image = CellReport.WinForms.Properties.Resources.print;
+            _printCntxMenuItem.Image = CellReport.WinForms.ToolbarIcons.Print;
             _printCntxMenuItem.Name = "_printCntxMenuItem";
             _printCntxMenuItem.Size = new System.Drawing.Size(348, 36);
             _printCntxMenuItem.Text = "#Report/Print";
@@ -143,7 +143,7 @@ namespace CellReport.Presenters.WinForms
             // 
             // _customPrintCntxMenuItem
             // 
-            _customPrintCntxMenuItem.Image = CellReport.WinForms.Properties.Resources.print;
+            _customPrintCntxMenuItem.Image = CellReport.WinForms.ToolbarIcons.Print;
             _customPrintCntxMenuItem.Name = "_customPrintCntxMenuItem";
             _customPrintCntxMenuItem.ShortcutKeys = Keys.Control | Keys.P;
             _customPrintCntxMenuItem.Size = new System.Drawing.Size(397, 40);
@@ -152,7 +152,7 @@ namespace CellReport.Presenters.WinForms
             // 
             // _previewCntxMenuItem
             // 
-            _previewCntxMenuItem.Image = CellReport.WinForms.Properties.Resources.print_preview;
+            _previewCntxMenuItem.Image = CellReport.WinForms.ToolbarIcons.PrintPreview;
             _previewCntxMenuItem.Name = "_previewCntxMenuItem";
             _previewCntxMenuItem.Size = new System.Drawing.Size(397, 40);
             _previewCntxMenuItem.Text = "#Report/Preview";
@@ -160,7 +160,7 @@ namespace CellReport.Presenters.WinForms
             // 
             // _customPageCntxMenuItem
             // 
-            _customPageCntxMenuItem.Image = CellReport.WinForms.Properties.Resources.print_setup;
+            _customPageCntxMenuItem.Image = CellReport.WinForms.ToolbarIcons.PrintSetup;
             _customPageCntxMenuItem.Name = "_customPageCntxMenuItem";
             _customPageCntxMenuItem.Size = new System.Drawing.Size(397, 40);
             _customPageCntxMenuItem.Text = "#Report/PageSettings";
@@ -180,7 +180,7 @@ namespace CellReport.Presenters.WinForms
             // 
             // _showGridMenuItem
             // 
-            _showGridMenuItem.Image = CellReport.WinForms.Properties.Resources.show_grid_16x16;
+            _showGridMenuItem.Image = CellReport.WinForms.ToolbarIcons.ShowGrid16x16;
             _showGridMenuItem.Name = "_showGridMenuItem";
             _showGridMenuItem.Size = new System.Drawing.Size(348, 36);
             _showGridMenuItem.Text = "#Report/ShowHideGrid";
@@ -188,7 +188,7 @@ namespace CellReport.Presenters.WinForms
             // 
             // _showResizersMenuItem
             // 
-            _showResizersMenuItem.Image = CellReport.WinForms.Properties.Resources.show_columns_16x16;
+            _showResizersMenuItem.Image = CellReport.WinForms.ToolbarIcons.ShowColumns16x16;
             _showResizersMenuItem.Name = "_showResizersMenuItem";
             _showResizersMenuItem.Size = new System.Drawing.Size(348, 36);
             _showResizersMenuItem.Text = "#Report/ShowHideHeaders";
@@ -204,7 +204,7 @@ namespace CellReport.Presenters.WinForms
             // 
             // _findMenuItem
             // 
-            _findMenuItem.Image = CellReport.WinForms.Properties.Resources.find;
+            _findMenuItem.Image = CellReport.WinForms.ToolbarIcons.Find;
             _findMenuItem.Name = "_findMenuItem";
             _findMenuItem.ShortcutKeys = Keys.Control | Keys.F;
             _findMenuItem.Size = new System.Drawing.Size(348, 36);
@@ -213,7 +213,7 @@ namespace CellReport.Presenters.WinForms
             // 
             // _exportExcelMenuItem
             // 
-            _exportExcelMenuItem.Image = CellReport.WinForms.Properties.Resources.excel2013_16;
+            _exportExcelMenuItem.Image = CellReport.WinForms.ToolbarIcons.Excel2013_16;
             _exportExcelMenuItem.Name = "_exportExcelMenuItem";
             _exportExcelMenuItem.Size = new System.Drawing.Size(348, 36);
             _exportExcelMenuItem.Text = "#Report/ExportToExcel";
@@ -221,7 +221,7 @@ namespace CellReport.Presenters.WinForms
             // 
             // _exportPdfMenuItem
             // 
-            _exportPdfMenuItem.Image = CellReport.WinForms.Properties.Resources.print_preview;
+            _exportPdfMenuItem.Image = CellReport.WinForms.ToolbarIcons.PrintPreview;
             _exportPdfMenuItem.Name = "_exportPdfMenuItem";
             _exportPdfMenuItem.Size = new System.Drawing.Size(348, 36);
             _exportPdfMenuItem.Text = "#Report/ExportToPdf";
@@ -229,7 +229,7 @@ namespace CellReport.Presenters.WinForms
             // 
             // _saveMenuItem
             // 
-            _saveMenuItem.Image = CellReport.WinForms.Properties.Resources.save;
+            _saveMenuItem.Image = CellReport.WinForms.ToolbarIcons.Save;
             _saveMenuItem.Name = "_saveMenuItem";
             _saveMenuItem.Size = new System.Drawing.Size(348, 36);
             _saveMenuItem.Text = "#Report/Save";
@@ -307,7 +307,7 @@ namespace CellReport.Presenters.WinForms
             // _printButton
             // 
             _printButton.DropDownItems.AddRange(new ToolStripItem[] { _customPrintMenuItem, _printPreviewMenuItem, _pageSetupMenuItem, _autoWidthMenuItem });
-            _printButton.Image = CellReport.WinForms.Properties.Resources.print;
+            _printButton.Image = CellReport.WinForms.ToolbarIcons.Print;
             _printButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             _printButton.Name = "_printButton";
             _printButton.Size = new System.Drawing.Size(189, 34);
@@ -316,7 +316,7 @@ namespace CellReport.Presenters.WinForms
             // 
             // _customPrintMenuItem
             // 
-            _customPrintMenuItem.Image = CellReport.WinForms.Properties.Resources.print;
+            _customPrintMenuItem.Image = CellReport.WinForms.ToolbarIcons.Print;
             _customPrintMenuItem.Name = "_customPrintMenuItem";
             _customPrintMenuItem.Size = new System.Drawing.Size(331, 40);
             _customPrintMenuItem.Text = "#Report/CustomPrint";
@@ -324,7 +324,7 @@ namespace CellReport.Presenters.WinForms
             // 
             // _printPreviewMenuItem
             // 
-            _printPreviewMenuItem.Image = CellReport.WinForms.Properties.Resources.print_preview;
+            _printPreviewMenuItem.Image = CellReport.WinForms.ToolbarIcons.PrintPreview;
             _printPreviewMenuItem.Name = "_printPreviewMenuItem";
             _printPreviewMenuItem.Size = new System.Drawing.Size(331, 40);
             _printPreviewMenuItem.Text = "#Report/Preview";
@@ -332,7 +332,7 @@ namespace CellReport.Presenters.WinForms
             // 
             // _pageSetupMenuItem
             // 
-            _pageSetupMenuItem.Image = CellReport.WinForms.Properties.Resources.print_setup;
+            _pageSetupMenuItem.Image = CellReport.WinForms.ToolbarIcons.PrintSetup;
             _pageSetupMenuItem.Name = "_pageSetupMenuItem";
             _pageSetupMenuItem.Size = new System.Drawing.Size(331, 40);
             _pageSetupMenuItem.Text = "#Report/PageSettings";
@@ -353,7 +353,7 @@ namespace CellReport.Presenters.WinForms
             // _showGridButton
             // 
             _showGridButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            _showGridButton.Image = CellReport.WinForms.Properties.Resources.show_grid_16x16;
+            _showGridButton.Image = CellReport.WinForms.ToolbarIcons.ShowGrid16x16;
             _showGridButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             _showGridButton.Name = "_showGridButton";
             _showGridButton.Size = new System.Drawing.Size(40, 34);
@@ -363,7 +363,7 @@ namespace CellReport.Presenters.WinForms
             // _showResizersButton
             // 
             _showResizersButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            _showResizersButton.Image = CellReport.WinForms.Properties.Resources.show_columns_16x16;
+            _showResizersButton.Image = CellReport.WinForms.ToolbarIcons.ShowColumns16x16;
             _showResizersButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             _showResizersButton.Name = "_showResizersButton";
             _showResizersButton.Size = new System.Drawing.Size(40, 34);
@@ -391,7 +391,7 @@ namespace CellReport.Presenters.WinForms
             // _excelExportButton
             // 
             _excelExportButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            _excelExportButton.Image = CellReport.WinForms.Properties.Resources.excel2013_16;
+            _excelExportButton.Image = CellReport.WinForms.ToolbarIcons.Excel2013_16;
             _excelExportButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             _excelExportButton.Name = "_excelExportButton";
             _excelExportButton.Size = new System.Drawing.Size(40, 34);
@@ -401,7 +401,7 @@ namespace CellReport.Presenters.WinForms
             // _pdfExportButton
             // 
             _pdfExportButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            _pdfExportButton.Image = CellReport.WinForms.Properties.Resources.pdf_2616_32;
+            _pdfExportButton.Image = CellReport.WinForms.ToolbarIcons.Pdf2616_32;
             _pdfExportButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             _pdfExportButton.Name = "_pdfExportButton";
             _pdfExportButton.Size = new System.Drawing.Size(40, 34);
@@ -415,7 +415,7 @@ namespace CellReport.Presenters.WinForms
             // 
             // _findStripButton
             // 
-            _findStripButton.Image = CellReport.WinForms.Properties.Resources.find;
+            _findStripButton.Image = CellReport.WinForms.ToolbarIcons.Find;
             _findStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             _findStripButton.Name = "_findStripButton";
             _findStripButton.Size = new System.Drawing.Size(188, 34);
@@ -425,7 +425,7 @@ namespace CellReport.Presenters.WinForms
             // _bookMarksStripButton
             // 
             _bookMarksStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            _bookMarksStripButton.Image = CellReport.WinForms.Properties.Resources.bookmark;
+            _bookMarksStripButton.Image = CellReport.WinForms.ToolbarIcons.Bookmark;
             _bookMarksStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             _bookMarksStripButton.Name = "_bookMarksStripButton";
             _bookMarksStripButton.Size = new System.Drawing.Size(40, 34);
