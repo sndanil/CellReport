@@ -23,15 +23,21 @@ namespace CellReport.Core
 		private ExportSettings _exportSettings;
 		private Properties _properties;
 		private readonly Dictionary<int, bool> _autoFitRows = new Dictionary<int, bool>();
-		private readonly Dictionary<BaseExpression, int> _expressions = new Dictionary<BaseExpression, int>();
+		private readonly HashSet<BaseExpression> _expressions = new HashSet<BaseExpression>();
+		[NonSerialized]
+		private Dictionary<string, BaseExpression> _expressionsById = new Dictionary<string, BaseExpression>();
 		private readonly List<TemplateSection> _sections = new List<TemplateSection>();
 		private readonly List<BookMark> _bookMarks = new List<BookMark>();
-		private readonly List<int> _pageBreakRows = new List<int>();
+		private readonly HashSet<int> _pageBreakRows = new HashSet<int>();
 
 		private readonly List<BaseStyle> _stylesList = new List<BaseStyle>();
 		private readonly List<ExternalStyle> _externalStyles = new List<ExternalStyle>();
 
 		private readonly Dictionary<string, byte[]> _resources = new Dictionary<string, byte[]>();
+
+		private int _updateDepth;
+		[NonSerialized]
+		private HashSet<string> _pendingPropertyChanges;
 
 		public CellManager()
 		{
@@ -78,6 +84,77 @@ namespace CellReport.Core
 			Properties = properties ?? new Properties();
 		}
 
+		public CellManagerUpdateScope BeginUpdateScope()
+		{
+			return new CellManagerUpdateScope(this);
+		}
+
+		public void BeginUpdate()
+		{
+			_updateDepth++;
+		}
+
+		public void EndUpdate()
+		{
+			if (_updateDepth <= 0)
+				throw new InvalidOperationException("EndUpdate was called without a matching BeginUpdate.");
+
+			_updateDepth--;
+			if (_updateDepth == 0)
+				FlushPendingPropertyChanges();
+		}
+
+		protected override void OnPropertyChanged(string name)
+		{
+			if (_updateDepth > 0)
+			{
+				if (_pendingPropertyChanges == null)
+					_pendingPropertyChanges = new HashSet<string>();
+				_pendingPropertyChanges.Add(name);
+				return;
+			}
+
+			base.OnPropertyChanged(name);
+		}
+
+		private void FlushPendingPropertyChanges()
+		{
+			if (_pendingPropertyChanges == null || _pendingPropertyChanges.Count == 0)
+				return;
+
+			var pending = _pendingPropertyChanges.ToArray();
+			_pendingPropertyChanges.Clear();
+			foreach (var name in pending)
+				base.OnPropertyChanged(name);
+		}
+
+		private void RegisterExpression(BaseExpression expression)
+		{
+			if (_expressionsById == null)
+				_expressionsById = new Dictionary<string, BaseExpression>();
+
+			_expressions.Add(expression);
+			_expressionsById[expression.ID] = expression;
+		}
+
+		private void UnregisterExpression(BaseExpression expression)
+		{
+			_expressions.Remove(expression);
+			if (_expressionsById != null)
+			{
+				BaseExpression existing;
+				if (_expressionsById.TryGetValue(expression.ID, out existing) && ReferenceEquals(existing, expression))
+					_expressionsById.Remove(expression.ID);
+			}
+		}
+
+		private void RebuildExpressionIndex()
+		{
+			_expressionsById = new Dictionary<string, BaseExpression>();
+			foreach (var expression in _expressions)
+				_expressionsById[expression.ID] = expression;
+		}
+
 		public void AddResource(string name, byte[] data)
 		{
 			if (string.IsNullOrEmpty(name))
@@ -116,7 +193,7 @@ namespace CellReport.Core
 
 		public void AddExpression(BaseExpression expression)
 		{
-			_expressions[expression] = 1;
+			RegisterExpression(expression);
 			expression.PropertyChanged += OnPropertyChanged;
 			OnPropertyChanged("Expressions");
 		}
@@ -147,26 +224,30 @@ namespace CellReport.Core
 
 		public void RemoveExpression(BaseExpression expression)
 		{
-			_expressions.Remove(expression);
+			UnregisterExpression(expression);
 			expression.PropertyChanged -= OnPropertyChanged;
 			OnPropertyChanged("Expressions");
 		}
 
 		public IEnumerable<BaseExpression> GetExpressions()
 		{
-			foreach (var expression in _expressions.Keys)
+			foreach (var expression in _expressions)
 				yield return expression;
 		}
 
 		public BaseExpression GetExpressionByID(string id)
 		{
-			return (from exp in GetExpressions() where exp.ID == id select exp).FirstOrDefault();
+			if (string.IsNullOrEmpty(id) || _expressionsById == null)
+				return null;
+
+			BaseExpression expression;
+			_expressionsById.TryGetValue(id, out expression);
+			return expression;
 		}
 
 		public void AddPageBreakRow(int row)
 		{
-			if (!_pageBreakRows.Contains(row))
-				_pageBreakRows.Add(row);
+			_pageBreakRows.Add(row);
 		}
 
 		public void RemovePageBreakRow(int row)
@@ -552,38 +633,8 @@ namespace CellReport.Core
 				_cells[row][column].Span = new CellSpan {ColSpan = 0, RowSpan = 0};
 				_cells[cell.Location.Row][cell.Location.Column] = null;
 
-				if (row == _actualRowsCount - 1 || column == _actualColumnsCount - 1)
-				{
-					var found = false;
-					for (var colIndex = _actualColumnsCount - 1; colIndex >= 0; colIndex--)
-					{
-						for (var rowIndex = 0; rowIndex < _cells.Length; rowIndex++)
-						{
-							if (colIndex < _cells[rowIndex].Length && _cells[rowIndex][colIndex] != null)
-							{
-								found = true;
-								break;
-							}
-						}
-						if (found)
-							break;
-						_actualColumnsCount--;
-					}
-					for (var rowIndex = _actualRowsCount - 1; rowIndex >= 0; rowIndex--)
-					{
-						for (var colIndex = 0; colIndex < _actualColumnsCount; colIndex++)
-						{
-							if (rowIndex < _cells.Length && colIndex < _cells[rowIndex].Length && _cells[rowIndex][colIndex] != null)
-							{
-								found = true;
-								break;
-							}
-						}
-						if (found)
-							break;
-						_actualRowsCount--;
-					}
-				}
+				if (row >= _actualRowsCount - 1 || column >= _actualColumnsCount - 1)
+					RecalculateActualDimensions();
 			}
 			OnPropertyChanged("Cells");
 		}
@@ -620,7 +671,6 @@ namespace CellReport.Core
 			if (from.Content != null)
 				cell.Content = from.Content.Clone(this);
 
-			OnPropertyChanged("Cells");
 			return cell;
 		}
 
@@ -641,6 +691,18 @@ namespace CellReport.Core
 		{
 			CheckRowAndColumn(row, column);
 			return _cells[row][column];
+		}
+
+		public bool TryGetCell(int row, int column, out Cell cell)
+		{
+			if (row < 0 || column < 0 || row >= RowsCount || column >= ColumnsCount)
+			{
+				cell = null;
+				return false;
+			}
+
+			cell = _cells[row][column];
+			return cell != null;
 		}
 
 		public void SetSpansForCell(CellLocation location, CellSpan span)
@@ -669,6 +731,37 @@ namespace CellReport.Core
 				}
 			cell.SpanInternal = span;
 			OnPropertyChanged("Cells");
+		}
+
+		private void RecalculateActualDimensions()
+		{
+			_actualColumnsCount = 0;
+			var columnsFound = false;
+			for (int col = ColumnsCount - 1; col >= 0 && !columnsFound; col--)
+			{
+				for (int row = 0; row < RowsCount; row++)
+				{
+					if (_cells[row][col] != null)
+					{
+						_actualColumnsCount = col + 1;
+						columnsFound = true;
+						break;
+					}
+				}
+			}
+
+			_actualRowsCount = 0;
+			for (int row = RowsCount - 1; row >= 0; row--)
+			{
+				for (int col = 0; col < _actualColumnsCount; col++)
+				{
+					if (_cells[row][col] != null)
+					{
+						_actualRowsCount = row + 1;
+						return;
+					}
+				}
+			}
 		}
 
 		public float GetRowHeight(int index)
@@ -862,6 +955,7 @@ namespace CellReport.Core
 		[OnDeserialized]
 		internal void OnDeserializedMethod(StreamingContext context)
 		{
+			RebuildExpressionIndex();
 			foreach (Cell[] row in _cells)
 			{
 				foreach (Cell cell in row)

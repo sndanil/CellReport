@@ -68,18 +68,19 @@ namespace CellReport.Presenters
 				{
 					for (int col = 0; col < _manager.ActualColumnsCount; col++)
 					{
-						if (_manager.GetCell(row, col) != null && _manager.GetCell(row, col).Content != null && !alreadyFit.Contains(_manager.GetCell(row, col)))
+						Cell cell;
+						if (!_manager.TryGetCell(row, col, out cell) || cell.Content == null || alreadyFit.Contains(cell))
+							continue;
+
+						alreadyFit.Add(cell);
+						var content = cell.Content;
+						if (content is TextBasedContent)
+							FitCell(row, col, (TextBasedContent)content);
+						else if (content is CollectionContent)
 						{
-							alreadyFit.Add(_manager.GetCell(row, col));
-							var content = _manager.GetCell(row, col).Content;
-							if (content is TextBasedContent)
-								FitCell(row, col, (TextBasedContent)content);
-							else if (content is CollectionContent)
-							{
-								foreach (var item in ((CollectionContent)content).GetContents())
-									if (item is TextBasedContent)
-										FitCell(row, col, (TextBasedContent)item);
-							}
+							foreach (var item in ((CollectionContent)content).GetContents())
+								if (item is TextBasedContent)
+									FitCell(row, col, (TextBasedContent)item);
 						}
 					}
 				}
@@ -88,19 +89,19 @@ namespace CellReport.Presenters
 				{
 					for (int j = 0; j < _manager.ColumnsCount; j++)
 					{
-						var cell = _manager.GetCell(i, j);
-						if (cell != null && !alreadyFit.Contains(cell))
+						Cell cell;
+						if (!_manager.TryGetCell(i, j, out cell) || alreadyFit.Contains(cell))
+							continue;
+
+						alreadyFit.Add(cell);
+						var content = cell.Content;
+						if (content is TextContent)
+							FitCellFontSize(i, j, (TextContent)content);
+						else if (content is CollectionContent)
 						{
-							alreadyFit.Add(cell);
-							var content = cell.Content;
-							if (content is TextContent)
-								FitCellFontSize(i, j, (TextContent)content);
-							else if (content is CollectionContent)
-							{
-								foreach (var item in ((CollectionContent)content).GetContents())
-									if (item is TextContent)
-										FitCellFontSize(i, j, (TextContent)item);
-							}
+							foreach (var item in ((CollectionContent)content).GetContents())
+								if (item is TextContent)
+									FitCellFontSize(i, j, (TextContent)item);
 						}
 					}
 				}

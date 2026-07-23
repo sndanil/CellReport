@@ -338,29 +338,38 @@ namespace CellReport
 			}
 			if (Manager.ColumnsCount < (colOffset + section.Width))
 				Manager.ColumnsCount = colOffset + section.Width;
-			foreach (var cell in section.GetCells(_template.Manager))
+
+			Manager.BeginUpdate();
+			try
 			{
-				var sectionLocation = section.TranslateToSectionOffset(cell);
-				var newCell = Manager.CreateCell(rowOffset + sectionLocation.Row, colOffset + sectionLocation.Column, cell);
-				newCell.Content?.ExecuteExpressions();
-				_lastAddedCells.Add(newCell);
+				foreach (var cell in section.GetCells(_template.Manager))
+				{
+					var sectionLocation = section.TranslateToSectionOffset(cell);
+					var newCell = Manager.CreateCell(rowOffset + sectionLocation.Row, colOffset + sectionLocation.Column, cell);
+					newCell.Content?.ExecuteExpressions();
+					_lastAddedCells.Add(newCell);
+				}
+				foreach (var rowIndex in section.GetAutoFitRows(_template.Manager))
+				{
+					if (rowIndex >= section.Top && rowIndex <= section.Bottom)
+						Manager.SetAutoFitRow((rowIndex - section.Top) + rowOffset, true);
+				}
+				int index = 0;
+				foreach (var height in section.GetRowsHeights(_template.Manager))
+				{
+					Manager.SetRowHeight(index + rowOffset, height);
+					index++;
+				}
+				index = 0;
+				foreach (var width in section.GetColumnWidths(_template.Manager))
+				{
+					Manager.SetColumnWidth(index + colOffset, width);
+					index++;
+				}
 			}
-			foreach (var rowIndex in section.GetAutoFitRows(_template.Manager))
+			finally
 			{
-				if (rowIndex >= section.Top && rowIndex <= section.Bottom)
-					Manager.SetAutoFitRow((rowIndex - section.Top) + rowOffset, true);
-			}
-			int index = 0;
-			foreach (var height in section.GetRowsHeights(_template.Manager))
-			{
-				Manager.SetRowHeight(index + rowOffset, height);
-				index++;
-			}
-			index = 0;
-			foreach (var width in section.GetColumnWidths(_template.Manager))
-			{
-				Manager.SetColumnWidth(index + colOffset, width);
-				index++;
+				Manager.EndUpdate();
 			}
 		}
 	}
