@@ -18,6 +18,8 @@ namespace CellReport.Core
 		private int _actualRowsCount;
 		private int _actualColumnsCount;
 		private Cell[][] _cells;
+		[NonSerialized]
+		private readonly List<Cell> _originCells = new List<Cell>();
 		private PrintSettings _printSettings;
 		private DisplaySettings _displaySettings;
 		private ExportSettings _exportSettings;
@@ -618,11 +620,16 @@ namespace CellReport.Core
 
 		public void DeleteCell(int row, int column)
 		{
-			if (_cells[row][column] != null)
+			var cell = ResolveCell(row, column);
+			if (cell != null)
 			{
-				var cell = _cells[row][column];
-				_cells[row][column].Span = new CellSpan {ColSpan = 0, RowSpan = 0};
-				_cells[cell.Location.Row][cell.Location.Column] = null;
+				var originRow = cell.Location.Row;
+				var originCol = cell.Location.Column;
+				var oldSpan = cell.SpanInternal;
+				cell.SpanInternal = new CellSpan { ColSpan = 0, RowSpan = 0 };
+				_cells[originRow][originCol] = null;
+				_originCells.Remove(cell);
+				CellGridHelper.ClearSpanSlotReferences(_cells, cell.Location, oldSpan, cell);
 
 				if (row >= _actualRowsCount - 1 || column >= _actualColumnsCount - 1)
 					RecalculateActualDimensions();
@@ -645,6 +652,7 @@ namespace CellReport.Core
 			var cell = new Cell(this, row, column);
 			cell.PropertyChanged += OnPropertyChanged;
 			_cells[row][column] = cell;
+			_originCells.Add(cell);
 
 			OnPropertyChanged("Cells");
 			return cell;
@@ -681,7 +689,7 @@ namespace CellReport.Core
 		public Cell GetCell(int row, int column)
 		{
 			CheckRowAndColumn(row, column);
-			return _cells[row][column];
+			return ResolveCell(row, column);
 		}
 
 		public bool TryGetCell(int row, int column, out Cell cell)
@@ -692,67 +700,90 @@ namespace CellReport.Core
 				return false;
 			}
 
-			cell = _cells[row][column];
+			cell = ResolveCell(row, column);
 			return cell != null;
+		}
+
+		internal Cell GetStoredCell(int row, int column)
+		{
+			if (row < 0 || column < 0 || row >= RowsCount || column >= ColumnsCount)
+				return null;
+
+			return _cells[row][column];
+		}
+
+		internal int OriginCellCount
+		{
+			get { return _originCells.Count; }
+		}
+
+		internal void SetStoredCellForTests(int row, int column, Cell cell)
+		{
+			if (row >= 0 && column >= 0 && row < RowsCount && column < ColumnsCount)
+				_cells[row][column] = cell;
+		}
+
+		private Cell ResolveCell(int row, int column)
+		{
+			var stored = _cells[row][column];
+			if (CellGridHelper.IsOrigin(stored, row, column))
+				return stored;
+
+			if (stored != null && CellGridHelper.Covers(stored, row, column))
+				return stored;
+
+			for (int i = 0; i < _originCells.Count; i++)
+			{
+				var origin = _originCells[i];
+				if (CellGridHelper.Covers(origin, row, column))
+					return origin;
+			}
+
+			return null;
 		}
 
 		public void SetSpansForCell(CellLocation location, CellSpan span)
 		{
 			CheckRowAndColumn(location.Row + span.RowSpan, location.Column + span.ColSpan);
 
-			var cell = GetCell(location) ?? CreateCell(location.Row, location.Column);
-			var oldSpan = cell.Span;
-			for (int row = location.Row; row <= location.Row + oldSpan.RowSpan; row++)
-				for (int col = location.Column; col <= location.Column + oldSpan.ColSpan; col++)
-				{
-					if (row != location.Row || col != location.Column)
-						_cells[row][col] = null;
-				}
-			for (int row = location.Row; row <= location.Row + span.RowSpan; row++)
-				for (int col = location.Column; col <= location.Column + span.ColSpan; col++)
-				{
-					if (row != location.Row || col != location.Column)
-					{
-						if (_cells[row][col] != null)
-							_cells[row][col].Span = new CellSpan {ColSpan = 0, RowSpan = 0};
-						_cells[row][col] = cell;
-						_actualRowsCount = Math.Max(_actualRowsCount, row + 1);
-						_actualColumnsCount = Math.Max(_actualColumnsCount, col + 1);
-					}
-				}
+			var cell = ResolveCell(location.Row, location.Column) ?? CreateCell(location.Row, location.Column);
+			var oldSpan = cell.SpanInternal;
+			CellGridHelper.ClearSpanSlotReferences(_cells, cell.Location, oldSpan, cell);
 			cell.SpanInternal = span;
+
+			_actualRowsCount = System.Math.Max(_actualRowsCount, location.Row + span.RowSpan + 1);
+			_actualColumnsCount = System.Math.Max(_actualColumnsCount, location.Column + span.ColSpan + 1);
 			OnPropertyChanged("Cells");
 		}
 
 		private void RecalculateActualDimensions()
 		{
-			_actualColumnsCount = 0;
-			var columnsFound = false;
-			for (int col = ColumnsCount - 1; col >= 0 && !columnsFound; col--)
+			CellGridHelper.RecalculateActualDimensions(_originCells, out _actualRowsCount, out _actualColumnsCount);
+		}
+
+		internal void NormalizeSparseGrid()
+		{
+			_originCells.Clear();
+			for (int row = 0; row < RowsCount; row++)
 			{
-				for (int row = 0; row < RowsCount; row++)
+				for (int col = 0; col < _cells[row].Length; col++)
 				{
-					if (_cells[row][col] != null)
+					var cell = _cells[row][col];
+					if (cell == null)
+						continue;
+
+					if (CellGridHelper.IsOrigin(cell, row, col))
 					{
-						_actualColumnsCount = col + 1;
-						columnsFound = true;
-						break;
+						if (!_originCells.Contains(cell))
+							_originCells.Add(cell);
+						continue;
 					}
+
+					_cells[row][col] = null;
 				}
 			}
 
-			_actualRowsCount = 0;
-			for (int row = RowsCount - 1; row >= 0; row--)
-			{
-				for (int col = 0; col < _actualColumnsCount; col++)
-				{
-					if (_cells[row][col] != null)
-					{
-						_actualRowsCount = row + 1;
-						return;
-					}
-				}
-			}
+			RecalculateActualDimensions();
 		}
 
 		public float GetRowHeight(int index)
@@ -929,15 +960,10 @@ namespace CellReport.Core
 
 		private bool IsStyleUsed(BaseStyle style)
 		{
-			for (int row = 0; row < RowsCount; row++)
+			for (int i = 0; i < _originCells.Count; i++)
 			{
-				var rowCells = _cells[row];
-				for (int col = 0; col < rowCells.Length; col++)
-				{
-					var cell = rowCells[col];
-					if (cell != null && cell.Location.Row == row && cell.Location.Column == col && HasStyle(cell, style))
-						return true;
-				}
+				if (HasStyle(_originCells[i], style))
+					return true;
 			}
 
 			return false;
@@ -971,6 +997,7 @@ namespace CellReport.Core
 						cell.SetManager(this);
 				}
 			}
+			NormalizeSparseGrid();
 		}
 
 		public void OnDeserializedMethod()
