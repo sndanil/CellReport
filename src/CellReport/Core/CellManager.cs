@@ -27,6 +27,8 @@ namespace CellReport.Core
 		[NonSerialized]
 		private Dictionary<string, BaseExpression> _expressionsById = new Dictionary<string, BaseExpression>();
 		private readonly List<TemplateSection> _sections = new List<TemplateSection>();
+		[NonSerialized]
+		private Dictionary<SectionLookupKey, TemplateSection> _sectionsByKey = new Dictionary<SectionLookupKey, TemplateSection>();
 		private readonly List<BookMark> _bookMarks = new List<BookMark>();
 		private readonly HashSet<int> _pageBreakRows = new HashSet<int>();
 
@@ -38,6 +40,8 @@ namespace CellReport.Core
 		private int _updateDepth;
 		[NonSerialized]
 		private HashSet<string> _pendingPropertyChanges;
+		[NonSerialized]
+		private UriDataLoader _uriDataLoader;
 
 		public CellManager()
 		{
@@ -155,6 +159,28 @@ namespace CellReport.Core
 				_expressionsById[expression.ID] = expression;
 		}
 
+		private void EnsureSectionIndex()
+		{
+			if (_sectionsByKey == null)
+			{
+				_sectionsByKey = new Dictionary<SectionLookupKey, TemplateSection>();
+				SectionIndex.Rebuild(_sectionsByKey, _sections);
+			}
+		}
+
+		private void RebuildSectionIndex()
+		{
+			_sectionsByKey = new Dictionary<SectionLookupKey, TemplateSection>();
+			SectionIndex.Rebuild(_sectionsByKey, _sections);
+		}
+
+		private UriDataLoader GetUriDataLoader()
+		{
+			if (_uriDataLoader == null)
+				_uriDataLoader = new UriDataLoader(GetResource);
+			return _uriDataLoader;
+		}
+
 		public void AddResource(string name, byte[] data)
 		{
 			if (string.IsNullOrEmpty(name))
@@ -203,7 +229,7 @@ namespace CellReport.Core
 			if (expression == null)
 				return;
 
-			var oldExpr = GetExpressions().FirstOrDefault(x => x.ID == expression.ID);
+			var oldExpr = GetExpressionByID(expression.ID);
 			if (oldExpr != null)
 			{
 				if (oldExpr.GetType() != expression.GetType())
@@ -262,29 +288,33 @@ namespace CellReport.Core
 
 		public void AddSection(TemplateSection section)
 		{
+			EnsureSectionIndex();
 			var foundSection = GetSectionInternal(section.Name, section.ObjectName, true);
 			if (foundSection != null)
+			{
 				_sections.Remove(foundSection);
+				SectionIndex.Unregister(_sectionsByKey, foundSection);
+			}
 
 			_sections.Add(section);
+			SectionIndex.Register(_sectionsByKey, section);
 			section.PropertyChanged += OnPropertyChanged;
 			OnPropertyChanged("Sections");
 		}
 
 		public void RemoveSection(TemplateSection section)
 		{
+			EnsureSectionIndex();
 			_sections.Remove(section);
+			SectionIndex.Unregister(_sectionsByKey, section);
 			section.PropertyChanged -= OnPropertyChanged;
 			OnPropertyChanged("Sections");
 		}
 
 		private TemplateSection GetSectionInternal(string name, string objectName, bool strict = false)
 		{
-			var foundSection = _sections.FirstOrDefault(s => s.Name == name && (s.ObjectName == objectName || s.ObjectName?.Split(new[] { ',', ';' }).Contains(objectName) == true));
-			if (foundSection == null && !strict)
-				foundSection = _sections.FirstOrDefault(s => s.Name == name && string.IsNullOrEmpty(s.ObjectName));
-
-			return foundSection;
+			EnsureSectionIndex();
+			return SectionIndex.Find(_sectionsByKey, name, objectName, strict);
 		}
 
 		public TemplateSection GetSection(string name, string objectName)
@@ -321,46 +351,7 @@ namespace CellReport.Core
 
 		public byte[] GetDataByUri(string uri)
 		{
-			try
-			{
-				if (uri.ToUpper().StartsWith("RESOURCE"))
-				{
-					var name = uri.Substring(uri.IndexOf("://") + 3);
-					return GetResource(name);
-				}
-				if (uri.ToUpper().StartsWith("FILE"))
-				{
-					var path = uri.Substring(uri.IndexOf("://") + 3);
-					var resolved = FileResolver.Resolve(path);
-					if (resolved != null)
-						return resolved;
-					if (System.IO.File.Exists(path))
-						return System.IO.File.ReadAllBytes(path);
-					if (System.IO.File.Exists(System.IO.Path.GetFileName(path)))
-						return System.IO.File.ReadAllBytes(System.IO.Path.GetFileName(path));
-					var localPath = System.IO.Path.Combine(
-						System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location),
-						System.IO.Path.GetFileName(path));
-					if (System.IO.File.Exists(localPath))
-						return System.IO.File.ReadAllBytes(localPath);
-				}
-				else if (uri.ToUpper().StartsWith("HTTP"))
-				{
-					using (var client = new System.Net.Http.HttpClient())
-					{
-						var result = client.GetAsync(uri).GetAwaiter().GetResult();
-						
-						return result.IsSuccessStatusCode ? result.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult()
-							: Array.Empty<byte>();
-					}
-				}
-
-				return null;
-			}
-			catch
-			{
-				return null;
-			}
+			return GetUriDataLoader().Load(uri);
 		}
 
 		public PrintSettings PrintSettings
@@ -926,15 +917,30 @@ namespace CellReport.Core
 		public void RemoveUnusedStyles()
 		{
 			var unusedStyles = new List<BaseStyle>();
-			var cells = _cells.SelectMany(x => x).Where(x => x != null);
 			foreach (var style in _stylesList)
 			{
-				if (cells.All(x => !HasStyle(x, style)))
+				if (!IsStyleUsed(style))
 					unusedStyles.Add(style);
 			}
 
 			foreach (var style in unusedStyles)
 				RemoveStyle(style);
+		}
+
+		private bool IsStyleUsed(BaseStyle style)
+		{
+			for (int row = 0; row < RowsCount; row++)
+			{
+				var rowCells = _cells[row];
+				for (int col = 0; col < rowCells.Length; col++)
+				{
+					var cell = rowCells[col];
+					if (cell != null && cell.Location.Row == row && cell.Location.Column == col && HasStyle(cell, style))
+						return true;
+				}
+			}
+
+			return false;
 		}
 
 		private bool HasStyle(Cell cell, BaseStyle style)
@@ -956,6 +962,7 @@ namespace CellReport.Core
 		internal void OnDeserializedMethod(StreamingContext context)
 		{
 			RebuildExpressionIndex();
+			RebuildSectionIndex();
 			foreach (Cell[] row in _cells)
 			{
 				foreach (Cell cell in row)

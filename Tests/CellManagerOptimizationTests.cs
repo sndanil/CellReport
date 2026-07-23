@@ -191,5 +191,78 @@ namespace CellReportTests
 
 			Assert.AreEqual(5, cellsNotifications);
 		}
+
+		[TestMethod]
+		public void GetSection_FindsSectionByObjectNameToken()
+		{
+			var manager = new CellManager();
+			var section = new TemplateSection { Name = "Секция 0", ObjectName = "Склады,Товары,Контрагенты" };
+			manager.AddSection(section);
+
+			Assert.AreSame(section, manager.GetSection("Секция 0", "Товары"));
+		}
+
+		[TestMethod]
+		public void GetSection_FallsBackToDefaultSectionWithoutObjectName()
+		{
+			var manager = new CellManager();
+			var defaultSection = new TemplateSection { Name = "Row" };
+			var typedSection = new TemplateSection { Name = "Row", ObjectName = "Detail" };
+			manager.AddSection(defaultSection);
+			manager.AddSection(typedSection);
+
+			Assert.AreSame(defaultSection, manager.GetSection("Row", null));
+			Assert.AreSame(typedSection, manager.GetSection("Row", "Detail"));
+		}
+
+		[TestMethod]
+		public void AddSection_ReplacesExistingSectionWithSameIdentity()
+		{
+			var manager = new CellManager();
+			var original = new TemplateSection { Name = "Header", ObjectName = "Main" };
+			var replacement = new TemplateSection { Name = "Header", ObjectName = "Main" };
+			manager.AddSection(original);
+			manager.AddSection(replacement);
+
+			Assert.AreSame(replacement, manager.GetSection("Header", "Main"));
+			Assert.AreEqual(1, CountSections(manager));
+		}
+
+		[TestMethod]
+		public void RemoveUnusedStyles_KeepsStylesUsedByOriginCells()
+		{
+			var manager = new CellManager(5, 5);
+			var usedStyle = new CellStyle("#FFFFFF") { ID = "used" };
+			var unusedStyle = new CellStyle("#000000") { ID = "unused" };
+			manager.AddStyle(usedStyle);
+			manager.AddStyle(unusedStyle);
+
+			var cell = manager.CreateCell(1, 1);
+			cell.Style = usedStyle;
+
+			manager.RemoveUnusedStyles();
+
+			Assert.IsNotNull(FindStyleById(manager, "used"));
+			Assert.IsNull(FindStyleById(manager, "unused"));
+		}
+
+		private static int CountSections(CellManager manager)
+		{
+			var count = 0;
+			foreach (var section in manager.GetSections())
+				count++;
+			return count;
+		}
+
+		private static BaseStyle FindStyleById(CellManager manager, string id)
+		{
+			foreach (var style in manager.GetStyles())
+			{
+				if (style.ID == id)
+					return style;
+			}
+
+			return null;
+		}
 	}
 }
