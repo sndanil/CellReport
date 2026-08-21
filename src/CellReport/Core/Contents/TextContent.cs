@@ -351,6 +351,8 @@ namespace CellReport.Core.Contents
 		{
 			string result;
 			var text = Text ?? string.Empty;
+			if (!CellManager.IsDesignMode && TemplateLocalizer.IsFullKey(text))
+				return TemplateLocalizer.GetString(_manager.Properties.Localization, text, _manager.Properties.Culture);
 			if (string.IsNullOrEmpty(Text))
 			{
 				var paramName = GetParamNameByTarget("Text");
@@ -365,6 +367,9 @@ namespace CellReport.Core.Contents
 			}
 			else
 			{
+				if (!CellManager.IsDesignMode)
+					text = TemplateLocalizer.ResolveInline(_manager.Properties.Localization, text, _manager.Properties.Culture);
+
 				var reg = new Regex(@"\[(?=[^\[]*\]).*?\]");
 				var matches = reg.Matches(text);
 				foreach (Match match in matches)

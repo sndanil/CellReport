@@ -30,6 +30,27 @@ namespace CellReport.Core
 			}
 		}
 
+		private string _culture;
+		public string Culture
+		{
+			get { return _culture; }
+			set
+			{
+				if (_culture != value)
+				{
+					_culture = value;
+					OnPropertyChanged("Culture");
+				}
+			}
+		}
+
+		private TemplateStrings _localization = new TemplateStrings();
+		public TemplateStrings Localization
+		{
+			get { return _localization; }
+			set { _localization = value ?? new TemplateStrings(); }
+		}
+
 		private Column _defaultColumn = new Column { Width = DefaultColumnWidthConst, MarkerForShow = null, MarkerForHide = null };
 		public Column DefaultColumn
 		{
@@ -99,6 +120,7 @@ namespace CellReport.Core
 			{
 				if (element.Element("DocumentName") != null)
 					result.DocumentName = element.Element("DocumentName").Value;
+				result.Localization = TemplateStrings.Parse(element.Element("Localization"));
 				if (element.Attribute("DefaultColumnsCount") != null)
 					result.DefaultColumnsCount = Convert.ToInt32(element.Attribute("DefaultColumnsCount").Value, CultureInfo.InvariantCulture);
 				if (element.Attribute("DefaultRowsCount") != null)
@@ -119,6 +141,9 @@ namespace CellReport.Core
 		internal XElement Serialize()
 		{
 			var result = new XElement("Properties", new XElement("DocumentName", DocumentName));
+			var localization = Localization.Serialize();
+			if (localization != null)
+				result.Add(localization);
 			if (DefaultRowsCount != DefaultRowsCountConst)
 				result.Add(new XAttribute("DefaultRowsCount", DefaultRowsCount.ToString(CultureInfo.InvariantCulture)));
 			if (DefaultColumnsCount != DefaultColumnsCountConst)

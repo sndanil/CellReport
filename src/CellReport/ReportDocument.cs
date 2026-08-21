@@ -27,6 +27,17 @@ namespace CellReport
 
 		public CellManager Manager { get; private set; }
 
+		public string Culture
+		{
+			get { return Manager.Properties.Culture; }
+			set { Manager.Properties.Culture = value; }
+		}
+
+		public TemplateStrings Localization
+		{
+			get { return Manager.Properties.Localization; }
+		}
+
 		public ReportDocument(CellTemplate template)
 		{
 			_template = template ?? throw new ArgumentNullException(nameof(template));
