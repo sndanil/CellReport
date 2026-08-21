@@ -11,6 +11,8 @@ namespace CellReport.Presenters.Skia
 {
 	public class SkiaReportRenderer : BaseRenderer
 	{
+		public bool InvertColors { get; set; }
+
 		public static Size GetTextSize(Rectangle rect, string text, string fontFamily, float fontSize, FontStyle fontStyle)
 		{
 			if (string.IsNullOrEmpty(text) || rect.Width <= 0)
@@ -33,7 +35,19 @@ namespace CellReport.Presenters.Skia
 		{
 			byte a, r, g, b;
 			BaseStyle.ParseColor(color, out a, out r, out g, out b);
-			return new SKColor(r, g, b, a);
+			return TransformColor(new SKColor(r, g, b, a));
+		}
+
+		protected SKColor TransformColor(SKColor color)
+		{
+			if (!InvertColors)
+				return color;
+
+			return new SKColor(
+				(byte)(255 - color.Red),
+				(byte)(255 - color.Green),
+				(byte)(255 - color.Blue),
+				color.Alpha);
 		}
 
 		private static SKPathEffect GetDashEffect(LineStyle style)
@@ -243,7 +257,13 @@ namespace CellReport.Presenters.Skia
 				using (var result = (SKBitmap)writer.Write(barcode.GetCode()))
 				{
 					var dc = (SKCanvas)context;
-					dc.DrawBitmap(result, cellRect.ToRect());
+					if (InvertColors)
+					{
+						using (var paint = new SKPaint { ColorFilter = SkiaColorFilters.CreateInvert() })
+							dc.DrawBitmap(result, cellRect.ToRect(), paint);
+					}
+					else
+						dc.DrawBitmap(result, cellRect.ToRect());
 				}
 			}
 			catch
@@ -296,8 +316,9 @@ namespace CellReport.Presenters.Skia
 				.FontSize(fontSize)
 				.FontItalic(fontStyle.HasFlag(FontStyle.Italic))
 				.FontWeight(fontStyle.HasFlag(FontStyle.Bold) ? (int)SKFontStyleWeight.Bold : (int)SKFontStyleWeight.Normal)
-				.Alignment(alignment)
-				.Add(text);
+				.Alignment(alignment);
+
+			rs.Add(text);
 
 			rs.MaxWidth = textRect.Width;
 			rs.MaxHeight = textRect.Height + 5;
@@ -308,7 +329,18 @@ namespace CellReport.Presenters.Skia
 			else if (v == VerticalAlignment.Bottom)
 				y += Math.Max(0, textRect.Height - rs.MeasuredHeight);
 
-			rs.Paint(dc, new SKPoint(textRect.X, y));
+			if (InvertColors)
+			{
+				using (var layerPaint = new SKPaint { ColorFilter = SkiaColorFilters.CreateInvert() })
+				{
+					dc.SaveLayer(textRect.ToRect(), layerPaint);
+					rs.Paint(dc, new SKPoint(textRect.X, y));
+					dc.Restore();
+				}
+			}
+			else
+				rs.Paint(dc, new SKPoint(textRect.X, y));
+
 			dc.Restore();
 		}
 
@@ -318,7 +350,7 @@ namespace CellReport.Presenters.Skia
 			if (canvas == null || rect.Width < 1 || rect.Height < 1 || content == null)
 				return;
 
-			SkiaChartRenderer.Render(canvas, rect, content);
+			SkiaChartRenderer.Render(canvas, rect, content, InvertColors);
 		}
 
 		public override void SetClip(object context, Rectangle rect)

@@ -32,6 +32,20 @@ namespace CellReport.Avalonia
 			ProcessFit();
 		}
 
+		public bool InvertColors
+		{
+			get => Renderer is SkiaReportRenderer skiaRenderer && skiaRenderer.InvertColors;
+			set
+			{
+				var skiaRenderer = Renderer as SkiaReportRenderer;
+				if (skiaRenderer == null || skiaRenderer.InvertColors == value)
+					return;
+
+				skiaRenderer.InvertColors = value;
+				Update();
+			}
+		}
+
 		protected override void SetClip(object context, Rectangle clip)
 		{
 			if (context is not SKCanvas canvas)

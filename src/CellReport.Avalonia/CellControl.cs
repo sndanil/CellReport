@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Skia;
+using Avalonia.Styling;
 using Avalonia.Threading;
 using CellReport.Core;
 using System;
@@ -13,6 +14,11 @@ namespace CellReport.Avalonia
 {
 	public class CellControl : Control
 	{
+		public static readonly StyledProperty<ContentInversionMode> InvertContentModeProperty =
+			AvaloniaProperty.Register<CellControl, ContentInversionMode>(
+				nameof(InvertContentMode),
+				ContentInversionMode.Auto);
+
 		private readonly DispatcherTimer _autoScrollTimer;
 		private readonly Dictionary<int, global::Avalonia.Point> _activePointers = new();
 		private global::Avalonia.Point? _lastPointerPosition;
@@ -29,18 +35,76 @@ namespace CellReport.Avalonia
 		private bool _middleButtonPanActive;
 		private global::Avalonia.Point _middleButtonLastPosition;
 
-		public AvaloniaDisplayPresenter? Presenter { get; set; }
+		private AvaloniaDisplayPresenter? _presenter;
+
+		public AvaloniaDisplayPresenter? Presenter
+		{
+			get => _presenter;
+			set
+			{
+				_presenter = value;
+				ApplyInversionToPresenter();
+			}
+		}
+
+		public ContentInversionMode InvertContentMode
+		{
+			get => GetValue(InvertContentModeProperty);
+			set => SetValue(InvertContentModeProperty, value);
+		}
+
+		static CellControl()
+		{
+			AffectsRender<CellControl>(InvertContentModeProperty);
+		}
 
 		public CellControl()
 		{
 			ClipToBounds = true;
 			Focusable = true;
 
+			ActualThemeVariantChanged += OnActualThemeVariantChanged;
+
 			_autoScrollTimer = new DispatcherTimer
 			{
 				Interval = TimeSpan.FromMilliseconds(100)
 			};
 			_autoScrollTimer.Tick += OnAutoScrollTick;
+		}
+
+		protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs e)
+		{
+			base.OnPropertyChanged(e);
+
+			if (e.Property == InvertContentModeProperty)
+				ApplyInversionToPresenter();
+		}
+
+		private void OnActualThemeVariantChanged(object? sender, EventArgs e)
+		{
+			ApplyInversionToPresenter();
+		}
+
+		private void ApplyInversionToPresenter()
+		{
+			if (_presenter == null)
+				return;
+
+			bool invert;
+			switch (InvertContentMode)
+			{
+				case ContentInversionMode.Always:
+					invert = true;
+					break;
+				case ContentInversionMode.Never:
+					invert = false;
+					break;
+				default:
+					invert = ActualThemeVariant == ThemeVariant.Dark;
+					break;
+			}
+
+			_presenter.InvertColors = invert;
 		}
 
 		public override void Render(DrawingContext context)

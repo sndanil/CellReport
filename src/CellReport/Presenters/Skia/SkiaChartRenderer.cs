@@ -24,6 +24,11 @@ namespace CellReport.Presenters.Skia
 
 		public static void Render(SKCanvas canvas, Rectangle rect, ChartContent content)
 		{
+			Render(canvas, rect, content, false);
+		}
+
+		public static void Render(SKCanvas canvas, Rectangle rect, ChartContent content, bool invertColors)
+		{
 			var bounds = rect.ToRect();
 			if (bounds.Width < 2 || bounds.Height < 2)
 				return;
@@ -31,6 +36,23 @@ namespace CellReport.Presenters.Skia
 			canvas.Save();
 			canvas.ClipRect(bounds);
 
+			if (invertColors)
+			{
+				using (var layerPaint = new SKPaint { ColorFilter = SkiaColorFilters.CreateInvert() })
+				{
+					canvas.SaveLayer(layerPaint);
+					RenderContent(canvas, bounds, content);
+					canvas.Restore();
+				}
+			}
+			else
+				RenderContent(canvas, bounds, content);
+
+			canvas.Restore();
+		}
+
+		private static void RenderContent(SKCanvas canvas, SKRect bounds, ChartContent content)
+		{
 			using (var bgPaint = new SKPaint { Style = SKPaintStyle.Fill, Color = SKColors.White })
 				canvas.DrawRect(bounds, bgPaint);
 
