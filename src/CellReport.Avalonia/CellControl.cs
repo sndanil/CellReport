@@ -34,6 +34,8 @@ namespace CellReport.Avalonia
 
 		private bool _middleButtonPanActive;
 		private global::Avalonia.Point _middleButtonLastPosition;
+		private CustomDrawOp _cachedDrawOp;
+		private Rect _lastDrawBounds;
 
 		private AvaloniaDisplayPresenter? _presenter;
 
@@ -115,11 +117,14 @@ namespace CellReport.Avalonia
 				background = solid.Color;
 
 			context.FillRectangle(new SolidColorBrush(background), new Rect(0, 0, Bounds.Width, Bounds.Height));
-			context.Custom(new CustomDrawOp(
-				new Rect(0, 0, Bounds.Width, Bounds.Height),
-				this,
-				Presenter,
-				background.ToSKColor()));
+
+			var bounds = new Rect(0, 0, Bounds.Width, Bounds.Height);
+			if (_cachedDrawOp == null || _lastDrawBounds != bounds)
+			{
+				_cachedDrawOp = new CustomDrawOp(bounds, this, Presenter, background.ToSKColor());
+				_lastDrawBounds = bounds;
+			}
+			context.Custom(_cachedDrawOp);
 		}
 
 		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)

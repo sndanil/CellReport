@@ -26,7 +26,14 @@ namespace CellReport.Avalonia
 
 		public bool HitTest(global::Avalonia.Point p) => false;
 
-		public bool Equals(ICustomDrawOperation other) => false;
+		public bool Equals(ICustomDrawOperation other)
+		{
+			if (other is CustomDrawOp o)
+				return o.Bounds == Bounds
+					&& o._presenter == _presenter
+					&& o._background == _background;
+			return false;
+		}
 
 		public void Dispose()
 		{

@@ -23,6 +23,7 @@ namespace CellReport.Presenters
 		private CellLocation _currentCell;
 		private CellLocation _startSelection = CellLocation.None;
 		private CellLocation _endSelection = CellLocation.None;
+		private readonly HashSet<Cell> _alreadyPaintedCells = new HashSet<Cell>();
 
 		protected BaseDisplayPresenter(CellManager manager)
 				: base(manager)
@@ -242,7 +243,7 @@ namespace CellReport.Presenters
 		{
 			var rightBottom = new CellLocation { Row = fromRow, Column = fromCol };
 
-			var alreadyPaintedCells = new Dictionary<Cell, bool>();
+			_alreadyPaintedCells.Clear();
 			for (int row = fromRow; row < toRow; row++)
 			{
 				float top = GetTopOffset(row);
@@ -256,9 +257,8 @@ namespace CellReport.Presenters
 					var cell = Manager.GetCell(row, col);
 					if (cell != null)
 					{
-						if (!alreadyPaintedCells.ContainsKey(cell))
+						if (_alreadyPaintedCells.Add(cell))
 						{
-							alreadyPaintedCells.Add(cell, true);
 							RenderGrid(context, GetCellRect(cell));
 							RenderCellBackgroung(context, cell);
 						}
@@ -269,7 +269,7 @@ namespace CellReport.Presenters
 				if (top > bounds.Bottom)
 					break;
 			}
-			alreadyPaintedCells.Clear();
+			_alreadyPaintedCells.Clear();
 			for (int row = fromRow; row < toRow; row++)
 			{
 				float top = GetTopOffset(row);
@@ -281,9 +281,8 @@ namespace CellReport.Presenters
 					var cell = Manager.GetCell(row, col);
 					if (cell != null)
 					{
-						if (!alreadyPaintedCells.ContainsKey(cell))
+						if (_alreadyPaintedCells.Add(cell))
 						{
-							alreadyPaintedCells.Add(cell, true);
 							RenderCell(context, cell);
 						}
 					}

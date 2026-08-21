@@ -50,18 +50,23 @@ namespace CellReport.Presenters.Skia
 				color.Alpha);
 		}
 
+		private static readonly SKPathEffect _dashEffect = SKPathEffect.CreateDash(new[] { 4f, 2f }, 0);
+		private static readonly SKPathEffect _dotEffect = SKPathEffect.CreateDash(new[] { 1f, 2f }, 0);
+		private static readonly SKPathEffect _dashDotEffect = SKPathEffect.CreateDash(new[] { 4f, 2f, 1f, 2f }, 0);
+		private static readonly SKPathEffect _dashDotDotEffect = SKPathEffect.CreateDash(new[] { 4f, 2f, 1f, 2f, 1f, 2f }, 0);
+
 		private static SKPathEffect GetDashEffect(LineStyle style)
 		{
 			switch (style)
 			{
 				case LineStyle.Dash:
-					return SKPathEffect.CreateDash(new[] { 4f, 2f }, 0);
+					return _dashEffect;
 				case LineStyle.Dot:
-					return SKPathEffect.CreateDash(new[] { 1f, 2f }, 0);
+					return _dotEffect;
 				case LineStyle.DashDot:
-					return SKPathEffect.CreateDash(new[] { 4f, 2f, 1f, 2f }, 0);
+					return _dashDotEffect;
 				case LineStyle.DashDotDot:
-					return SKPathEffect.CreateDash(new[] { 4f, 2f, 1f, 2f, 1f, 2f }, 0);
+					return _dashDotDotEffect;
 				default:
 					return null;
 			}

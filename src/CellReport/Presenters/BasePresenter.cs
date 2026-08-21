@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,8 +24,10 @@ namespace CellReport.Presenters
 		private int _frozenColumnsCount = 0;
 		private bool _updateMode = false;
 
-		private ConcurrentDictionary<int, float> _topOffsets = new ConcurrentDictionary<int, float>();
-		private ConcurrentDictionary<int, float> _leftOffsets = new ConcurrentDictionary<int, float>();
+		private Dictionary<int, float> _topOffsets = new Dictionary<int, float>();
+		private Dictionary<int, float> _leftOffsets = new Dictionary<int, float>();
+		private float[] _topPrefixSums;
+		private float[] _leftPrefixSums;
 
 		public BasePresenter(CellManager manager)
 		{
@@ -344,18 +345,31 @@ namespace CellReport.Presenters
 
 		public float GetTopOffset(int row, CellReport.Core.GraphicsUnit unit)
 		{
-			float offset = 0;
-			if (_topOffsets == null || !_topOffsets.TryGetValue(row, out offset))
+			float offset;
+
+			if (_topPrefixSums != null && row >= 0 && row < _topPrefixSums.Length)
+			{
+				int frozenEnd = Math.Min(FrozenRowsCount, row);
+				offset = _topPrefixSums[frozenEnd];
+
+				if (row > TopNoFrozenRow)
+					offset += _topPrefixSums[row] - _topPrefixSums[TopNoFrozenRow];
+				else if (row < TopNoFrozenRow && row > FrozenRowsCount)
+					offset -= _topPrefixSums[TopNoFrozenRow] - _topPrefixSums[row];
+			}
+			else if (_topOffsets.TryGetValue(row, out offset))
+			{
+			}
+			else
 			{
 				for (int rowIndex = 0; rowIndex < FrozenRowsCount && rowIndex < row; rowIndex++)
 					offset += Manager.GetRowHeight(rowIndex);
 				for (int rowIndex = TopNoFrozenRow; rowIndex < row; rowIndex++)
 					offset += Manager.GetRowHeight(rowIndex);
-				for (int rowIndex = row; rowIndex < TopNoFrozenRow && (rowIndex > FrozenRowsCount || FrozenRowsCount == 0); rowIndex++)
+				for (int rowIndex = row; rowIndex < TopNoFrozenRow && (rowIndex > FrozenRowsCount || FrozenRowsCount == 0); rowIndex--)
 					offset -= Manager.GetRowHeight(rowIndex);
 
-				if (_topOffsets != null)
-					_topOffsets[row] = offset;
+				_topOffsets[row] = offset;
 			}
 			if (DefaultUnit != unit)
 				offset = UnitsConverter.ConvertValue(offset, DefaultUnit, CurrentUnit, DeviceDpiY);
@@ -370,8 +384,22 @@ namespace CellReport.Presenters
 
 		public float GetLeftOffset(int column, CellReport.Core.GraphicsUnit unit)
 		{
-			float offset = 0;
-			if (_leftOffsets == null || !_leftOffsets.TryGetValue(column, out offset))
+			float offset;
+
+			if (_leftPrefixSums != null && column >= 0 && column < _leftPrefixSums.Length)
+			{
+				int frozenEnd = Math.Min(FrozenColumnsCount, column);
+				offset = _leftPrefixSums[frozenEnd];
+
+				if (column > LeftNoFrozenColumn)
+					offset += _leftPrefixSums[column] - _leftPrefixSums[LeftNoFrozenColumn];
+				else if (column < LeftNoFrozenColumn && column > FrozenColumnsCount)
+					offset -= _leftPrefixSums[LeftNoFrozenColumn] - _leftPrefixSums[column];
+			}
+			else if (_leftOffsets.TryGetValue(column, out offset))
+			{
+			}
+			else
 			{
 				for (int columnIndex = 0; columnIndex < FrozenColumnsCount && columnIndex < column; columnIndex++)
 					offset += Manager.GetColumnWidth(columnIndex);
@@ -380,8 +408,7 @@ namespace CellReport.Presenters
 				for (int columnIndex = column; columnIndex < LeftNoFrozenColumn && (columnIndex > FrozenColumnsCount || FrozenColumnsCount == 0); columnIndex++)
 					offset -= Manager.GetColumnWidth(columnIndex);
 
-				if (_leftOffsets != null)
-					_leftOffsets[column] = offset;
+				_leftOffsets[column] = offset;
 			}
 
 			if (DefaultUnit != unit)
@@ -494,14 +521,25 @@ namespace CellReport.Presenters
 
 		protected void BeginRender()
 		{
-			_topOffsets = new ConcurrentDictionary<int, float>();
-			_leftOffsets = new ConcurrentDictionary<int, float>();
+			int rowsCount = Manager.RowsCount;
+			int colsCount = Manager.ColumnsCount;
+
+			_topPrefixSums = new float[rowsCount + 1];
+			for (int i = 1; i <= rowsCount; i++)
+				_topPrefixSums[i] = _topPrefixSums[i - 1] + Manager.GetRowHeight(i - 1);
+
+			_leftPrefixSums = new float[colsCount + 1];
+			for (int i = 1; i <= colsCount; i++)
+				_leftPrefixSums[i] = _leftPrefixSums[i - 1] + Manager.GetColumnWidth(i - 1);
+
+			_topOffsets.Clear();
+			_leftOffsets.Clear();
 		}
 
 		protected void EndRender()
 		{
-			_topOffsets = null;
-			_leftOffsets = null;
+			_topPrefixSums = null;
+			_leftPrefixSums = null;
 		}
 
 		protected void RenderCell(object context, Cell cell)
