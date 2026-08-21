@@ -16,6 +16,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="mustache-sharp" Version="1.0.0" />
+		<PackageReference Include="Nut" Version="3.4.1" />
 		<PackageReference Include="SkiaSharp" Version="3.116.1" />
 		<PackageReference Include="Topten.RichTextKit" Version="0.4.167" />
 		<PackageReference Include="ZXing.Net" Version="0.16.10" />

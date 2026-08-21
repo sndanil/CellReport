@@ -215,24 +215,21 @@ namespace CellReport.Core.Contents
 
 					if (format.StartsWith("currency", StringComparison.OrdinalIgnoreCase) || format.StartsWith("number", StringComparison.InvariantCultureIgnoreCase))
 					{
-						if (!string.IsNullOrEmpty(param.Culture))
-							NumberToString.CurrentCulture.Value = param.Culture;
+						var culture = param.Culture;
 
-						try
+						if (format.Equals("numberString", StringComparison.OrdinalIgnoreCase))
 						{
-							if (format.Equals("numberString", StringComparison.OrdinalIgnoreCase))
-								return CurrencyToString.GetString(value, true, "", "", "", "", "", "", true);
-
-							var parts = format.Split('|');
-							if (parts.Length == 1)
-								return CurrencyToString.GetString(value);
-
-							return CurrencyToString.GetString(value, parts[1]);
+							return CurrencyToString.GetString(value, null, culture);
 						}
-						finally
+
+						var parts = format.Split('|');
+						var currency = "RUR";
+						if (parts.Length > 1)
 						{
-							NumberToString.CurrentCulture.Value = null;
+							currency = parts[1];
 						}
+
+						return CurrencyToString.GetString(value, currency, culture);
 					}
 
 					if (string.IsNullOrEmpty(param.Culture))
