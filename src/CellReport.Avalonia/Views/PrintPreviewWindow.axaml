@@ -9,51 +9,60 @@
         Height="700"
         WindowStartupLocation="CenterOwner"
         WindowState="Maximized">
+	<Window.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="avares://CellReport.Avalonia/Themes/CellReportTheme.axaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Window.Resources>
+	<Window.Styles>
+		<StyleInclude Source="avares://CellReport.Avalonia/Themes/CellReportControls.axaml" />
+	</Window.Styles>
 	<Grid RowDefinitions="Auto,*">
-		<Border Grid.Row="0"
-		        Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
-		        BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-		        BorderThickness="0,0,0,1">
-			<StackPanel Orientation="Horizontal" Margin="6,4" Spacing="4">
-				<Button Command="{Binding PrintCommand}" ToolTip.Tip="{Binding PrintLabel}" Padding="8,4">
-					<StackPanel Orientation="Horizontal" Spacing="6">
-						<materialIcons:MaterialIcon Kind="Printer" Width="18" Height="18" />
+		<Border Grid.Row="0" Classes="toolbar">
+			<StackPanel Classes="toolbar-items">
+				<Button Classes="toolbar-button" Command="{Binding PrintCommand}" ToolTip.Tip="{Binding PrintLabel}">
+					<StackPanel Classes="toolbar-content">
+						<materialIcons:MaterialIcon Kind="Printer" Classes="toolbar-icon icon-muted" />
 						<TextBlock Text="{Binding PrintLabel}" VerticalAlignment="Center" />
 					</StackPanel>
 				</Button>
-				<Button Command="{Binding PageSetupCommand}" ToolTip.Tip="{Binding PageSetupLabel}" Padding="8,4">
-					<StackPanel Orientation="Horizontal" Spacing="6">
-						<materialIcons:MaterialIcon Kind="FileSettingsOutline" Width="18" Height="18" />
+				<Button Classes="toolbar-button" Command="{Binding PageSetupCommand}" ToolTip.Tip="{Binding PageSetupLabel}">
+					<StackPanel Classes="toolbar-content">
+						<materialIcons:MaterialIcon Kind="FileSettingsOutline" Classes="toolbar-icon icon-muted" />
 						<TextBlock Text="{Binding PageSetupLabel}" VerticalAlignment="Center" />
 					</StackPanel>
 				</Button>
-				<ToggleButton IsChecked="{Binding AutoFitWidth}" ToolTip.Tip="{Binding AutoFitLabel}" Padding="8,4">
-					<materialIcons:MaterialIcon Kind="FitToPageOutline" Width="18" Height="18" />
+				<ToggleButton Classes="toolbar-button toolbar-icon-button" IsChecked="{Binding AutoFitWidth}" ToolTip.Tip="{Binding AutoFitLabel}">
+					<materialIcons:MaterialIcon Kind="FitToPageOutline" Classes="toolbar-icon icon-muted" />
 				</ToggleButton>
 
-				<Border Width="1" Margin="6,2" Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+				<Border Classes="toolbar-separator" />
 
-				<Button Command="{Binding FirstPageCommand}" ToolTip.Tip="Первая страница" Classes="toolbar-icon">
-					<materialIcons:MaterialIcon Kind="SkipPrevious" Width="20" Height="20" />
+				<Button Classes="toolbar-button toolbar-icon-button" Command="{Binding FirstPageCommand}" ToolTip.Tip="Первая страница">
+					<materialIcons:MaterialIcon Kind="SkipPrevious" Classes="toolbar-icon icon-muted" />
 				</Button>
-				<Button Command="{Binding PreviousPageCommand}" IsEnabled="{Binding CanGoPrevious}" ToolTip.Tip="Предыдущая" Classes="toolbar-icon">
-					<materialIcons:MaterialIcon Kind="ChevronLeft" Width="20" Height="20" />
+				<Button Classes="toolbar-button toolbar-icon-button" Command="{Binding PreviousPageCommand}" IsEnabled="{Binding CanGoPrevious}" ToolTip.Tip="Предыдущая">
+					<materialIcons:MaterialIcon Kind="ChevronLeft" Classes="toolbar-icon icon-muted" />
 				</Button>
 				<TextBlock VerticalAlignment="Center" Margin="4,0">
 					<Run Text="{Binding CurrentPage}" />
 					<Run Text="/" />
 					<Run Text="{Binding TotalPages}" />
 				</TextBlock>
-				<Button Command="{Binding NextPageCommand}" IsEnabled="{Binding CanGoNext}" ToolTip.Tip="Следующая" Classes="toolbar-icon">
-					<materialIcons:MaterialIcon Kind="ChevronRight" Width="20" Height="20" />
+				<Button Classes="toolbar-button toolbar-icon-button" Command="{Binding NextPageCommand}" IsEnabled="{Binding CanGoNext}" ToolTip.Tip="Следующая">
+					<materialIcons:MaterialIcon Kind="ChevronRight" Classes="toolbar-icon icon-muted" />
 				</Button>
-				<Button Command="{Binding LastPageCommand}" ToolTip.Tip="Последняя страница" Classes="toolbar-icon">
-					<materialIcons:MaterialIcon Kind="SkipNext" Width="20" Height="20" />
+				<Button Classes="toolbar-button toolbar-icon-button" Command="{Binding LastPageCommand}" ToolTip.Tip="Последняя страница">
+					<materialIcons:MaterialIcon Kind="SkipNext" Classes="toolbar-icon icon-muted" />
 				</Button>
 
-				<Border Width="1" Margin="6,2" Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+				<Border Classes="toolbar-separator" />
 
 				<ComboBox Width="90"
+				          Margin="4,0"
+				          VerticalAlignment="Center"
 				          ItemsSource="{Binding ZoomOptions}"
 				          SelectedIndex="{Binding SelectedZoomIndex}" />
 			</StackPanel>
@@ -62,7 +71,7 @@
 		<ScrollViewer Grid.Row="1"
 		              HorizontalScrollBarVisibility="Auto"
 		              VerticalScrollBarVisibility="Auto"
-		              Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
+		              Background="{DynamicResource CellReport.Content.Background}">
 			<LayoutTransformControl HorizontalAlignment="Center" VerticalAlignment="Center" Margin="24">
 				<LayoutTransformControl.LayoutTransform>
 					<ScaleTransform ScaleX="{Binding ZoomScale}" ScaleY="{Binding ZoomScale}" />

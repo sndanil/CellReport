@@ -12,7 +12,17 @@
         MinHeight="320"
         WindowStartupLocation="CenterOwner"
         CanResize="True">
-	<DockPanel Margin="12" LastChildFill="True">
+	<Window.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="avares://CellReport.Avalonia/Themes/CellReportTheme.axaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Window.Resources>
+	<Window.Styles>
+		<StyleInclude Source="avares://CellReport.Avalonia/Themes/CellReportControls.axaml" />
+	</Window.Styles>
+	<DockPanel Classes="dialog-body" LastChildFill="True">
 		<StackPanel DockPanel.Dock="Top" Spacing="10">
 			<Grid ColumnDefinitions="110,*" ColumnSpacing="8">
 				<TextBlock Grid.Column="0"
@@ -71,7 +81,7 @@
 		<TextBlock DockPanel.Dock="Bottom"
 		           Margin="0,6,0,0"
 		           Text="{Binding StatusMessage}"
-		           Foreground="DarkRed"
+		           Foreground="{DynamicResource CellReport.Error.Foreground}"
 		           IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
 		<Grid RowDefinitions="Auto,*" Margin="0,4,0,0">
@@ -93,7 +103,7 @@
 			</Grid>
 
 			<Border Grid.Row="1"
-			        BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+			        BorderBrush="{DynamicResource CellReport.Grid.Border}"
 			        BorderThickness="1">
 				<ListBox ItemsSource="{Binding Results}"
 				         SelectedItem="{Binding SelectedResult}">

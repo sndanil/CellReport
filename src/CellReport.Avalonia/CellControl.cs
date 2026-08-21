@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.Skia;
 using Avalonia.Threading;
 using CellReport.Core;
 using System;
@@ -44,8 +45,17 @@ namespace CellReport.Avalonia
 
 		public override void Render(DrawingContext context)
 		{
-			context.FillRectangle(Brushes.White, new Rect(0, 0, Bounds.Width, Bounds.Height));
-			context.Custom(new CustomDrawOp(new Rect(0, 0, Bounds.Width, Bounds.Height), this, Presenter));
+			var background = Colors.White;
+			if (this.TryFindResource("CellReport.Grid.Background", ActualThemeVariant, out var brush)
+				&& brush is ISolidColorBrush solid)
+				background = solid.Color;
+
+			context.FillRectangle(new SolidColorBrush(background), new Rect(0, 0, Bounds.Width, Bounds.Height));
+			context.Custom(new CustomDrawOp(
+				new Rect(0, 0, Bounds.Width, Bounds.Height),
+				this,
+				Presenter,
+				background.ToSKColor()));
 		}
 
 		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)

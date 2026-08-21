@@ -9,161 +9,107 @@
              x:Class="CellReport.Avalonia.PresentControl"
              x:DataType="vm:PresentControlViewModel">
 	<UserControl.Resources>
-		<SolidColorBrush x:Key="ResizersBackBrush" Color="#DFE3E8" />
-		<SolidColorBrush x:Key="ResizersTextBrush" Color="#363636" />
-		<SolidColorBrush x:Key="ResizersLineBrush" Color="#B1B5BA" />
-		<FontFamily x:Key="ResizersFont">Microsoft Sans Serif</FontFamily>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="avares://CellReport.Avalonia/Themes/CellReportTheme.axaml" />
+			</ResourceDictionary.MergedDictionaries>
+			<FontFamily x:Key="ResizersFont">Microsoft Sans Serif</FontFamily>
+		</ResourceDictionary>
 	</UserControl.Resources>
 
 	<UserControl.Styles>
-		<Style Selector="Button.toolbar-icon /template/ ContentPresenter">
-			<Setter Property="RecognizesAccessKey" Value="False" />
-		</Style>
-		<Style Selector="ToggleButton.toolbar-icon /template/ ContentPresenter">
-			<Setter Property="RecognizesAccessKey" Value="False" />
-		</Style>
-
-		<Style Selector="Button.toolbar-icon">
-			<Setter Property="Background" Value="Transparent" />
-			<Setter Property="BorderThickness" Value="0" />
-			<Setter Property="Padding" Value="6" />
-			<Setter Property="CornerRadius" Value="4" />
-			<Setter Property="MinWidth" Value="32" />
-			<Setter Property="MinHeight" Value="32" />
-			<Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-		</Style>
-		<Style Selector="Button.toolbar-icon:pointerover">
-			<Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListLowBrush}" />
-		</Style>
-		<Style Selector="Button.toolbar-icon:pressed">
-			<Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListMediumBrush}" />
-		</Style>
-
-		<Style Selector="ToggleButton.toolbar-icon">
-			<Setter Property="Background" Value="Transparent" />
-			<Setter Property="BorderThickness" Value="0" />
-			<Setter Property="Padding" Value="6" />
-			<Setter Property="CornerRadius" Value="4" />
-			<Setter Property="MinWidth" Value="32" />
-			<Setter Property="MinHeight" Value="32" />
-			<Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-		</Style>
-		<Style Selector="ToggleButton.toolbar-icon:pointerover">
-			<Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListLowBrush}" />
-		</Style>
-		<Style Selector="ToggleButton.toolbar-icon:pressed">
-			<Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListMediumBrush}" />
-		</Style>
-		<Style Selector="ToggleButton.toolbar-icon:checked">
-			<Setter Property="Background" Value="{DynamicResource SystemAccentColorLight2}" />
-			<Setter Property="Foreground" Value="{DynamicResource SystemAccentColorDark1}" />
-		</Style>
-		<Style Selector="ToggleButton.toolbar-icon:checked:pointerover">
-			<Setter Property="Background" Value="{DynamicResource SystemAccentColorLight1}" />
-		</Style>
+		<StyleInclude Source="avares://CellReport.Avalonia/Themes/CellReportControls.axaml" />
 	</UserControl.Styles>
 
 	<Grid RowDefinitions="Auto,*">
 		<Border Grid.Row="0"
-		        Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
-		        BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-		        BorderThickness="0,0,0,1"
+		        Classes="toolbar"
 		        IsVisible="{Binding ShowToolBar}">
-			<StackPanel Orientation="Horizontal" Margin="4,2" Spacing="2">
-				<Button Classes="toolbar-icon"
+			<StackPanel Classes="toolbar-items">
+				<Button Classes="toolbar-button toolbar-icon-button"
 				        Command="{Binding PrintCommand}"
 				        ToolTip.Tip="{Binding PrintLabel}">
-					<materialIcons:MaterialIcon Kind="Printer" Width="20" Height="20" />
+					<materialIcons:MaterialIcon Kind="Printer" Classes="toolbar-icon icon-muted" />
 				</Button>
-				<Button Classes="toolbar-icon"
+				<Button Classes="toolbar-button toolbar-icon-button"
 				        Command="{Binding CustomPrintCommand}"
 				        ToolTip.Tip="{Binding CustomPrintLabel}">
-					<materialIcons:MaterialIcon Kind="PrinterSettings" Width="20" Height="20" />
+					<materialIcons:MaterialIcon Kind="PrinterSettings" Classes="toolbar-icon icon-muted" />
 				</Button>
-				<Button Classes="toolbar-icon"
+				<Button Classes="toolbar-button toolbar-icon-button"
 				        Command="{Binding PrintPreviewCommand}"
 				        ToolTip.Tip="{Binding PreviewLabel}">
-					<materialIcons:MaterialIcon Kind="FileEyeOutline" Width="20" Height="20" />
+					<materialIcons:MaterialIcon Kind="FileEyeOutline" Classes="toolbar-icon icon-muted" />
 				</Button>
-				<Button Classes="toolbar-icon"
+				<Button Classes="toolbar-button toolbar-icon-button"
 				        Command="{Binding PageSetupCommand}"
 				        ToolTip.Tip="{Binding PageSetupLabel}">
-					<materialIcons:MaterialIcon Kind="FileSettingsOutline" Width="20" Height="20" />
+					<materialIcons:MaterialIcon Kind="FileSettingsOutline" Classes="toolbar-icon icon-muted" />
 				</Button>
 
-				<Border Width="1"
-				        Margin="6,4"
-				        Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+				<Border Classes="toolbar-separator" />
 
-				<ToggleButton Classes="toolbar-icon"
+				<ToggleButton Classes="toolbar-button toolbar-icon-button"
 				              IsChecked="{Binding ShowGridLines}"
 				              ToolTip.Tip="{Binding ShowGridLabel}">
-					<materialIcons:MaterialIcon Kind="Grid" Width="20" Height="20" />
+					<materialIcons:MaterialIcon Kind="Grid" Classes="toolbar-icon icon-muted" />
 				</ToggleButton>
-				<ToggleButton Classes="toolbar-icon"
+				<ToggleButton Classes="toolbar-button toolbar-icon-button"
 				              IsChecked="{Binding ShowResizers}"
 				              ToolTip.Tip="{Binding ShowResizersLabel}">
-					<materialIcons:MaterialIcon Kind="TableHeadersEye" Width="20" Height="20" />
+					<materialIcons:MaterialIcon Kind="TableHeadersEye" Classes="toolbar-icon icon-muted" />
 				</ToggleButton>
 
-				<Border Width="1"
-				        Margin="6,4"
-				        Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+				<Border Classes="toolbar-separator" />
 
 				<ComboBox Width="80"
-				          Margin="0,0,4,0"
+				          Margin="4,0"
 				          VerticalAlignment="Center"
 				          ItemsSource="{Binding ScaleOptions}"
 				          SelectedIndex="{Binding SelectedScaleIndex}" />
 
-				<Border Width="1"
-				        Margin="6,4"
-				        Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+				<Border Classes="toolbar-separator" />
 
-				<Button Classes="toolbar-icon"
+				<Button Classes="toolbar-button toolbar-icon-button"
 				        Command="{Binding ExportExcelCommand}"
 				        ToolTip.Tip="{Binding ExportExcelLabel}">
-					<materialIcons:MaterialIcon Kind="FileExcelBox" Width="20" Height="20" />
+					<materialIcons:MaterialIcon Kind="FileExcelBox" Classes="toolbar-icon icon-muted" />
 				</Button>
-				<Button Classes="toolbar-icon"
+				<Button Classes="toolbar-button toolbar-icon-button"
 				        Command="{Binding ExportHtmlCommand}"
 				        ToolTip.Tip="{Binding ExportHtmlLabel}">
-					<materialIcons:MaterialIcon Kind="LanguageHtml5" Width="20" Height="20" />
+					<materialIcons:MaterialIcon Kind="LanguageHtml5" Classes="toolbar-icon icon-muted" />
 				</Button>
-				<Button Classes="toolbar-icon"
+				<Button Classes="toolbar-button toolbar-icon-button"
 				        Command="{Binding ExportPdfCommand}"
 				        ToolTip.Tip="{Binding ExportPdfLabel}">
-					<materialIcons:MaterialIcon Kind="FilePdfBox" Width="20" Height="20" />
+					<materialIcons:MaterialIcon Kind="FilePdfBox" Classes="toolbar-icon icon-muted" />
 				</Button>
-				<Button Classes="toolbar-icon"
+				<Button Classes="toolbar-button toolbar-icon-button"
 				        Command="{Binding SaveCommand}"
 				        ToolTip.Tip="{Binding SaveLabel}">
-					<materialIcons:MaterialIcon Kind="ContentSave" Width="20" Height="20" />
+					<materialIcons:MaterialIcon Kind="ContentSave" Classes="toolbar-icon icon-muted" />
 				</Button>
 
-				<Border Width="1"
-				        Margin="6,4"
-				        Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+				<Border Classes="toolbar-separator" />
 
-				<Button Classes="toolbar-icon"
+				<Button Classes="toolbar-button toolbar-icon-button"
 				        Command="{Binding FindCommand}"
 				        ToolTip.Tip="{Binding FindLabel}">
-					<materialIcons:MaterialIcon Kind="Magnify" Width="20" Height="20" />
+					<materialIcons:MaterialIcon Kind="Magnify" Classes="toolbar-icon icon-muted" />
 				</Button>
-				<Button Classes="toolbar-icon"
+				<Button Classes="toolbar-button toolbar-icon-button"
 				        Command="{Binding GoToRowCommand}"
 				        ToolTip.Tip="{Binding GoToRowLabel}">
-					<materialIcons:MaterialIcon Kind="FormatListNumbered" Width="20" Height="20" />
+					<materialIcons:MaterialIcon Kind="FormatListNumbered" Classes="toolbar-icon icon-muted" />
 				</Button>
 
-				<Border Width="1"
-				        Margin="6,4"
-				        Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+				<Border Classes="toolbar-separator" />
 
-				<ToggleButton Classes="toolbar-icon"
+				<ToggleButton Classes="toolbar-button toolbar-icon-button"
 				              IsChecked="{Binding ShowBookMarks}"
 				              ToolTip.Tip="{Binding BookMarksLabel}">
-					<materialIcons:MaterialIcon Kind="BookmarkOutline" Width="20" Height="20" />
+					<materialIcons:MaterialIcon Kind="BookmarkOutline" Classes="toolbar-icon icon-muted" />
 				</ToggleButton>
 			</StackPanel>
 		</Border>
@@ -186,14 +132,14 @@
 			<Grid Grid.Column="1"
 			      ColumnDefinitions="Auto,*,Auto"
 			      RowDefinitions="Auto,*,Auto"
-			      Background="{DynamicResource ResizersBackBrush}">
+			      Background="{DynamicResource CellReport.Grid.HeaderBackground}">
 				<Border Grid.Row="0"
 				        Grid.Column="0"
 				        Width="30"
 				        Height="20"
 				        IsVisible="{Binding ShowResizers}"
-				        Background="{DynamicResource ResizersBackBrush}"
-				        BorderBrush="{DynamicResource ResizersLineBrush}"
+				        Background="{DynamicResource CellReport.Grid.HeaderBackground}"
+				        BorderBrush="{DynamicResource CellReport.Grid.HeaderBorder}"
 				        BorderThickness="0,0,1,1" />
 				<local:ColumnResizerControl Grid.Column="1"
 				                            Grid.Row="0"

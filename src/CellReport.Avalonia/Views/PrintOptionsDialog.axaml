@@ -7,6 +7,16 @@
 		SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterOwner"
         CanResize="False">
+	<Window.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="avares://CellReport.Avalonia/Themes/CellReportTheme.axaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Window.Resources>
+	<Window.Styles>
+		<StyleInclude Source="avares://CellReport.Avalonia/Themes/CellReportControls.axaml" />
+	</Window.Styles>
 	<StackPanel Margin="16" Spacing="12">
 		<TextBlock Text="{Binding PrinterLabel}" FontWeight="SemiBold" />
 		<ComboBox ItemsSource="{Binding Printers}"
@@ -31,7 +41,7 @@
 			<TextBlock Grid.Column="5"
 			           Text="{Binding PageCountHint}"
 			           VerticalAlignment="Center"
-			           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+			           Foreground="{DynamicResource CellReport.Icon.Muted}" />
 		</Grid>
 
 		<Grid ColumnDefinitions="Auto,150">

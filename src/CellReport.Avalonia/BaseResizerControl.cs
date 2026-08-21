@@ -14,22 +14,28 @@ namespace CellReport.Avalonia
 
 		public BaseDisplayPresenter? Presenter { get; set; }
 
+		protected IBrush GetBrush(string key, Color fallback)
+		{
+			if (this.TryFindResource(key, ActualThemeVariant, out var resource) && resource is IBrush brush)
+				return brush;
+			return new SolidColorBrush(fallback);
+		}
+
 		protected Pen CreatePen()
 		{
-			this.TryFindResource("ResizersLineBrush", ActualThemeVariant, out var lineBrush);
-			return new Pen((SolidColorBrush)lineBrush!, 1);
+			return new Pen(GetBrush("CellReport.Grid.HeaderBorder", Color.FromRgb(0xB1, 0xB5, 0xBA)), 1);
 		}
 
 		protected Pen CreateHeaderSeparatorPen()
 		{
-			return new Pen(new SolidColorBrush(Color.FromRgb(0x9E, 0xB6, 0xCE)), 1);
+			return new Pen(GetBrush("CellReport.Grid.HeaderSeparator", Color.FromRgb(0x9E, 0xB6, 0xCE)), 1);
 		}
 
 		public override void Render(DrawingContext drawingContext)
 		{
 			base.Render(drawingContext);
-			this.TryFindResource("ResizersBackBrush", ActualThemeVariant, out var backBrush);
-			drawingContext.FillRectangle((SolidColorBrush)backBrush!,
+			drawingContext.FillRectangle(
+				GetBrush("CellReport.Grid.HeaderBackground", Color.FromRgb(0xDF, 0xE3, 0xE8)),
 				new AvaloniaRect(0, 0, Bounds.Width, Bounds.Height));
 		}
 
@@ -38,15 +44,17 @@ namespace CellReport.Avalonia
 			if (bounds.Height <= 0.1 || bounds.Width <= 0.1)
 				return;
 
-			this.TryFindResource("ResizersTextBrush", ActualThemeVariant, out var textBrush);
+			var textBrush = GetBrush("CellReport.Grid.HeaderForeground", Color.FromRgb(0x36, 0x36, 0x36));
 			this.TryFindResource("ResizersFont", ActualThemeVariant, out var fontFamily);
+			if (!(fontFamily is FontFamily))
+				fontFamily = FontFamily.Default;
 
 			var formattedText = new FormattedText(text,
 				System.Globalization.CultureInfo.CurrentCulture,
 				FlowDirection.LeftToRight,
-				new Typeface((FontFamily)fontFamily!),
+				new Typeface((FontFamily)fontFamily),
 				10,
-				(SolidColorBrush)textBrush!
+				textBrush
 			);
 
 			formattedText.MaxTextWidth = bounds.Width;
@@ -63,7 +71,7 @@ namespace CellReport.Avalonia
 			if (bounds.Width <= 0.1 || bounds.Height <= 0.1)
 				return;
 
-			var brush = new LinearGradientBrush
+			IBrush brush = new LinearGradientBrush
 			{
 				StartPoint = new RelativePoint(0.5, 0, RelativeUnit.Relative),
 				EndPoint = new RelativePoint(0.5, 1, RelativeUnit.Relative),
@@ -73,6 +81,11 @@ namespace CellReport.Avalonia
 					new GradientStop(Color.FromRgb(0xFF, 0xEF, 0x71), 1)
 				}
 			};
+
+			if (this.TryFindResource("CellReport.Grid.SelectedHeader", ActualThemeVariant, out var headerBrush)
+				&& headerBrush is IBrush selected)
+				brush = selected;
+
 			dc.DrawRectangle(brush, null, bounds);
 		}
 

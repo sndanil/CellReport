@@ -9,6 +9,16 @@
         Height="160"
         WindowStartupLocation="CenterOwner"
         CanResize="False">
+	<Window.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="avares://CellReport.Avalonia/Themes/CellReportTheme.axaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Window.Resources>
+	<Window.Styles>
+		<StyleInclude Source="avares://CellReport.Avalonia/Themes/CellReportControls.axaml" />
+	</Window.Styles>
 	<Grid Margin="12" RowDefinitions="Auto,Auto" RowSpacing="12">
 		<StackPanel Spacing="4">
 			<TextBlock Text="{Binding RowNumberLabel}" />

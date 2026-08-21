@@ -12,13 +12,15 @@ namespace CellReport.Avalonia
 	{
 		private readonly Control _control;
 		private readonly AvaloniaDisplayPresenter _presenter;
+		private readonly SKColor _background;
 
 		public Rect Bounds { get; }
 
-		public CustomDrawOp(Rect bounds, Control control, AvaloniaDisplayPresenter presenter)
+		public CustomDrawOp(Rect bounds, Control control, AvaloniaDisplayPresenter presenter, SKColor background)
 		{
 			_control = control;
 			_presenter = presenter;
+			_background = background;
 			Bounds = bounds;
 		}
 
@@ -40,7 +42,7 @@ namespace CellReport.Avalonia
 			var canvas = lease.SkCanvas;
 			canvas.Save();
 
-			using (var paint = new SKPaint { Color = SKColors.White, Style = SKPaintStyle.Fill })
+			using (var paint = new SKPaint { Color = _background, Style = SKPaintStyle.Fill })
 				canvas.DrawRect(_control.Bounds.WithX(0).WithY(0).ToSKRect(), paint);
 
 			_presenter?.Render(_control, canvas);
