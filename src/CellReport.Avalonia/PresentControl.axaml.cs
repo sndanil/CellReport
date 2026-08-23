@@ -6,7 +6,10 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Material.Icons;
+using Material.Icons.Avalonia;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 
@@ -47,17 +50,26 @@ namespace CellReport.Avalonia
 		private void OnPresentControlDataContextChanged(object? sender, System.EventArgs e)
 		{
 			if (_viewModel != null)
+			{
 				_viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+				_viewModel.Printers.CollectionChanged -= OnPrintersChanged;
+			}
 
 			_viewModel = DataContext as PresentControlViewModel;
 			if (_viewModel == null)
 				return;
 
 			_viewModel.PropertyChanged += OnViewModelPropertyChanged;
+			_viewModel.Printers.CollectionChanged += OnPrintersChanged;
 			if (_viewModel.Manager != null)
 				AttachManager(_viewModel.Manager);
 
 			UpdateContextMenuDataContext();
+			BuildPrintFlyout();
+		}
+
+		private void OnPrintersChanged(object? sender, NotifyCollectionChangedEventArgs e)
+		{
 			BuildPrintFlyout();
 		}
 
@@ -72,44 +84,43 @@ namespace CellReport.Avalonia
 			if (_viewModel == null)
 				return;
 
-			var flyout = new MenuFlyout();
+			var flyout = _printSplitButton.Flyout as MenuFlyout;
+			if (flyout == null)
+				return;
 
-			if (_viewModel.Printers.Count > 0)
+			flyout.Items.Clear();
+			_printerMenuItems.Clear();
+
+			foreach (var printerName in _viewModel.Printers)
 			{
-				_printerMenuItems.Clear();
-				foreach (var printerName in _viewModel.Printers)
-				{
-					var item = new MenuItem { Header = printerName, Tag = printerName };
-					item.Click += OnPrinterMenuClick;
-					flyout.Items.Add(item);
-					_printerMenuItems.Add(item);
-				}
-
-				UpdatePrinterCheckmarks();
-				flyout.Items.Add(new Separator());
+				var item = new MenuItem { Header = printerName, Tag = "PrinterMenuItem" };
+				item.Click += OnPrinterMenuClick;
+				flyout.Items.Add(item);
+				_printerMenuItems.Add(item);
 			}
 
-			var customPrintItem = new MenuItem
-			{
-				Header = _viewModel.CustomPrintLabel,
-				Command = _viewModel.CustomPrintCommand
-			};
-			var previewItem = new MenuItem
-			{
-				Header = _viewModel.PreviewLabel,
-				Command = _viewModel.PrintPreviewCommand
-			};
-			var pageSetupItem = new MenuItem
-			{
-				Header = _viewModel.PageSetupLabel,
-				Command = _viewModel.PageSetupCommand
-			};
+			if (_viewModel.Printers.Count > 0)
+				flyout.Items.Add(new Separator());
 
-			flyout.Items.Add(customPrintItem);
-			flyout.Items.Add(previewItem);
-			flyout.Items.Add(pageSetupItem);
+			flyout.Items.Add(CreateActionMenuItem(_viewModel.CustomPrintLabel, _viewModel.CustomPrintCommand, MaterialIconKind.PrinterSettings));
+			flyout.Items.Add(CreateActionMenuItem(_viewModel.PreviewLabel, _viewModel.PrintPreviewCommand, MaterialIconKind.FileEyeOutline));
+			flyout.Items.Add(CreateActionMenuItem(_viewModel.PageSetupLabel, _viewModel.PageSetupCommand, MaterialIconKind.FileSettingsOutline));
 
-			_printSplitButton.Flyout = flyout;
+			UpdatePrinterCheckmarks();
+		}
+
+		private static MenuItem CreateActionMenuItem(string header, System.Windows.Input.ICommand command, MaterialIconKind iconKind)
+		{
+			var icon = new MaterialIcon { Kind = iconKind };
+			icon.Classes.Add("toolbar-icon");
+			icon.Classes.Add("icon-muted");
+
+			return new MenuItem
+			{
+				Header = header,
+				Command = command,
+				Icon = icon
+			};
 		}
 
 		private void OnPrinterMenuClick(object? sender, RoutedEventArgs e)
@@ -120,6 +131,12 @@ namespace CellReport.Avalonia
 				UpdatePrinterCheckmarks();
 				_viewModel.PrintCommand.Execute(null);
 			}
+		}
+
+		private void PrintSplitButton_Click(object? sender, RoutedEventArgs e)
+		{
+			if (_printSplitButton.Flyout != null && !_printSplitButton.Flyout.IsOpen)
+				_printSplitButton.Flyout.ShowAt(_printSplitButton);
 		}
 
 		private void UpdatePrinterCheckmarks()
@@ -138,6 +155,9 @@ namespace CellReport.Avalonia
 			else if (e.PropertyName is nameof(PresentControlViewModel.ShowResizers)
 			         or nameof(PresentControlViewModel.ShowToolBar))
 				UpdateResizerVisibility();
+
+			if (e.PropertyName == nameof(PresentControlViewModel.SelectedPrinter))
+                UpdatePrinterCheckmarks();
 		}
 
 		public void AttachManager(CellManager manager)

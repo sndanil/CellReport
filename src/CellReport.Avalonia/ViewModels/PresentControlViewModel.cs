@@ -59,7 +59,8 @@ namespace CellReport.Avalonia.ViewModels
 
 		public string AutoFitPageLabel => ReportLocalization.Get("Report/AutoFitPage");
 
-		public ObservableCollection<string> Printers { get; } = new();
+		[ObservableProperty]
+		private ObservableCollection<string> _printers = new();
 
 		[ObservableProperty]
 		private string? _selectedPrinter;
@@ -95,9 +96,10 @@ namespace CellReport.Avalonia.ViewModels
 
 		private void LoadPrinters()
 		{
-			Printers.Clear();
-			foreach (var printer in WindowsPrinterService.GetInstalledPrinters())
-				Printers.Add(printer);
+            Printers.Clear();
+
+            foreach (var printer in WindowsPrinterService.GetInstalledPrinters())
+                Printers.Add(printer);
 
 			SelectedPrinter = WindowsPrinterService.GetDefaultPrinter()
 				?? (Printers.Count > 0 ? Printers[0] : null);

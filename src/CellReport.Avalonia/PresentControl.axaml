@@ -27,36 +27,13 @@
 		        IsVisible="{Binding ShowToolBar}">
 			<StackPanel Classes="toolbar-items">
 				<SplitButton Classes="toolbar-button toolbar-icon-button"
-				             Command="{Binding PrintCommand}"
 				             Name="printSplitButton"
+				             Click="PrintSplitButton_Click"
 				             ToolTip.Tip="{Binding PrintLabel}">
 					<materialIcons:MaterialIcon Kind="Printer" Classes="toolbar-icon icon-muted" />
 					<SplitButton.Flyout>
-						<MenuFlyout Placement="BottomEdgeAlignedLeft">
-							<Separator />
-							<MenuItem Header="{Binding CustomPrintLabel}"
-									  Command="{Binding PrintPreviewCommand}"
-									  >
-								<MenuItem.Icon>
-									<materialIcons:MaterialIcon Kind="PrinterSettings" Classes="toolbar-icon icon-muted" />
-								</MenuItem.Icon>
-							</MenuItem>
-							<MenuItem Header="{Binding PreviewLabel}"
-									  Command="{Binding PrintPreviewCommand}"
-									  >
-								<MenuItem.Icon>
-									<materialIcons:MaterialIcon Kind="FileEyeOutline" Classes="toolbar-icon icon-muted" />
-								</MenuItem.Icon>
-							</MenuItem>
-							<MenuItem Header="{Binding PageSetupLabel}"
-									  Command="{Binding PageSetupCommand}"
-									  >
-								<MenuItem.Icon>
-									<materialIcons:MaterialIcon Kind="FileSettingsOutline" Classes="toolbar-icon icon-muted" />
-								</MenuItem.Icon>
-							</MenuItem>
-						</MenuFlyout>
-					</SplitButton.Flyout>				
+						<MenuFlyout Placement="BottomEdgeAlignedLeft" />
+					</SplitButton.Flyout>
 				</SplitButton>
 
 				<Border Classes="toolbar-separator" />
