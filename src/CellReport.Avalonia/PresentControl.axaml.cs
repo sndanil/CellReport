@@ -1,10 +1,14 @@
-﻿using CellReport.Avalonia.ViewModels;
+﻿using CellReport.Avalonia.Services;
+using CellReport.Avalonia.ViewModels;
 using CellReport.Core;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace CellReport.Avalonia
 {
@@ -15,9 +19,11 @@ namespace CellReport.Avalonia
 		private RowResizerControl _rowsResizer;
 		private ScrollBar _hScrollBar;
 		private ScrollBar _vScrollBar;
+		private SplitButton _printSplitButton;
 		private AvaloniaDisplayPresenter? _presenter;
 		private PresentControlViewModel? _viewModel;
 		private bool _updatingScrollBars;
+		private readonly List<MenuItem> _printerMenuItems = new();
 
 		public PresentControl()
 		{
@@ -27,6 +33,7 @@ namespace CellReport.Avalonia
 			_rowsResizer = this.Find<RowResizerControl>("rowsResizer");
 			_hScrollBar = this.Find<ScrollBar>("hScrollBar");
 			_vScrollBar = this.Find<ScrollBar>("vScrollBar");
+			_printSplitButton = this.Find<SplitButton>("printSplitButton");
 
 			_hScrollBar.PropertyChanged += OnHorizontalScrollBarChanged;
 			_vScrollBar.PropertyChanged += OnVerticalScrollBarChanged;
@@ -51,12 +58,77 @@ namespace CellReport.Avalonia
 				AttachManager(_viewModel.Manager);
 
 			UpdateContextMenuDataContext();
+			BuildPrintFlyout();
 		}
 
 		private void UpdateContextMenuDataContext()
 		{
 			if (_cellControl.ContextMenu != null)
 				_cellControl.ContextMenu.DataContext = _viewModel;
+		}
+
+		private void BuildPrintFlyout()
+		{
+			if (_viewModel == null)
+				return;
+
+			var flyout = new MenuFlyout();
+
+			if (_viewModel.Printers.Count > 0)
+			{
+				_printerMenuItems.Clear();
+				foreach (var printerName in _viewModel.Printers)
+				{
+					var item = new MenuItem { Header = printerName, Tag = printerName };
+					item.Click += OnPrinterMenuClick;
+					flyout.Items.Add(item);
+					_printerMenuItems.Add(item);
+				}
+
+				UpdatePrinterCheckmarks();
+				flyout.Items.Add(new Separator());
+			}
+
+			var customPrintItem = new MenuItem
+			{
+				Header = _viewModel.CustomPrintLabel,
+				Command = _viewModel.CustomPrintCommand
+			};
+			var previewItem = new MenuItem
+			{
+				Header = _viewModel.PreviewLabel,
+				Command = _viewModel.PrintPreviewCommand
+			};
+			var pageSetupItem = new MenuItem
+			{
+				Header = _viewModel.PageSetupLabel,
+				Command = _viewModel.PageSetupCommand
+			};
+
+			flyout.Items.Add(customPrintItem);
+			flyout.Items.Add(previewItem);
+			flyout.Items.Add(pageSetupItem);
+
+			_printSplitButton.Flyout = flyout;
+		}
+
+		private void OnPrinterMenuClick(object? sender, RoutedEventArgs e)
+		{
+			if (sender is MenuItem menuItem && menuItem.Tag is string printerName && _viewModel != null)
+			{
+				_viewModel.SelectedPrinter = printerName;
+				UpdatePrinterCheckmarks();
+				_viewModel.PrintCommand.Execute(null);
+			}
+		}
+
+		private void UpdatePrinterCheckmarks()
+		{
+			var selected = _viewModel?.SelectedPrinter;
+			foreach (var item in _printerMenuItems)
+			{
+				item.IsChecked = item.Tag is string name && name == selected;
+			}
 		}
 
 		private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)

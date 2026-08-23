@@ -26,35 +26,38 @@
 		        Classes="toolbar"
 		        IsVisible="{Binding ShowToolBar}">
 			<StackPanel Classes="toolbar-items">
-				<Button Classes="toolbar-button toolbar-icon-button"
-				        Command="{Binding PrintCommand}"
-				        ToolTip.Tip="{Binding PrintLabel}">
+				<SplitButton Classes="toolbar-button toolbar-icon-button"
+				             Command="{Binding PrintCommand}"
+				             Name="printSplitButton"
+				             ToolTip.Tip="{Binding PrintLabel}">
 					<materialIcons:MaterialIcon Kind="Printer" Classes="toolbar-icon icon-muted" />
-				</Button>
-				<Button Classes="toolbar-button toolbar-icon-button"
-				        Command="{Binding CustomPrintCommand}"
-				        ToolTip.Tip="{Binding CustomPrintLabel}">
-					<materialIcons:MaterialIcon Kind="PrinterSettings" Classes="toolbar-icon icon-muted" />
-				</Button>
-				<Button Classes="toolbar-button toolbar-icon-button"
-				        Command="{Binding PrintPreviewCommand}"
-				        ToolTip.Tip="{Binding PreviewLabel}">
-					<materialIcons:MaterialIcon Kind="FileEyeOutline" Classes="toolbar-icon icon-muted" />
-				</Button>
-				<Button Classes="toolbar-button toolbar-icon-button"
-				        Command="{Binding PageSetupCommand}"
-				        ToolTip.Tip="{Binding PageSetupLabel}">
-					<materialIcons:MaterialIcon Kind="FileSettingsOutline" Classes="toolbar-icon icon-muted" />
-				</Button>
-
-				<Border Classes="toolbar-separator" />
-
-				<ComboBox Width="200"
-				          Margin="4,0"
-				          VerticalAlignment="Center"
-				          ItemsSource="{Binding Printers}"
-				          SelectedItem="{Binding SelectedPrinter}"
-				          ToolTip.Tip="{Binding PrintPrinterLabel}" />
+					<SplitButton.Flyout>
+						<MenuFlyout Placement="BottomEdgeAlignedLeft">
+							<Separator />
+							<MenuItem Header="{Binding CustomPrintLabel}"
+									  Command="{Binding PrintPreviewCommand}"
+									  >
+								<MenuItem.Icon>
+									<materialIcons:MaterialIcon Kind="PrinterSettings" Classes="toolbar-icon icon-muted" />
+								</MenuItem.Icon>
+							</MenuItem>
+							<MenuItem Header="{Binding PreviewLabel}"
+									  Command="{Binding PrintPreviewCommand}"
+									  >
+								<MenuItem.Icon>
+									<materialIcons:MaterialIcon Kind="FileEyeOutline" Classes="toolbar-icon icon-muted" />
+								</MenuItem.Icon>
+							</MenuItem>
+							<MenuItem Header="{Binding PageSetupLabel}"
+									  Command="{Binding PageSetupCommand}"
+									  >
+								<MenuItem.Icon>
+									<materialIcons:MaterialIcon Kind="FileSettingsOutline" Classes="toolbar-icon icon-muted" />
+								</MenuItem.Icon>
+							</MenuItem>
+						</MenuFlyout>
+					</SplitButton.Flyout>				
+				</SplitButton>
 
 				<Border Classes="toolbar-separator" />
 

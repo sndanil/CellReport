@@ -64,8 +64,6 @@ namespace CellReport.Avalonia.ViewModels
 		[ObservableProperty]
 		private string? _selectedPrinter;
 
-		public string PrintPrinterLabel => ReportLocalization.Get("Report/Print");
-
 		public ObservableCollection<BookMarkItemViewModel> BookMarks { get; } = new();
 
 		[ObservableProperty]
