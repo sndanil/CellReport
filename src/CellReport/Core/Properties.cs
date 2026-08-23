@@ -19,7 +19,12 @@ namespace CellReport.Core
 		private string _documentName = string.Empty;
 		public string DocumentName
 		{
-			get { return _documentName; }
+			get
+			{
+				if (TemplateLocalizer.IsFullKey(_documentName) && _localization != null)
+					return TemplateLocalizer.GetString(_localization, _documentName, _culture);
+				return _documentName;
+			}
 			set
 			{
 				if (_documentName != value)
@@ -28,6 +33,11 @@ namespace CellReport.Core
 					OnPropertyChanged("DocumentName");
 				}
 			}
+		}
+
+		internal string RawDocumentName
+		{
+			get { return _documentName; }
 		}
 
 		private string _culture;
@@ -140,7 +150,7 @@ namespace CellReport.Core
 
 		internal XElement Serialize()
 		{
-			var result = new XElement("Properties", new XElement("DocumentName", DocumentName));
+			var result = new XElement("Properties", new XElement("DocumentName", RawDocumentName));
 			var localization = Localization.Serialize();
 			if (localization != null)
 				result.Add(localization);

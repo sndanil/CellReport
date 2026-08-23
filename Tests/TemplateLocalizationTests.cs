@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 using CellReport;
@@ -250,11 +250,44 @@ namespace CellReportTests
 			var report = new ReportDocument(template);
 			report.Culture = "en";
 
-			var expression = new DocumentNameExpression();
-			Assert.AreEqual("Report", expression.GetValue(report.Manager));
+			Assert.AreEqual("Report", report.Manager.Properties.DocumentName);
 
 			report.Culture = "ru";
-			Assert.AreEqual("Отчёт", expression.GetValue(report.Manager));
+			Assert.AreEqual("Отчёт", report.Manager.Properties.DocumentName);
+		}
+
+		[TestMethod]
+		public void DocumentName_AutoResolvesViaProperty()
+		{
+			var template = new CellTemplate();
+			template.LoadFromXml(LocalizedTemplate);
+			template.Manager.Properties.Culture = "en";
+
+			Assert.AreEqual("Report", template.Manager.Properties.DocumentName);
+		}
+
+		[TestMethod]
+		public void DocumentName_RawKeyPreservedForSerialization()
+		{
+			var template = new CellTemplate();
+			template.LoadFromXml(LocalizedTemplate);
+			template.Manager.Properties.Culture = "en";
+
+			Assert.AreEqual("Report", template.Manager.Properties.DocumentName);
+			Assert.AreEqual("#docTitle", template.Manager.Properties.RawDocumentName);
+		}
+
+		[TestMethod]
+		public void DocumentName_RoundTrip_PreservesRawKey()
+		{
+			var template = new CellTemplate();
+			template.LoadFromXml(LocalizedTemplate);
+
+			var reloaded = RoundTrip(template);
+			Assert.AreEqual("#docTitle", reloaded.Manager.Properties.RawDocumentName);
+
+			reloaded.Manager.Properties.Culture = "en";
+			Assert.AreEqual("Report", reloaded.Manager.Properties.DocumentName);
 		}
 
 		[TestMethod]
@@ -289,7 +322,31 @@ namespace CellReportTests
 			Assert.AreEqual("Привет, Мир!", GetCellText(report.Manager, 0, 0));
 		}
 
-		[TestMethod]
+        [TestMethod]
+        public void Resolver_InlineKeys_NotCorruptedByNumbering()
+        {
+            TemplateLocalizer.Resolver = (key, culture) => "RESOLVED";
+            var xml = MixedTemplate.Replace("#greeting, [name]!", "#greeting, #1 [name]! #2");
+            var report = TestTemplateFactory.LoadReport(xml);
+            report.AddSection("main");
+            report.SetParameter("name", "Тест");
+
+            report.Culture = "en";
+            Assert.AreEqual("RESOLVED, #1 Тест! #2", GetCellText(report.Manager, 0, 0));
+        }
+
+        [TestMethod]
+        public void Resolver_ParamFromResolver()
+        {
+            TemplateLocalizer.Resolver = (key, culture) => "RESOLVED [name]";
+            var report = TestTemplateFactory.LoadReport(MixedTemplate);
+            report.AddSection("main");
+            report.SetParameter("name", "Тест");
+
+            Assert.AreEqual("RESOLVED Тест, Тест!", GetCellText(report.Manager, 0, 0));
+        }
+
+        [TestMethod]
 		public void InlineKeys_NotCorruptedByNumbering()
 		{
 			var xml = MixedTemplate.Replace("#greeting, [name]!", "Пункт #1 [name]");

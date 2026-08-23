@@ -16,10 +16,7 @@ namespace CellReport.Core.Expressions
 
         public override object GetValue(CellManager manager)
         {
-            var name = manager.Properties.DocumentName;
-            if (TemplateLocalizer.IsKey(name))
-                return TemplateLocalizer.GetString(manager.Properties.Localization, name, manager.Properties.Culture);
-            return name;
+            return manager.Properties.DocumentName;
         }
 
         internal new static DocumentNameExpression Parse(XElement element)
