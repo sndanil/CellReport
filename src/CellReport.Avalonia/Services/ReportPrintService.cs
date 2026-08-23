@@ -34,7 +34,7 @@ namespace CellReport.Avalonia
 			return result == true;
 		}
 
-		public static async Task PrintAsync(Visual host, CellManager manager, bool custom)
+		public static async Task PrintAsync(Visual host, CellManager manager, bool custom, string? printerName = null)
 		{
 			try
 			{
@@ -55,7 +55,7 @@ namespace CellReport.Avalonia
 				}
 				else
 				{
-					presenter.Print();
+					presenter.Print(printerName);
 				}
 			}
 			catch (PlatformNotSupportedException)

@@ -6,6 +6,7 @@ using CellReport.Presenters;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
@@ -58,6 +59,13 @@ namespace CellReport.Avalonia.ViewModels
 
 		public string AutoFitPageLabel => ReportLocalization.Get("Report/AutoFitPage");
 
+		public ObservableCollection<string> Printers { get; } = new();
+
+		[ObservableProperty]
+		private string? _selectedPrinter;
+
+		public string PrintPrinterLabel => ReportLocalization.Get("Report/Print");
+
 		public ObservableCollection<BookMarkItemViewModel> BookMarks { get; } = new();
 
 		[ObservableProperty]
@@ -84,6 +92,17 @@ namespace CellReport.Avalonia.ViewModels
 		public void Load(CellManager manager)
 		{
 			Manager = manager;
+			LoadPrinters();
+		}
+
+		private void LoadPrinters()
+		{
+			Printers.Clear();
+			foreach (var printer in WindowsPrinterService.GetInstalledPrinters())
+				Printers.Add(printer);
+
+			SelectedPrinter = WindowsPrinterService.GetDefaultPrinter()
+				?? (Printers.Count > 0 ? Printers[0] : null);
 		}
 
 		public void AttachPresenter(BaseDisplayPresenter presenter, Visual host)
@@ -255,7 +274,7 @@ namespace CellReport.Avalonia.ViewModels
 			if (_presenter == null || _host == null)
 				return;
 
-			await ReportPrintService.PrintAsync(_host, _presenter.Manager, custom: false);
+			await ReportPrintService.PrintAsync(_host, _presenter.Manager, custom: false, printerName: SelectedPrinter);
 		}
 
 		[RelayCommand]

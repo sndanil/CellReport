@@ -49,6 +49,15 @@
 
 				<Border Classes="toolbar-separator" />
 
+				<ComboBox Width="200"
+				          Margin="4,0"
+				          VerticalAlignment="Center"
+				          ItemsSource="{Binding Printers}"
+				          SelectedItem="{Binding SelectedPrinter}"
+				          ToolTip.Tip="{Binding PrintPrinterLabel}" />
+
+				<Border Classes="toolbar-separator" />
+
 				<ToggleButton Classes="toolbar-button toolbar-icon-button"
 				              IsChecked="{Binding ShowGridLines}"
 				              ToolTip.Tip="{Binding ShowGridLabel}">
