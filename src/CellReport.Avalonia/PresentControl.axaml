@@ -156,33 +156,85 @@
 				                   Name="cellControl">
 					<local:CellControl.ContextMenu>
 						<ContextMenu x:DataType="vm:PresentControlViewModel">
-							<MenuItem Header="{Binding PrintLabel}" Command="{Binding PrintCommand}" />
-							<MenuItem Header="{Binding CustomPrintLabel}" Command="{Binding CustomPrintCommand}" />
-							<MenuItem Header="{Binding PreviewLabel}" Command="{Binding PrintPreviewCommand}" />
-							<MenuItem Header="{Binding PageSetupLabel}" Command="{Binding PageSetupCommand}" />
+							<MenuItem Header="{Binding PrintLabel}" Command="{Binding PrintCommand}">
+								<MenuItem.Icon>
+									<materialIcons:MaterialIcon Kind="Printer" />
+								</MenuItem.Icon>
+							</MenuItem>
+							<MenuItem Header="{Binding CustomPrintLabel}" Command="{Binding CustomPrintCommand}">
+								<MenuItem.Icon>
+									<materialIcons:MaterialIcon Kind="PrinterSettings" />
+								</MenuItem.Icon>
+							</MenuItem>
+							<MenuItem Header="{Binding PreviewLabel}" Command="{Binding PrintPreviewCommand}">
+								<MenuItem.Icon>
+									<materialIcons:MaterialIcon Kind="FileEyeOutline" />
+								</MenuItem.Icon>
+							</MenuItem>
+							<MenuItem Header="{Binding PageSetupLabel}" Command="{Binding PageSetupCommand}">
+								<MenuItem.Icon>
+									<materialIcons:MaterialIcon Kind="FileSettingsOutline" />
+								</MenuItem.Icon>
+							</MenuItem>
 							<Separator />
 							<MenuItem Header="{Binding ShowGridLabel}"
 							          ToggleType="CheckBox"
-							          IsChecked="{Binding ShowGridLines}" />
+							          IsChecked="{Binding ShowGridLines}">
+								<MenuItem.Icon>
+									<materialIcons:MaterialIcon Kind="Grid" />
+								</MenuItem.Icon>
+							</MenuItem>
 							<MenuItem Header="{Binding ShowResizersLabel}"
 							          ToggleType="CheckBox"
-							          IsChecked="{Binding ShowResizers}" />
+							          IsChecked="{Binding ShowResizers}">
+								<MenuItem.Icon>
+									<materialIcons:MaterialIcon Kind="TableHeadersEye" />
+								</MenuItem.Icon>
+							</MenuItem>
 							<Separator />
 							<MenuItem Header="{Binding GoToRowLabel}"
-							          Command="{Binding GoToRowCommand}" />
+							          Command="{Binding GoToRowCommand}">
+								<MenuItem.Icon>
+									<materialIcons:MaterialIcon Kind="FormatListNumbered" />
+								</MenuItem.Icon>
+							</MenuItem>
 							<MenuItem Header="{Binding FindLabel}"
-							          Command="{Binding FindCommand}" />
+							          Command="{Binding FindCommand}">
+								<MenuItem.Icon>
+									<materialIcons:MaterialIcon Kind="Magnify" />
+								</MenuItem.Icon>
+							</MenuItem>
 							<Separator />
 							<MenuItem Header="{Binding ExportExcelLabel}"
-							          Command="{Binding ExportExcelCommand}" />
+							          Command="{Binding ExportExcelCommand}">
+								<MenuItem.Icon>
+									<materialIcons:MaterialIcon Kind="FileExcelBox" />
+								</MenuItem.Icon>
+							</MenuItem>
 							<MenuItem Header="{Binding ExportHtmlLabel}"
-							          Command="{Binding ExportHtmlCommand}" />
+							          Command="{Binding ExportHtmlCommand}">
+								<MenuItem.Icon>
+									<materialIcons:MaterialIcon Kind="LanguageHtml5" />
+								</MenuItem.Icon>
+							</MenuItem>
 							<MenuItem Header="{Binding ExportPdfLabel}"
-							          Command="{Binding ExportPdfCommand}" />
+							          Command="{Binding ExportPdfCommand}">
+								<MenuItem.Icon>
+									<materialIcons:MaterialIcon Kind="FilePdfBox" />
+								</MenuItem.Icon>
+							</MenuItem>
 							<MenuItem Header="{Binding ExportImageLabel}"
-							          Command="{Binding ExportImageCommand}" />
+							          Command="{Binding ExportImageCommand}">
+								<MenuItem.Icon>
+									<materialIcons:MaterialIcon Kind="Image" />
+								</MenuItem.Icon>
+							</MenuItem>
 							<MenuItem Header="{Binding SaveLabel}"
-							          Command="{Binding SaveCommand}" />
+							          Command="{Binding SaveCommand}">
+								<MenuItem.Icon>
+									<materialIcons:MaterialIcon Kind="ContentSave" />
+								</MenuItem.Icon>
+							</MenuItem>
 						</ContextMenu>
 					</local:CellControl.ContextMenu>
 				</local:CellControl>

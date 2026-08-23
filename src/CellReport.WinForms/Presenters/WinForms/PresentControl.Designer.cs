@@ -221,7 +221,7 @@ namespace CellReport.Presenters.WinForms
             // 
             // _exportPdfMenuItem
             // 
-            _exportPdfMenuItem.Image = CellReport.WinForms.ToolbarIcons.PrintPreview;
+            _exportPdfMenuItem.Image = CellReport.WinForms.ToolbarIcons.Pdf2616_32;
             _exportPdfMenuItem.Name = "_exportPdfMenuItem";
             _exportPdfMenuItem.Size = new System.Drawing.Size(348, 36);
             _exportPdfMenuItem.Text = "#Report/ExportToPdf";
