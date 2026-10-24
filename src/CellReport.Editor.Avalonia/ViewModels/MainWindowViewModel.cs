@@ -215,6 +215,7 @@ public partial class MainWindowViewModel : ObservableObject
 			return;
 
 		await ReportPrintService.ShowPreviewAsync(_window, _manager);
+		_presenter?.Update();
 	}
 
 	[RelayCommand]
@@ -224,6 +225,7 @@ public partial class MainWindowViewModel : ObservableObject
 			return;
 
 		await ReportPrintService.PrintAsync(_window, _manager, custom: true);
+		_presenter?.Update();
 	}
 
 	private void ShowDesigner()
@@ -567,7 +569,7 @@ public partial class MainWindowViewModel : ObservableObject
 
 	private void OnManagerPropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		if (_applying || _manager == null)
+		if (_applying || _manager == null || !CellManager.IsDesignMode)
 			return;
 
 		if (_editDepth > 0)

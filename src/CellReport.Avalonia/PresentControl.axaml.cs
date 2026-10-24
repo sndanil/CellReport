@@ -195,7 +195,8 @@ namespace CellReport.Avalonia
 				return false;
 
 			var settings = _presenter.Manager.DisplaySettings;
-			return settings.ShowResizers || (settings.ShowDesignerResizers && CellManager.IsDesignMode);
+			var designMode = _viewModel?.DesignMode == true || CellManager.IsDesignMode;
+			return settings.ShowResizers || (settings.ShowDesignerResizers && designMode);
 		}
 
 		private void OnHorizontalScrollBarChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
