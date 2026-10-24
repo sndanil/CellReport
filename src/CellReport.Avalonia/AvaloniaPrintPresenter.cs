@@ -25,11 +25,14 @@ namespace CellReport.Avalonia
 
 		public void BuildPages()
 		{
-			_pageImages.Clear();
+			using (DesignModeScope.Suspend())
+			{
+				_pageImages.Clear();
 
-			var builder = new PrintPageImageBuilder(Manager, Renderer, AvaloniaRenderer.GetTextSize);
-			builder.BuildPages();
-			_pageImages.AddRange(builder.Pages);
+				var builder = new PrintPageImageBuilder(Manager, Renderer, AvaloniaRenderer.GetTextSize);
+				builder.BuildPages();
+				_pageImages.AddRange(builder.Pages);
+			}
 		}
 
 		protected override void OnPrint(bool useCustom, string? printerName = null)

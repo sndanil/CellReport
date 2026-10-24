@@ -124,9 +124,9 @@
 			      Background="{DynamicResource CellReport.Grid.HeaderBackground}">
 				<Border Grid.Row="0"
 				        Grid.Column="0"
+				        Name="resizerCorner"
 				        Width="30"
 				        Height="20"
-				        IsVisible="{Binding ShowResizers}"
 				        Background="{DynamicResource CellReport.Grid.HeaderBackground}"
 				        BorderBrush="{DynamicResource CellReport.Grid.HeaderBorder}"
 				        BorderThickness="0,0,1,1" />

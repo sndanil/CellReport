@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using Material.Icons;
 using Material.Icons.Avalonia;
 using System.Collections.Generic;
@@ -22,10 +23,12 @@ namespace CellReport.Avalonia
 		private RowResizerControl _rowsResizer;
 		private ScrollBar _hScrollBar;
 		private ScrollBar _vScrollBar;
+		private global::Avalonia.Controls.Border _resizerCorner;
 		private SplitButton _printSplitButton;
 		private AvaloniaDisplayPresenter? _presenter;
 		private PresentControlViewModel? _viewModel;
 		private bool _updatingScrollBars;
+		private bool _invalidatePosted;
 		private readonly List<MenuItem> _printerMenuItems = new();
 
 		public PresentControl()
@@ -36,6 +39,7 @@ namespace CellReport.Avalonia
 			_rowsResizer = this.Find<RowResizerControl>("rowsResizer");
 			_hScrollBar = this.Find<ScrollBar>("hScrollBar");
 			_vScrollBar = this.Find<ScrollBar>("vScrollBar");
+			_resizerCorner = this.Find<global::Avalonia.Controls.Border>("resizerCorner");
 			_printSplitButton = this.Find<SplitButton>("printSplitButton");
 
 			_hScrollBar.PropertyChanged += OnHorizontalScrollBarChanged;
@@ -165,11 +169,14 @@ namespace CellReport.Avalonia
 			if (manager == null)
 				return;
 
-			CellManager.IsDesignMode = false;
+			var designMode = _viewModel?.DesignMode == true;
+			CellManager.IsDesignMode = designMode;
 			_presenter = new AvaloniaDisplayPresenter(manager, this, _cellControl);
 			_cellControl.Presenter = _presenter;
 			_columnsResizer.Presenter = _presenter;
 			_rowsResizer.Presenter = _presenter;
+			if (designMode)
+				_presenter.ShowToolBar = false;
 
 			_viewModel?.AttachPresenter(_presenter, this);
 			Update();
@@ -177,10 +184,20 @@ namespace CellReport.Avalonia
 
 		private void UpdateResizerVisibility()
 		{
-			var showResizers = _presenter != null && _presenter.ShowResizers && !CellManager.IsDesignMode;
+			var showResizers = ShouldShowResizers();
 			_columnsResizer.IsVisible = showResizers;
 			_rowsResizer.IsVisible = showResizers;
+			_resizerCorner.IsVisible = showResizers;
 			UpdateRowResizerTopOffset();
+		}
+
+		private bool ShouldShowResizers()
+		{
+			if (_presenter == null)
+				return false;
+
+			var settings = _presenter.Manager.DisplaySettings;
+			return settings.ShowResizers || (settings.ShowDesignerResizers && CellManager.IsDesignMode);
 		}
 
 		private void OnColumnsResizerLayoutUpdated(object? sender, System.EventArgs e)
@@ -239,6 +256,20 @@ namespace CellReport.Avalonia
 		}
 
 		internal void Invalidate()
+		{
+			InvalidateSurfaces();
+			if (_invalidatePosted)
+				return;
+
+			_invalidatePosted = true;
+			Dispatcher.UIThread.Post(() =>
+			{
+				_invalidatePosted = false;
+				InvalidateSurfaces();
+			}, DispatcherPriority.Render);
+		}
+
+		private void InvalidateSurfaces()
 		{
 			_cellControl?.InvalidateVisual();
 			_columnsResizer?.InvalidateVisual();

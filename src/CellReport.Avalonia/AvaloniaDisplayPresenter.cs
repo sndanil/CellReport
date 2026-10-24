@@ -148,6 +148,8 @@ namespace CellReport.Avalonia
 						return true;
 					case Key.C:
 					case Key.Insert:
+						if (CellManager.IsDesignMode)
+							return false;
 						CopySelectionToClipboard();
 						return true;
 				}

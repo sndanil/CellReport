@@ -11,12 +11,12 @@ namespace CellReport.Avalonia
 	internal class CustomDrawOp : ICustomDrawOperation
 	{
 		private readonly Control _control;
-		private readonly AvaloniaDisplayPresenter _presenter;
+		private readonly AvaloniaDisplayPresenter? _presenter;
 		private readonly SKColor _background;
 
 		public Rect Bounds { get; }
 
-		public CustomDrawOp(Rect bounds, Control control, AvaloniaDisplayPresenter presenter, SKColor background)
+		public CustomDrawOp(Rect bounds, Control control, AvaloniaDisplayPresenter? presenter, SKColor background)
 		{
 			_control = control;
 			_presenter = presenter;
@@ -26,14 +26,11 @@ namespace CellReport.Avalonia
 
 		public bool HitTest(global::Avalonia.Point p) => false;
 
-		public bool Equals(ICustomDrawOperation other)
-		{
-			if (other is CustomDrawOp o)
-				return o.Bounds == Bounds
-					&& o._presenter == _presenter
-					&& o._background == _background;
-			return false;
-		}
+		public bool Equals(ICustomDrawOperation? other) => false;
+
+		public override bool Equals(object? obj) => false;
+
+		public override int GetHashCode() => 0;
 
 		public void Dispose()
 		{

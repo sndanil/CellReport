@@ -8,8 +8,7 @@ Cross-platform .NET reporting framework (WinForms / WPF / Avalonia). Templates a
 - `src/CellReport.WinForms/` — **`net48` only**, packable.
 - `src/CellReport.WPF/` — `net8.0-windows;net48`, **not packable**, references WinForms.
 - `src/CellReport.Avalonia/` — `net8.0`, packable. Avalonia 12 (12.0.4), `CommunityToolkit.Mvvm`.
-- `src/CellReport.Editor/`, `src/CellReport.Viewer/`, `src/CellReport.Avalonia.Viewer/` — apps (not packable).
-- `src/CellReport.Editor.Avalonia/` — local WIP: no `.csproj`, not in the solution, not tracked by git. Ignore it.
+- `src/CellReport.Editor/`, `src/CellReport.Viewer/`, `src/CellReport.Avalonia.Viewer/`, `src/CellReport.Editor.Avalonia/` — apps (not packable). `CellReport.Editor.Avalonia` is the Avalonia editor (`net10.0`), references `CellReport.Avalonia`.
 - `Tests/` — MSTest, references only the core.
 
 ## Commands

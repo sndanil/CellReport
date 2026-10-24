@@ -1,0 +1,233 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:CellReport.Editor.Avalonia.ViewModels"
+        xmlns:report="clr-namespace:CellReport.Avalonia;assembly=CellReport.Avalonia"
+        xmlns:core="clr-namespace:CellReport.Core;assembly=CellReport"
+        xmlns:contents="clr-namespace:CellReport.Core.Contents;assembly=CellReport"
+        x:Class="CellReport.Editor.Avalonia.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{Binding Title}"
+        Width="1100"
+        Height="720"
+        WindowState="Maximized">
+	<Window.KeyBindings>
+		<KeyBinding Gesture="Ctrl+N" Command="{Binding CreateCommand}" />
+		<KeyBinding Gesture="Ctrl+O" Command="{Binding OpenCommand}" />
+		<KeyBinding Gesture="Ctrl+S" Command="{Binding SaveCommand}" />
+		<KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
+		<KeyBinding Gesture="Ctrl+Z" Command="{Binding UndoCommand}" />
+		<KeyBinding Gesture="Ctrl+Y" Command="{Binding RedoCommand}" />
+		<KeyBinding Gesture="Ctrl+C" Command="{Binding Inspector.CopyCommand}" />
+		<KeyBinding Gesture="Ctrl+X" Command="{Binding Inspector.CutCommand}" />
+		<KeyBinding Gesture="Ctrl+V" Command="{Binding Inspector.PasteCommand}" />
+	</Window.KeyBindings>
+
+	<Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+		<Border Grid.Row="0" Classes="toolbar">
+			<StackPanel Classes="toolbar-items">
+				<Button Classes="toolbar-button" Content="Создать" Command="{Binding CreateCommand}" />
+				<Button Classes="toolbar-button" Content="Открыть" Command="{Binding OpenCommand}" />
+				<Button Classes="toolbar-button" Content="Сохранить" Command="{Binding SaveCommand}" />
+				<Button Classes="toolbar-button" Content="Сохранить как" Command="{Binding SaveAsCommand}" />
+				<Border Classes="toolbar-separator" />
+				<Button Classes="toolbar-button" Content="Отменить" Command="{Binding UndoCommand}" />
+				<Button Classes="toolbar-button" Content="Вернуть" Command="{Binding RedoCommand}" />
+				<Border Classes="toolbar-separator" />
+				<Button Classes="toolbar-button" Content="Выход" Command="{Binding ExitCommand}" />
+			</StackPanel>
+		</Border>
+
+		<Grid Grid.Row="1" ColumnDefinitions="Auto,*" Margin="8,6">
+			<TextBlock VerticalAlignment="Center" Margin="0,0,8,0" Text="Текст" />
+			<TextBox Grid.Column="1"
+			         Height="56"
+			         AcceptsReturn="True"
+			         TextWrapping="Wrap"
+			         FontFamily="Consolas, Cascadia Mono, monospace"
+			         IsEnabled="{Binding IsTextContent}"
+			         Text="{Binding CurrentText, UpdateSourceTrigger=PropertyChanged}" />
+		</Grid>
+
+		<Border Grid.Row="2" Classes="toolbar">
+			<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+				<StackPanel Classes="toolbar-items">
+					<Button Classes="toolbar-button" Content="Вырезать" Command="{Binding Inspector.CutCommand}" />
+					<Button Classes="toolbar-button" Content="Копировать" Command="{Binding Inspector.CopyCommand}" />
+					<Button Classes="toolbar-button" Content="Вставить" Command="{Binding Inspector.PasteCommand}" />
+					<Border Classes="toolbar-separator" />
+					<Button Classes="toolbar-button" Content="Объединить" Command="{Binding Inspector.MergeCellsCommand}" />
+					<Button Classes="toolbar-button" Content="Строки">
+						<Button.Flyout>
+							<MenuFlyout>
+								<MenuItem Header="Вставить до" Command="{Binding Inspector.InsertRowBeforeCommand}" />
+								<MenuItem Header="Вставить после" Command="{Binding Inspector.InsertRowAfterCommand}" />
+								<MenuItem Header="Удалить" Command="{Binding Inspector.DeleteRowsCommand}" />
+							</MenuFlyout>
+						</Button.Flyout>
+					</Button>
+					<Button Classes="toolbar-button" Content="Столбцы">
+						<Button.Flyout>
+							<MenuFlyout>
+								<MenuItem Header="Вставить до" Command="{Binding Inspector.InsertColumnBeforeCommand}" />
+								<MenuItem Header="Вставить после" Command="{Binding Inspector.InsertColumnAfterCommand}" />
+								<MenuItem Header="Удалить" Command="{Binding Inspector.DeleteColumnsCommand}" />
+							</MenuFlyout>
+						</Button.Flyout>
+					</Button>
+					<Button Classes="toolbar-button" Content="Удалить ячейку" Command="{Binding Inspector.DeleteCellCommand}" />
+					<Button Classes="toolbar-button" Content="Удалить содержимое" Command="{Binding Inspector.DeleteContentCommand}" />
+					<Button Classes="toolbar-button" Content="Добавить">
+						<Button.Flyout>
+							<MenuFlyout>
+								<MenuItem Header="Текст" Command="{Binding Inspector.AddTextCommand}" />
+								<MenuItem Header="Число" Command="{Binding Inspector.AddDecimalCommand}" />
+								<MenuItem Header="Дату и время" Command="{Binding Inspector.AddDateTimeCommand}" />
+								<MenuItem Header="Штрих-код" Command="{Binding Inspector.AddBarCodeCommand}" />
+								<MenuItem Header="Изображение" Command="{Binding Inspector.AddImageCommand}" />
+								<MenuItem Header="Действие" Command="{Binding Inspector.AddActionCommand}" />
+							</MenuFlyout>
+						</Button.Flyout>
+					</Button>
+					<Border Classes="toolbar-separator" />
+					<TextBlock VerticalAlignment="Center" Margin="4,0" Text="Ячейка" />
+					<ComboBox Width="140" Margin="0,4,8,4"
+					          ItemsSource="{Binding Inspector.CellStyles}"
+					          SelectedItem="{Binding Inspector.SelectedCellStyle}" />
+					<TextBlock VerticalAlignment="Center" Text="Текст" />
+					<ComboBox Width="140" Margin="6,4"
+					          IsEnabled="{Binding Inspector.HasTextContent}"
+					          ItemsSource="{Binding Inspector.TextStyles}"
+					          SelectedItem="{Binding Inspector.SelectedTextStyle}" />
+					<TextBlock VerticalAlignment="Center" Text="Число" />
+					<ComboBox Width="140" Margin="6,4"
+					          IsEnabled="{Binding Inspector.HasDecimalContent}"
+					          ItemsSource="{Binding Inspector.DecimalStyles}"
+					          SelectedItem="{Binding Inspector.SelectedDecimalStyle}" />
+					<TextBlock VerticalAlignment="Center" Text="Дата" />
+					<ComboBox Width="140" Margin="6,4,4,4"
+					          IsEnabled="{Binding Inspector.HasDateTimeContent}"
+					          ItemsSource="{Binding Inspector.DateTimeStyles}"
+					          SelectedItem="{Binding Inspector.SelectedDateTimeStyle}" />
+				</StackPanel>
+			</ScrollViewer>
+		</Border>
+
+		<Grid Grid.Row="3" ColumnDefinitions="300,*">
+			<TabControl Margin="4,0,4,4">
+				<TabItem Header="Параметры">
+					<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+						<StackPanel Margin="8" Spacing="6">
+							<TextBlock Text="Содержимое" />
+							<ListBox Height="90" ItemsSource="{Binding Inspector.Contents}" SelectedItem="{Binding Inspector.SelectedContent}" />
+							<Grid ColumnDefinitions="*,*">
+								<Button Content="Параметр" Command="{Binding Inspector.AddParamCommand}" />
+								<Button Grid.Column="1" Margin="6,0,0,0" Content="Удалить" Command="{Binding Inspector.DeleteParamCommand}" />
+							</Grid>
+							<ListBox Height="90" ItemsSource="{Binding Inspector.Params}" SelectedItem="{Binding Inspector.SelectedParam}">
+								<ListBox.ItemTemplate>
+									<DataTemplate x:DataType="contents:Param">
+										<TextBlock Text="{Binding Name}" />
+									</DataTemplate>
+								</ListBox.ItemTemplate>
+							</ListBox>
+							<Grid ColumnDefinitions="110,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+								<TextBlock VerticalAlignment="Center" Text="Имя" />
+								<TextBox Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedParam}" Text="{Binding Inspector.ParamName, UpdateSourceTrigger=LostFocus}" />
+								<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Значение" />
+								<TextBox Grid.Row="1" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedParam}" Text="{Binding Inspector.ParamValue, UpdateSourceTrigger=LostFocus}" />
+								<TextBlock Grid.Row="2" VerticalAlignment="Center" Text="Цель" />
+								<ComboBox Grid.Row="2" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedParam}"
+								          ItemsSource="{Binding Inspector.ParamTargets}"
+								          SelectedItem="{Binding Inspector.SelectedParamTarget}" />
+								<TextBlock Grid.Row="3" VerticalAlignment="Center" Text="Выражение" />
+								<TextBox Grid.Row="3" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedParam}" Text="{Binding Inspector.ParamExpression, UpdateSourceTrigger=LostFocus}" />
+								<TextBlock Grid.Row="4" VerticalAlignment="Center" Text="Формат" />
+								<TextBox Grid.Row="4" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedParam}" Text="{Binding Inspector.ParamFormat, UpdateSourceTrigger=LostFocus}" />
+								<TextBlock Grid.Row="5" VerticalAlignment="Center" Text="Культура" />
+								<TextBox Grid.Row="5" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedParam}" Text="{Binding Inspector.ParamCulture, UpdateSourceTrigger=LostFocus}" />
+								<TextBlock Grid.Row="6" VerticalAlignment="Center" Text="Тип" />
+								<ComboBox Grid.Row="6" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedParam}"
+								          ItemsSource="{Binding Inspector.ParamTypes}"
+								          SelectedItem="{Binding Inspector.SelectedParamType}" />
+								<TextBlock Grid.Row="7" VerticalAlignment="Center" Text="Присвоить" />
+								<TextBox Grid.Row="7" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedParam}" Text="{Binding Inspector.ParamAssign, UpdateSourceTrigger=LostFocus}" />
+							</Grid>
+						</StackPanel>
+					</ScrollViewer>
+				</TabItem>
+				<TabItem Header="Секции">
+					<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+						<StackPanel Margin="8" Spacing="6">
+							<ListBox Height="140" ItemsSource="{Binding Inspector.Sections}" SelectedItem="{Binding Inspector.SelectedSection}">
+								<ListBox.ItemTemplate>
+									<DataTemplate x:DataType="core:TemplateSection">
+										<StackPanel Orientation="Horizontal" Spacing="6">
+											<TextBlock Text="{Binding Name}" />
+											<TextBlock Text="{Binding ObjectName}" Opacity="0.7" />
+										</StackPanel>
+									</DataTemplate>
+								</ListBox.ItemTemplate>
+							</ListBox>
+							<Grid ColumnDefinitions="*,*">
+								<Button Content="Добавить" Command="{Binding Inspector.AddSectionCommand}" />
+								<Button Grid.Column="1" Margin="6,0,0,0" Content="Удалить" Command="{Binding Inspector.DeleteSectionCommand}" />
+							</Grid>
+							<Grid ColumnDefinitions="110,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+								<TextBlock VerticalAlignment="Center" Text="Имя" />
+								<TextBox Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedSection}" Text="{Binding Inspector.SectionName, UpdateSourceTrigger=LostFocus}" />
+								<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Имя объекта" />
+								<TextBox Grid.Row="1" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedSection}" Text="{Binding Inspector.SectionObjectName, UpdateSourceTrigger=LostFocus}" />
+								<TextBlock Grid.Row="2" VerticalAlignment="Center" Text="Лево" />
+								<TextBox Grid.Row="2" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedSection}" Text="{Binding Inspector.SectionLeft, UpdateSourceTrigger=LostFocus}" />
+								<TextBlock Grid.Row="3" VerticalAlignment="Center" Text="Верх" />
+								<TextBox Grid.Row="3" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedSection}" Text="{Binding Inspector.SectionTop, UpdateSourceTrigger=LostFocus}" />
+								<TextBlock Grid.Row="4" VerticalAlignment="Center" Text="Право" />
+								<TextBox Grid.Row="4" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedSection}" Text="{Binding Inspector.SectionRight, UpdateSourceTrigger=LostFocus}" />
+								<TextBlock Grid.Row="5" VerticalAlignment="Center" Text="Низ" />
+								<TextBox Grid.Row="5" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedSection}" Text="{Binding Inspector.SectionBottom, UpdateSourceTrigger=LostFocus}" />
+								<Button Grid.Row="6" Grid.ColumnSpan="2" Margin="0,4,0,0" HorizontalAlignment="Stretch"
+								        Content="Установить"
+								        Command="{Binding Inspector.SetSectionBoundsCommand}" />
+							</Grid>
+						</StackPanel>
+					</ScrollViewer>
+				</TabItem>
+				<TabItem Header="Ячейка">
+					<StackPanel Margin="8" Spacing="8">
+						<CheckBox IsChecked="{Binding Inspector.AutoHeight}" Content="Автовысота строки" />
+						<TextBlock Text="Маркер отображения" />
+						<TextBox Text="{Binding Inspector.MarkerForShow, UpdateSourceTrigger=LostFocus}" />
+						<TextBlock Text="Маркер сокрытия" />
+						<TextBox Text="{Binding Inspector.MarkerForHide, UpdateSourceTrigger=LostFocus}" />
+					</StackPanel>
+				</TabItem>
+			</TabControl>
+
+			<report:PresentControl Grid.Column="1" DataContext="{Binding Present}" />
+		</Grid>
+
+		<Border Grid.Row="4" Classes="toolbar" BorderThickness="0,1,0,0">
+			<Grid ColumnDefinitions="Auto,Auto,88,Auto,88,Auto,Auto,*,Auto,110" Margin="4,0">
+				<TextBlock Grid.Column="0" VerticalAlignment="Center" Margin="4,0" Text="{Binding CellAddress}" />
+				<TextBlock Grid.Column="1" VerticalAlignment="Center" Text="Ширина" />
+				<TextBox Grid.Column="2"
+				         Margin="6,4"
+				         VerticalAlignment="Center"
+				         Text="{Binding CellWidthText, UpdateSourceTrigger=LostFocus}" />
+				<TextBlock Grid.Column="3" VerticalAlignment="Center" Text="Высота" />
+				<TextBox Grid.Column="4"
+				         Margin="6,4"
+				         VerticalAlignment="Center"
+				         Text="{Binding CellHeightText, UpdateSourceTrigger=LostFocus}" />
+				<TextBlock Grid.Column="5" VerticalAlignment="Center" Text="мм" />
+				<TextBlock Grid.Column="6" VerticalAlignment="Center" Margin="8,0" Text="{Binding SelectionStatus}" />
+				<TextBlock Grid.Column="8" VerticalAlignment="Center" Margin="0,0,8,0" Text="Масштаб" />
+				<ComboBox Grid.Column="9"
+				          Margin="0,4,4,4"
+				          VerticalAlignment="Center"
+				          ItemsSource="{Binding Present.ScaleOptions}"
+				          SelectedIndex="{Binding Present.SelectedScaleIndex}" />
+			</Grid>
+		</Border>
+	</Grid>
+</Window>

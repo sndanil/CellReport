@@ -1,6 +1,5 @@
 ﻿using CellReport.Avalonia.Services;
 using CellReport.Avalonia.Views;
-using CellReport.Avalonia.Views;
 using CellReport.Core;
 using CellReport.Presenters;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -21,6 +20,10 @@ namespace CellReport.Avalonia.ViewModels
 		private BaseDisplayPresenter? _presenter;
 		private Visual? _host;
 		private bool _syncing;
+
+		public BaseDisplayPresenter? Presenter => _presenter;
+
+		public event EventHandler? PresenterChanged;
 
 		public string[] ScaleOptions { get; } =
 		{
@@ -88,8 +91,11 @@ namespace CellReport.Avalonia.ViewModels
 		[ObservableProperty]
 		private BookMarkItemViewModel? _selectedBookMark;
 
-		public void Load(CellManager manager)
+		public bool DesignMode { get; private set; }
+
+		public void Load(CellManager manager, bool designMode = false)
 		{
+			DesignMode = designMode;
 			Manager = manager;
 			LoadPrinters();
 		}
@@ -116,6 +122,7 @@ namespace CellReport.Avalonia.ViewModels
 
 			LoadBookMarks();
 			SyncFromPresenter();
+			PresenterChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		public void SyncFromPresenter()
@@ -230,6 +237,7 @@ namespace CellReport.Avalonia.ViewModels
 				return;
 
 			await ReportExportService.ExportExcelAsync(_host, _presenter, openAfterExport: true);
+			RefreshSurface();
 		}
 
 		[RelayCommand]
@@ -239,6 +247,7 @@ namespace CellReport.Avalonia.ViewModels
 				return;
 
 			await ReportExportService.ExportHtmlAsync(_host, _presenter, openAfterExport: true);
+			RefreshSurface();
 		}
 
 		[RelayCommand]
@@ -248,6 +257,7 @@ namespace CellReport.Avalonia.ViewModels
 				return;
 
 			await ReportExportService.ExportImageAsync(_host, _presenter, openAfterExport: true);
+			RefreshSurface();
 		}
 
 		[RelayCommand]
@@ -257,6 +267,7 @@ namespace CellReport.Avalonia.ViewModels
 				return;
 
 			await ReportExportService.ExportPdfAsync(_host, _presenter, openAfterExport: true);
+			RefreshSurface();
 		}
 
 		[RelayCommand]
@@ -266,6 +277,7 @@ namespace CellReport.Avalonia.ViewModels
 				return;
 
 			await ReportExportService.SaveAsync(_host, _presenter);
+			RefreshSurface();
 		}
 
 		[RelayCommand]
@@ -275,6 +287,7 @@ namespace CellReport.Avalonia.ViewModels
 				return;
 
 			await ReportPrintService.PrintAsync(_host, _presenter.Manager, custom: false, printerName: SelectedPrinter);
+			RefreshSurface();
 		}
 
 		[RelayCommand]
@@ -284,6 +297,7 @@ namespace CellReport.Avalonia.ViewModels
 				return;
 
 			await ReportPrintService.PrintAsync(_host, _presenter.Manager, custom: true);
+			RefreshSurface();
 		}
 
 		[RelayCommand]
@@ -293,6 +307,7 @@ namespace CellReport.Avalonia.ViewModels
 				return;
 
 			await ReportPrintService.ShowPreviewAsync(_host, _presenter.Manager);
+			RefreshSurface();
 		}
 
 		[RelayCommand]
@@ -339,6 +354,11 @@ namespace CellReport.Avalonia.ViewModels
 					Row = viewModel.SelectedRow - 1
 				};
 			}
+		}
+
+		private void RefreshSurface()
+		{
+			_presenter?.Update();
 		}
 
 		[RelayCommand]

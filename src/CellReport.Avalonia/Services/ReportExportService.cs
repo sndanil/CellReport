@@ -152,29 +152,34 @@ namespace CellReport.Avalonia.Services
 			}
 		}
 
-		private static Task ExportToFileAsync(BaseExporter exporter, string path, bool openAfterExport)
+		private static async Task ExportToFileAsync(BaseExporter exporter, string path, bool openAfterExport)
 		{
-			return Task.Run(() =>
+			using (DesignModeScope.Suspend())
 			{
-				using var stream = File.Create(path);
+				await Task.Run(() => ExportToFile(exporter, path, openAfterExport));
+			}
+		}
+
+		private static void ExportToFile(BaseExporter exporter, string path, bool openAfterExport)
+		{
+			using (var stream = File.Create(path))
 				exporter.ExportTo(stream);
 
-				if (openAfterExport)
-				{
-					try
-					{
-						Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
-					}
-					catch (Win32Exception)
-					{
-						throw;
-					}
-					catch
-					{
-						// ignore other open errors
-					}
-				}
-			});
+			if (!openAfterExport)
+				return;
+
+			try
+			{
+				Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+			}
+			catch (Win32Exception)
+			{
+				throw;
+			}
+			catch
+			{
+				// ignore other open errors
+			}
 		}
 
 		public static async Task ShowMessageAsync(Visual host, string message)

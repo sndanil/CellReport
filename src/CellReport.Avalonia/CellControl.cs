@@ -34,9 +34,6 @@ namespace CellReport.Avalonia
 
 		private bool _middleButtonPanActive;
 		private global::Avalonia.Point _middleButtonLastPosition;
-		private CustomDrawOp _cachedDrawOp;
-		private Rect _lastDrawBounds;
-
 		private AvaloniaDisplayPresenter? _presenter;
 
 		public AvaloniaDisplayPresenter? Presenter
@@ -44,9 +41,10 @@ namespace CellReport.Avalonia
 			get => _presenter;
 			set
 			{
-				_presenter = value;
-				ApplyInversionToPresenter();
-			}
+			_presenter = value;
+			ApplyInversionToPresenter();
+			InvalidateVisual();
+		}
 		}
 
 		public ContentInversionMode InvertContentMode
@@ -119,12 +117,14 @@ namespace CellReport.Avalonia
 			context.FillRectangle(new SolidColorBrush(background), new Rect(0, 0, Bounds.Width, Bounds.Height));
 
 			var bounds = new Rect(0, 0, Bounds.Width, Bounds.Height);
-			if (_cachedDrawOp == null || _lastDrawBounds != bounds)
-			{
-				_cachedDrawOp = new CustomDrawOp(bounds, this, Presenter, background.ToSKColor());
-				_lastDrawBounds = bounds;
-			}
-			context.Custom(_cachedDrawOp);
+			context.Custom(new CustomDrawOp(bounds, this, Presenter, background.ToSKColor()));
+		}
+
+		protected override void OnSizeChanged(SizeChangedEventArgs e)
+		{
+			base.OnSizeChanged(e);
+			if (e.NewSize.Width > 0 && e.NewSize.Height > 0)
+				InvalidateVisual();
 		}
 
 		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
