@@ -36,6 +36,7 @@ public sealed class XmlCodeEditor
 	private readonly XmlSchemaSet _schemas;
 	private readonly XmlFoldingStrategy _foldingStrategy = new();
 	private readonly FoldingManager _foldingManager;
+	private readonly SearchPanel _searchPanel;
 	private bool _active;
 	private CellManager? _parsedManager;
 
@@ -50,7 +51,7 @@ public sealed class XmlCodeEditor
 		editor.Options.IndentationSize = 2;
 		editor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("XML");
 		editor.TextArea.IndentationStrategy = new DefaultIndentationStrategy();
-		SearchPanel.Install(editor);
+		_searchPanel = SearchPanel.Install(editor);
 
 		var schemaPath = Path.Combine(AppContext.BaseDirectory, "Schema.xsd");
 		_schemas = new XmlSchemaSet();
@@ -111,6 +112,71 @@ public sealed class XmlCodeEditor
 			if (DarkHighlightColors.TryGetValue(color.Name, out var hex))
 				color.Foreground = new SimpleHighlightingBrush(Color.Parse(hex));
 		}
+	}
+
+	public void ShowSearch(bool replace)
+	{
+		var selection = _editor.TextArea.Selection;
+		if (selection != null && !selection.IsEmpty && !selection.IsMultiline)
+		{
+			var selected = selection.GetText();
+			if (!string.IsNullOrEmpty(selected))
+				_searchPanel.SearchPattern = selected;
+		}
+
+		_searchPanel.IsReplaceMode = replace;
+		if (!_searchPanel.IsOpened)
+			_searchPanel.Open();
+		_searchPanel.Reactivate();
+		_editor.Focus();
+	}
+
+	public void SelectTemplateRow(int row)
+	{
+		var document = _editor.Document;
+		var rowIndex = -1;
+		var selectStartLine = 0;
+		var selectEndLine = 0;
+		for (var lineNumber = 1; lineNumber <= document.LineCount; lineNumber++)
+		{
+			var line = document.GetLineByNumber(lineNumber);
+			var text = document.GetText(line).Trim();
+			if (text.Contains("<Row") && rowIndex != row && selectStartLine == 0)
+			{
+				rowIndex++;
+				try
+				{
+					var rowElement = XElement.Parse(text.EndsWith("/>") ? text : text + "</Row>");
+					var index = rowElement.Attribute("Index");
+					if (index != null)
+						rowIndex = Convert.ToInt32(index.Value);
+				}
+				catch (XmlException)
+				{
+				}
+			}
+
+			if (rowIndex == row && selectStartLine == 0)
+				selectStartLine = lineNumber;
+
+			if ((text.Contains("</Row") || (text.Contains("<Row") && text.EndsWith("/>"))) && selectStartLine != 0)
+			{
+				selectEndLine = lineNumber;
+				break;
+			}
+		}
+
+		if (selectStartLine == 0)
+			return;
+
+		if (selectEndLine == 0)
+			selectEndLine = selectStartLine;
+
+		var start = document.GetLineByNumber(selectStartLine);
+		var end = document.GetLineByNumber(selectEndLine);
+		_editor.Select(start.Offset, end.EndOffset - start.Offset);
+		_editor.ScrollToLine(selectStartLine);
+		_editor.Focus();
 	}
 
 	public void SetActive(bool active)

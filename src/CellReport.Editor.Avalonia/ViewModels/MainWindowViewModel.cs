@@ -1,5 +1,6 @@
 using CellReport.Avalonia;
 using CellReport.Avalonia.Services;
+using CellReport.Avalonia.Views;
 using CellReport.Avalonia.ViewModels;
 using CellReport.Core;
 using CellReport.Core.Contents;
@@ -61,6 +62,10 @@ public partial class MainWindowViewModel : ObservableObject
 	public event EventHandler? ExitRequested;
 
 	public event EventHandler? ShowDesignerRequested;
+
+	public event EventHandler<bool>? CodeSearchRequested;
+
+	public event EventHandler? FindRowInCodeRequested;
 
 	[ObservableProperty]
 	private string _title = "Редактор отчетов";
@@ -292,7 +297,44 @@ public partial class MainWindowViewModel : ObservableObject
 		Inspector.RefreshCommands();
 		UndoCommand.NotifyCanExecuteChanged();
 		RedoCommand.NotifyCanExecuteChanged();
+		FindAndReplaceCommand.NotifyCanExecuteChanged();
+		FindInCodeCommand.NotifyCanExecuteChanged();
 	}
+
+	[RelayCommand]
+	private async Task Find()
+	{
+		if (_manager == null)
+			return;
+
+		if (IsCodeMode)
+		{
+			CodeSearchRequested?.Invoke(this, false);
+			return;
+		}
+
+		if (_presenter == null || _window == null)
+			return;
+
+		var dialog = new FindDialog(_presenter);
+		await dialog.ShowDialog(_window);
+	}
+
+	[RelayCommand(CanExecute = nameof(CanFindAndReplace))]
+	private void FindAndReplace()
+	{
+		CodeSearchRequested?.Invoke(this, true);
+	}
+
+	private bool CanFindAndReplace() => IsCodeMode && _manager != null;
+
+	[RelayCommand(CanExecute = nameof(CanFindInCode))]
+	private void FindInCode()
+	{
+		FindRowInCodeRequested?.Invoke(this, EventArgs.Empty);
+	}
+
+	private bool CanFindInCode() => !IsCodeMode && _manager != null;
 
 	private bool TryApplyXml(string xml, bool resetHistory, out string? error)
 	{

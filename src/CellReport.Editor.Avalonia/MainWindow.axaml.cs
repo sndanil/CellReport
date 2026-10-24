@@ -26,11 +26,31 @@ public partial class MainWindow : Window
 
 		viewModel.ExitRequested += (_, _) => Close();
 		viewModel.ShowDesignerRequested += (_, _) => ShowDesigner();
+		viewModel.CodeSearchRequested += (_, replace) => ShowCodeSearch(replace);
+		viewModel.FindRowInCodeRequested += (_, _) => FindRowInCode();
 		viewModel.ReadCode = () => CodeEditor.Text;
 		viewModel.CodeTextInvalidated += (_, _) => ShowCurrentCode(viewModel);
 		_codeEditor = new XmlCodeEditor(CodeEditor, () => viewModel.Manager, viewModel.CodeErrors);
 		await viewModel.InitializeAsync(Program.StartupArgs, this);
 		_modeReady = true;
+	}
+
+	private void ShowCodeSearch(bool replace)
+	{
+		if (ModeTabs.SelectedIndex != 1)
+			ModeTabs.SelectedIndex = 1;
+		_codeEditor?.ShowSearch(replace);
+	}
+
+	private void FindRowInCode()
+	{
+		if (DataContext is not MainWindowViewModel viewModel)
+			return;
+
+		var row = viewModel.Presenter?.CurrentCell.Row ?? 0;
+		if (ModeTabs.SelectedIndex != 1)
+			ModeTabs.SelectedIndex = 1;
+		_codeEditor?.SelectTemplateRow(row);
 	}
 
 	private void ShowDesigner()
