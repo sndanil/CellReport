@@ -142,6 +142,32 @@
 		<Setter Property="Opacity" Value="0.45" />
 	</Style>
 
+	<Style Selector="ToggleButton.ribbon-toggle">
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="BorderBrush" Value="Transparent" />
+		<Setter Property="CornerRadius" Value="2" />
+		<Setter Property="Padding" Value="4,2" />
+		<Setter Property="MinWidth" Value="28" />
+		<Setter Property="MinHeight" Value="24" />
+		<Setter Property="HorizontalContentAlignment" Value="Center" />
+		<Setter Property="VerticalContentAlignment" Value="Center" />
+	</Style>
+
+	<Style Selector="ToggleButton.ribbon-toggle:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="{DynamicResource CellReport.Ribbon.Hover}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource CellReport.Ribbon.ButtonBorderHover}" />
+	</Style>
+
+	<Style Selector="ToggleButton.ribbon-toggle:checked /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="{DynamicResource CellReport.Ribbon.Pressed}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource CellReport.Ribbon.ButtonBorderHover}" />
+	</Style>
+
+	<Style Selector="ToggleButton.ribbon-toggle:disabled">
+		<Setter Property="Opacity" Value="0.45" />
+	</Style>
+
 	<Style Selector="Border.ribbon-ops-panel">
 		<Setter Property="Background" Value="{DynamicResource CellReport.Ribbon.OpsPanelBackground}" />
 		<Setter Property="BorderBrush" Value="{DynamicResource CellReport.Ribbon.Border}" />

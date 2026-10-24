@@ -24,6 +24,9 @@
 		<KeyBinding Gesture="Ctrl+V" Command="{Binding Inspector.PasteCommand}" />
 		<KeyBinding Gesture="Ctrl+F" Command="{Binding FindCommand}" />
 		<KeyBinding Gesture="Ctrl+H" Command="{Binding FindAndReplaceCommand}" />
+		<KeyBinding Gesture="Ctrl+B" Command="{Binding ToggleBoldCommand}" />
+		<KeyBinding Gesture="Ctrl+I" Command="{Binding ToggleItalicCommand}" />
+		<KeyBinding Gesture="Ctrl+U" Command="{Binding ToggleUnderlineCommand}" />
 	</Window.KeyBindings>
 
 	<Grid RowDefinitions="Auto,*,Auto">
@@ -154,9 +157,67 @@
 								</Border>
 								<Border Classes="ribbon-group">
 									<DockPanel LastChildFill="True">
+										<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Шрифт" />
+										<StackPanel Margin="4,4,4,2" Orientation="Vertical" Spacing="2">
+											<StackPanel Orientation="Horizontal" Spacing="4">
+												<ComboBox Width="148"
+												          ItemsSource="{Binding Fonts}"
+												          SelectedItem="{Binding FontFamily}"
+												          IsEnabled="{Binding IsTextableContent}" />
+												<ComboBox Width="68"
+												          ItemsSource="{Binding FontSizes}"
+												          SelectedItem="{Binding FontSize}"
+												          IsEnabled="{Binding IsTextableContent}" />
+											</StackPanel>
+											<StackPanel Orientation="Horizontal" Spacing="2">
+												<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding FontBold}" IsEnabled="{Binding IsTextableContent}" ToolTip.Tip="Полужирный (Ctrl+B)">
+													<materialIcons:MaterialIcon Kind="FormatBold" Width="16" Height="16" />
+												</ToggleButton>
+												<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding FontItalic}" IsEnabled="{Binding IsTextableContent}" ToolTip.Tip="Курсив (Ctrl+I)">
+													<materialIcons:MaterialIcon Kind="FormatItalic" Width="16" Height="16" />
+												</ToggleButton>
+												<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding FontUnderline}" IsEnabled="{Binding IsTextableContent}" ToolTip.Tip="Подчёркивание (Ctrl+U)">
+													<materialIcons:MaterialIcon Kind="FormatUnderline" Width="16" Height="16" />
+												</ToggleButton>
+												<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding FontStrikeout}" IsEnabled="{Binding IsTextableContent}" ToolTip.Tip="Зачёркивание">
+													<materialIcons:MaterialIcon Kind="FormatStrikethrough" Width="16" Height="16" />
+												</ToggleButton>
+												<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding AutoFitFont}" IsEnabled="{Binding IsTextContent}" ToolTip.Tip="Автоматический размер шрифта">
+													<materialIcons:MaterialIcon Kind="FormatFontSizeDecrease" Width="16" Height="16" />
+												</ToggleButton>
+											</StackPanel>
+										</StackPanel>
+									</DockPanel>
+								</Border>
+								<Border Classes="ribbon-group">
+									<DockPanel LastChildFill="True">
 										<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Выравнивание" />
-										<StackPanel Margin="4,4,4,2" VerticalAlignment="Center">
-											<Button Classes="ribbon-button compact" Command="{Binding Inspector.MergeCellsCommand}">
+										<StackPanel Orientation="Horizontal" Margin="4,4,4,2" Spacing="8">
+											<StackPanel Orientation="Vertical" Spacing="2" VerticalAlignment="Center">
+												<StackPanel Orientation="Horizontal" Spacing="2">
+													<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding AlignTop}" IsEnabled="{Binding IsTextableContent}" ToolTip.Tip="По верхнему краю">
+														<materialIcons:MaterialIcon Kind="FormatAlignTop" Width="16" Height="16" />
+													</ToggleButton>
+													<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding AlignMiddle}" IsEnabled="{Binding IsTextableContent}" ToolTip.Tip="По середине">
+														<materialIcons:MaterialIcon Kind="FormatAlignMiddle" Width="16" Height="16" />
+													</ToggleButton>
+													<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding AlignBottom}" IsEnabled="{Binding IsTextableContent}" ToolTip.Tip="По нижнему краю">
+														<materialIcons:MaterialIcon Kind="FormatAlignBottom" Width="16" Height="16" />
+													</ToggleButton>
+												</StackPanel>
+												<StackPanel Orientation="Horizontal" Spacing="2">
+													<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding AlignLeft}" IsEnabled="{Binding IsTextableContent}" ToolTip.Tip="По левому краю">
+														<materialIcons:MaterialIcon Kind="FormatAlignLeft" Width="16" Height="16" />
+													</ToggleButton>
+													<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding AlignCenter}" IsEnabled="{Binding IsTextableContent}" ToolTip.Tip="По центру">
+														<materialIcons:MaterialIcon Kind="FormatAlignCenter" Width="16" Height="16" />
+													</ToggleButton>
+													<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding AlignRight}" IsEnabled="{Binding IsTextableContent}" ToolTip.Tip="По правому краю">
+														<materialIcons:MaterialIcon Kind="FormatAlignRight" Width="16" Height="16" />
+													</ToggleButton>
+												</StackPanel>
+											</StackPanel>
+											<Button Classes="ribbon-button compact" Command="{Binding Inspector.MergeCellsCommand}" VerticalAlignment="Center">
 												<StackPanel Orientation="Horizontal" Spacing="4">
 													<materialIcons:MaterialIcon Kind="TableMergeCells" Width="16" Height="16" Classes="icon-muted" />
 													<TextBlock Text="Объединить ячейки" VerticalAlignment="Center" />

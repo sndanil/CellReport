@@ -12,6 +12,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.ComponentModel;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
@@ -19,6 +20,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using SkiaSharp;
 
 namespace CellReport.Editor.Avalonia.ViewModels;
 
@@ -98,6 +100,55 @@ public partial class MainWindowViewModel : ObservableObject
 
 	[ObservableProperty]
 	private bool _isTextContent;
+
+	[ObservableProperty]
+	private bool _isTextableContent;
+
+	[ObservableProperty]
+	private string _fontFamily = string.Empty;
+
+	[ObservableProperty]
+	private string _fontSize = string.Empty;
+
+	[ObservableProperty]
+	private bool _fontBold;
+
+	[ObservableProperty]
+	private bool _fontItalic;
+
+	[ObservableProperty]
+	private bool _fontUnderline;
+
+	[ObservableProperty]
+	private bool _fontStrikeout;
+
+	[ObservableProperty]
+	private bool _autoFitFont;
+
+	[ObservableProperty]
+	private bool _alignLeft;
+
+	[ObservableProperty]
+	private bool _alignCenter;
+
+	[ObservableProperty]
+	private bool _alignRight;
+
+	[ObservableProperty]
+	private bool _alignTop;
+
+	[ObservableProperty]
+	private bool _alignMiddle;
+
+	[ObservableProperty]
+	private bool _alignBottom;
+
+	public IReadOnlyList<string> Fonts { get; } = LoadFonts();
+
+	public IReadOnlyList<string> FontSizes { get; } =
+	[
+		string.Empty, "7", "8", "9", "10", "11", "12", "14", "16", "18", "20", "22", "24", "28", "32", "36", "48", "72"
+	];
 
 	[ObservableProperty]
 	private string _cellAddress = string.Empty;
@@ -319,6 +370,7 @@ public partial class MainWindowViewModel : ObservableObject
 		RedoCommand.NotifyCanExecuteChanged();
 		FindAndReplaceCommand.NotifyCanExecuteChanged();
 		FindInCodeCommand.NotifyCanExecuteChanged();
+		NotifyFormatCommands();
 	}
 
 	[RelayCommand]
@@ -593,6 +645,16 @@ public partial class MainWindowViewModel : ObservableObject
 				CellAddress = string.Empty;
 				SelectionStatus = string.Empty;
 				IsTextContent = false;
+				_syncing = true;
+				try
+				{
+					ClearFormat();
+				}
+				finally
+				{
+					_syncing = false;
+				}
+
 				return;
 			}
 
@@ -603,6 +665,16 @@ public partial class MainWindowViewModel : ObservableObject
 				CellAddress = string.Empty;
 				SelectionStatus = string.Empty;
 				IsTextContent = false;
+				_syncing = true;
+				try
+				{
+					ClearFormat();
+				}
+				finally
+				{
+					_syncing = false;
+				}
+
 				return;
 			}
 
@@ -616,6 +688,7 @@ public partial class MainWindowViewModel : ObservableObject
 					CurrentText = text;
 
 				IsTextContent = content != null;
+				ReadFormat();
 				CellAddress = "Ячейка " + location.Row + ", " + location.Column;
 				CellWidthText = _manager.GetColumnWidth(location.Column).ToString("0.##", CultureInfo.CurrentCulture);
 				CellHeightText = _manager.GetRowHeight(location.Row).ToString("0.##", CultureInfo.CurrentCulture);
@@ -629,6 +702,7 @@ public partial class MainWindowViewModel : ObservableObject
 		finally
 		{
 			Inspector.OnCellChanged();
+			NotifyFormatCommands();
 		}
 	}
 
@@ -669,6 +743,306 @@ public partial class MainWindowViewModel : ObservableObject
 			return collection.GetContents().OfType<TextContent>().FirstOrDefault();
 
 		return null;
+	}
+
+	private TextBasedContent? GetTextBasedContent()
+	{
+		if (_manager == null || _presenter == null)
+			return null;
+
+		var location = _presenter.CurrentCell;
+		if (location.Row < 0 || location.Column < 0
+			|| location.Row >= _manager.RowsCount || location.Column >= _manager.ColumnsCount)
+			return null;
+
+		var content = _manager.GetCell(location)?.Content;
+		if (content is CollectionContent collection)
+			content = collection.GetContents().FirstOrDefault(item => item is TextBasedContent);
+
+		return content as TextBasedContent;
+	}
+
+	private void ReadFormat()
+	{
+		var content = GetTextBasedContent();
+		var style = content?.GetStyle() as TextContentStyle;
+		IsTextableContent = style != null;
+		if (content == null || style == null)
+		{
+			ClearFormat();
+			return;
+		}
+
+		FontFamily = ReadParam(content, "Style.Font.Family") ?? style.Font.Family;
+		FontSize = ReadParam(content, "Style.Font.Size") ?? Convert.ToInt32(style.Font.Size).ToString(CultureInfo.InvariantCulture);
+		FontBold = HasFontStyle(content, style, nameof(FontStyle.Bold), FontStyle.Bold);
+		FontItalic = HasFontStyle(content, style, nameof(FontStyle.Italic), FontStyle.Italic);
+		FontUnderline = HasFontStyle(content, style, nameof(FontStyle.Underline), FontStyle.Underline);
+		FontStrikeout = HasFontStyle(content, style, nameof(FontStyle.Strikeout), FontStyle.Strikeout);
+		AutoFitFont = content is TextContent text && text.AutoSizeFont;
+		AlignLeft = HasAlignment(content, "Style.HAlignment", style.HAlignment, HorizontalAlignment.Left);
+		AlignCenter = HasAlignment(content, "Style.HAlignment", style.HAlignment, HorizontalAlignment.Center);
+		AlignRight = HasAlignment(content, "Style.HAlignment", style.HAlignment, HorizontalAlignment.Right);
+		AlignTop = HasAlignment(content, "Style.VAlignment", style.VAlignment, VerticalAlignment.Top);
+		AlignMiddle = HasAlignment(content, "Style.VAlignment", style.VAlignment, VerticalAlignment.Middle);
+		AlignBottom = HasAlignment(content, "Style.VAlignment", style.VAlignment, VerticalAlignment.Bottom);
+	}
+
+	private void ClearFormat()
+	{
+		IsTextableContent = false;
+		FontFamily = string.Empty;
+		FontSize = string.Empty;
+		FontBold = false;
+		FontItalic = false;
+		FontUnderline = false;
+		FontStrikeout = false;
+		AutoFitFont = false;
+		AlignLeft = false;
+		AlignCenter = false;
+		AlignRight = false;
+		AlignTop = false;
+		AlignMiddle = false;
+		AlignBottom = false;
+	}
+
+	private static string? ReadParam(TextBasedContent content, string target)
+	{
+		var param = content.GetParams().FirstOrDefault(item => item.Target == target);
+		return param?.Value as string;
+	}
+
+	private static bool HasFontStyle(TextBasedContent content, TextContentStyle style, string name, FontStyle part)
+	{
+		var param = ReadParam(content, "Style.Font.Style");
+		if (param != null)
+			return param.Contains(name);
+
+		return style.Font.Style.HasFlag(part);
+	}
+
+	private static bool HasAlignment<T>(TextBasedContent content, string target, T styleValue, T requested)
+		where T : struct
+	{
+		var param = ReadParam(content, target);
+		if (param != null && Enum.TryParse(param, out T parsed))
+			return parsed.Equals(requested);
+
+		return styleValue.Equals(requested);
+	}
+
+	partial void OnFontFamilyChanged(string value)
+	{
+		if (_syncing)
+			return;
+
+		SetStyleParam("Style.Font.Family", "Шрифт", value, style => style.Font.Family);
+	}
+
+	partial void OnFontSizeChanged(string value)
+	{
+		if (_syncing)
+			return;
+
+		SetStyleParam("Style.Font.Size", "Шрифт.Размер", value, style => Convert.ToInt32(style.Font.Size).ToString(CultureInfo.InvariantCulture));
+	}
+
+	partial void OnFontBoldChanged(bool value) => SetFontStyle(value, nameof(FontStyle.Bold), FontStyle.Bold);
+
+	partial void OnFontItalicChanged(bool value) => SetFontStyle(value, nameof(FontStyle.Italic), FontStyle.Italic);
+
+	partial void OnFontUnderlineChanged(bool value) => SetFontStyle(value, nameof(FontStyle.Underline), FontStyle.Underline);
+
+	partial void OnFontStrikeoutChanged(bool value) => SetFontStyle(value, nameof(FontStyle.Strikeout), FontStyle.Strikeout);
+
+	partial void OnAutoFitFontChanged(bool value)
+	{
+		if (_syncing || _presenter == null)
+			return;
+
+		var content = GetTextContent(_presenter.CurrentCell);
+		if (content == null || content.AutoSizeFont == value)
+			return;
+
+		EditContent(() => content.AutoSizeFont = value);
+	}
+
+	partial void OnAlignLeftChanged(bool value) => SetHorizontalAlignment(HorizontalAlignment.Left, value);
+
+	partial void OnAlignCenterChanged(bool value) => SetHorizontalAlignment(HorizontalAlignment.Center, value);
+
+	partial void OnAlignRightChanged(bool value) => SetHorizontalAlignment(HorizontalAlignment.Right, value);
+
+	partial void OnAlignTopChanged(bool value) => SetVerticalAlignment(VerticalAlignment.Top, value);
+
+	partial void OnAlignMiddleChanged(bool value) => SetVerticalAlignment(VerticalAlignment.Middle, value);
+
+	partial void OnAlignBottomChanged(bool value) => SetVerticalAlignment(VerticalAlignment.Bottom, value);
+
+	private void SetHorizontalAlignment(HorizontalAlignment alignment, bool value)
+	{
+		if (_syncing)
+			return;
+
+		SetStyleParam("Style.HAlignment", "Гор.Выравнивание", value ? alignment.ToString() : null, style => style.HAlignment.ToString(), value);
+	}
+
+	private void SetVerticalAlignment(VerticalAlignment alignment, bool value)
+	{
+		if (_syncing)
+			return;
+
+		SetStyleParam("Style.VAlignment", "Верт.Выравнивание", value ? alignment.ToString() : null, style => style.VAlignment.ToString(), value);
+	}
+
+	private void SetStyleParam(string target, string name, string? value, Func<TextContentStyle, string> styleValue, bool? enabled = null)
+	{
+		EditContent(() =>
+		{
+			var content = GetTextBasedContent();
+			if (content?.GetStyle() is not TextContentStyle style || _manager == null)
+				return;
+
+			var baseline = styleValue(style);
+			var param = content.GetParams().FirstOrDefault(item => item.Target == target);
+			var matchesStyle = enabled == null
+				? string.IsNullOrEmpty(value) || value == baseline
+				: (baseline == value) == enabled.Value;
+			if (matchesStyle)
+			{
+				if (param != null)
+				{
+					content.RemoveParam(param);
+					_editDirty = true;
+				}
+
+				return;
+			}
+
+			if (param != null)
+				param.Value = value;
+			else
+			{
+				content.AddParam(new Param(_manager, content)
+				{
+					Name = name,
+					Target = target,
+					Value = value
+				});
+			}
+
+			_editDirty = true;
+		});
+	}
+
+	private void SetFontStyle(bool value, string name, FontStyle part)
+	{
+		if (_syncing)
+			return;
+
+		EditContent(() =>
+		{
+			var content = GetTextBasedContent();
+			if (content?.GetStyle() is not TextContentStyle style || _manager == null)
+				return;
+
+			var baseStyle = style.Font.Style;
+			var param = content.GetParams().FirstOrDefault(item => item.Target == "Style.Font.Style");
+			if (value == baseStyle.HasFlag(part))
+			{
+				if (param == null)
+					return;
+
+				var paramValue = param.Value as string;
+				if (paramValue?.Contains(name) == true)
+				{
+					paramValue = paramValue.Replace("," + name, string.Empty).Trim();
+					if ((Enum.TryParse(paramValue, out FontStyle parsed) && parsed == baseStyle)
+						|| string.IsNullOrEmpty(paramValue)
+						|| paramValue == nameof(FontStyle.Regular))
+						content.RemoveParam(param);
+					else
+						param.Value = paramValue;
+				}
+				else
+					param.Value = param.Value + "," + name;
+			}
+			else if (param != null)
+			{
+				if (value)
+					param.Value = param.Value + "," + name;
+				else
+					param.Value = (param.Value as string)?.Replace("," + name, string.Empty).Trim();
+			}
+			else
+			{
+				var created = new Param(_manager, content)
+				{
+					Name = "Шрифт.Стиль",
+					Target = "Style.Font.Style",
+					Value = baseStyle == FontStyle.Regular
+						? baseStyle.ToString()
+						: nameof(FontStyle.Regular) + "," + baseStyle
+				};
+				var paramValue = created.Value as string;
+				if (value)
+					created.Value = paramValue + "," + name;
+				else
+					created.Value = paramValue?.Replace("," + name, string.Empty).Trim();
+
+				content.AddParam(created);
+			}
+
+			_editDirty = true;
+		});
+	}
+
+	private void EditContent(Action edit)
+	{
+		if (_manager == null)
+			return;
+
+		BeginEdit();
+		try
+		{
+			edit();
+		}
+		finally
+		{
+			EndEdit();
+		}
+	}
+
+	[RelayCommand(CanExecute = nameof(CanFormatText))]
+	private void ToggleBold() => FontBold = !FontBold;
+
+	[RelayCommand(CanExecute = nameof(CanFormatText))]
+	private void ToggleItalic() => FontItalic = !FontItalic;
+
+	[RelayCommand(CanExecute = nameof(CanFormatText))]
+	private void ToggleUnderline() => FontUnderline = !FontUnderline;
+
+	private bool CanFormatText() => !IsCodeMode && IsTextableContent;
+
+	private void NotifyFormatCommands()
+	{
+		ToggleBoldCommand.NotifyCanExecuteChanged();
+		ToggleItalicCommand.NotifyCanExecuteChanged();
+		ToggleUnderlineCommand.NotifyCanExecuteChanged();
+	}
+
+	private static IReadOnlyList<string> LoadFonts()
+	{
+		try
+		{
+			return new[] { string.Empty }
+				.Concat(SKFontManager.Default.FontFamilies.OrderBy(item => item, StringComparer.CurrentCultureIgnoreCase))
+				.ToArray();
+		}
+		catch (Exception)
+		{
+			return [string.Empty, "Arial", "Times New Roman", "Courier New"];
+		}
 	}
 
 	partial void OnCurrentTextChanged(string value)
