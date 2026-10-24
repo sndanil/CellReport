@@ -208,6 +208,24 @@ public partial class MainWindowViewModel : ObservableObject
 		ApplyDocument(manager, resetHistory: true, CellLocation.None);
 	}
 
+	[RelayCommand]
+	private async Task PrintPreview()
+	{
+		if (_manager == null || _window == null)
+			return;
+
+		await ReportPrintService.ShowPreviewAsync(_window, _manager);
+	}
+
+	[RelayCommand]
+	private async Task Print()
+	{
+		if (_manager == null || _window == null)
+			return;
+
+		await ReportPrintService.PrintAsync(_window, _manager, custom: true);
+	}
+
 	private void ShowDesigner()
 	{
 		if (IsCodeMode)

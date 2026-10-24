@@ -41,6 +41,9 @@
 									<MenuItem Header="Сохранить" InputGesture="Ctrl+S" Command="{Binding SaveCommand}" />
 									<MenuItem Header="Сохранить как" InputGesture="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
 									<Separator />
+									<MenuItem Header="Предварительный просмотр" Command="{Binding PrintPreviewCommand}" />
+									<MenuItem Header="Печать" Command="{Binding PrintCommand}" />
+									<Separator />
 									<MenuItem Header="Выход" Command="{Binding ExitCommand}" />
 								</MenuFlyout>
 							</Button.Flyout>
