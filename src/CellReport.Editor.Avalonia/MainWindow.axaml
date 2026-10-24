@@ -5,6 +5,7 @@
         xmlns:core="clr-namespace:CellReport.Core;assembly=CellReport"
         xmlns:contents="clr-namespace:CellReport.Core.Contents;assembly=CellReport"
         xmlns:edit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+        xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         x:Class="CellReport.Editor.Avalonia.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="{Binding Title}"
@@ -24,23 +25,259 @@
 	</Window.KeyBindings>
 
 	<Grid RowDefinitions="Auto,*,Auto">
-		<Border Grid.Row="0" Classes="toolbar">
-			<StackPanel Classes="toolbar-items">
-				<Button Classes="toolbar-button" Content="Создать" Command="{Binding CreateCommand}" />
-				<Button Classes="toolbar-button" Content="Открыть" Command="{Binding OpenCommand}" />
-				<Button Classes="toolbar-button" Content="Сохранить" Command="{Binding SaveCommand}" />
-				<Button Classes="toolbar-button" Content="Сохранить как" Command="{Binding SaveAsCommand}" />
-				<Border Classes="toolbar-separator" />
-				<Button Classes="toolbar-button" Content="Отменить" Command="{Binding UndoCommand}" />
-				<Button Classes="toolbar-button" Content="Вернуть" Command="{Binding RedoCommand}" />
-				<Border Classes="toolbar-separator" />
-				<Button Classes="toolbar-button" Content="Выход" Command="{Binding ExitCommand}" />
-			</StackPanel>
+		<Border Grid.Row="0" Classes="ribbon">
+			<DockPanel>
+				<Border Classes="ribbon-tabs" DockPanel.Dock="Top">
+					<DockPanel>
+						<Button Classes="ribbon-ops" DockPanel.Dock="Left" Content="Файл">
+							<Button.Flyout>
+								<MenuFlyout Placement="BottomEdgeAlignedLeft">
+									<MenuItem Header="Создать" InputGesture="Ctrl+N" Command="{Binding CreateCommand}" />
+									<MenuItem Header="Открыть" InputGesture="Ctrl+O" Command="{Binding OpenCommand}" />
+									<Separator />
+									<MenuItem Header="Сохранить" InputGesture="Ctrl+S" Command="{Binding SaveCommand}" />
+									<MenuItem Header="Сохранить как" InputGesture="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
+									<Separator />
+									<MenuItem Header="Выход" Command="{Binding ExitCommand}" />
+								</MenuFlyout>
+							</Button.Flyout>
+						</Button>
+						<StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+							<Button Classes="ribbon-chrome" Command="{Binding SaveCommand}" ToolTip.Tip="Сохранить">
+								<materialIcons:MaterialIcon Kind="ContentSave" />
+							</Button>
+							<Button Classes="ribbon-chrome" Command="{Binding UndoCommand}" ToolTip.Tip="Отменить">
+								<materialIcons:MaterialIcon Kind="Undo" />
+							</Button>
+							<Button Classes="ribbon-chrome" Command="{Binding RedoCommand}" ToolTip.Tip="Вернуть">
+								<materialIcons:MaterialIcon Kind="Redo" />
+							</Button>
+						</StackPanel>
+						<StackPanel Orientation="Horizontal">
+							<Button Classes="ribbon-tab"
+							        Classes.selected="{Binding IsHomeRibbon}"
+							        Content="Главная"
+							        Command="{Binding SelectRibbonTabCommand}"
+							        CommandParameter="0" />
+							<Button Classes="ribbon-tab"
+							        Classes.selected="{Binding IsCellsRibbon}"
+							        Content="Ячейки"
+							        Command="{Binding SelectRibbonTabCommand}"
+							        CommandParameter="1" />
+							<Button Classes="ribbon-tab"
+							        Classes.selected="{Binding IsContentRibbon}"
+							        Content="Содержимое"
+							        Command="{Binding SelectRibbonTabCommand}"
+							        CommandParameter="2" />
+						</StackPanel>
+					</DockPanel>
+				</Border>
+
+				<Border Classes="ribbon-content">
+					<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+						<Panel>
+							<StackPanel Classes="ribbon-groups" IsVisible="{Binding IsHomeRibbon}">
+								<Border Classes="ribbon-group">
+									<DockPanel LastChildFill="True">
+										<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Буфер обмена" />
+										<StackPanel Margin="4,4,4,2">
+											<Button Classes="ribbon-button compact" Command="{Binding Inspector.CutCommand}">
+												<StackPanel Orientation="Horizontal" Spacing="4">
+													<materialIcons:MaterialIcon Kind="ContentCut" Width="16" Height="16" Classes="icon-muted" />
+													<TextBlock Text="Вырезать" VerticalAlignment="Center" />
+												</StackPanel>
+											</Button>
+											<Button Classes="ribbon-button compact" Command="{Binding Inspector.CopyCommand}">
+												<StackPanel Orientation="Horizontal" Spacing="4">
+													<materialIcons:MaterialIcon Kind="ContentCopy" Width="16" Height="16" Classes="icon-muted" />
+													<TextBlock Text="Копировать" VerticalAlignment="Center" />
+												</StackPanel>
+											</Button>
+											<Button Classes="ribbon-button compact" Command="{Binding Inspector.PasteCommand}">
+												<StackPanel Orientation="Horizontal" Spacing="4">
+													<materialIcons:MaterialIcon Kind="ContentPaste" Width="16" Height="16" Classes="icon-muted" />
+													<TextBlock Text="Вставить" VerticalAlignment="Center" />
+												</StackPanel>
+											</Button>
+										</StackPanel>
+									</DockPanel>
+								</Border>
+								<Border Classes="ribbon-group">
+									<DockPanel LastChildFill="True">
+										<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Действия" />
+										<StackPanel Margin="4,4,4,2">
+											<Button Classes="ribbon-button compact" Command="{Binding UndoCommand}">
+												<StackPanel Orientation="Horizontal" Spacing="4">
+													<materialIcons:MaterialIcon Kind="Undo" Width="16" Height="16" Classes="icon-muted" />
+													<TextBlock Text="Отменить" VerticalAlignment="Center" />
+												</StackPanel>
+											</Button>
+											<Button Classes="ribbon-button compact" Command="{Binding RedoCommand}">
+												<StackPanel Orientation="Horizontal" Spacing="4">
+													<materialIcons:MaterialIcon Kind="Redo" Width="16" Height="16" Classes="icon-muted" />
+													<TextBlock Text="Вернуть" VerticalAlignment="Center" />
+												</StackPanel>
+											</Button>
+										</StackPanel>
+									</DockPanel>
+								</Border>
+								<Border Classes="ribbon-group">
+									<DockPanel LastChildFill="True">
+										<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Выравнивание" />
+										<StackPanel Margin="4,4,4,2" VerticalAlignment="Center">
+											<Button Classes="ribbon-button compact" Command="{Binding Inspector.MergeCellsCommand}">
+												<StackPanel Orientation="Horizontal" Spacing="4">
+													<materialIcons:MaterialIcon Kind="TableMergeCells" Width="16" Height="16" Classes="icon-muted" />
+													<TextBlock Text="Объединить ячейки" VerticalAlignment="Center" />
+												</StackPanel>
+											</Button>
+										</StackPanel>
+									</DockPanel>
+								</Border>
+							</StackPanel>
+
+							<StackPanel Classes="ribbon-groups" IsVisible="{Binding IsCellsRibbon}">
+								<Border Classes="ribbon-group">
+									<DockPanel LastChildFill="True">
+										<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Ячейки" />
+										<StackPanel Orientation="Horizontal" Margin="4,4,4,2">
+											<Button Classes="ribbon-button large" Command="{Binding Inspector.DeleteCellCommand}">
+												<StackPanel Orientation="Vertical" Spacing="2" HorizontalAlignment="Center">
+													<materialIcons:MaterialIcon Kind="TableRemove" Width="32" Height="32" Classes="icon-danger" />
+													<TextBlock Text="Удалить" MaxWidth="72" />
+												</StackPanel>
+											</Button>
+										</StackPanel>
+									</DockPanel>
+								</Border>
+								<Border Classes="ribbon-group">
+									<DockPanel LastChildFill="True">
+										<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Строки и столбцы" />
+										<StackPanel Orientation="Horizontal" Margin="4,4,4,2">
+											<Button Classes="ribbon-button large">
+												<Button.Flyout>
+													<MenuFlyout Placement="BottomEdgeAlignedLeft">
+														<MenuItem Header="Вставить до" Command="{Binding Inspector.InsertRowBeforeCommand}" />
+														<MenuItem Header="Вставить после" Command="{Binding Inspector.InsertRowAfterCommand}" />
+													</MenuFlyout>
+												</Button.Flyout>
+												<StackPanel Orientation="Vertical" Spacing="2" HorizontalAlignment="Center">
+													<materialIcons:MaterialIcon Kind="TableRowPlusBefore" Width="32" Height="32" Classes="icon-success" />
+													<StackPanel Orientation="Horizontal" Spacing="2" HorizontalAlignment="Center">
+														<TextBlock Text="Добавить строку" MaxWidth="64" />
+														<materialIcons:MaterialIcon Kind="ChevronDown" Width="12" Height="12" VerticalAlignment="Center" />
+													</StackPanel>
+												</StackPanel>
+											</Button>
+											<Button Classes="ribbon-button large" Command="{Binding Inspector.DeleteRowsCommand}">
+												<StackPanel Orientation="Vertical" Spacing="2" HorizontalAlignment="Center">
+													<materialIcons:MaterialIcon Kind="TableRowRemove" Width="32" Height="32" Classes="icon-danger" />
+													<TextBlock Text="Удалить строку" MaxWidth="72" />
+												</StackPanel>
+											</Button>
+											<Button Classes="ribbon-button large">
+												<Button.Flyout>
+													<MenuFlyout Placement="BottomEdgeAlignedLeft">
+														<MenuItem Header="Вставить до" Command="{Binding Inspector.InsertColumnBeforeCommand}" />
+														<MenuItem Header="Вставить после" Command="{Binding Inspector.InsertColumnAfterCommand}" />
+													</MenuFlyout>
+												</Button.Flyout>
+												<StackPanel Orientation="Vertical" Spacing="2" HorizontalAlignment="Center">
+													<materialIcons:MaterialIcon Kind="TableColumnPlusBefore" Width="32" Height="32" Classes="icon-success" />
+													<StackPanel Orientation="Horizontal" Spacing="2" HorizontalAlignment="Center">
+														<TextBlock Text="Добавить столбец" MaxWidth="68" />
+														<materialIcons:MaterialIcon Kind="ChevronDown" Width="12" Height="12" VerticalAlignment="Center" />
+													</StackPanel>
+												</StackPanel>
+											</Button>
+											<Button Classes="ribbon-button large" Command="{Binding Inspector.DeleteColumnsCommand}">
+												<StackPanel Orientation="Vertical" Spacing="2" HorizontalAlignment="Center">
+													<materialIcons:MaterialIcon Kind="TableColumnRemove" Width="32" Height="32" Classes="icon-danger" />
+													<TextBlock Text="Удалить столбец" MaxWidth="72" />
+												</StackPanel>
+											</Button>
+										</StackPanel>
+									</DockPanel>
+								</Border>
+								<Border Classes="ribbon-group">
+									<DockPanel LastChildFill="True">
+										<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Стиль" />
+										<StackPanel Width="180" Margin="8,8,8,2" VerticalAlignment="Center">
+											<ComboBox ItemsSource="{Binding Inspector.CellStyles}"
+											          SelectedItem="{Binding Inspector.SelectedCellStyle}" />
+										</StackPanel>
+									</DockPanel>
+								</Border>
+							</StackPanel>
+
+							<StackPanel Classes="ribbon-groups" IsVisible="{Binding IsContentRibbon}">
+								<Border Classes="ribbon-group">
+									<DockPanel LastChildFill="True">
+										<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Контент" />
+										<StackPanel Orientation="Horizontal" Margin="4,4,4,2">
+											<Button Classes="ribbon-button large">
+												<Button.Flyout>
+													<MenuFlyout Placement="BottomEdgeAlignedLeft">
+														<MenuItem Header="Текст" Command="{Binding Inspector.AddTextCommand}" />
+														<MenuItem Header="Число" Command="{Binding Inspector.AddDecimalCommand}" />
+														<MenuItem Header="Дату и время" Command="{Binding Inspector.AddDateTimeCommand}" />
+														<MenuItem Header="Штрих-код" Command="{Binding Inspector.AddBarCodeCommand}" />
+														<MenuItem Header="Изображение" Command="{Binding Inspector.AddImageCommand}" />
+														<MenuItem Header="Действие" Command="{Binding Inspector.AddActionCommand}" />
+													</MenuFlyout>
+												</Button.Flyout>
+												<StackPanel Orientation="Vertical" Spacing="2" HorizontalAlignment="Center">
+													<materialIcons:MaterialIcon Kind="PlusBoxOutline" Width="32" Height="32" Classes="icon-success" />
+													<StackPanel Orientation="Horizontal" Spacing="2" HorizontalAlignment="Center">
+														<TextBlock Text="Добавить" MaxWidth="72" />
+														<materialIcons:MaterialIcon Kind="ChevronDown" Width="12" Height="12" VerticalAlignment="Center" />
+													</StackPanel>
+												</StackPanel>
+											</Button>
+											<Button Classes="ribbon-button large" Command="{Binding Inspector.DeleteContentCommand}">
+												<StackPanel Orientation="Vertical" Spacing="2" HorizontalAlignment="Center">
+													<materialIcons:MaterialIcon Kind="DeleteOutline" Width="32" Height="32" Classes="icon-danger" />
+													<TextBlock Text="Удалить все" MaxWidth="72" />
+												</StackPanel>
+											</Button>
+										</StackPanel>
+									</DockPanel>
+								</Border>
+								<Border Classes="ribbon-group">
+									<DockPanel LastChildFill="True">
+										<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Стиль" />
+										<StackPanel Orientation="Horizontal" Margin="4,8,4,2" VerticalAlignment="Center">
+											<StackPanel Width="150" Margin="4,0">
+												<TextBlock FontSize="11" Margin="0,0,0,2" Opacity="0.8" Text="Текст" />
+												<ComboBox IsEnabled="{Binding Inspector.HasTextContent}"
+												          ItemsSource="{Binding Inspector.TextStyles}"
+												          SelectedItem="{Binding Inspector.SelectedTextStyle}" />
+											</StackPanel>
+											<StackPanel Width="150" Margin="4,0">
+												<TextBlock FontSize="11" Margin="0,0,0,2" Opacity="0.8" Text="Число" />
+												<ComboBox IsEnabled="{Binding Inspector.HasDecimalContent}"
+												          ItemsSource="{Binding Inspector.DecimalStyles}"
+												          SelectedItem="{Binding Inspector.SelectedDecimalStyle}" />
+											</StackPanel>
+											<StackPanel Width="150" Margin="4,0">
+												<TextBlock FontSize="11" Margin="0,0,0,2" Opacity="0.8" Text="Дата" />
+												<ComboBox IsEnabled="{Binding Inspector.HasDateTimeContent}"
+												          ItemsSource="{Binding Inspector.DateTimeStyles}"
+												          SelectedItem="{Binding Inspector.SelectedDateTimeStyle}" />
+											</StackPanel>
+										</StackPanel>
+									</DockPanel>
+								</Border>
+							</StackPanel>
+						</Panel>
+					</ScrollViewer>
+				</Border>
+			</DockPanel>
 		</Border>
 
 		<TabControl x:Name="ModeTabs" Grid.Row="1" SelectionChanged="OnModeChanged">
 			<TabItem Header="Конструктор">
-				<Grid RowDefinitions="Auto,Auto,*">
+				<Grid RowDefinitions="Auto,*">
 		<Grid Grid.Row="0" ColumnDefinitions="Auto,*" Margin="8,6">
 			<TextBlock VerticalAlignment="Center" Margin="0,0,8,0" Text="Текст" />
 			<TextBox Grid.Column="1"
@@ -52,71 +289,7 @@
 			         Text="{Binding CurrentText, UpdateSourceTrigger=PropertyChanged}" />
 		</Grid>
 
-		<Border Grid.Row="1" Classes="toolbar">
-			<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-				<StackPanel Classes="toolbar-items">
-					<Button Classes="toolbar-button" Content="Вырезать" Command="{Binding Inspector.CutCommand}" />
-					<Button Classes="toolbar-button" Content="Копировать" Command="{Binding Inspector.CopyCommand}" />
-					<Button Classes="toolbar-button" Content="Вставить" Command="{Binding Inspector.PasteCommand}" />
-					<Border Classes="toolbar-separator" />
-					<Button Classes="toolbar-button" Content="Объединить" Command="{Binding Inspector.MergeCellsCommand}" />
-					<Button Classes="toolbar-button" Content="Строки">
-						<Button.Flyout>
-							<MenuFlyout>
-								<MenuItem Header="Вставить до" Command="{Binding Inspector.InsertRowBeforeCommand}" />
-								<MenuItem Header="Вставить после" Command="{Binding Inspector.InsertRowAfterCommand}" />
-								<MenuItem Header="Удалить" Command="{Binding Inspector.DeleteRowsCommand}" />
-							</MenuFlyout>
-						</Button.Flyout>
-					</Button>
-					<Button Classes="toolbar-button" Content="Столбцы">
-						<Button.Flyout>
-							<MenuFlyout>
-								<MenuItem Header="Вставить до" Command="{Binding Inspector.InsertColumnBeforeCommand}" />
-								<MenuItem Header="Вставить после" Command="{Binding Inspector.InsertColumnAfterCommand}" />
-								<MenuItem Header="Удалить" Command="{Binding Inspector.DeleteColumnsCommand}" />
-							</MenuFlyout>
-						</Button.Flyout>
-					</Button>
-					<Button Classes="toolbar-button" Content="Удалить ячейку" Command="{Binding Inspector.DeleteCellCommand}" />
-					<Button Classes="toolbar-button" Content="Удалить содержимое" Command="{Binding Inspector.DeleteContentCommand}" />
-					<Button Classes="toolbar-button" Content="Добавить">
-						<Button.Flyout>
-							<MenuFlyout>
-								<MenuItem Header="Текст" Command="{Binding Inspector.AddTextCommand}" />
-								<MenuItem Header="Число" Command="{Binding Inspector.AddDecimalCommand}" />
-								<MenuItem Header="Дату и время" Command="{Binding Inspector.AddDateTimeCommand}" />
-								<MenuItem Header="Штрих-код" Command="{Binding Inspector.AddBarCodeCommand}" />
-								<MenuItem Header="Изображение" Command="{Binding Inspector.AddImageCommand}" />
-								<MenuItem Header="Действие" Command="{Binding Inspector.AddActionCommand}" />
-							</MenuFlyout>
-						</Button.Flyout>
-					</Button>
-					<Border Classes="toolbar-separator" />
-					<TextBlock VerticalAlignment="Center" Margin="4,0" Text="Ячейка" />
-					<ComboBox Width="140" Margin="0,4,8,4"
-					          ItemsSource="{Binding Inspector.CellStyles}"
-					          SelectedItem="{Binding Inspector.SelectedCellStyle}" />
-					<TextBlock VerticalAlignment="Center" Text="Текст" />
-					<ComboBox Width="140" Margin="6,4"
-					          IsEnabled="{Binding Inspector.HasTextContent}"
-					          ItemsSource="{Binding Inspector.TextStyles}"
-					          SelectedItem="{Binding Inspector.SelectedTextStyle}" />
-					<TextBlock VerticalAlignment="Center" Text="Число" />
-					<ComboBox Width="140" Margin="6,4"
-					          IsEnabled="{Binding Inspector.HasDecimalContent}"
-					          ItemsSource="{Binding Inspector.DecimalStyles}"
-					          SelectedItem="{Binding Inspector.SelectedDecimalStyle}" />
-					<TextBlock VerticalAlignment="Center" Text="Дата" />
-					<ComboBox Width="140" Margin="6,4,4,4"
-					          IsEnabled="{Binding Inspector.HasDateTimeContent}"
-					          ItemsSource="{Binding Inspector.DateTimeStyles}"
-					          SelectedItem="{Binding Inspector.SelectedDateTimeStyle}" />
-				</StackPanel>
-			</ScrollViewer>
-		</Border>
-
-		<Grid Grid.Row="2" ColumnDefinitions="300,*">
+		<Grid Grid.Row="1" ColumnDefinitions="300,*">
 			<TabControl Margin="4,0,4,4">
 				<TabItem Header="Параметры">
 					<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">

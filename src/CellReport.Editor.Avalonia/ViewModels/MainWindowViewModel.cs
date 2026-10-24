@@ -63,6 +63,29 @@ public partial class MainWindowViewModel : ObservableObject
 	private string _title = "Редактор отчетов";
 
 	[ObservableProperty]
+	private int _ribbonTabIndex;
+
+	public bool IsHomeRibbon => RibbonTabIndex == 0;
+
+	public bool IsCellsRibbon => RibbonTabIndex == 1;
+
+	public bool IsContentRibbon => RibbonTabIndex == 2;
+
+	partial void OnRibbonTabIndexChanged(int value)
+	{
+		OnPropertyChanged(nameof(IsHomeRibbon));
+		OnPropertyChanged(nameof(IsCellsRibbon));
+		OnPropertyChanged(nameof(IsContentRibbon));
+	}
+
+	[RelayCommand]
+	private void SelectRibbonTab(string? index)
+	{
+		if (int.TryParse(index, out var tab))
+			RibbonTabIndex = tab;
+	}
+
+	[ObservableProperty]
 	private string _currentText = string.Empty;
 
 	[ObservableProperty]

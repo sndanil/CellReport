@@ -7,6 +7,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://CellReport.Avalonia/Themes/CellReportTheme.axaml" />
+                <ResourceInclude Source="avares://CellReport.Editor.Avalonia/Themes/RibbonTheme.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
@@ -15,6 +16,7 @@
         <FluentTheme />
         <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
         <StyleInclude Source="avares://CellReport.Avalonia/Themes/CellReportControls.axaml" />
+        <StyleInclude Source="avares://CellReport.Editor.Avalonia/Themes/Ribbon.axaml" />
         <materialIcons:MaterialIconStyles />
     </Application.Styles>
 </Application>

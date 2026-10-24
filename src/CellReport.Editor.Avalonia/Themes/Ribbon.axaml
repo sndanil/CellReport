@@ -1,0 +1,170 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
+
+	<Style Selector="Border.ribbon">
+		<Setter Property="Background" Value="{DynamicResource CellReport.Ribbon.TabBg}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource CellReport.Ribbon.Border}" />
+		<Setter Property="BorderThickness" Value="0,0,0,1" />
+	</Style>
+
+	<Style Selector="Border.ribbon-tabs">
+		<Setter Property="Background" Value="{DynamicResource CellReport.Ribbon.Blue}" />
+		<Setter Property="Padding" Value="0" />
+		<Setter Property="MinHeight" Value="28" />
+	</Style>
+
+	<Style Selector="Button.ribbon-ops">
+		<Setter Property="Background" Value="{DynamicResource CellReport.Ribbon.BlueDark}" />
+		<Setter Property="Foreground" Value="{DynamicResource CellReport.Ribbon.ChromeForeground}" />
+		<Setter Property="BorderThickness" Value="0" />
+		<Setter Property="Padding" Value="14,4" />
+		<Setter Property="MinHeight" Value="28" />
+		<Setter Property="CornerRadius" Value="0" />
+		<Setter Property="FontWeight" Value="SemiBold" />
+		<Setter Property="VerticalAlignment" Value="Stretch" />
+	</Style>
+
+	<Style Selector="Button.ribbon-ops:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="{DynamicResource CellReport.Ribbon.OpsHover}" />
+	</Style>
+
+	<Style Selector="Button.ribbon-tab">
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="Foreground" Value="{DynamicResource CellReport.Ribbon.TabForeground}" />
+		<Setter Property="BorderThickness" Value="0" />
+		<Setter Property="Padding" Value="12,4" />
+		<Setter Property="MinHeight" Value="28" />
+		<Setter Property="CornerRadius" Value="0" />
+		<Setter Property="VerticalAlignment" Value="Stretch" />
+	</Style>
+
+	<Style Selector="Button.ribbon-tab:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="{DynamicResource CellReport.Ribbon.BlueHover}" />
+	</Style>
+
+	<Style Selector="Button.ribbon-tab.selected">
+		<Setter Property="Background" Value="{DynamicResource CellReport.Ribbon.ContentBg}" />
+		<Setter Property="Foreground" Value="{DynamicResource CellReport.Ribbon.SelectedForeground}" />
+		<Setter Property="FontWeight" Value="SemiBold" />
+	</Style>
+
+	<Style Selector="Button.ribbon-tab.selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="{DynamicResource CellReport.Ribbon.ContentBg}" />
+	</Style>
+
+	<Style Selector="Button.ribbon-chrome">
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="Foreground" Value="{DynamicResource CellReport.Ribbon.ChromeForeground}" />
+		<Setter Property="BorderThickness" Value="0" />
+		<Setter Property="Padding" Value="8,4" />
+		<Setter Property="MinWidth" Value="28" />
+		<Setter Property="CornerRadius" Value="0" />
+		<Setter Property="VerticalAlignment" Value="Stretch" />
+	</Style>
+
+	<Style Selector="Button.ribbon-chrome:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="{DynamicResource CellReport.Ribbon.BlueHover}" />
+	</Style>
+
+	<Style Selector="Button.ribbon-chrome:disabled">
+		<Setter Property="Opacity" Value="0.45" />
+	</Style>
+
+	<Style Selector="Button.ribbon-chrome icons|MaterialIcon">
+		<Setter Property="Foreground" Value="{DynamicResource CellReport.Ribbon.ChromeForeground}" />
+		<Setter Property="Width" Value="16" />
+		<Setter Property="Height" Value="16" />
+	</Style>
+
+	<Style Selector="Border.ribbon-content">
+		<Setter Property="Background" Value="{DynamicResource CellReport.Ribbon.ContentBg}" />
+		<Setter Property="Height" Value="96" />
+		<Setter Property="MinHeight" Value="96" />
+		<Setter Property="MaxHeight" Value="96" />
+		<Setter Property="Padding" Value="2,0,2,0" />
+		<Setter Property="ClipToBounds" Value="True" />
+	</Style>
+
+	<Style Selector="Border.ribbon-group">
+		<Setter Property="BorderBrush" Value="{DynamicResource CellReport.Ribbon.Border}" />
+		<Setter Property="BorderThickness" Value="0,0,1,0" />
+		<Setter Property="Padding" Value="2,0,2,2" />
+		<Setter Property="MinWidth" Value="72" />
+	</Style>
+
+	<Style Selector="TextBlock.ribbon-group-title">
+		<Setter Property="FontSize" Value="10.5" />
+		<Setter Property="Foreground" Value="{DynamicResource CellReport.Ribbon.GroupTitle}" />
+		<Setter Property="Margin" Value="0,2,0,0" />
+		<Setter Property="HorizontalAlignment" Value="Center" />
+	</Style>
+
+	<Style Selector="Button.ribbon-button">
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="BorderBrush" Value="Transparent" />
+		<Setter Property="CornerRadius" Value="2" />
+		<Setter Property="Padding" Value="4,2" />
+		<Setter Property="HorizontalContentAlignment" Value="Center" />
+		<Setter Property="VerticalContentAlignment" Value="Center" />
+	</Style>
+
+	<Style Selector="Button.ribbon-button.large">
+		<Setter Property="MinWidth" Value="64" />
+		<Setter Property="MinHeight" Value="68" />
+		<Setter Property="Padding" Value="6,4" />
+	</Style>
+
+	<Style Selector="Button.ribbon-button.large TextBlock">
+		<Setter Property="FontSize" Value="11" />
+		<Setter Property="TextAlignment" Value="Center" />
+		<Setter Property="TextWrapping" Value="Wrap" />
+	</Style>
+
+	<Style Selector="Button.ribbon-button.compact">
+		<Setter Property="MinHeight" Value="24" />
+		<Setter Property="Padding" Value="6,2" />
+		<Setter Property="HorizontalContentAlignment" Value="Left" />
+		<Setter Property="VerticalAlignment" Value="Top" />
+	</Style>
+
+	<Style Selector="Button.ribbon-button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="{DynamicResource CellReport.Ribbon.Hover}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource CellReport.Ribbon.ButtonBorderHover}" />
+	</Style>
+
+	<Style Selector="Button.ribbon-button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="{DynamicResource CellReport.Ribbon.Pressed}" />
+	</Style>
+
+	<Style Selector="Button.ribbon-button:disabled">
+		<Setter Property="Opacity" Value="0.45" />
+	</Style>
+
+	<Style Selector="Border.ribbon-ops-panel">
+		<Setter Property="Background" Value="{DynamicResource CellReport.Ribbon.OpsPanelBackground}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource CellReport.Ribbon.Border}" />
+		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="Padding" Value="4" />
+		<Setter Property="MinWidth" Value="220" />
+	</Style>
+
+	<Style Selector="Button.ribbon-ops-item">
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="BorderThickness" Value="0" />
+		<Setter Property="CornerRadius" Value="0" />
+		<Setter Property="Padding" Value="8,6" />
+		<Setter Property="HorizontalAlignment" Value="Stretch" />
+		<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+	</Style>
+
+	<Style Selector="Button.ribbon-ops-item:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="{DynamicResource CellReport.Ribbon.Hover}" />
+	</Style>
+
+	<Style Selector="StackPanel.ribbon-groups">
+		<Setter Property="Orientation" Value="Horizontal" />
+	</Style>
+
+</Styles>

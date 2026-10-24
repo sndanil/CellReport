@@ -1,0 +1,39 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<ResourceDictionary.ThemeDictionaries>
+		<ResourceDictionary x:Key="Light">
+			<SolidColorBrush x:Key="CellReport.Ribbon.Blue" Color="#2B579A" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.BlueDark" Color="#1E3F6F" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.BlueHover" Color="#3A6BB0" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.OpsHover" Color="#244A82" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.TabBg" Color="#E7EBF1" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.ContentBg" Color="#F3F5F8" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.Border" Color="#B8C0CC" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.Hover" Color="#D6E2F3" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.Pressed" Color="#C5D4EA" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.ButtonBorderHover" Color="#A8B8D0" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.SelectedForeground" Color="#1A1A1A" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.GroupTitle" Color="#5A6472" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.OpsPanelBackground" Color="#FFFFFF" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.ChromeForeground" Color="#FFFFFF" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.TabForeground" Color="#FFFFFF" />
+		</ResourceDictionary>
+		<ResourceDictionary x:Key="Dark">
+			<SolidColorBrush x:Key="CellReport.Ribbon.Blue" Color="#1F4E8C" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.BlueDark" Color="#163A68" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.BlueHover" Color="#2B63A8" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.OpsHover" Color="#1A4578" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.TabBg" Color="#2B2B2B" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.ContentBg" Color="#2D2D30" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.Border" Color="#3F3F46" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.Hover" Color="#3A4A5E" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.Pressed" Color="#314056" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.ButtonBorderHover" Color="#5A6A80" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.SelectedForeground" Color="#F0F0F0" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.GroupTitle" Color="#A0A8B0" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.OpsPanelBackground" Color="#2D2D30" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.ChromeForeground" Color="#FFFFFF" />
+			<SolidColorBrush x:Key="CellReport.Ribbon.TabForeground" Color="#FFFFFF" />
+		</ResourceDictionary>
+	</ResourceDictionary.ThemeDictionaries>
+</ResourceDictionary>
