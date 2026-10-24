@@ -4,6 +4,7 @@ using CellReport.Avalonia.ViewModels;
 using CellReport.Core;
 using CellReport.Core.Contents;
 using CellReport.Editor.Avalonia.Editing;
+using CellReport.Editor.Avalonia.Import;
 using CellReport.Export;
 using CellReport.Presenters;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -58,6 +59,8 @@ public partial class MainWindowViewModel : ObservableObject
 	public ObservableCollection<SchemaError> CodeErrors { get; } = new();
 
 	public event EventHandler? ExitRequested;
+
+	public event EventHandler? ShowDesignerRequested;
 
 	[ObservableProperty]
 	private string _title = "Редактор отчетов";
@@ -165,6 +168,50 @@ public partial class MainWindowViewModel : ObservableObject
 		{
 			await ShowErrorAsync("Не удалось открыть шаблон." + Environment.NewLine + ex.Message);
 		}
+	}
+
+	[RelayCommand]
+	private async Task Import()
+	{
+		if (_window?.StorageProvider.CanOpen != true)
+			return;
+
+		var files = await _window.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+		{
+			Title = "Импорт из Excel",
+			AllowMultiple = false,
+			FileTypeFilter = new[]
+			{
+				new FilePickerFileType("Excel") { Patterns = new[] { "*.xlsx" } }
+			}
+		});
+
+		if (files.Count == 0)
+			return;
+
+		var source = files[0].Path.LocalPath;
+		var manager = ExcelImporter.Import(source);
+		if (manager == null)
+		{
+			await ShowErrorAsync("Не удалось импортировать шаблон, возможно файл занят другим приложением.");
+			return;
+		}
+
+		ShowDesigner();
+		var directory = Path.GetDirectoryName(source) ?? string.Empty;
+		_filePath = Path.Combine(directory, Path.GetFileNameWithoutExtension(source) + ".tcr");
+		ApplyDocument(manager, resetHistory: true, CellLocation.None);
+	}
+
+	private void ShowDesigner()
+	{
+		if (IsCodeMode)
+		{
+			IsCodeMode = false;
+			NotifyMode();
+		}
+
+		ShowDesignerRequested?.Invoke(this, EventArgs.Empty);
 	}
 
 	[RelayCommand]

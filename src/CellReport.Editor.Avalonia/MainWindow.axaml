@@ -33,8 +33,9 @@
 							<Button.Flyout>
 								<MenuFlyout Placement="BottomEdgeAlignedLeft">
 									<MenuItem Header="Создать" InputGesture="Ctrl+N" Command="{Binding CreateCommand}" />
-									<MenuItem Header="Открыть" InputGesture="Ctrl+O" Command="{Binding OpenCommand}" />
-									<Separator />
+								<MenuItem Header="Открыть" InputGesture="Ctrl+O" Command="{Binding OpenCommand}" />
+								<MenuItem Header="Импорт" Command="{Binding ImportCommand}" />
+								<Separator />
 									<MenuItem Header="Сохранить" InputGesture="Ctrl+S" Command="{Binding SaveCommand}" />
 									<MenuItem Header="Сохранить как" InputGesture="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
 									<Separator />

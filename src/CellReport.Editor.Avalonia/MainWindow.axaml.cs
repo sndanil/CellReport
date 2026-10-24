@@ -25,11 +25,20 @@ public partial class MainWindow : Window
 			return;
 
 		viewModel.ExitRequested += (_, _) => Close();
+		viewModel.ShowDesignerRequested += (_, _) => ShowDesigner();
 		viewModel.ReadCode = () => CodeEditor.Text;
 		viewModel.CodeTextInvalidated += (_, _) => ShowCurrentCode(viewModel);
 		_codeEditor = new XmlCodeEditor(CodeEditor, () => viewModel.Manager, viewModel.CodeErrors);
 		await viewModel.InitializeAsync(Program.StartupArgs, this);
 		_modeReady = true;
+	}
+
+	private void ShowDesigner()
+	{
+		_modeGuard = true;
+		ModeTabs.SelectedIndex = 0;
+		_modeGuard = false;
+		_codeEditor?.SetActive(false);
 	}
 
 	private async void OnModeChanged(object? sender, SelectionChangedEventArgs e)
