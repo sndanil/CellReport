@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -26,6 +27,7 @@ public partial class MainWindowViewModel : ObservableObject
 	private BaseDisplayPresenter? _presenter;
 	private Window? _window;
 	private bool _applying;
+	private bool _applyingCode;
 	private bool _syncing;
 	private int _editDepth;
 	private bool _editDirty;
@@ -46,6 +48,14 @@ public partial class MainWindowViewModel : ObservableObject
 	public BaseDisplayPresenter? Presenter => _presenter;
 
 	public Window? Window => _window;
+
+	public bool IsCodeMode { get; private set; }
+
+	public Func<string?>? ReadCode { get; set; }
+
+	public event EventHandler? CodeTextInvalidated;
+
+	public ObservableCollection<SchemaError> CodeErrors { get; } = new();
 
 	public event EventHandler? ExitRequested;
 
@@ -172,9 +182,99 @@ public partial class MainWindowViewModel : ObservableObject
 		ExitRequested?.Invoke(this, EventArgs.Empty);
 	}
 
-	private bool CanUndo() => _history.CanUndo;
+	private bool CanUndo() => _history.CanUndo && !IsCodeMode;
 
-	private bool CanRedo() => _history.CanRedo;
+	private bool CanRedo() => _history.CanRedo && !IsCodeMode;
+
+	public string? ExportCode()
+	{
+		if (_manager == null)
+			return null;
+
+		var stream = new MemoryStream();
+		new CellTemplate(_manager).Save(stream, TemplateType.Xml);
+		stream.Position = 0;
+		using var reader = new StreamReader(stream);
+		return reader.ReadToEnd();
+	}
+
+	public void EnterCodeMode()
+	{
+		if (IsCodeMode)
+			return;
+
+		IsCodeMode = true;
+		NotifyMode();
+	}
+
+	public bool TryLeaveCodeMode(out string? error)
+	{
+		if (!TryApplyXml(ReadCode?.Invoke() ?? string.Empty, resetHistory: true, out error))
+			return false;
+
+		IsCodeMode = false;
+		NotifyMode();
+		return true;
+	}
+
+	private void NotifyMode()
+	{
+		Inspector.RefreshCommands();
+		UndoCommand.NotifyCanExecuteChanged();
+		RedoCommand.NotifyCanExecuteChanged();
+	}
+
+	private bool TryApplyXml(string xml, bool resetHistory, out string? error)
+	{
+		if (_manager == null)
+		{
+			error = "Шаблон не открыт.";
+			return false;
+		}
+
+		try
+		{
+			var template = new CellTemplate();
+			template.LoadFromXml(xml);
+			CopyResources(_manager, template.Manager);
+			var cell = _presenter?.CurrentCell ?? CellLocation.None;
+			_applyingCode = true;
+			try
+			{
+				ApplyDocument(template.Manager, resetHistory, cell);
+				if (!resetHistory)
+				{
+					_history.Push(_manager);
+					NotifyHistory();
+				}
+			}
+			finally
+			{
+				_applyingCode = false;
+			}
+
+			error = null;
+			return true;
+		}
+		catch (Exception ex)
+		{
+			error = ex.Message;
+			return false;
+		}
+	}
+
+	private static void CopyResources(CellManager from, CellManager to)
+	{
+		if (ReferenceEquals(from, to))
+			return;
+
+		foreach (var name in from.GetResourceNames())
+		{
+			var data = from.GetResource(name);
+			if (data != null && data.Length > 0)
+				to.AddResource(name, data);
+		}
+	}
 
 	public void BeginEdit()
 	{
@@ -238,6 +338,12 @@ public partial class MainWindowViewModel : ObservableObject
 	{
 		if (_manager == null || _window == null)
 			return;
+
+		if (IsCodeMode && !TryApplyXml(ReadCode?.Invoke() ?? string.Empty, resetHistory: false, out var codeError))
+		{
+			await ShowErrorAsync("Код шаблона не применён." + Environment.NewLine + codeError);
+			return;
+		}
 
 		var path = _filePath;
 		if (saveAs || string.IsNullOrEmpty(path))
@@ -307,6 +413,8 @@ public partial class MainWindowViewModel : ObservableObject
 		}
 
 		NotifyHistory();
+		if (IsCodeMode && !_applyingCode)
+			CodeTextInvalidated?.Invoke(this, EventArgs.Empty);
 	}
 
 	private void OnPresenterChanged(object? sender, EventArgs e)

@@ -162,6 +162,8 @@ public partial class InspectorViewModel : ObservableObject
 	[ObservableProperty]
 	private string _markerForHide = string.Empty;
 
+	public void RefreshCommands() => NotifyCommands();
+
 	public void ReloadDocument()
 	{
 		ReloadSections();
@@ -1027,7 +1029,7 @@ public partial class InspectorViewModel : ObservableObject
 	{
 		var manager = _owner.Manager;
 		var presenter = _owner.Presenter;
-		if (manager == null || presenter == null)
+		if (_owner.IsCodeMode || manager == null || presenter == null)
 			return false;
 
 		var cell = presenter.CurrentCell;

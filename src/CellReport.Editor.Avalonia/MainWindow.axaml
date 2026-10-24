@@ -4,6 +4,7 @@
         xmlns:report="clr-namespace:CellReport.Avalonia;assembly=CellReport.Avalonia"
         xmlns:core="clr-namespace:CellReport.Core;assembly=CellReport"
         xmlns:contents="clr-namespace:CellReport.Core.Contents;assembly=CellReport"
+        xmlns:edit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
         x:Class="CellReport.Editor.Avalonia.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="{Binding Title}"
@@ -22,7 +23,7 @@
 		<KeyBinding Gesture="Ctrl+V" Command="{Binding Inspector.PasteCommand}" />
 	</Window.KeyBindings>
 
-	<Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+	<Grid RowDefinitions="Auto,*,Auto">
 		<Border Grid.Row="0" Classes="toolbar">
 			<StackPanel Classes="toolbar-items">
 				<Button Classes="toolbar-button" Content="Создать" Command="{Binding CreateCommand}" />
@@ -37,7 +38,10 @@
 			</StackPanel>
 		</Border>
 
-		<Grid Grid.Row="1" ColumnDefinitions="Auto,*" Margin="8,6">
+		<TabControl x:Name="ModeTabs" Grid.Row="1" SelectionChanged="OnModeChanged">
+			<TabItem Header="Конструктор">
+				<Grid RowDefinitions="Auto,Auto,*">
+		<Grid Grid.Row="0" ColumnDefinitions="Auto,*" Margin="8,6">
 			<TextBlock VerticalAlignment="Center" Margin="0,0,8,0" Text="Текст" />
 			<TextBox Grid.Column="1"
 			         Height="56"
@@ -48,7 +52,7 @@
 			         Text="{Binding CurrentText, UpdateSourceTrigger=PropertyChanged}" />
 		</Grid>
 
-		<Border Grid.Row="2" Classes="toolbar">
+		<Border Grid.Row="1" Classes="toolbar">
 			<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
 				<StackPanel Classes="toolbar-items">
 					<Button Classes="toolbar-button" Content="Вырезать" Command="{Binding Inspector.CutCommand}" />
@@ -112,7 +116,7 @@
 			</ScrollViewer>
 		</Border>
 
-		<Grid Grid.Row="3" ColumnDefinitions="300,*">
+		<Grid Grid.Row="2" ColumnDefinitions="300,*">
 			<TabControl Margin="4,0,4,4">
 				<TabItem Header="Параметры">
 					<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
@@ -204,9 +208,32 @@
 			</TabControl>
 
 			<report:PresentControl Grid.Column="1" DataContext="{Binding Present}" />
+			</Grid>
 		</Grid>
+			</TabItem>
+			<TabItem Header="Код">
+				<Grid RowDefinitions="*,6,160">
+					<edit:TextEditor x:Name="CodeEditor"
+					                 FontFamily="Consolas, Cascadia Mono, monospace"
+					                 FontSize="14"
+					                 HorizontalScrollBarVisibility="Auto"
+					                 VerticalScrollBarVisibility="Auto" />
+					<GridSplitter Grid.Row="1" ResizeDirection="Rows" />
+					<ListBox x:Name="ErrorList"
+					         Grid.Row="2"
+					         ItemsSource="{Binding CodeErrors}"
+					         SelectionChanged="OnErrorSelected">
+						<ListBox.ItemTemplate>
+							<DataTemplate x:DataType="vm:SchemaError">
+								<TextBlock Text="{Binding Display}" TextWrapping="Wrap" />
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+				</Grid>
+			</TabItem>
+		</TabControl>
 
-		<Border Grid.Row="4" Classes="toolbar" BorderThickness="0,1,0,0">
+		<Border Grid.Row="2" Classes="toolbar" BorderThickness="0,1,0,0">
 			<Grid ColumnDefinitions="Auto,Auto,88,Auto,88,Auto,Auto,*,Auto,110" Margin="4,0">
 				<TextBlock Grid.Column="0" VerticalAlignment="Center" Margin="4,0" Text="{Binding CellAddress}" />
 				<TextBlock Grid.Column="1" VerticalAlignment="Center" Text="Ширина" />

@@ -78,7 +78,16 @@ namespace CellReport.Avalonia
 
 		protected override Rectangle GetHostBounds()
 		{
-			return _cellControl.Bounds.ToRecttangle();
+			return LocalBounds(_cellControl);
+		}
+
+		private static Rectangle LocalBounds(Control control)
+		{
+			return new Rectangle(
+				0,
+				0,
+				Convert.ToSingle(control.Bounds.Width),
+				Convert.ToSingle(control.Bounds.Height));
 		}
 
 		public override void Update()
@@ -200,7 +209,7 @@ namespace CellReport.Avalonia
 			if (control == null)
 				return;
 
-			var bounds = control.Bounds.ToRecttangle();
+			var bounds = LocalBounds(control);
 			RenderFrozenCells(context, bounds);
 
 			var x = GetLeftOffset(LeftNoFrozenColumn);
@@ -210,18 +219,31 @@ namespace CellReport.Avalonia
 			SetClip(context, clip);
 			RenderCellsRange(context, bounds, TopNoFrozenRow, Manager.RowsCount, LeftNoFrozenColumn, Manager.ColumnsCount);
 
-			if (IsCurreCellInFrozen())
+			var renderer = Renderer as SkiaReportRenderer;
+			var invert = renderer != null && renderer.InvertColors;
+			if (invert)
+				renderer!.InvertColors = false;
+			try
 			{
-				ResetClipState(canvas);
-				RenderCurrentCell(context, bounds);
+				if (IsCurreCellInFrozen())
+				{
+					ResetClipState(canvas);
+					RenderCurrentCell(context, bounds);
+				}
+				else
+				{
+					RenderCurrentCell(context, bounds);
+					ResetClipState(canvas);
+				}
+
+				RenderSelection(context);
 			}
-			else
+			finally
 			{
-				RenderCurrentCell(context, bounds);
-				ResetClipState(canvas);
+				if (invert)
+					renderer!.InvertColors = true;
 			}
 
-			RenderSelection(context);
 			EndRender();
 		}
 	}
