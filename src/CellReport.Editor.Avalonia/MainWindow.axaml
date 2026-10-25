@@ -6,6 +6,7 @@
         xmlns:contents="clr-namespace:CellReport.Core.Contents;assembly=CellReport"
         xmlns:edit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
         xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:gallery="clr-namespace:CellReport.Editor.Avalonia.Controls"
         x:Class="CellReport.Editor.Avalonia.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="{Binding Title}"
@@ -294,10 +295,10 @@
 								<Border Classes="ribbon-group">
 									<DockPanel LastChildFill="True">
 										<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Стиль" />
-										<StackPanel Width="180" Margin="8,8,8,2" VerticalAlignment="Center">
-											<ComboBox ItemsSource="{Binding Inspector.CellStyles}"
-											          SelectedItem="{Binding Inspector.SelectedCellStyle}" />
-										</StackPanel>
+										<gallery:StyleGallery Margin="8,4,8,2"
+										                      VerticalAlignment="Center"
+										                      ItemsSource="{Binding Inspector.CellStyles}"
+										                      SelectedItem="{Binding Inspector.SelectedCellStyle}" />
 									</DockPanel>
 								</Border>
 							</StackPanel>
@@ -339,23 +340,23 @@
 									<DockPanel LastChildFill="True">
 										<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Стиль" />
 										<StackPanel Orientation="Horizontal" Margin="4,8,4,2" VerticalAlignment="Center">
-											<StackPanel Width="150" Margin="4,0">
+											<StackPanel Width="168" Margin="4,0" VerticalAlignment="Center">
 												<TextBlock FontSize="11" Margin="0,0,0,2" Opacity="0.8" Text="Текст" />
-												<ComboBox IsEnabled="{Binding Inspector.HasTextContent}"
-												          ItemsSource="{Binding Inspector.TextStyles}"
-												          SelectedItem="{Binding Inspector.SelectedTextStyle}" />
+												<gallery:StyleGallery IsEnabled="{Binding Inspector.HasTextContent}"
+												                      ItemsSource="{Binding Inspector.TextStyles}"
+												                      SelectedItem="{Binding Inspector.SelectedTextStyle}" />
 											</StackPanel>
-											<StackPanel Width="150" Margin="4,0">
+											<StackPanel Width="168" Margin="4,0" VerticalAlignment="Center">
 												<TextBlock FontSize="11" Margin="0,0,0,2" Opacity="0.8" Text="Число" />
-												<ComboBox IsEnabled="{Binding Inspector.HasDecimalContent}"
-												          ItemsSource="{Binding Inspector.DecimalStyles}"
-												          SelectedItem="{Binding Inspector.SelectedDecimalStyle}" />
+												<gallery:StyleGallery IsEnabled="{Binding Inspector.HasDecimalContent}"
+												                      ItemsSource="{Binding Inspector.DecimalStyles}"
+												                      SelectedItem="{Binding Inspector.SelectedDecimalStyle}" />
 											</StackPanel>
-											<StackPanel Width="150" Margin="4,0">
+											<StackPanel Width="168" Margin="4,0" VerticalAlignment="Center">
 												<TextBlock FontSize="11" Margin="0,0,0,2" Opacity="0.8" Text="Дата" />
-												<ComboBox IsEnabled="{Binding Inspector.HasDateTimeContent}"
-												          ItemsSource="{Binding Inspector.DateTimeStyles}"
-												          SelectedItem="{Binding Inspector.SelectedDateTimeStyle}" />
+												<gallery:StyleGallery IsEnabled="{Binding Inspector.HasDateTimeContent}"
+												                      ItemsSource="{Binding Inspector.DateTimeStyles}"
+												                      SelectedItem="{Binding Inspector.SelectedDateTimeStyle}" />
 											</StackPanel>
 										</StackPanel>
 									</DockPanel>

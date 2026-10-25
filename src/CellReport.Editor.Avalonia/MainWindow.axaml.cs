@@ -31,6 +31,11 @@ public partial class MainWindow : Window
 		viewModel.ReadCode = () => CodeEditor.Text;
 		viewModel.CodeTextInvalidated += (_, _) => ShowCurrentCode(viewModel);
 		_codeEditor = new XmlCodeEditor(CodeEditor, () => viewModel.Manager, viewModel.CodeErrors);
+		viewModel.CanUndoCode = () => _codeEditor.CanUndo;
+		viewModel.CanRedoCode = () => _codeEditor.CanRedo;
+		viewModel.UndoCode = () => _codeEditor.UndoChange();
+		viewModel.RedoCode = () => _codeEditor.RedoChange();
+		_codeEditor.HistoryChanged += (_, _) => viewModel.NotifyHistory();
 		await viewModel.InitializeAsync(Program.StartupArgs, this);
 		_modeReady = true;
 	}

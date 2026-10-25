@@ -57,6 +57,14 @@ public partial class MainWindowViewModel : ObservableObject
 
 	public Func<string?>? ReadCode { get; set; }
 
+	public Func<bool>? CanUndoCode { get; set; }
+
+	public Func<bool>? CanRedoCode { get; set; }
+
+	public Action? UndoCode { get; set; }
+
+	public Action? RedoCode { get; set; }
+
 	public event EventHandler? CodeTextInvalidated;
 
 	public ObservableCollection<SchemaError> CodeErrors { get; } = new();
@@ -305,6 +313,13 @@ public partial class MainWindowViewModel : ObservableObject
 	[RelayCommand(CanExecute = nameof(CanUndo))]
 	private void Undo()
 	{
+		if (IsCodeMode)
+		{
+			UndoCode?.Invoke();
+			NotifyHistory();
+			return;
+		}
+
 		if (!_history.CanUndo || _manager == null)
 			return;
 
@@ -315,6 +330,13 @@ public partial class MainWindowViewModel : ObservableObject
 	[RelayCommand(CanExecute = nameof(CanRedo))]
 	private void Redo()
 	{
+		if (IsCodeMode)
+		{
+			RedoCode?.Invoke();
+			NotifyHistory();
+			return;
+		}
+
 		if (!_history.CanRedo || _manager == null)
 			return;
 
@@ -328,9 +350,9 @@ public partial class MainWindowViewModel : ObservableObject
 		ExitRequested?.Invoke(this, EventArgs.Empty);
 	}
 
-	private bool CanUndo() => _history.CanUndo && !IsCodeMode;
+	private bool CanUndo() => IsCodeMode ? CanUndoCode?.Invoke() == true : _history.CanUndo;
 
-	private bool CanRedo() => _history.CanRedo && !IsCodeMode;
+	private bool CanRedo() => IsCodeMode ? CanRedoCode?.Invoke() == true : _history.CanRedo;
 
 	public string? ExportCode()
 	{
@@ -371,6 +393,7 @@ public partial class MainWindowViewModel : ObservableObject
 		FindAndReplaceCommand.NotifyCanExecuteChanged();
 		FindInCodeCommand.NotifyCanExecuteChanged();
 		NotifyFormatCommands();
+		NotifyHistory();
 	}
 
 	[RelayCommand]
@@ -1110,7 +1133,7 @@ public partial class MainWindowViewModel : ObservableObject
 			: "Редактор отчетов " + _filePath;
 	}
 
-	private void NotifyHistory()
+	public void NotifyHistory()
 	{
 		UndoCommand.NotifyCanExecuteChanged();
 		RedoCommand.NotifyCanExecuteChanged();

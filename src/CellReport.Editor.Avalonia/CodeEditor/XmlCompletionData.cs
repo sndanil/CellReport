@@ -35,6 +35,8 @@ public sealed class XmlCompletionData : ICompletionData
 
 	public double Priority => 0;
 
+	public override string ToString() => Text;
+
 	public void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs)
 	{
 		switch (_type)

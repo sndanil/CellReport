@@ -40,6 +40,8 @@ public sealed class XmlCodeEditor
 	private bool _active;
 	private CellManager? _parsedManager;
 
+	public event EventHandler? HistoryChanged;
+
 	public XmlCodeEditor(TextEditor editor, Func<CellManager?> designManager, ObservableCollection<SchemaError> errors)
 	{
 		_editor = editor;
@@ -66,6 +68,7 @@ public sealed class XmlCodeEditor
 
 		editor.TextArea.TextEntered += OnTextEntered;
 		editor.TextArea.KeyDown += OnKeyDown;
+		editor.TextChanged += (_, _) => HistoryChanged?.Invoke(this, EventArgs.Empty);
 		editor.ActualThemeVariantChanged += (_, _) => ApplyThemeColors();
 		ApplyThemeColors();
 	}
@@ -179,6 +182,22 @@ public sealed class XmlCodeEditor
 		_editor.Focus();
 	}
 
+	public bool CanUndo => _editor.Document?.UndoStack.CanUndo == true;
+
+	public bool CanRedo => _editor.Document?.UndoStack.CanRedo == true;
+
+	public void UndoChange()
+	{
+		if (CanUndo)
+			_editor.Document.UndoStack.Undo();
+	}
+
+	public void RedoChange()
+	{
+		if (CanRedo)
+			_editor.Document.UndoStack.Redo();
+	}
+
 	public void SetActive(bool active)
 	{
 		_active = active;
@@ -233,70 +252,25 @@ public sealed class XmlCodeEditor
 
 	private void OnKeyDown(object? sender, KeyEventArgs e)
 	{
-		if (e.Key != Key.Space || e.KeyModifiers != KeyModifiers.Control)
+		if (e.Key != Key.Space || !e.KeyModifiers.HasFlag(KeyModifiers.Control) || e.KeyModifiers.HasFlag(KeyModifiers.Shift))
 			return;
 
 		e.Handled = true;
-		var manager = _parsedManager ?? _designManager();
-		var currentElement = XmlParser.GetActiveElementStartPath(_editor.Text, _editor.CaretOffset);
-		if (currentElement == null || manager == null)
-			return;
-
 		var attribute = XmlParser.GetActiveAttributeName(_editor.Text, _editor.CaretOffset);
-		if (attribute == null)
-			return;
-
-		var attributeInfo = XmlCodeModel.GetAttributes(currentElement)?.FirstOrDefault(item => item.Name == attribute);
-		if (attributeInfo?.DataType != null && attributeInfo.DataType.Equals("boolean", StringComparison.OrdinalIgnoreCase))
+		if (attribute != null)
 		{
-			Complete(Values("true", "false"), XmlCompletionDataType.AttributeValue);
+			CompleteAttributeValue(attribute, insideValue: true);
 			return;
 		}
 
-		var elementName = currentElement.Elements.Last().Name;
-		var parentElement = currentElement.Elements.Count >= 2
-			? currentElement.Elements[currentElement.Elements.Count - 2].Name
-			: null;
-		switch (attribute)
+		if (!string.IsNullOrEmpty(XmlParser.GetActiveElementText(_editor.Text, _editor.CaretOffset)))
 		{
-			case "Style":
-				CompleteStyle(manager, elementName);
-				break;
-			case "Position" when elementName is "Padding" or "Border":
-				Complete(Values("All", "Top", "Left", "Right", "Bottom"), XmlCompletionDataType.AttributeValue);
-				break;
-			case "Family" when elementName == "Font":
-				Complete(FontNames(), XmlCompletionDataType.AttributeValue, FontContent);
-				break;
-			case "Horizontal" when elementName == "Alignment":
-				Complete(Values("Left", "Center", "Right", "Justify"), XmlCompletionDataType.AttributeValue);
-				break;
-			case "Vertical" when elementName == "Alignment":
-				Complete(Values("Top", "Middle", "Center", "Bottom"), XmlCompletionDataType.AttributeValue);
-				break;
-			case "Direction" when elementName is "TextContentStyle" or "DecimalContentStyle" or "DateTimeContentStyle":
-				Complete(Values("LeftToRight", "TopToDown"), XmlCompletionDataType.AttributeValue);
-				break;
-			case "Color" when elementName is "CellStyle" or "Border" or "TextContentStyle" or "DecimalContentStyle" or "DateTimeContentStyle" or "LineContentStyle":
-				Complete(ColorNames(), XmlCompletionDataType.AttributeValue, ColorContent);
-				break;
-			case "Format" when elementName == "Param":
-				Complete(Values(
-					"currencyString", "currencyString|RUR", "currencyString|UAH", "currencyString|KZT",
-					"currencyString|TJS", "currencyString|USD", "currencyString|EUR", "numberString",
-					"#0", "00", "#,##0.000", "#,##0.00", "#,##0.0",
-					"dd.MM.yyyy", "dd.MM.yyyy HH:mm", "dd.MM.yyyy HH:mm:ss"), XmlCompletionDataType.AttributeValue);
-				break;
-			case "Target" when elementName == "Param":
-				Complete(TargetValues(parentElement), XmlCompletionDataType.AttributeValue);
-				break;
-			case "Type" when elementName == "Param":
-				Complete(Values("DateTime", "Decimal"), XmlCompletionDataType.AttributeValue);
-				break;
-			case "Expression" when elementName == "Param":
-				Complete(manager.GetExpressions().Select(item => Pair(item.ID, item.GetType().Name)), XmlCompletionDataType.AttributeValue);
-				break;
+			var currentElement = XmlParser.GetActiveElementStartPath(_editor.Text, _editor.CaretOffset);
+			Complete(XmlCodeModel.Attributes(_editor.Text, _editor.CaretOffset, currentElement), XmlCompletionDataType.Attribute);
+			return;
 		}
+
+		Complete(XmlCodeModel.Elements(XmlParser.GetParentElementPath(_editor.Text)), XmlCompletionDataType.Element);
 	}
 
 	private void OnTextEntered(object? sender, TextInputEventArgs e)
@@ -313,6 +287,11 @@ public sealed class XmlCodeEditor
 					break;
 				case "<":
 					Complete(XmlCodeModel.Elements(XmlParser.GetParentElementPath(_editor.Text)), XmlCompletionDataType.Element);
+					break;
+				case "\"":
+					var quotedAttribute = XmlParser.GetActiveAttributeName(_editor.Text, _editor.CaretOffset);
+					if (quotedAttribute != null)
+						CompleteAttributeValue(quotedAttribute, insideValue: true);
 					break;
 				case " ":
 					var activeAttribute = XmlParser.GetActiveAttributeName(_editor.Text, _editor.CaretOffset);
@@ -370,26 +349,86 @@ public sealed class XmlCodeEditor
 		}
 	}
 
-	private void CompleteStyle(CellManager manager, string elementName)
+	private void CompleteAttributeValue(string attribute, bool insideValue)
+	{
+		var manager = _parsedManager ?? _designManager();
+		var currentElement = XmlParser.GetActiveElementStartPath(_editor.Text, _editor.CaretOffset);
+		if (manager == null || currentElement.Elements.Count == 0)
+			return;
+
+		var attributeInfo = XmlCodeModel.GetAttributes(currentElement)?.FirstOrDefault(item => item.Name == attribute);
+		if (attributeInfo?.DataType != null && attributeInfo.DataType.Equals("boolean", StringComparison.OrdinalIgnoreCase))
+		{
+			Complete(Values("true", "false"), XmlCompletionDataType.AttributeValue, valueStart: insideValue);
+			return;
+		}
+
+		var elementName = currentElement.Elements.Last().Name;
+		var parentElement = currentElement.Elements.Count >= 2
+			? currentElement.Elements[currentElement.Elements.Count - 2].Name
+			: null;
+		switch (attribute)
+		{
+			case "Style":
+				CompleteStyle(manager, elementName, insideValue);
+				break;
+			case "Position" when elementName is "Padding" or "Border":
+				Complete(Values("All", "Top", "Left", "Right", "Bottom"), XmlCompletionDataType.AttributeValue, valueStart: insideValue);
+				break;
+			case "Family" when elementName == "Font":
+				Complete(FontNames(), XmlCompletionDataType.AttributeValue, FontContent, insideValue);
+				break;
+			case "Horizontal" when elementName == "Alignment":
+				Complete(Values("Left", "Center", "Right", "Justify"), XmlCompletionDataType.AttributeValue, valueStart: insideValue);
+				break;
+			case "Vertical" when elementName == "Alignment":
+				Complete(Values("Top", "Middle", "Center", "Bottom"), XmlCompletionDataType.AttributeValue, valueStart: insideValue);
+				break;
+			case "Direction" when elementName is "TextContentStyle" or "DecimalContentStyle" or "DateTimeContentStyle":
+				Complete(Values("LeftToRight", "TopToDown"), XmlCompletionDataType.AttributeValue, valueStart: insideValue);
+				break;
+			case "Color" when elementName is "CellStyle" or "Border" or "TextContentStyle" or "DecimalContentStyle" or "DateTimeContentStyle" or "LineContentStyle":
+				Complete(ColorNames(), XmlCompletionDataType.AttributeValue, ColorContent, insideValue);
+				break;
+			case "Format" when elementName == "Param":
+				Complete(Values(
+					"currencyString", "currencyString|RUR", "currencyString|UAH", "currencyString|KZT",
+					"currencyString|TJS", "currencyString|USD", "currencyString|EUR", "numberString",
+					"#0", "00", "#,##0.000", "#,##0.00", "#,##0.0",
+					"dd.MM.yyyy", "dd.MM.yyyy HH:mm", "dd.MM.yyyy HH:mm:ss"), XmlCompletionDataType.AttributeValue, valueStart: insideValue);
+				break;
+			case "Target" when elementName == "Param":
+				Complete(TargetValues(parentElement), XmlCompletionDataType.AttributeValue, valueStart: insideValue);
+				break;
+			case "Type" when elementName == "Param":
+				Complete(Values("DateTime", "Decimal"), XmlCompletionDataType.AttributeValue, valueStart: insideValue);
+				break;
+			case "Expression" when elementName == "Param":
+				Complete(manager.GetExpressions().Select(item => Pair(item.ID, item.GetType().Name)), XmlCompletionDataType.AttributeValue, valueStart: insideValue);
+				break;
+		}
+	}
+
+	private void CompleteStyle(CellManager manager, string elementName, bool insideValue)
 	{
 		switch (elementName)
 		{
 			case "Cell":
-				Complete(manager.GetStyles().OfType<CellStyle>().Select(style => Pair(style.ID, string.Empty)), XmlCompletionDataType.AttributeValue);
+				Complete(manager.GetStyles().OfType<CellStyle>().Select(style => Pair(style.ID, string.Empty)), XmlCompletionDataType.AttributeValue, valueStart: insideValue);
 				break;
 			case "TextContent":
 				Complete(manager.GetStyles().OfType<TextContentStyle>()
 					.Where(style => style.GetType() == typeof(TextContentStyle))
-					.Select(style => Pair(style.ID, style.Font?.Family)), XmlCompletionDataType.AttributeValue);
+					.Select(style => Pair(style.ID, style.Font?.Family)), XmlCompletionDataType.AttributeValue, valueStart: insideValue);
 				break;
 			case "DecimalContent":
-				Complete(manager.GetStyles().OfType<DecimalContentStyle>().Select(style => Pair(style.ID, style.Font?.Family)), XmlCompletionDataType.AttributeValue);
+				Complete(manager.GetStyles().OfType<DecimalContentStyle>().Select(style => Pair(style.ID, style.Font?.Family)), XmlCompletionDataType.AttributeValue, valueStart: insideValue);
 				break;
 			case "DateTimeContent":
-				Complete(manager.GetStyles().OfType<DateTimeContentStyle>().Select(style => Pair(style.ID, style.Font?.Family)), XmlCompletionDataType.AttributeValue);
+				Complete(manager.GetStyles().OfType<DateTimeContentStyle>().Select(style => Pair(style.ID, style.Font?.Family)), XmlCompletionDataType.AttributeValue, valueStart: insideValue);
 				break;
 			case "Border":
-				Complete(Values("None", "Solid", "Dash", "Dot", "DashDot", "DashDotDot"), XmlCompletionDataType.AttributeValue);
+				Complete(Values("None", "Solid", "Dash", "Dot", "DashDot", "DashDotDot"), XmlCompletionDataType.AttributeValue, valueStart: insideValue);
 				break;
 		}
 	}
@@ -433,16 +472,36 @@ public sealed class XmlCodeEditor
 		}
 	}
 
-	private void Complete(IEnumerable<(string Text, string Description)> items, XmlCompletionDataType type, Func<string, object>? content = null)
+	private void Complete(IEnumerable<(string Text, string Description)> items, XmlCompletionDataType type, Func<string, object>? content = null, bool valueStart = false)
 	{
 		var list = items.Where(item => !string.IsNullOrEmpty(item.Text)).ToList();
 		if (list.Count == 0)
 			return;
 
-		var window = new CompletionWindow(_editor.TextArea) { Width = 320 };
+		var window = new CompletionWindow(_editor.TextArea)
+		{
+			Width = 320,
+			CloseWhenCaretAtBeginning = false
+		};
+		if (valueStart)
+			window.StartOffset = AttributeValueStart();
+
+		var dark = _editor.ActualThemeVariant == ThemeVariant.Dark;
+		window.CompletionList.Background = new SolidColorBrush(dark ? Color.Parse("#252526") : Colors.White);
+		window.CompletionList.Foreground = new SolidColorBrush(dark ? Color.Parse("#D4D4D4") : Color.Parse("#1A1A1A"));
 		foreach (var item in list)
 			window.CompletionList.CompletionData.Add(new XmlCompletionData(item.Text, item.Description, type, content?.Invoke(item.Text)));
 		window.Show();
+	}
+
+	private int AttributeValueStart()
+	{
+		var text = _editor.Text;
+		var start = _editor.CaretOffset;
+		while (start > 0 && text[start - 1] != '"')
+			start--;
+
+		return start;
 	}
 
 	private static IEnumerable<(string Text, string Description)> Values(params string[] values)
