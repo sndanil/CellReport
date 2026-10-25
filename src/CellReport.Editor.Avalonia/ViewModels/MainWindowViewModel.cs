@@ -39,11 +39,14 @@ public partial class MainWindowViewModel : ObservableObject
 
 	public MainWindowViewModel()
 	{
+		Settings = new DocumentSettingsViewModel(this);
 		Inspector = new InspectorViewModel(this);
 		Present.PresenterChanged += OnPresenterChanged;
 	}
 
 	public PresentControlViewModel Present { get; } = new();
+
+	public DocumentSettingsViewModel Settings { get; }
 
 	public InspectorViewModel Inspector { get; }
 
@@ -486,6 +489,22 @@ public partial class MainWindowViewModel : ObservableObject
 		}
 	}
 
+	public void CommitDocumentChange(Action change)
+	{
+		BeginEdit();
+		try
+		{
+			change();
+			_editDirty = true;
+		}
+		finally
+		{
+			EndEdit();
+		}
+
+		Present.SyncFromPresenter();
+	}
+
 	public void BeginEdit()
 	{
 		if (_editDepth == 0)
@@ -611,6 +630,7 @@ public partial class MainWindowViewModel : ObservableObject
 			_presenter.CurrentCell = cell;
 
 		_manager.PropertyChanged += OnManagerPropertyChanged;
+		Settings.Load(_manager);
 		RefreshCellFields();
 		Inspector.ReloadDocument();
 		UpdateTitle();
@@ -655,6 +675,10 @@ public partial class MainWindowViewModel : ObservableObject
 			_editDirty = true;
 			return;
 		}
+
+		Settings.ApplyExternalChange(sender, e.PropertyName);
+		if (sender is DisplaySettings)
+			Present.SyncFromPresenter();
 
 		_history.Push(_manager);
 		NotifyHistory();
@@ -1129,7 +1153,7 @@ public partial class MainWindowViewModel : ObservableObject
 		return float.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out value);
 	}
 
-	private void SetDocumentPath(string path)
+	private void SetDocumentPath(string? path)
 	{
 		_filePath = path;
 		ExternalStyleSearch.DocumentDirectory = string.IsNullOrEmpty(path)

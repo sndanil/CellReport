@@ -52,6 +52,8 @@ namespace CellReport.Presenters
 		{
 			if (sender is DisplaySettings)
 			{
+				FrozenColumnsCount = Manager.DisplaySettings.FrozenColumns;
+				FrozenRowsCount = Manager.DisplaySettings.FrozenRows;
 				Update();
 				return;
 			}

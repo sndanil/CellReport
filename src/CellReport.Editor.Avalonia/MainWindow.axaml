@@ -374,7 +374,7 @@
 		</Border>
 
 		<TabControl x:Name="ModeTabs" Grid.Row="1" SelectionChanged="OnModeChanged">
-			<TabItem Header="Конструктор">
+			<TabItem x:Name="DesignerTab" Header="Конструктор">
 				<Grid RowDefinitions="Auto,*">
 		<Grid Grid.Row="0" ColumnDefinitions="Auto,*" Margin="8,6">
 			<TextBlock VerticalAlignment="Center" Margin="0,0,8,0" Text="Текст" />
@@ -485,7 +485,132 @@
 			</Grid>
 		</Grid>
 			</TabItem>
-			<TabItem Header="Код">
+			<TabItem Header="Параметры">
+				<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+					<StackPanel Margin="16" Spacing="12" MaxWidth="860" HorizontalAlignment="Left">
+						<TextBlock FontWeight="SemiBold" Text="Документ" />
+						<Grid ColumnDefinitions="260,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+							<TextBlock VerticalAlignment="Center" Text="Имя документа" />
+							<TextBox Grid.Column="1" Margin="0,2" Text="{Binding Settings.DocumentName, UpdateSourceTrigger=LostFocus}" />
+							<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Культура" />
+							<TextBox Grid.Row="1" Grid.Column="1" Margin="0,2" Text="{Binding Settings.Culture, UpdateSourceTrigger=LostFocus}" />
+							<TextBlock Grid.Row="2" VerticalAlignment="Center" Text="Столбцов по умолчанию" />
+							<TextBox Grid.Row="2" Grid.Column="1" Margin="0,2" Text="{Binding Settings.DefaultColumnsCountText, UpdateSourceTrigger=LostFocus}" />
+							<TextBlock Grid.Row="3" VerticalAlignment="Center" Text="Строк по умолчанию" />
+							<TextBox Grid.Row="3" Grid.Column="1" Margin="0,2" Text="{Binding Settings.DefaultRowsCountText, UpdateSourceTrigger=LostFocus}" />
+							<TextBlock Grid.Row="4" VerticalAlignment="Center" Text="Ширина столбца по умолчанию, мм" />
+							<TextBox Grid.Row="4" Grid.Column="1" Margin="0,2" Text="{Binding Settings.DefaultColumnWidthText, UpdateSourceTrigger=LostFocus}" />
+							<TextBlock Grid.Row="5" VerticalAlignment="Center" Text="Высота строки по умолчанию, мм" />
+							<TextBox Grid.Row="5" Grid.Column="1" Margin="0,2" Text="{Binding Settings.DefaultRowHeightText, UpdateSourceTrigger=LostFocus}" />
+							<TextBlock Grid.Row="6" VerticalAlignment="Center" Text="Маркер отображения столбца" />
+							<TextBox Grid.Row="6" Grid.Column="1" Margin="0,2" Text="{Binding Settings.DefaultMarkerForShow, UpdateSourceTrigger=LostFocus}" />
+							<TextBlock Grid.Row="7" VerticalAlignment="Center" Text="Маркер сокрытия столбца" />
+							<TextBox Grid.Row="7" Grid.Column="1" Margin="0,2" Text="{Binding Settings.DefaultMarkerForHide, UpdateSourceTrigger=LostFocus}" />
+							<TextBlock Grid.Row="8" VerticalAlignment="Center" Text="Культура локализации" />
+							<TextBox Grid.Row="8" Grid.Column="1" Margin="0,2" Text="{Binding Settings.DefaultCulture, UpdateSourceTrigger=LostFocus}" />
+						</Grid>
+
+						<Grid ColumnDefinitions="*,Auto">
+							<TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="Строки локализации" />
+							<Button Grid.Column="1" Content="Добавить" Command="{Binding Settings.AddLocalizationCommand}" />
+						</Grid>
+						<ItemsControl ItemsSource="{Binding Settings.Strings}">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate x:DataType="vm:LocalizationEdit">
+									<Grid Margin="0,0,0,6" ColumnDefinitions="140,220,*,Auto" ColumnSpacing="6">
+										<TextBox PlaceholderText="Культура" Text="{Binding Culture, UpdateSourceTrigger=LostFocus}" />
+										<TextBox Grid.Column="1" PlaceholderText="Идентификатор" Text="{Binding Id, UpdateSourceTrigger=LostFocus}" />
+										<TextBox Grid.Column="2" PlaceholderText="Значение" Text="{Binding Value, UpdateSourceTrigger=LostFocus}" />
+										<Button Grid.Column="3" Content="Удалить" Command="{Binding RemoveCommand}" />
+									</Grid>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+
+						<TextBlock FontWeight="SemiBold" Text="Экспорт" />
+						<CheckBox Content="Запускать Excel после экспорта" IsChecked="{Binding Settings.RunExcelAfterExport}" />
+					</StackPanel>
+				</ScrollViewer>
+			</TabItem>
+			<TabItem Header="Параметры печати">
+				<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+					<StackPanel Margin="16" Spacing="12" MaxWidth="980" HorizontalAlignment="Left">
+						<TextBlock FontWeight="SemiBold" Text="Страница" />
+						<Grid ColumnDefinitions="260,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+							<CheckBox Grid.ColumnSpan="2" Content="Альбомная ориентация" IsChecked="{Binding Settings.Landscape}" />
+							<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Копии" />
+							<TextBox Grid.Row="1" Grid.Column="1" Margin="0,2" Text="{Binding Settings.CopiesText, UpdateSourceTrigger=LostFocus}" />
+							<TextBlock Grid.Row="2" VerticalAlignment="Center" Text="Масштаб печати" />
+							<TextBox Grid.Row="2" Grid.Column="1" Margin="0,2" Text="{Binding Settings.PrintScaleText, UpdateSourceTrigger=LostFocus}" />
+							<TextBlock Grid.Row="3" VerticalAlignment="Center" Text="Страниц по ширине" />
+							<TextBox Grid.Row="3" Grid.Column="1" Margin="0,2" Text="{Binding Settings.AutoFitWidthPagesText, UpdateSourceTrigger=LostFocus}" />
+							<TextBlock Grid.Row="4" VerticalAlignment="Center" Text="Поле слева, мм" />
+							<TextBox Grid.Row="4" Grid.Column="1" Margin="0,2" Text="{Binding Settings.MarginLeftText, UpdateSourceTrigger=LostFocus}" />
+							<TextBlock Grid.Row="5" VerticalAlignment="Center" Text="Поле справа, мм" />
+							<TextBox Grid.Row="5" Grid.Column="1" Margin="0,2" Text="{Binding Settings.MarginRightText, UpdateSourceTrigger=LostFocus}" />
+							<TextBlock Grid.Row="6" VerticalAlignment="Center" Text="Поле сверху, мм" />
+							<TextBox Grid.Row="6" Grid.Column="1" Margin="0,2" Text="{Binding Settings.MarginTopText, UpdateSourceTrigger=LostFocus}" />
+							<TextBlock Grid.Row="7" VerticalAlignment="Center" Text="Поле снизу, мм" />
+							<TextBox Grid.Row="7" Grid.Column="1" Margin="0,2" Text="{Binding Settings.MarginBottomText, UpdateSourceTrigger=LostFocus}" />
+						</Grid>
+
+						<Grid ColumnDefinitions="*,Auto">
+							<TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="Фиксированные строки заголовка" />
+							<Button Grid.Column="1" Content="Добавить" Command="{Binding Settings.AddHeaderFixedRowCommand}" />
+						</Grid>
+						<ItemsControl ItemsSource="{Binding Settings.HeaderFixedRows}">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate x:DataType="vm:RangeEdit">
+									<Grid Margin="0,0,0,6" ColumnDefinitions="160,160,Auto" ColumnSpacing="6">
+										<TextBox PlaceholderText="С строки" Text="{Binding FromText, UpdateSourceTrigger=LostFocus}" />
+										<TextBox Grid.Column="1" PlaceholderText="По строку" Text="{Binding ToText, UpdateSourceTrigger=LostFocus}" />
+										<Button Grid.Column="2" Content="Удалить" Command="{Binding RemoveCommand}" />
+									</Grid>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+
+						<Grid ColumnDefinitions="*,Auto">
+							<TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="Фиксированные строки подвала" />
+							<Button Grid.Column="1" Content="Добавить" Command="{Binding Settings.AddFooterFixedRowCommand}" />
+						</Grid>
+						<ItemsControl ItemsSource="{Binding Settings.FooterFixedRows}">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate x:DataType="vm:RangeEdit">
+									<Grid Margin="0,0,0,6" ColumnDefinitions="160,160,Auto" ColumnSpacing="6">
+										<TextBox PlaceholderText="С строки" Text="{Binding FromText, UpdateSourceTrigger=LostFocus}" />
+										<TextBox Grid.Column="1" PlaceholderText="По строку" Text="{Binding ToText, UpdateSourceTrigger=LostFocus}" />
+										<Button Grid.Column="2" Content="Удалить" Command="{Binding RemoveCommand}" />
+									</Grid>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</StackPanel>
+				</ScrollViewer>
+			</TabItem>
+			<TabItem Header="Параметры отображения">
+				<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+					<StackPanel Margin="16" Spacing="8" MaxWidth="860" HorizontalAlignment="Left">
+						<Grid ColumnDefinitions="260,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="8">
+							<TextBlock VerticalAlignment="Center" Text="Масштаб" />
+							<TextBox Grid.Column="1" Margin="0,2" Text="{Binding Settings.DisplayScaleText, UpdateSourceTrigger=LostFocus}" />
+							<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Закреплённые столбцы" />
+							<TextBox Grid.Row="1" Grid.Column="1" Margin="0,2" Text="{Binding Settings.FrozenColumnsText, UpdateSourceTrigger=LostFocus}" />
+							<TextBlock Grid.Row="2" VerticalAlignment="Center" Text="Закреплённые строки" />
+							<TextBox Grid.Row="2" Grid.Column="1" Margin="0,2" Text="{Binding Settings.FrozenRowsText, UpdateSourceTrigger=LostFocus}" />
+							<TextBlock Grid.Row="3" VerticalAlignment="Center" Text="Цвет сетки" />
+							<TextBox Grid.Row="3" Grid.Column="1" Margin="0,2" Text="{Binding Settings.GridColor, UpdateSourceTrigger=LostFocus}" />
+						</Grid>
+						<CheckBox Content="Линии сетки" IsChecked="{Binding Settings.ShowGridLines}" />
+						<CheckBox Content="Линии сетки в конструкторе" IsChecked="{Binding Settings.ShowDesignerGridLines}" />
+						<CheckBox Content="Закладки" IsChecked="{Binding Settings.ShowBookMarks}" />
+						<CheckBox Content="Резайзеры" IsChecked="{Binding Settings.ShowResizers}" />
+						<CheckBox Content="Резайзеры в конструкторе" IsChecked="{Binding Settings.ShowDesignerResizers}" />
+						<CheckBox Content="Подсветка текущей строки" IsChecked="{Binding Settings.ShowCurrentRows}" />
+					</StackPanel>
+				</ScrollViewer>
+			</TabItem>
+			<TabItem x:Name="CodeTab" Header="Код">
 				<Grid RowDefinitions="*,6,160">
 					<edit:TextEditor x:Name="CodeEditor"
 					                 FontFamily="Consolas, Cascadia Mono, monospace"

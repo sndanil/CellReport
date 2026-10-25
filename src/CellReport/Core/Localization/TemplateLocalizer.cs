@@ -64,6 +64,41 @@ namespace CellReport.Core
 			return false;
 		}
 
+		public TemplateString[] GetStrings()
+		{
+			var result = new List<TemplateString>();
+			foreach (var pair in _cultures)
+			{
+				foreach (var item in pair.Value)
+				{
+					result.Add(new TemplateString
+					{
+						Culture = pair.Key,
+						ID = item.Key,
+						Value = item.Value
+					});
+				}
+			}
+
+			return result.ToArray();
+		}
+
+		public void ReplaceAll(string defaultCulture, IList<TemplateString> items)
+		{
+			_cultures.Clear();
+			DefaultCulture = defaultCulture;
+			if (items == null)
+				return;
+
+			for (var i = 0; i < items.Count; i++)
+			{
+				var item = items[i];
+				if (item == null || string.IsNullOrEmpty(item.ID))
+					continue;
+				Add(item.Culture, item.ID, item.Value ?? string.Empty);
+			}
+		}
+
 		internal XElement Serialize()
 		{
 			if (_cultures.Count == 0 && string.IsNullOrEmpty(DefaultCulture))
@@ -111,6 +146,16 @@ namespace CellReport.Core
 
 			return result;
 		}
+	}
+
+	[Serializable]
+	public class TemplateString
+	{
+		public string Culture { get; set; }
+
+		public string ID { get; set; }
+
+		public string Value { get; set; }
 	}
 
 	public static class TemplateLocalizer

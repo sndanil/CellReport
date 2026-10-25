@@ -137,7 +137,9 @@ namespace CellReport.Avalonia.ViewModels
 				ShowResizers = _presenter.ShowResizers;
 				ShowBookMarks = _presenter.ShowBookMarks;
 				ShowToolBar = _presenter.ShowToolBar;
-				SelectedScaleIndex = GetScaleIndex(_presenter.Scale);
+				var scaleIndex = GetScaleIndex(_presenter.Scale);
+				if (scaleIndex >= 0)
+					SelectedScaleIndex = scaleIndex;
 			}
 			finally
 			{
@@ -165,7 +167,7 @@ namespace CellReport.Avalonia.ViewModels
 					return i;
 			}
 
-			return 3;
+			return -1;
 		}
 
 		private void OnPresenterShowToolBarChanged(object? sender, System.EventArgs e)

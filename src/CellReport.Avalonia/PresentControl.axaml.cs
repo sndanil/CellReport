@@ -30,6 +30,7 @@ namespace CellReport.Avalonia
 		private global::Avalonia.Controls.Border _resizerCorner;
 		private SplitButton _printSplitButton;
 		private AvaloniaDisplayPresenter? _presenter;
+		private CellManager? _watchedManager;
 		private PresentControlViewModel? _viewModel;
 		private bool _updatingScrollBars;
 		private bool _invalidatePosted;
@@ -192,6 +193,8 @@ namespace CellReport.Avalonia
 			if (manager == null)
 				return;
 
+			WatchManager(manager);
+
 			var designMode = _viewModel?.DesignMode == true;
 			CellManager.IsDesignMode = designMode;
 			_presenter = new AvaloniaDisplayPresenter(manager, this, _cellControl);
@@ -203,6 +206,24 @@ namespace CellReport.Avalonia
 
 			_viewModel?.AttachPresenter(_presenter, this);
 			Update();
+		}
+
+		private void WatchManager(CellManager manager)
+		{
+			if (ReferenceEquals(_watchedManager, manager))
+				return;
+
+			if (_watchedManager != null)
+				_watchedManager.PropertyChanged -= OnManagerSettingsChanged;
+
+			_watchedManager = manager;
+			_watchedManager.PropertyChanged += OnManagerSettingsChanged;
+		}
+
+		private void OnManagerSettingsChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName is "ShowResizers" or "ShowDesignerResizers")
+				UpdateResizerVisibility();
 		}
 
 		private void UpdateResizerVisibility()

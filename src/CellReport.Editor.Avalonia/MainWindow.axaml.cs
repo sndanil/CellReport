@@ -56,8 +56,8 @@ public partial class MainWindow : Window
 
 	private void ShowCodeSearch(bool replace)
 	{
-		if (ModeTabs.SelectedIndex != 1)
-			ModeTabs.SelectedIndex = 1;
+		if (!ReferenceEquals(ModeTabs.SelectedItem, CodeTab))
+			ModeTabs.SelectedItem = CodeTab;
 		_codeEditor?.ShowSearch(replace);
 	}
 
@@ -67,15 +67,15 @@ public partial class MainWindow : Window
 			return;
 
 		var row = viewModel.Presenter?.CurrentCell.Row ?? 0;
-		if (ModeTabs.SelectedIndex != 1)
-			ModeTabs.SelectedIndex = 1;
+		if (!ReferenceEquals(ModeTabs.SelectedItem, CodeTab))
+			ModeTabs.SelectedItem = CodeTab;
 		_codeEditor?.SelectTemplateRow(row);
 	}
 
 	private void ShowDesigner()
 	{
 		_modeGuard = true;
-		ModeTabs.SelectedIndex = 0;
+		ModeTabs.SelectedItem = DesignerTab;
 		_modeGuard = false;
 		_codeEditor?.SetActive(false);
 	}
@@ -87,7 +87,7 @@ public partial class MainWindow : Window
 		if (DataContext is not MainWindowViewModel viewModel)
 			return;
 
-		if (ModeTabs.SelectedIndex == 1)
+		if (ReferenceEquals(ModeTabs.SelectedItem, CodeTab))
 		{
 			ShowCurrentCode(viewModel);
 			viewModel.EnterCodeMode();
@@ -105,7 +105,7 @@ public partial class MainWindow : Window
 		}
 
 		_modeGuard = true;
-		ModeTabs.SelectedIndex = 1;
+		ModeTabs.SelectedItem = CodeTab;
 		_modeGuard = false;
 		await ReportExportService.ShowMessageAsync(this, "Код шаблона не применён." + Environment.NewLine + error);
 	}
