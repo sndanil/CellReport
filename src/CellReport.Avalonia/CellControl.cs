@@ -85,6 +85,23 @@ namespace CellReport.Avalonia
 			ApplyInversionToPresenter();
 		}
 
+		private Color ReportBackground()
+		{
+			switch (InvertContentMode)
+			{
+				case ContentInversionMode.Never:
+					return Colors.White;
+				case ContentInversionMode.Always:
+					return Colors.Black;
+				default:
+					if (this.TryFindResource("CellReport.Grid.Background", ActualThemeVariant, out var brush)
+						&& brush is ISolidColorBrush solid)
+						return solid.Color;
+
+					return ActualThemeVariant == ThemeVariant.Dark ? Colors.Black : Colors.White;
+			}
+		}
+
 		private void ApplyInversionToPresenter()
 		{
 			if (_presenter == null)
@@ -109,11 +126,7 @@ namespace CellReport.Avalonia
 
 		public override void Render(DrawingContext context)
 		{
-			var background = Colors.White;
-			if (this.TryFindResource("CellReport.Grid.Background", ActualThemeVariant, out var brush)
-				&& brush is ISolidColorBrush solid)
-				background = solid.Color;
-
+			var background = ReportBackground();
 			context.FillRectangle(new SolidColorBrush(background), new Rect(0, 0, Bounds.Width, Bounds.Height));
 
 			var bounds = new Rect(0, 0, Bounds.Width, Bounds.Height);

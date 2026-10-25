@@ -81,6 +81,9 @@ public partial class MainWindowViewModel : ObservableObject
 	private string _title = "Редактор отчетов";
 
 	[ObservableProperty]
+	private bool _invertReport;
+
+	[ObservableProperty]
 	private int _ribbonTabIndex;
 
 	public bool IsHomeRibbon => RibbonTabIndex == 0;

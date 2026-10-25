@@ -18,6 +18,10 @@ namespace CellReport.Avalonia
 {
 	public partial class PresentControl : UserControl
 	{
+		public static readonly StyledProperty<ContentInversionMode> InvertContentModeProperty =
+			AvaloniaProperty.Register<PresentControl, ContentInversionMode>(
+				nameof(InvertContentMode),
+				ContentInversionMode.Auto);
 		private CellControl _cellControl;
 		private ColumnResizerControl _columnsResizer;
 		private RowResizerControl _rowsResizer;
@@ -41,6 +45,7 @@ namespace CellReport.Avalonia
 			_vScrollBar = this.Find<ScrollBar>("vScrollBar");
 			_resizerCorner = this.Find<global::Avalonia.Controls.Border>("resizerCorner");
 			_printSplitButton = this.Find<SplitButton>("printSplitButton");
+			ApplyContentInversion();
 
 			_hScrollBar.PropertyChanged += OnHorizontalScrollBarChanged;
 			_vScrollBar.PropertyChanged += OnVerticalScrollBarChanged;
@@ -49,6 +54,25 @@ namespace CellReport.Avalonia
 		}
 
 		public new AvaloniaDisplayPresenter? Presenter => _presenter;
+
+		public ContentInversionMode InvertContentMode
+		{
+			get => GetValue(InvertContentModeProperty);
+			set => SetValue(InvertContentModeProperty, value);
+		}
+
+		protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+		{
+			base.OnPropertyChanged(change);
+			if (change.Property == InvertContentModeProperty)
+				ApplyContentInversion();
+		}
+
+		private void ApplyContentInversion()
+		{
+			if (_cellControl != null)
+				_cellControl.InvertContentMode = InvertContentMode;
+		}
 
 		private void OnPresentControlDataContextChanged(object? sender, System.EventArgs e)
 		{

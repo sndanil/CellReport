@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using CellReport.Avalonia;
 using CellReport.Avalonia.Services;
 using CellReport.Editor.Avalonia.CodeEditor;
 using CellReport.Editor.Avalonia.ViewModels;
@@ -36,8 +37,21 @@ public partial class MainWindow : Window
 		viewModel.UndoCode = () => _codeEditor.UndoChange();
 		viewModel.RedoCode = () => _codeEditor.RedoChange();
 		_codeEditor.HistoryChanged += (_, _) => viewModel.NotifyHistory();
+		viewModel.PropertyChanged += (_, args) =>
+		{
+			if (args.PropertyName == nameof(MainWindowViewModel.InvertReport))
+				ApplyReportInversion(viewModel);
+		};
+		ApplyReportInversion(viewModel);
 		await viewModel.InitializeAsync(Program.StartupArgs, this);
 		_modeReady = true;
+	}
+
+	private void ApplyReportInversion(MainWindowViewModel viewModel)
+	{
+		ReportSurface.InvertContentMode = viewModel.InvertReport
+			? ContentInversionMode.Always
+			: ContentInversionMode.Never;
 	}
 
 	private void ShowCodeSearch(bool replace)
