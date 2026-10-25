@@ -13,6 +13,19 @@ namespace CellReport.Core.Expressions
         private DateTime _value = DateTime.Now;
         private bool _freeze = false;
 
+        public bool Freeze
+        {
+            get { return _freeze; }
+            set
+            {
+                if (_freeze != value)
+                {
+                    _freeze = value;
+                    OnPropertyChanged("Freeze");
+                }
+            }
+        }
+
         public override object GetValue(CellManager manager)
         {
             if (_freeze)
@@ -29,8 +42,9 @@ namespace CellReport.Core.Expressions
         internal new static NowExpression Parse(XElement element)
         {
             var freeze = false;
-            if (element.Attribute("Freeze") != null)
-                freeze = bool.Parse(element.Attribute("Freeze").Value);
+            var freezeAttribute = element.Attribute("Freeze") ?? element.Attribute("Freez");
+            if (freezeAttribute != null)
+                freeze = bool.Parse(freezeAttribute.Value);
 
             return new NowExpression() { _freeze = freeze };
         }
@@ -39,7 +53,7 @@ namespace CellReport.Core.Expressions
         {
             var result = base.OnSerialize("NowExpression");
             if (_freeze)
-                result.Add(new XAttribute("Freez", true));
+                result.Add(new XAttribute("Freeze", true));
 
             return result;
         }

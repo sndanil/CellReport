@@ -25,6 +25,45 @@ namespace CellReport.Core.Expressions
 
 		private string _prevExpression = null;
 
+		public Operation Operation
+		{
+			get { return _operation; }
+			set
+			{
+				if (_operation != value)
+				{
+					_operation = value;
+					OnPropertyChanged("Operation");
+				}
+			}
+		}
+
+		public decimal SecondValue
+		{
+			get { return _secondValue; }
+			set
+			{
+				if (_secondValue != value)
+				{
+					_secondValue = value;
+					OnPropertyChanged("SecondValue");
+				}
+			}
+		}
+
+		public string PrevExpression
+		{
+			get { return _prevExpression; }
+			set
+			{
+				if (_prevExpression != value)
+				{
+					_prevExpression = value;
+					OnPropertyChanged("PrevExpression");
+				}
+			}
+		}
+
 		public override object GetValue(CellManager manager, object value)
 		{
 			if (value is decimal)

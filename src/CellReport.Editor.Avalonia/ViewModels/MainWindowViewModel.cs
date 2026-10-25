@@ -40,6 +40,7 @@ public partial class MainWindowViewModel : ObservableObject
 	public MainWindowViewModel()
 	{
 		Settings = new DocumentSettingsViewModel(this);
+		Expressions = new ExpressionsViewModel(this);
 		Inspector = new InspectorViewModel(this);
 		Present.PresenterChanged += OnPresenterChanged;
 	}
@@ -47,6 +48,8 @@ public partial class MainWindowViewModel : ObservableObject
 	public PresentControlViewModel Present { get; } = new();
 
 	public DocumentSettingsViewModel Settings { get; }
+
+	public ExpressionsViewModel Expressions { get; }
 
 	public InspectorViewModel Inspector { get; }
 
@@ -631,6 +634,7 @@ public partial class MainWindowViewModel : ObservableObject
 
 		_manager.PropertyChanged += OnManagerPropertyChanged;
 		Settings.Load(_manager);
+		Expressions.Load(_manager);
 		RefreshCellFields();
 		Inspector.ReloadDocument();
 		UpdateTitle();

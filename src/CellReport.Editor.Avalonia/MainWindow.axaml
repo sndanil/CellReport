@@ -610,6 +610,51 @@
 					</StackPanel>
 				</ScrollViewer>
 			</TabItem>
+			<TabItem Header="Выражения">
+				<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+					<StackPanel Margin="16" Spacing="12" MaxWidth="980" HorizontalAlignment="Left">
+						<Grid ColumnDefinitions="280,Auto" ColumnSpacing="8">
+							<ComboBox ItemsSource="{Binding Expressions.Kinds}" SelectedItem="{Binding Expressions.NewKind}" />
+							<Button Grid.Column="1" Content="Добавить" Command="{Binding Expressions.AddCommand}" />
+						</Grid>
+						<ItemsControl ItemsSource="{Binding Expressions.Items}">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate x:DataType="vm:ExpressionEdit">
+									<Border Margin="0,0,0,8" Padding="8" BorderThickness="1" BorderBrush="{DynamicResource CellReport.Ribbon.Border}" CornerRadius="4">
+										<StackPanel Spacing="8">
+											<Grid ColumnDefinitions="220,*,Auto" ColumnSpacing="8">
+												<ComboBox ItemsSource="{Binding Kinds}" SelectedItem="{Binding Kind}" />
+												<TextBox Grid.Column="1" PlaceholderText="Идентификатор" Text="{Binding Id, UpdateSourceTrigger=LostFocus}" />
+												<Button Grid.Column="2" Content="Удалить" Command="{Binding RemoveCommand}" />
+											</Grid>
+											<Grid IsVisible="{Binding IsCount}" ColumnDefinitions="160,*" ColumnSpacing="8" RowDefinitions="Auto,Auto">
+												<TextBlock VerticalAlignment="Center" Text="Старт" />
+												<TextBox Grid.Column="1" Text="{Binding StartText, UpdateSourceTrigger=LostFocus}" />
+												<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Шаг" />
+												<TextBox Grid.Row="1" Grid.Column="1" Margin="0,4,0,0" Text="{Binding IncrementText, UpdateSourceTrigger=LostFocus}" />
+											</Grid>
+											<Grid IsVisible="{Binding IsSum}" ColumnDefinitions="160,*" ColumnSpacing="8" RowDefinitions="Auto,Auto">
+												<TextBlock VerticalAlignment="Center" Text="Имя параметра" />
+												<TextBox Grid.Column="1" Text="{Binding ParamName, UpdateSourceTrigger=LostFocus}" />
+												<CheckBox Grid.Row="1" Grid.ColumnSpan="2" Margin="0,4,0,0" Content="По странице" IsChecked="{Binding PerPage}" />
+											</Grid>
+											<CheckBox IsVisible="{Binding IsNow}" Content="Зафиксировать значение" IsChecked="{Binding Freeze}" />
+											<Grid IsVisible="{Binding IsDecimal}" ColumnDefinitions="160,*" ColumnSpacing="8" RowDefinitions="Auto,Auto,Auto">
+												<TextBlock VerticalAlignment="Center" Text="Операция" />
+												<ComboBox Grid.Column="1" ItemsSource="{Binding Operations}" SelectedItem="{Binding Operation}" />
+												<TextBlock Grid.Row="1" VerticalAlignment="Center" IsVisible="{Binding ShowSecondValue}" Text="Второе значение" />
+												<TextBox Grid.Row="1" Grid.Column="1" Margin="0,4,0,0" IsVisible="{Binding ShowSecondValue}" Text="{Binding SecondValueText, UpdateSourceTrigger=LostFocus}" />
+												<TextBlock Grid.Row="2" VerticalAlignment="Center" Text="Предыдущее выражение" />
+												<TextBox Grid.Row="2" Grid.Column="1" Margin="0,4,0,0" Text="{Binding PrevExpression, UpdateSourceTrigger=LostFocus}" />
+											</Grid>
+										</StackPanel>
+									</Border>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</StackPanel>
+				</ScrollViewer>
+			</TabItem>
 			<TabItem x:Name="CodeTab" Header="Код">
 				<Grid RowDefinitions="*,6,160">
 					<edit:TextEditor x:Name="CodeEditor"
