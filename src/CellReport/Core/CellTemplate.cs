@@ -22,6 +22,13 @@ namespace CellReport.Core
 	public class CellTemplate
 	{
 		private CellManager _manager = null;
+		private string _templateDirectory;
+
+		public string TemplateDirectory
+		{
+			get { return _templateDirectory; }
+			set { _templateDirectory = value; }
+		}
 
 		public CellManager Manager
 		{
@@ -222,6 +229,7 @@ namespace CellReport.Core
 
 		public void Load(string fileName)
 		{
+			_templateDirectory = Path.GetDirectoryName(Path.GetFullPath(fileName));
 			using (var file = File.OpenRead(fileName))
 				Load(file);
 		}
@@ -285,6 +293,7 @@ namespace CellReport.Core
 			var columnsCount = Convert.ToInt32(tableElement.Attribute("ColumnsCount").Value);
 
 			_manager = new CellManager(properties);
+			_manager.TemplateDirectory = _templateDirectory;
 			_manager.RowsCount = rowsCount;
 			_manager.ColumnsCount = columnsCount;
 			foreach (KeyValuePair<string, byte[]> res in resources)

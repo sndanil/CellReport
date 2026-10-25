@@ -113,7 +113,13 @@ namespace CellReport.Editor.ViewModel
 		public string FileName
 		{
 			get => _fileName;
-			set => SetProperty(ref _fileName, value);
+			set
+			{
+				SetProperty(ref _fileName, value);
+				ExternalStyleSearch.DocumentDirectory = string.IsNullOrEmpty(value)
+					? null
+					: Path.GetDirectoryName(Path.GetFullPath(value));
+			}
 		}
 
 		public int Scale

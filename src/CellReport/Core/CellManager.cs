@@ -37,6 +37,8 @@ namespace CellReport.Core
 		private readonly List<BaseStyle> _stylesList = new List<BaseStyle>();
 		private readonly List<ExternalStyle> _externalStyles = new List<ExternalStyle>();
 
+		public string TemplateDirectory { get; set; }
+
 		private readonly Dictionary<string, byte[]> _resources = new Dictionary<string, byte[]>();
 
 		private int _updateDepth;
@@ -928,7 +930,9 @@ namespace CellReport.Core
 		public void AddExternalStyle(ExternalStyle style)
 		{
 			_externalStyles.Add(style);
-			var data = this.GetDataByUri(style.Uri);
+			var data = ExternalStyleSearch.TryLoad(style.Uri, TemplateDirectory);
+			if (data == null)
+				data = this.GetDataByUri(style.Uri);
 			if (data != null)
 			{
 				var template = new CellTemplate(this);

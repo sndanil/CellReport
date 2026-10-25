@@ -266,7 +266,7 @@ public partial class MainWindowViewModel : ObservableObject
 
 		ShowDesigner();
 		var directory = Path.GetDirectoryName(source) ?? string.Empty;
-		_filePath = Path.Combine(directory, Path.GetFileNameWithoutExtension(source) + ".tcr");
+		SetDocumentPath(Path.Combine(directory, Path.GetFileNameWithoutExtension(source) + ".tcr"));
 		ApplyDocument(manager, resetHistory: true, CellLocation.None);
 	}
 
@@ -530,17 +530,17 @@ public partial class MainWindowViewModel : ObservableObject
 
 	private void CreateDocument()
 	{
+		SetDocumentPath(null);
 		var manager = new CellManager();
 		manager.AddExternalStyle(new ExternalStyle("file://DefaultStyles.xml"));
-		_filePath = null;
 		ApplyDocument(manager, resetHistory: true, CellLocation.None);
 	}
 
 	private void OpenPath(string path)
 	{
+		SetDocumentPath(path);
 		var template = new CellTemplate();
 		template.Load(path);
-		_filePath = path;
 		ApplyDocument(template.Manager, resetHistory: true, CellLocation.None);
 	}
 
@@ -589,7 +589,7 @@ public partial class MainWindowViewModel : ObservableObject
 				? TemplateType.Package
 				: TemplateType.Xml;
 			new CellTemplate(_manager).Save(path, type);
-			_filePath = path;
+			SetDocumentPath(path);
 			UpdateTitle();
 		}
 		catch (Exception ex)
@@ -1127,6 +1127,14 @@ public partial class MainWindowViewModel : ObservableObject
 			return true;
 
 		return float.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out value);
+	}
+
+	private void SetDocumentPath(string path)
+	{
+		_filePath = path;
+		ExternalStyleSearch.DocumentDirectory = string.IsNullOrEmpty(path)
+			? null
+			: Path.GetDirectoryName(Path.GetFullPath(path));
 	}
 
 	private void UpdateTitle()
