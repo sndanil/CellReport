@@ -4,6 +4,7 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Styling;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using AvaloniaEdit;
 using AvaloniaEdit.CodeCompletion;
 using AvaloniaEdit.Folding;
@@ -30,6 +31,8 @@ namespace CellReport.Editor.Avalonia.CodeEditor;
 
 public sealed class XmlCodeEditor
 {
+	private static readonly object SearchPanelButtonMarker = new();
+
 	private readonly TextEditor _editor;
 	private readonly Func<CellManager?> _designManager;
 	private readonly ObservableCollection<SchemaError> _errors;
@@ -130,8 +133,49 @@ public sealed class XmlCodeEditor
 		_searchPanel.IsReplaceMode = replace;
 		if (!_searchPanel.IsOpened)
 			_searchPanel.Open();
-		_searchPanel.Reactivate();
-		_editor.Focus();
+
+		// Шаблон панели создаётся при первом открытии, поэтому фокус в поле поиска
+		// ставим после раскладки. От этого зависит CanExecute у кнопок «найти/закрыть».
+		Dispatcher.UIThread.Post(() =>
+		{
+			if (!_searchPanel.IsOpened)
+				return;
+
+			WireSearchPanelButtons();
+			_searchPanel.Reactivate();
+		}, DispatcherPriority.Background);
+	}
+
+	/// <summary>
+	/// В AvaloniaEdit команды поиска не поднимают CanExecuteChanged, поэтому кнопки панели
+	/// навсегда остаются выключенными. Привязываем их напрямую к методам панели.
+	/// </summary>
+	private void WireSearchPanelButtons()
+	{
+		foreach (var button in _searchPanel.GetVisualDescendants().OfType<Button>())
+		{
+			if (ReferenceEquals(button.Tag, SearchPanelButtonMarker))
+				continue;
+
+			var command = button.Command;
+
+			if (ReferenceEquals(command, SearchCommands.FindPrevious))
+				button.Click += (_, _) => _searchPanel.FindPrevious();
+			else if (ReferenceEquals(command, SearchCommands.FindNext))
+				button.Click += (_, _) => _searchPanel.FindNext();
+			else if (ReferenceEquals(command, SearchCommands.CloseSearchPanel))
+				button.Click += (_, _) => _searchPanel.Close();
+			else if (ReferenceEquals(command, SearchCommands.ReplaceNext))
+				button.Click += (_, _) => _searchPanel.ReplaceNext();
+			else if (ReferenceEquals(command, SearchCommands.ReplaceAll))
+				button.Click += (_, _) => _searchPanel.ReplaceAll();
+			else
+				continue;
+
+			button.Command = null;
+			button.IsEnabled = true;
+			button.Tag = SearchPanelButtonMarker;
+		}
 	}
 
 	public void SelectTemplateRow(int row)
