@@ -2,6 +2,8 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
+using Avalonia.Media;
 using Avalonia.VisualTree;
 using CellReport.Avalonia;
 using CellReport.Core;
@@ -33,6 +35,10 @@ public partial class DesignerView : UserControl
 
 		InlineEditor.AddHandler(KeyDownEvent, OnInlineEditorKeyDown, RoutingStrategies.Tunnel, handledEventsToo: true);
 		InlineEditor.LostFocus += (_, _) => OnInlineEditorLostFocus();
+		FormulaNumberTextBox.AddHandler(TextInputEvent, OnFormulaNumberTextInput, RoutingStrategies.Tunnel, handledEventsToo: true);
+		FormulaNumberTextBox.KeyDown += OnFormulaNumberKeyDown;
+		FormulaNumberTextBox.LostFocus += (_, _) => _viewModel?.CommitNumberText();
+		ApplyFormulaBarMode();
 		AddHandler(KeyDownEvent, OnDesignerKeyDown, RoutingStrategies.Bubble);
 		ReportSurface.AddHandler(PointerPressedEvent, OnCanvasPointerPressed, RoutingStrategies.Tunnel);
 		ReportSurface.PointerWheelChanged += (_, _) => CommitInlineEdit();
@@ -282,6 +288,42 @@ public partial class DesignerView : UserControl
 	{
 		if (e.PropertyName is nameof(MainWindowViewModel.InspectorWidth) or nameof(MainWindowViewModel.IsInspectorCollapsed))
 			ApplyLayout();
+		else if (e.PropertyName == nameof(MainWindowViewModel.IsFormulaBarExpanded))
+			ApplyFormulaBarMode();
+	}
+
+	private void ApplyFormulaBarMode()
+	{
+		var expanded = _viewModel?.IsFormulaBarExpanded == true;
+		FormulaTextBox.TextWrapping = expanded ? TextWrapping.Wrap : TextWrapping.NoWrap;
+		FormulaTextBox.AcceptsReturn = expanded;
+		FormulaTextBox.VerticalContentAlignment = expanded ? VerticalAlignment.Top : VerticalAlignment.Center;
+		FormulaTextBox.MinHeight = expanded ? 72 : 26;
+		FormulaTextBox.MaxHeight = expanded ? 160 : 26;
+	}
+
+	private void OnFormulaNumberTextInput(object? sender, TextInputEventArgs e)
+	{
+		if (string.IsNullOrEmpty(e.Text))
+			return;
+
+		foreach (var symbol in e.Text)
+		{
+			if (char.IsDigit(symbol) || symbol == '-' || symbol == '+' || symbol == ',' || symbol == '.' || symbol == ' ')
+				continue;
+
+			e.Handled = true;
+			return;
+		}
+	}
+
+	private void OnFormulaNumberKeyDown(object? sender, KeyEventArgs e)
+	{
+		if (e.Key != Key.Enter)
+			return;
+
+		e.Handled = true;
+		_viewModel?.CommitNumberText();
 	}
 
 	private void ApplyLayout()

@@ -105,6 +105,161 @@ public partial class MainWindowViewModel : ObservableObject
 		? string.Empty
 		: (HasUnsavedChanges ? "Изменено" : "Сохранено");
 
+	public string CellValueKindLabel => ValueKind switch
+	{
+		CellValueKind.Text => "Текст",
+		CellValueKind.Number => "Число",
+		CellValueKind.Date => "Дата",
+		_ => "Нет"
+	};
+
+	public bool IsTextValue => ValueKind == CellValueKind.Text;
+
+	public bool IsNumberValue => ValueKind == CellValueKind.Number;
+
+	public bool IsDateValue => ValueKind == CellValueKind.Date;
+
+	public bool IsNoValue => ValueKind == CellValueKind.None;
+
+	public bool CanExpandFormulaBar => IsTextValue;
+
+	[ObservableProperty]
+	private CellValueKind _valueKind;
+
+	[ObservableProperty]
+	private bool _isFormulaBarExpanded;
+
+	[ObservableProperty]
+	private string _numberText = string.Empty;
+
+	[ObservableProperty]
+	private DateTime? _dateValue;
+
+	private bool _updatingFormulaBar;
+	private CellLocation _numberEditCell = CellLocation.None;
+	private string? _numberEditText;
+
+	[RelayCommand]
+	private void ToggleFormulaBar() => IsFormulaBarExpanded = !IsFormulaBarExpanded;
+
+	public void CommitNumberText()
+	{
+		var location = _numberEditCell;
+		var text = _numberEditText ?? NumberText;
+		_numberEditCell = CellLocation.None;
+		_numberEditText = null;
+
+		if (_manager == null || _updatingFormulaBar || location.Equals(CellLocation.None))
+			return;
+
+		if (GetTextBasedContent(location) is not DecimalContent content)
+			return;
+
+		if (!TryParseDecimal(text, out var value))
+		{
+			UpdateCellValueEditor();
+			return;
+		}
+
+		if (content.GetValue() == value)
+			return;
+
+		CommitDocumentChange(() =>
+		{
+			var param = content.GetParams().FirstOrDefault(item => item.Target == "Value" && string.IsNullOrEmpty(item.ExpressionID));
+			if (param != null)
+				param.Value = value.ToString(CultureInfo.InvariantCulture);
+			else
+				content.Value = value;
+		});
+	}
+
+	partial void OnNumberTextChanged(string value)
+	{
+		if (_updatingFormulaBar)
+			return;
+
+		if (_numberEditCell.Equals(CellLocation.None))
+			_numberEditCell = _presenter?.CurrentCell ?? CellLocation.None;
+
+		_numberEditText = value;
+	}
+
+	partial void OnDateValueChanged(DateTime? value)
+	{
+		if (_updatingFormulaBar || _manager == null)
+			return;
+
+		if (GetTextBasedContent() is not DateTimeContent content || value == null || content.GetValue() == value.Value)
+			return;
+
+		CommitDocumentChange(() =>
+		{
+			var param = content.GetParams().FirstOrDefault(item => item.Target == "Value" && string.IsNullOrEmpty(item.ExpressionID));
+			if (param != null)
+			{
+				var format = (content.GetActualStyle() as DateTimeContentStyle)?.Format;
+				param.Value = string.IsNullOrEmpty(format)
+					? value.Value.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)
+					: value.Value.ToString(format, CultureInfo.InvariantCulture);
+			}
+			else
+				content.Value = value.Value;
+		});
+	}
+
+	private static bool TryParseDecimal(string? text, out decimal value)
+	{
+		if (decimal.TryParse(text, NumberStyles.Number, CultureInfo.CurrentCulture, out value))
+			return true;
+
+		return decimal.TryParse(text, NumberStyles.Number, CultureInfo.InvariantCulture, out value);
+	}
+
+	private void UpdateCellValueEditor()
+	{
+		var content = _manager != null && _presenter != null ? GetTextBasedContent() : null;
+		var kind = content switch
+		{
+			TextContent => CellValueKind.Text,
+			DecimalContent => CellValueKind.Number,
+			DateTimeContent => CellValueKind.Date,
+			_ => CellValueKind.None
+		};
+
+		_updatingFormulaBar = true;
+		try
+		{
+			if (content is DecimalContent number)
+				NumberText = number.GetValue().ToString(CultureInfo.CurrentCulture);
+			else if (content is DateTimeContent date)
+				DateValue = date.GetValue();
+		}
+		finally
+		{
+			_updatingFormulaBar = false;
+		}
+
+		if (kind != CellValueKind.Text)
+			IsFormulaBarExpanded = false;
+
+		SetValueKind(kind);
+	}
+
+	private void SetValueKind(CellValueKind kind)
+	{
+		if (ValueKind == kind)
+			return;
+
+		ValueKind = kind;
+		OnPropertyChanged(nameof(IsTextValue));
+		OnPropertyChanged(nameof(IsNumberValue));
+		OnPropertyChanged(nameof(IsDateValue));
+		OnPropertyChanged(nameof(IsNoValue));
+		OnPropertyChanged(nameof(CanExpandFormulaBar));
+		OnPropertyChanged(nameof(CellValueKindLabel));
+	}
+
 	[ObservableProperty]
 	private string _contentTypeLabel = string.Empty;
 
@@ -1082,6 +1237,7 @@ public partial class MainWindowViewModel : ObservableObject
 		{
 			Inspector.OnCellChanged();
 			NotifyFormatCommands();
+			UpdateCellValueEditor();
 		}
 	}
 
@@ -1201,10 +1357,17 @@ public partial class MainWindowViewModel : ObservableObject
 
 	private TextBasedContent? GetTextBasedContent()
 	{
-		if (_manager == null || _presenter == null)
+		if (_presenter == null)
 			return null;
 
-		var location = _presenter.CurrentCell;
+		return GetTextBasedContent(_presenter.CurrentCell);
+	}
+
+	private TextBasedContent? GetTextBasedContent(CellLocation location)
+	{
+		if (_manager == null)
+			return null;
+
 		if (location.Row < 0 || location.Column < 0
 			|| location.Row >= _manager.RowsCount || location.Column >= _manager.ColumnsCount)
 			return null;
@@ -1687,8 +1850,7 @@ public partial class MainWindowViewModel : ObservableObject
 }
 
 public sealed class RecentFileEntry
-{
-	public RecentFileEntry(string path)
+{	public RecentFileEntry(string path)
 	{
 		Path = path;
 		Title = System.IO.Path.GetFileName(path);
@@ -1697,4 +1859,12 @@ public sealed class RecentFileEntry
 	public string Path { get; }
 
 	public string Title { get; }
+}
+
+public enum CellValueKind
+{
+	None,
+	Text,
+	Number,
+	Date
 }
