@@ -19,6 +19,9 @@
 			<TabItem Header="Печать">
 				<views:PrintSettingsView />
 			</TabItem>
+			<TabItem Header="Закладки">
+				<views:BookmarkSettingsView />
+			</TabItem>
 			<TabItem Header="Отображение">
 				<views:DisplaySettingsView />
 			</TabItem>

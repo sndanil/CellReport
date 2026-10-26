@@ -46,7 +46,9 @@ namespace CellReport.Editor.Avalonia.CodeEditor.XHelper
 			// Get the complex type of the Customer element.
 			XmlSchemaComplexType complexType = element.ElementSchemaType as XmlSchemaComplexType;
 
-			if (complexType != null)
+			// схема может быть рекурсивной (например, вложенные BookMark) —
+			// не разворачиваем повторно тот же элемент, иначе переполнение стека
+			if (complexType != null && !HasAncestor(prefix, element.Name))
 			{
 				// If the complex type has any attributes, get an enumerator 
 				// and write each attribute name to the console.
@@ -106,6 +108,20 @@ namespace CellReport.Editor.Avalonia.CodeEditor.XHelper
 			flatList.Add(xsdElementInformation);
 
 			return xsdElementInformation;
+		}
+
+		private static bool HasAncestor(string prefix, string name)
+		{
+			if (string.IsNullOrEmpty(prefix) || string.IsNullOrEmpty(name))
+				return false;
+
+			foreach (var segment in prefix.Split('/'))
+			{
+				if (string.Equals(segment, name, System.StringComparison.Ordinal))
+					return true;
+			}
+
+			return false;
 		}
 	}
 }

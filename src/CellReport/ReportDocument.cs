@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
 using CellReport.Core;
 using CellReport.Core.BookMarks;
 using CellReport.Core.Contents;
@@ -17,7 +17,12 @@ namespace CellReport
 		[NonSerialized] private int _colNumberForJoinSection;
 		[NonSerialized] private readonly List<Cell> _lastAddedCells = new List<Cell>();
 		[NonSerialized] private string _lastSectionName;
-		[NonSerialized] private BookMark _lastBookMark;
+		[NonSerialized] private readonly Dictionary<BookMark, BookMark> _lastByRule = new Dictionary<BookMark, BookMark>();
+		[NonSerialized] private readonly Dictionary<BookMark, int> _depthByRule = new Dictionary<BookMark, int>();
+		[NonSerialized] private readonly List<BookmarkLevelEntry> _levelStack = new List<BookmarkLevelEntry>();
+		[NonSerialized] private readonly Dictionary<string, int> _sectionIndexes = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		[NonSerialized] private bool _buildingBookMarks;
+		[NonSerialized] private bool _staticBookMarksAdded;
 
 		[field: NonSerialized]
 		public event Action<string> SectionAttached;
@@ -86,94 +91,337 @@ namespace CellReport
 				Manager.AddStyle(style);
 			//foreach (var style in _template.Manager.GetExtStyles())
 			//	Manager.AddExternalStyle(style);
+
+			Manager.BookmarkSettings = _template.Manager.BookmarkSettings.Clone();
+			Manager.SetBookMarksCompletion(BuildBookMarks);
 		}
 
-		private void CreateBookMarks()
+		/// <summary>
+		/// Достраивает закладки последней секции. Вызывается при завершении формирования
+		/// отчёта и лениво — при первом чтении <see cref="CellManager.GetBookMarks"/>.
+		/// </summary>
+		public void BuildBookMarks()
 		{
+			if (_buildingBookMarks || Manager == null)
+				return;
+
+			var settings = Manager.BookmarkSettings;
+			if (settings != null && (!settings.Enabled || !settings.FlushAtEnd))
+				return;
+
 			if (string.IsNullOrEmpty(_lastSectionName))
+				return;
+
+			_buildingBookMarks = true;
+			try
 			{
-				foreach (var item in _template.Manager.GetBookMarks())
-				{
-					if (string.IsNullOrEmpty(item.SectionID))
-						Manager.AddBookMark(item.Clone());
-				}
+				CompleteSection();
 			}
-			else
+			finally
 			{
-				foreach (var item in _template.Manager.GetBookMarks())
-					AddBookMark(item, null);
+				_buildingBookMarks = false;
 			}
 		}
 
-		private void AddBookMark(BookMark item, BookMark parent)
+		/// <summary>
+		/// Завершает секцию, добавленную последней: её значения уже установлены,
+		/// поэтому можно строить закладки по правилам шаблона.
+		/// </summary>
+		private void CompleteSection()
 		{
-			bool addBookMark = false;
-			var bookMark = item.Clone();
-			bookMark.Child.Clear();
-			if (_lastSectionName.Equals(item.SectionID))
-			{
-				foreach (var cell in _lastAddedCells)
-				{
-					var @break = false;
-					if (cell.Content != null)
-					{
-						foreach (var param in cell.Content.GetParams())
-						{
-							if (item.TextParamName == param.Name)
-							{
-								if (!string.IsNullOrEmpty(param.Value as string))
-									bookMark.Name = param.Value.ToString();
-								if (!string.IsNullOrEmpty(item.VisibleParamName))
-									addBookMark = param.Value != null;
-								else
-									addBookMark = true;
-								bookMark.Location = cell.Location;
-								@break = true;
-								break;
-							}
-						}
-					}
-					if (@break)
-						break;
-				}
-			}
-			if (addBookMark)
-			{
-				if (parent == null)
-					Manager.AddBookMark(bookMark);
-				else if (_lastBookMark == null)
-					Manager.AddBookMark(bookMark);
-				else if (_lastBookMark.SectionID == parent.SectionID)
-					_lastBookMark.Child.Add(bookMark);
-				else
-				{
-					var lastInTree = Manager.GetBookMarks().LastOrDefault();
-					if (lastInTree == null)
-						Manager.AddBookMark(bookMark);
-					else if (!AddIfSectionEqual(parent.SectionID, lastInTree, bookMark))
-						Manager.AddBookMark(bookMark);
-				}
+			var settings = Manager.BookmarkSettings ?? new BookmarkSettings();
+			var sectionName = _lastSectionName;
+			_lastSectionName = null;
 
-				_lastBookMark = bookMark;
+			if (!settings.Enabled)
+				return;
+
+			if (string.IsNullOrEmpty(sectionName))
+			{
+				AddStaticBookMarks();
+				return;
 			}
-			foreach (var child in item.Child)
-				AddBookMark(child, item);
+
+			var index = NextSectionIndex(sectionName);
+
+			var hasExplicitRule = false;
+			foreach (var rule in _template.Manager.GetBookMarks())
+			{
+				if (string.IsNullOrEmpty(rule.SectionID))
+					continue;
+
+				hasExplicitRule |= AddRule(rule, null, sectionName, index);
+			}
+
+			if (settings.AutoSections && !hasExplicitRule)
+				AddAutoBookMark(settings, sectionName, index);
 		}
 
-		private bool AddIfSectionEqual(string sectionName, BookMark parent, BookMark child)
+		private void AddStaticBookMarks()
 		{
-			if (parent.SectionID == sectionName)
+			if (_staticBookMarksAdded)
+				return;
+
+			_staticBookMarksAdded = true;
+			foreach (var item in _template.Manager.GetBookMarks())
 			{
-				parent.Child.Add(child);
-				return true;
+				if (string.IsNullOrEmpty(item.SectionID))
+					Manager.AddBookMark(item.Clone());
 			}
-			foreach (var item in parent.Child)
+		}
+
+		private int NextSectionIndex(string sectionName)
+		{
+			int current;
+			_sectionIndexes.TryGetValue(sectionName, out current);
+			current++;
+			_sectionIndexes[sectionName] = current;
+			return current;
+		}
+
+		private bool AddRule(BookMark rule, BookMark parentRule, string sectionName, int index)
+		{
+			var added = false;
+			if (string.Equals(rule.SectionID, sectionName, StringComparison.Ordinal))
+				added = AddRuleInstance(rule, parentRule, sectionName, index);
+
+			// дочерние правила проверяются всегда: они описывают секции,
+			// которые добавляются после родительской
+			foreach (var child in rule.Child)
+				added |= AddRule(child, rule, sectionName, index);
+
+			return added;
+		}
+
+		private bool AddRuleInstance(BookMark rule, BookMark parentRule, string sectionName, int index)
+		{
+			var settings = Manager.BookmarkSettings ?? new BookmarkSettings();
+			var titleParam = string.IsNullOrEmpty(rule.TextParamName) ? settings.TitleParam : rule.TextParamName;
+
+			object value;
+			CellLocation location;
+			if (!TryGetParamValue(titleParam, out value, out location))
+				return false;
+
+			var rawValue = Convert.ToString(value, CultureInfo.CurrentCulture) ?? string.Empty;
+			if (RequiresValue(settings, rule) && string.IsNullOrWhiteSpace(rawValue))
+				return false;
+
+			var bookmark = new BookMark
 			{
-				if (AddIfSectionEqual(sectionName, item, child))
+				SectionID = sectionName,
+				Name = BuildTitle(settings, rule.Name, rawValue, sectionName, index, GetLastRuleName(parentRule)),
+				Location = location,
+				TextParamName = titleParam
+			};
+
+			return AttachBookMark(bookmark, rule, parentRule, sectionName);
+		}
+
+		private void AddAutoBookMark(BookmarkSettings settings, string sectionName, int index)
+		{
+			var titleParam = string.IsNullOrEmpty(settings.TitleParam) ? BookmarkSettings.DefaultTitleParam : settings.TitleParam;
+
+			object value;
+			CellLocation location;
+			if (!TryGetParamValue(titleParam, out value, out location))
+				return;
+
+			var rawValue = Convert.ToString(value, CultureInfo.CurrentCulture) ?? string.Empty;
+			if (settings.SkipEmpty && string.IsNullOrWhiteSpace(rawValue))
+				return;
+
+			var bookmark = new BookMark
+			{
+				SectionID = sectionName,
+				Name = BuildTitle(settings, null, rawValue, sectionName, index, null),
+				Location = location,
+				TextParamName = titleParam
+			};
+
+			AttachBookMark(bookmark, null, null, sectionName);
+		}
+
+		private static bool RequiresValue(BookmarkSettings settings, BookMark rule)
+		{
+			return !string.IsNullOrEmpty(rule.VisibleParamName) || settings.SkipEmpty;
+		}
+
+		private bool TryGetParamValue(string paramName, out object value, out CellLocation location)
+		{
+			value = null;
+			location = CellLocation.None;
+			if (string.IsNullOrEmpty(paramName))
+				return false;
+
+			foreach (var cell in _lastAddedCells)
+			{
+				var content = cell.Content;
+				if (content == null)
+					continue;
+
+				foreach (var param in content.GetParams())
+				{
+					if (!string.Equals(param.Name, paramName, StringComparison.Ordinal))
+						continue;
+
+					value = param.Value;
+					location = cell.Location;
 					return true;
+				}
 			}
 
 			return false;
+		}
+
+		private string GetLastRuleName(BookMark parentRule)
+		{
+			if (parentRule == null)
+				return null;
+
+			BookMark parent;
+			return _lastByRule.TryGetValue(parentRule, out parent) ? parent.Name : null;
+		}
+
+		private static string BuildTitle(
+			BookmarkSettings settings,
+			string fallback,
+			string value,
+			string sectionName,
+			int index,
+			string parentName)
+		{
+			var format = string.IsNullOrEmpty(settings.TitleFormat)
+				? BookmarkSettings.DefaultTitleFormat
+				: settings.TitleFormat;
+
+			var title = format
+				.Replace("{Value}", value ?? string.Empty)
+				.Replace("{Section}", sectionName ?? string.Empty)
+				.Replace("{Index}", index.ToString(CultureInfo.InvariantCulture))
+				.Replace("{Parent}", parentName ?? string.Empty)
+				.Trim();
+
+			if (title.Length == 0)
+				title = fallback ?? string.Empty;
+			if (title.Length == 0)
+				title = sectionName ?? string.Empty;
+
+			return title;
+		}
+
+		private bool AttachBookMark(BookMark bookmark, BookMark rule, BookMark parentRule, string sectionName)
+		{
+			var settings = Manager.BookmarkSettings ?? new BookmarkSettings();
+			var depth = ResolveDepth(settings, sectionName, parentRule);
+			if (settings.MaxDepth > 0 && depth > settings.MaxDepth)
+				return false;
+
+			var parent = ResolveParent(settings, depth, parentRule);
+
+			bool add;
+			var node = ApplyDuplicates(settings, parent, bookmark, out add);
+			if (add)
+			{
+				if (parent == null)
+					Manager.AddBookMark(node);
+				else
+					parent.Child.Add(node);
+			}
+
+			if (rule != null)
+			{
+				_lastByRule[rule] = node;
+				_depthByRule[rule] = depth;
+			}
+
+			PushLevel(depth, node);
+			return add;
+		}
+
+		private int ResolveDepth(BookmarkSettings settings, string sectionName, BookMark parentRule)
+		{
+			var level = settings.GetLevel(sectionName);
+			if (level > 0)
+				return level;
+
+			int parentDepth;
+			if (parentRule != null && _depthByRule.TryGetValue(parentRule, out parentDepth))
+				return parentDepth + 1;
+
+			return 1;
+		}
+
+		private BookMark ResolveParent(BookmarkSettings settings, int depth, BookMark parentRule)
+		{
+			if (settings.HasLevels)
+			{
+				for (var i = _levelStack.Count - 1; i >= 0; i--)
+				{
+					if (_levelStack[i].Level < depth)
+						return _levelStack[i].BookMark;
+				}
+
+				return null;
+			}
+
+			BookMark parent;
+			if (parentRule != null && _lastByRule.TryGetValue(parentRule, out parent))
+				return parent;
+
+			return null;
+		}
+
+		private BookMark ApplyDuplicates(BookmarkSettings settings, BookMark parent, BookMark bookmark, out bool add)
+		{
+			add = true;
+			if (settings.Duplicates == BookmarkDuplicateMode.Keep)
+				return bookmark;
+
+			IList<BookMark> siblings = parent == null
+				? (IList<BookMark>)Manager.BookMarksStorage
+				: parent.Child;
+
+			if (settings.Duplicates == BookmarkDuplicateMode.Skip)
+			{
+				for (var i = 0; i < siblings.Count; i++)
+				{
+					if (!string.Equals(siblings[i].Name, bookmark.Name, StringComparison.Ordinal))
+						continue;
+
+					add = false;
+					return siblings[i];
+				}
+
+				return bookmark;
+			}
+
+			if (siblings.Count == 0)
+				return bookmark;
+
+			var last = siblings[siblings.Count - 1];
+			if (!string.Equals(last.Name, bookmark.Name, StringComparison.Ordinal))
+				return bookmark;
+
+			add = false;
+			return last;
+		}
+
+		private void PushLevel(int depth, BookMark bookmark)
+		{
+			for (var i = _levelStack.Count - 1; i >= 0; i--)
+			{
+				if (_levelStack[i].Level >= depth)
+					_levelStack.RemoveAt(i);
+			}
+
+			_levelStack.Add(new BookmarkLevelEntry { Level = depth, BookMark = bookmark });
+		}
+
+		private struct BookmarkLevelEntry
+		{
+			public int Level;
+			public BookMark BookMark;
 		}
 
 		public void AddPageBreak()
@@ -201,7 +449,7 @@ namespace CellReport
 
 		protected void AddSection(string sectionName, string objectName)
 		{
-			CreateBookMarks();
+			CompleteSection();
 			_lastSectionName = sectionName;
 			var section = _template.GetSectionByName(sectionName, objectName);
 			CreateCells(_rowNumberForAddSection, 0, section);
@@ -255,7 +503,7 @@ namespace CellReport
 
 		protected void JoinSection(string sectionName, string objectName)
 		{
-			CreateBookMarks();
+			CompleteSection();
 			_lastSectionName = sectionName;
 			var section = _template.GetSectionByName(sectionName, objectName);
 			CreateCells(_rowNumberForJoinSection, _colNumberForJoinSection, section);
@@ -333,6 +581,7 @@ namespace CellReport
 
 		public void FitDocument()
 		{
+			BuildBookMarks();
 			Manager.RowsCount = Manager.ActualRowsCount;
 			Manager.ColumnsCount = Manager.ActualColumnsCount;
 		}

@@ -313,14 +313,20 @@ public static class TemplateValidator
 
 	private static void ValidateBookMarks(List<TemplateIssue> issues, CellManager manager)
 	{
+		ValidateBookmarkSettings(issues, manager);
 		Walk(manager.GetBookMarks());
 
 		void Walk(IEnumerable<BookMark> bookMarks)
 		{
 			foreach (var bookMark in bookMarks)
 			{
-				if (string.IsNullOrWhiteSpace(bookMark.Name))
-					issues.Add(Warning("Закладки", "У закладки не задано имя"));
+				if (bookMark.SectionID == null || bookMark.SectionID.Length == 0)
+				{
+					if (string.IsNullOrWhiteSpace(bookMark.Name))
+						issues.Add(Warning("Закладки", "У закладки не задано имя"));
+				}
+				else if (bookMark.TextParamName == null || bookMark.TextParamName.Length == 0)
+					issues.Add(Warning("Закладки", "У правила закладки не задан параметр заголовка"));
 
 				var location = bookMark.Location;
 				if (!location.Equals(CellLocation.None)
@@ -331,6 +337,33 @@ public static class TemplateValidator
 				Walk(bookMark.Child);
 			}
 		}
+	}
+
+	private static void ValidateBookmarkSettings(List<TemplateIssue> issues, CellManager manager)
+	{
+		var settings = manager.BookmarkSettings;
+		if (settings == null)
+			return;
+
+		var sections = new HashSet<string>(
+			manager.GetSections().Select(item => item.Name ?? string.Empty),
+			StringComparer.OrdinalIgnoreCase);
+
+		foreach (var pair in settings.GetLevels())
+		{
+			if (!sections.Contains(pair.Key))
+				issues.Add(Warning("Закладки", "Уровень задан для несуществующей секции «" + pair.Key + "»"));
+		}
+
+		if (!settings.Enabled)
+			return;
+
+		if (settings.AutoSections && string.IsNullOrWhiteSpace(settings.TitleParam))
+			issues.Add(Warning("Закладки", "Для автозакладок не задан параметр заголовка"));
+
+		var format = settings.TitleFormat ?? string.Empty;
+		if (format.Length > 0 && !format.Contains("{Value}") && !format.Contains("{Section}"))
+			issues.Add(Warning("Закладки", "Формат заголовка не содержит подстановок {Value} или {Section}"));
 	}
 
 	private static void ValidateProperties(List<TemplateIssue> issues, CellManager manager)

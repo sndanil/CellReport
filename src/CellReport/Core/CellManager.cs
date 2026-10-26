@@ -23,6 +23,9 @@ namespace CellReport.Core
 		private PrintSettings _printSettings;
 		private DisplaySettings _displaySettings;
 		private ExportSettings _exportSettings;
+		private BookmarkSettings _bookmarkSettings;
+		[NonSerialized]
+		private Action _bookMarksCompletion;
 		private Properties _properties;
 		private readonly Dictionary<int, bool> _autoFitRows = new Dictionary<int, bool>();
 		private readonly HashSet<BaseExpression> _expressions = new HashSet<BaseExpression>();
@@ -89,6 +92,7 @@ namespace CellReport.Core
 			PrintSettings = new PrintSettings();
 			DisplaySettings = new DisplaySettings();
 			ExportSettings = new ExportSettings();
+			BookmarkSettings = new BookmarkSettings();
 			Properties = properties ?? new Properties();
 		}
 
@@ -349,8 +353,24 @@ namespace CellReport.Core
 
 		public IEnumerable<BookMarks.BookMark> GetBookMarks()
 		{
+			// сформированные отчёты достраивают закладки последней секции лениво,
+			// чтобы потребителю (просмотр, экспорт) не приходилось вызывать что-то ещё
+			var completion = _bookMarksCompletion;
+			if (completion != null)
+				completion();
+
 			foreach (var item in _bookMarks)
 				yield return item;
+		}
+
+		internal IList<BookMarks.BookMark> BookMarksStorage
+		{
+			get { return _bookMarks; }
+		}
+
+		internal void SetBookMarksCompletion(Action completion)
+		{
+			_bookMarksCompletion = completion;
 		}
 
 		public byte[] GetDataByUri(string uri)
@@ -368,6 +388,12 @@ namespace CellReport.Core
 		{
 			get { return _displaySettings; }
 			set { SetField(ref _displaySettings, value); }
+		}
+
+		public BookmarkSettings BookmarkSettings
+		{
+			get { return _bookmarkSettings; }
+			set { SetField(ref _bookmarkSettings, value ?? new BookmarkSettings()); }
 		}
 
 		public ExportSettings ExportSettings

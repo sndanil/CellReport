@@ -1,0 +1,119 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:CellReport.Editor.Avalonia.ViewModels"
+             x:Class="CellReport.Editor.Avalonia.Views.BookmarkSettingsView"
+             x:DataType="vm:MainWindowViewModel">
+	<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+		<StackPanel Margin="16" Spacing="10" MaxWidth="980" HorizontalAlignment="Left">
+			<TextBlock FontWeight="SemiBold" Text="Построение" />
+			<CheckBox Content="Строить закладки при формировании отчёта" IsChecked="{Binding Bookmarks.Enabled}" />
+			<CheckBox Content="Добавлять закладку для каждой секции с параметром заголовка"
+			          IsChecked="{Binding Bookmarks.AutoSections}" />
+
+			<Grid ColumnDefinitions="260,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="6">
+				<TextBlock VerticalAlignment="Center" Text="Параметр заголовка" />
+				<AutoCompleteBox Grid.Column="1"
+				                 Text="{Binding Bookmarks.TitleParam, UpdateSourceTrigger=LostFocus}"
+				                 ItemsSource="{Binding Bookmarks.ParamNames}"
+				                 PlaceholderText="Title" />
+
+				<TextBlock Grid.Row="1" VerticalAlignment="Top" Margin="0,6,0,0" Text="Формат заголовка" />
+				<StackPanel Grid.Row="1" Grid.Column="1" Spacing="2">
+					<TextBox Text="{Binding Bookmarks.TitleFormat, UpdateSourceTrigger=LostFocus}"
+					         PlaceholderText="Формат: {Value}" />
+					<TextBlock FontSize="11"
+					           Opacity="0.65"
+					           TextWrapping="Wrap"
+					           Text="Подстановки: {Value} — значение параметра, {Section} — имя секции, {Index} — номер вхождения секции, {Parent} — заголовок родителя" />
+				</StackPanel>
+
+				<TextBlock Grid.Row="2" VerticalAlignment="Center" Text="Максимальная глубина" />
+				<StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="8">
+					<TextBox Width="80" Text="{Binding Bookmarks.MaxDepthText, UpdateSourceTrigger=LostFocus}" />
+					<TextBlock VerticalAlignment="Center" Opacity="0.65" Text="0 — без ограничения" />
+				</StackPanel>
+
+				<TextBlock Grid.Row="3" VerticalAlignment="Center" Text="Повторы заголовков" />
+				<ComboBox Grid.Row="3"
+				          Grid.Column="1"
+				          Width="280"
+				          HorizontalAlignment="Left"
+				          ItemsSource="{Binding Bookmarks.DuplicateChoices}"
+				          SelectedItem="{Binding Bookmarks.SelectedDuplicate}">
+					<ComboBox.ItemTemplate>
+						<DataTemplate x:DataType="vm:BookmarkDuplicateChoice">
+							<TextBlock Text="{Binding Title}" />
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+				</ComboBox>
+			</Grid>
+
+			<CheckBox Content="Пропускать закладки с пустым заголовком" IsChecked="{Binding Bookmarks.SkipEmpty}" />
+			<CheckBox Content="Достраивать закладки последней секции по завершении формирования"
+			          IsChecked="{Binding Bookmarks.FlushAtEnd}" />
+
+			<Separator />
+
+			<Grid ColumnDefinitions="*,Auto">
+				<TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="Правила закладок" />
+				<Button Grid.Column="1" Content="Добавить правило" Command="{Binding Bookmarks.AddRuleCommand}" />
+			</Grid>
+			<TextBlock IsVisible="{Binding !Bookmarks.HasRules}"
+			           Opacity="0.7"
+			           TextWrapping="Wrap"
+			           Text="Правил нет. Правило описывает, из какого параметра секции брать заголовок закладки; без правил можно включить автозакладки для секций." />
+
+			<ItemsControl ItemsSource="{Binding Bookmarks.Rules}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="vm:BookmarkRuleEdit">
+						<Border Margin="{Binding Indent}" Padding="0,0,0,6">
+							<Grid ColumnDefinitions="170,170,*,Auto" ColumnSpacing="6">
+								<AutoCompleteBox Text="{Binding Section, UpdateSourceTrigger=LostFocus}"
+								                 ItemsSource="{Binding Sections}"
+								                 PlaceholderText="Секция" />
+								<AutoCompleteBox Grid.Column="1"
+								                 Text="{Binding Param, UpdateSourceTrigger=LostFocus}"
+								                 ItemsSource="{Binding ParamNames}"
+								                 PlaceholderText="Параметр" />
+								<CheckBox Grid.Column="2"
+								          VerticalAlignment="Center"
+								          Content="Только при значении"
+								          IsChecked="{Binding RequiresValue}" />
+								<StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="6">
+									<TextBox Width="58"
+									         Text="{Binding LevelText, UpdateSourceTrigger=LostFocus}"
+									         ToolTip.Tip="Уровень секции в дереве закладок (пусто — из вложенности правил)" />
+									<Button Content="Удалить" Command="{Binding RemoveCommand}" />
+								</StackPanel>
+							</Grid>
+						</Border>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+
+			<Separator />
+
+			<Grid ColumnDefinitions="*,Auto">
+				<TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="Уровни секций" />
+				<Button Grid.Column="1" Content="Добавить секцию" Command="{Binding Bookmarks.AddLevelCommand}" />
+			</Grid>
+			<TextBlock IsVisible="{Binding !Bookmarks.HasLevels}"
+			           Opacity="0.7"
+			           TextWrapping="Wrap"
+			           Text="Уровни задают вложенность закладок: 1 — корень, 2 — дочерний узел и так далее. Без уровней вложенность берётся из правил." />
+			<ItemsControl ItemsSource="{Binding Bookmarks.Levels}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="vm:BookmarkLevelEdit">
+						<Grid Margin="0,0,0,6" ColumnDefinitions="220,80,Auto" ColumnSpacing="6">
+							<AutoCompleteBox Text="{Binding Section, UpdateSourceTrigger=LostFocus}"
+							                 ItemsSource="{Binding Sections}"
+							                 PlaceholderText="Секция" />
+							<TextBox Grid.Column="1" Text="{Binding LevelText, UpdateSourceTrigger=LostFocus}" />
+							<Button Grid.Column="2" Content="Удалить" Command="{Binding RemoveCommand}" />
+						</Grid>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</StackPanel>
+	</ScrollViewer>
+</UserControl>

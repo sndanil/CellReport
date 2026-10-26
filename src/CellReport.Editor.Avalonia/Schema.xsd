@@ -7,6 +7,7 @@
 				<xs:element name='ExportSettings' type='ExportSettingsType' minOccurs='0' maxOccurs='1'/>
 				<xs:element name='DisplaySettings' type='DisplaySettingsType' minOccurs='0' maxOccurs='1'/>
 				<xs:element name='PrintSettings' type='PrintSettingsType' minOccurs='0' maxOccurs='1'/>
+				<xs:element name='BookmarkSettings' type='BookmarkSettingsType' minOccurs='0' maxOccurs='1'/>
 				<xs:element name='Sections' type='SectionsType' minOccurs='0' maxOccurs='1'/>
 				<xs:element name='BookMarks' type='BookMarksType' minOccurs='0' maxOccurs='1'/>
 				<xs:element name='Table' type='TableType' minOccurs='0' maxOccurs='1'/>
@@ -48,6 +49,46 @@
   </xs:complexType>
 
 	<xs:complexType name='BookMarksType'>
+		<xs:sequence>
+			<xs:element name='BookMark' type='BookMarkType' minOccurs='0' maxOccurs='unbounded'/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name='BookMarkType'>
+		<xs:sequence>
+			<xs:element name='Location' type='CellLocationType' minOccurs='0' maxOccurs='1'/>
+			<xs:element name='BookMark' type='BookMarkType' minOccurs='0' maxOccurs='unbounded'/>
+		</xs:sequence>
+		<xs:attribute name='SectionID' type='xs:string'/>
+		<xs:attribute name='TextParamName' type='xs:string'/>
+		<xs:attribute name='VisibleParamName' type='xs:string'/>
+		<xs:attribute name='Name' type='xs:string'/>
+		<xs:attribute name='Image' type='xs:string'/>
+	</xs:complexType>
+
+	<xs:complexType name='BookmarkSettingsType'>
+		<xs:sequence>
+			<xs:element name='Levels' type='BookmarkLevelsType' minOccurs='0' maxOccurs='1'/>
+		</xs:sequence>
+		<xs:attribute name='Enabled' type='xs:boolean' default='true'/>
+		<xs:attribute name='AutoSections' type='xs:boolean' default='false'/>
+		<xs:attribute name='TitleParam' type='xs:string' default='Title'/>
+		<xs:attribute name='TitleFormat' type='xs:string' default='{Value}'/>
+		<xs:attribute name='SkipEmpty' type='xs:boolean' default='false'/>
+		<xs:attribute name='MaxDepth' type='xs:int' default='0'/>
+		<xs:attribute name='Duplicates' type='xs:string' default='Keep'/>
+		<xs:attribute name='FlushAtEnd' type='xs:boolean' default='true'/>
+	</xs:complexType>
+
+	<xs:complexType name='BookmarkLevelsType'>
+		<xs:sequence>
+			<xs:element name='Level' minOccurs='0' maxOccurs='unbounded'>
+				<xs:complexType>
+					<xs:attribute name='Section' type='xs:string' use='required'/>
+					<xs:attribute name='Depth' type='xs:int' default='1'/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name='CellLocationType'>

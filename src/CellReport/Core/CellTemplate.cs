@@ -82,6 +82,7 @@ namespace CellReport.Core
 				Manager.ExportSettings.Serialize(),
 				Manager.DisplaySettings.Serialize(),
 				Manager.PrintSettings.Serialize(),
+				Manager.BookmarkSettings.Serialize(),
 				GetSections(),
 				GetBookMarks(),
 				GetTable(),
@@ -308,6 +309,7 @@ namespace CellReport.Core
 			_manager.PrintSettings = PrintSettings.Parse(_manager, templElement.Element("PrintSettings"));
 			_manager.ExportSettings = ExportSettings.Parse(templElement.Element("ExportSettings"));
 			_manager.DisplaySettings = DisplaySettings.Parse(templElement.Element("DisplaySettings"));
+			_manager.BookmarkSettings = BookmarkSettings.Parse(templElement.Element("BookmarkSettings"));
 
 		}
 

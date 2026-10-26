@@ -54,6 +54,7 @@ public partial class MainWindowViewModel : ObservableObject
 	public MainWindowViewModel()
 	{
 		Settings = new DocumentSettingsViewModel(this);
+		Bookmarks = new BookmarkSettingsViewModel(this);
 		Expressions = new ExpressionsViewModel(this);
 		Inspector = new InspectorViewModel(this);
 		Present.PresenterChanged += OnPresenterChanged;
@@ -85,6 +86,8 @@ public partial class MainWindowViewModel : ObservableObject
 	public ObservableCollection<RecentFileEntry> RecentFiles { get; } = new();
 
 	public DocumentSettingsViewModel Settings { get; }
+
+	public BookmarkSettingsViewModel Bookmarks { get; }
 
 	public ExpressionsViewModel Expressions { get; }
 
@@ -1162,6 +1165,7 @@ public partial class MainWindowViewModel : ObservableObject
 
 		_manager.PropertyChanged += OnManagerPropertyChanged;
 		Settings.Load(_manager);
+		Bookmarks.Load(_manager);
 		Expressions.Load(_manager);
 		RefreshCellFields();
 		Inspector.ReloadDocument();
