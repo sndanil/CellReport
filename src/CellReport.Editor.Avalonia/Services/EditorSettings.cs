@@ -21,6 +21,10 @@ public sealed class EditorSettings
 
 	public List<string> RecentFiles { get; set; } = new();
 
+	public string Theme { get; set; } = "Default";
+
+	public bool RibbonCollapsed { get; set; }
+
 	private static string FilePath => Path.Combine(
 		Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
 		"CellReport",

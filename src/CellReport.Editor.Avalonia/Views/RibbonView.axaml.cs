@@ -1,4 +1,6 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using CellReport.Editor.Avalonia.ViewModels;
 using System.Collections.Specialized;
 
@@ -12,6 +14,21 @@ public partial class RibbonView : UserControl
 	{
 		InitializeComponent();
 		DataContextChanged += (_, _) => AttachViewModel();
+		TabsStrip.AddHandler(PointerPressedEvent, OnTabPointerPressed, RoutingStrategies.Tunnel, handledEventsToo: true);
+	}
+
+	public void ShowFileMenu()
+	{
+		FileButton.Flyout?.ShowAt(FileButton);
+	}
+
+	private void OnTabPointerPressed(object? sender, PointerPressedEventArgs e)
+	{
+		if (e.ClickCount != 2)
+			return;
+
+		_viewModel?.ToggleRibbonCommand.Execute(null);
+		e.Handled = true;
 	}
 
 	private void AttachViewModel()

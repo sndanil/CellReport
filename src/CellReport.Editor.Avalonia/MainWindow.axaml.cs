@@ -32,6 +32,8 @@ public partial class MainWindow : Window
 		viewModel.ExitRequested += (_, _) => Close();
 		viewModel.ShowDesignerRequested += (_, _) => ShowDesigner();
 		viewModel.SettingsRequested += (_, _) => ShowSettings();
+		viewModel.AboutRequested += async (_, _) => await new AboutWindow().ShowDialog(this);
+		viewModel.FileMenuRequested += (_, _) => Ribbon.ShowFileMenu();
 		viewModel.FitToWidthRequested += (_, _) => DesignerPane.FitToWidth();
 		viewModel.CodeSearchRequested += (_, replace) => ShowCodeSearch(replace);
 		viewModel.FindRowInCodeRequested += (_, _) => FindRowInCode();

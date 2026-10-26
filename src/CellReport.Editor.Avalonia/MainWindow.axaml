@@ -5,6 +5,7 @@
         x:Class="CellReport.Editor.Avalonia.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="{Binding Title}"
+        Icon="/Assets/Logo.png"
         Width="1100"
         Height="720"
         WindowState="Maximized">
@@ -15,11 +16,16 @@
 		<KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
 		<KeyBinding Gesture="Ctrl+F" Command="{Binding FindCommand}" />
 		<KeyBinding Gesture="Ctrl+H" Command="{Binding FindAndReplaceCommand}" />
+		<KeyBinding Gesture="Ctrl+F1" Command="{Binding ToggleRibbonCommand}" />
+		<KeyBinding Gesture="Alt+F" Command="{Binding OpenFileMenuCommand}" />
+		<KeyBinding Gesture="Alt+D1" Command="{Binding SelectRibbonTabCommand}" CommandParameter="0" />
+		<KeyBinding Gesture="Alt+D2" Command="{Binding SelectRibbonTabCommand}" CommandParameter="1" />
+		<KeyBinding Gesture="Alt+D3" Command="{Binding SelectRibbonTabCommand}" CommandParameter="2" />
 		<KeyBinding Gesture="Ctrl+OemComma" Command="{Binding ShowSettingsCommand}" />
 	</Window.KeyBindings>
 
 	<Grid RowDefinitions="Auto,*,Auto">
-		<views:RibbonView Grid.Row="0" />
+		<views:RibbonView Grid.Row="0" x:Name="Ribbon" />
 
 		<TabControl x:Name="ModeTabs" Grid.Row="1" SelectionChanged="OnModeChanged">
 			<TabItem x:Name="DesignerTab" Header="Конструктор">

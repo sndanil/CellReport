@@ -68,6 +68,7 @@ public partial class MainWindowViewModel : ObservableObject
 		var layout = _settings;
 		InspectorWidth = Math.Clamp(layout.InspectorWidth, MinInspectorWidth, MaxInspectorWidth);
 		IsInspectorCollapsed = layout.InspectorCollapsed;
+		IsRibbonCollapsed = layout.RibbonCollapsed;
 
 		foreach (var path in layout.RecentFiles)
 		{
@@ -323,6 +324,44 @@ public partial class MainWindowViewModel : ObservableObject
 	[RelayCommand]
 	private void ToggleInspector() => IsInspectorCollapsed = !IsInspectorCollapsed;
 
+	public bool IsSystemTheme => string.Equals(_settings.Theme, "Default", StringComparison.OrdinalIgnoreCase);
+
+	public bool IsLightTheme => string.Equals(_settings.Theme, "Light", StringComparison.OrdinalIgnoreCase);
+
+	public bool IsDarkTheme => string.Equals(_settings.Theme, "Dark", StringComparison.OrdinalIgnoreCase);
+
+	[RelayCommand]
+	private void SetTheme(string? theme)
+	{
+		_settings.Theme = theme is "Light" or "Dark" ? theme : "Default";
+
+		if (global::Avalonia.Application.Current != null)
+			global::Avalonia.Application.Current.RequestedThemeVariant = App.ThemeVariantOf(_settings.Theme);
+
+		SaveLayoutSettings();
+		OnPropertyChanged(nameof(IsSystemTheme));
+		OnPropertyChanged(nameof(IsLightTheme));
+		OnPropertyChanged(nameof(IsDarkTheme));
+	}
+
+	[ObservableProperty]
+	private bool _isRibbonCollapsed;
+
+	partial void OnIsRibbonCollapsedChanged(bool value)
+	{
+		if (_layoutLoaded)
+			QueueLayoutSave();
+	}
+
+	[RelayCommand]
+	private void ToggleRibbon() => IsRibbonCollapsed = !IsRibbonCollapsed;
+
+	[RelayCommand]
+	private void ShowAbout() => AboutRequested?.Invoke(this, EventArgs.Empty);
+
+	[RelayCommand]
+	private void OpenFileMenu() => FileMenuRequested?.Invoke(this, EventArgs.Empty);
+
 	private void QueueLayoutSave()
 	{
 		_layoutTimer.Stop();
@@ -334,6 +373,7 @@ public partial class MainWindowViewModel : ObservableObject
 		_layoutTimer.Stop();
 		_settings.InspectorWidth = Math.Clamp(InspectorWidth, MinInspectorWidth, MaxInspectorWidth);
 		_settings.InspectorCollapsed = IsInspectorCollapsed;
+		_settings.RibbonCollapsed = IsRibbonCollapsed;
 		_settings.RecentFiles = RecentFiles.Select(item => item.Path).ToList();
 		_settings.Save();
 	}
@@ -457,6 +497,10 @@ public partial class MainWindowViewModel : ObservableObject
 	public event EventHandler? SettingsRequested;
 
 	public event EventHandler? FitToWidthRequested;
+
+	public event EventHandler? AboutRequested;
+
+	public event EventHandler? FileMenuRequested;
 
 	public event EventHandler<bool>? CodeSearchRequested;
 
@@ -1732,7 +1776,7 @@ public partial class MainWindowViewModel : ObservableObject
 	{
 		var name = string.IsNullOrEmpty(_filePath)
 			? "Редактор отчетов"
-			: "Редактор отчетов — " + _filePath;
+			: Path.GetFileName(_filePath) + " — Редактор отчетов";
 		Title = (HasUnsavedChanges ? "*" : string.Empty) + name;
 	}
 

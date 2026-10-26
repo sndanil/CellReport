@@ -1,6 +1,8 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Styling;
+using CellReport.Editor.Avalonia.Services;
 using CellReport.Editor.Avalonia.ViewModels;
 
 namespace CellReport.Editor.Avalonia;
@@ -20,6 +22,8 @@ public partial class App : Application
 	{
 		if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
 		{
+			RequestedThemeVariant = ThemeVariantOf(EditorSettings.Load().Theme);
+
 			desktop.MainWindow = new MainWindow
 			{
 				DataContext = new MainWindowViewModel()
@@ -28,5 +32,15 @@ public partial class App : Application
 		}
 
 		base.OnFrameworkInitializationCompleted();
+	}
+
+	public static ThemeVariant ThemeVariantOf(string? theme)
+	{
+		return theme switch
+		{
+			"Light" => ThemeVariant.Light,
+			"Dark" => ThemeVariant.Dark,
+			_ => ThemeVariant.Default
+		};
 	}
 }

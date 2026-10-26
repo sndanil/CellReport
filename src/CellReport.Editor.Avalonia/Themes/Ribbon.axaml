@@ -103,9 +103,7 @@
 
 	<Style Selector="Border.ribbon-content">
 		<Setter Property="Background" Value="{DynamicResource CellReport.Ribbon.ContentBg}" />
-		<Setter Property="Height" Value="96" />
 		<Setter Property="MinHeight" Value="96" />
-		<Setter Property="MaxHeight" Value="96" />
 		<Setter Property="Padding" Value="2,0,2,0" />
 		<Setter Property="ClipToBounds" Value="True" />
 	</Style>

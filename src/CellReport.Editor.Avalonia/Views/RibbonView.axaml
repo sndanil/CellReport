@@ -7,9 +7,9 @@
              x:DataType="vm:MainWindowViewModel">
 	<Border Classes="ribbon">
 		<DockPanel>
-			<Border Classes="ribbon-tabs" DockPanel.Dock="Top">
+			<Border x:Name="TabsStrip" Classes="ribbon-tabs" DockPanel.Dock="Top">
 				<DockPanel>
-					<Button Classes="ribbon-ops" DockPanel.Dock="Left" Content="Файл">
+					<Button x:Name="FileButton" Classes="ribbon-ops" DockPanel.Dock="Left" Content="Файл">
 						<Button.Flyout>
 							<MenuFlyout Placement="BottomEdgeAlignedLeft">
 								<MenuItem Header="Создать" InputGesture="Ctrl+N" Command="{Binding CreateCommand}" />
@@ -31,6 +31,7 @@
 								</MenuItem>
 								<Separator />
 								<MenuItem Header="Свойства документа" InputGesture="Ctrl+," Command="{Binding ShowSettingsCommand}" />
+								<MenuItem Header="О программе" Command="{Binding ShowAboutCommand}" />
 								<Separator />
 								<MenuItem Header="Выход" Command="{Binding ExitCommand}" />
 							</MenuFlyout>
@@ -55,6 +56,28 @@
 						        Margin="4,7"
 						        Opacity="0.4"
 						        Background="{DynamicResource CellReport.Ribbon.ChromeForeground}" />
+						<Button Classes="ribbon-chrome" ToolTip.Tip="Тема оформления">
+							<Button.Flyout>
+								<MenuFlyout Placement="BottomEdgeAlignedLeft">
+									<MenuItem Header="Системная"
+									          ToggleType="Radio"
+									          IsChecked="{Binding IsSystemTheme}"
+									          Command="{Binding SetThemeCommand}"
+									          CommandParameter="Default" />
+									<MenuItem Header="Светлая"
+									          ToggleType="Radio"
+									          IsChecked="{Binding IsLightTheme}"
+									          Command="{Binding SetThemeCommand}"
+									          CommandParameter="Light" />
+									<MenuItem Header="Тёмная"
+									          ToggleType="Radio"
+									          IsChecked="{Binding IsDarkTheme}"
+									          Command="{Binding SetThemeCommand}"
+									          CommandParameter="Dark" />
+								</MenuFlyout>
+							</Button.Flyout>
+							<materialIcons:MaterialIcon Kind="ThemeLightDark" />
+						</Button>
 						<Button Classes="ribbon-chrome" Command="{Binding ShowSettingsCommand}" ToolTip.Tip="Свойства документа (Ctrl+,)">
 							<materialIcons:MaterialIcon Kind="Cog" />
 						</Button>
@@ -79,7 +102,7 @@
 				</DockPanel>
 			</Border>
 
-			<Border Classes="ribbon-content">
+			<Border Classes="ribbon-content" IsVisible="{Binding !IsRibbonCollapsed}">
 				<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
 					<Panel>
 						<StackPanel Classes="ribbon-groups" IsVisible="{Binding IsHomeRibbon}">

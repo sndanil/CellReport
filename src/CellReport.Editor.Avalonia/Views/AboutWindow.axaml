@@ -1,0 +1,39 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="CellReport.Editor.Avalonia.Views.AboutWindow"
+        Title="О программе"
+        Icon="avares://CellReport.Editor.Avalonia/Assets/Logo.png"
+        Width="460"
+        Height="270"
+        CanResize="False"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+	<Grid RowDefinitions="*,Auto" Margin="20,18,20,16">
+		<StackPanel Spacing="10">
+			<StackPanel Orientation="Horizontal" Spacing="12">
+				<Image Source="avares://CellReport.Editor.Avalonia/Assets/Logo.png"
+				       Width="40"
+				       Height="40"
+				       VerticalAlignment="Center" />
+				<StackPanel VerticalAlignment="Center">
+					<TextBlock FontSize="18" FontWeight="SemiBold" Text="CellReport Editor" />
+					<TextBlock x:Name="VersionText" Opacity="0.7" />
+				</StackPanel>
+			</StackPanel>
+
+			<TextBlock TextWrapping="Wrap"
+			           Opacity="0.85"
+			           Text="Редактор шаблонов отчётов CellReport: построение шаблонов, предпросмотр, печать и экспорт." />
+
+			<TextBlock x:Name="RuntimeText" Opacity="0.7" />
+			<TextBlock x:Name="AvaloniaText" Opacity="0.7" />
+		</StackPanel>
+
+		<Button Grid.Row="1"
+		        Content="Закрыть"
+		        MinWidth="96"
+		        HorizontalAlignment="Right"
+		        IsCancel="True"
+		        Click="OnCloseClick" />
+	</Grid>
+</Window>
