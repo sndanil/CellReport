@@ -4,6 +4,7 @@ using CellReport.Avalonia;
 using CellReport.Avalonia.Services;
 using CellReport.Editor.Avalonia.CodeEditor;
 using CellReport.Editor.Avalonia.ViewModels;
+using CellReport.Editor.Avalonia.Views;
 using System;
 
 namespace CellReport.Editor.Avalonia;
@@ -11,6 +12,7 @@ namespace CellReport.Editor.Avalonia;
 public partial class MainWindow : Window
 {
 	private XmlCodeEditor? _codeEditor;
+	private SettingsWindow? _settingsWindow;
 	private bool _modeReady;
 	private bool _modeGuard;
 	private bool _closeConfirmed;
@@ -29,6 +31,7 @@ public partial class MainWindow : Window
 
 		viewModel.ExitRequested += (_, _) => Close();
 		viewModel.ShowDesignerRequested += (_, _) => ShowDesigner();
+		viewModel.SettingsRequested += (_, _) => ShowSettings();
 		viewModel.CodeSearchRequested += (_, replace) => ShowCodeSearch(replace);
 		viewModel.FindRowInCodeRequested += (_, _) => FindRowInCode();
 		viewModel.ReadCode = () => CodePane.Editor.Text;
@@ -86,6 +89,32 @@ public partial class MainWindow : Window
 		_codeEditor?.SetActive(false);
 	}
 
+	private void ShowSettings()
+	{
+		if (_settingsWindow != null)
+		{
+			_settingsWindow.Activate();
+			return;
+		}
+
+		if (DataContext is not MainWindowViewModel viewModel)
+			return;
+
+		var window = new SettingsWindow { DataContext = viewModel };
+		window.Closed += (_, _) => _settingsWindow = null;
+		_settingsWindow = window;
+		window.Show(this);
+	}
+
+	private void CloseSettingsWindow()
+	{
+		if (_settingsWindow == null)
+			return;
+
+		_settingsWindow.Close();
+		_settingsWindow = null;
+	}
+
 	private async void OnModeChanged(object? sender, SelectionChangedEventArgs e)
 	{
 		if (!_modeReady || _modeGuard || !ReferenceEquals(e.Source, ModeTabs))
@@ -95,6 +124,7 @@ public partial class MainWindow : Window
 
 		if (ReferenceEquals(ModeTabs.SelectedItem, CodeTab))
 		{
+			CloseSettingsWindow();
 			ShowCurrentCode(viewModel);
 			viewModel.EnterCodeMode();
 			_codeEditor?.SetActive(true);

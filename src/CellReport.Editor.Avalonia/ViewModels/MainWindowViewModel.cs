@@ -87,6 +87,8 @@ public partial class MainWindowViewModel : ObservableObject
 
 	public event EventHandler? ShowDesignerRequested;
 
+	public event EventHandler? SettingsRequested;
+
 	public event EventHandler<bool>? CodeSearchRequested;
 
 	public event EventHandler? FindRowInCodeRequested;
@@ -472,6 +474,7 @@ public partial class MainWindowViewModel : ObservableObject
 		RedoCommand.NotifyCanExecuteChanged();
 		FindAndReplaceCommand.NotifyCanExecuteChanged();
 		FindInCodeCommand.NotifyCanExecuteChanged();
+		ShowSettingsCommand.NotifyCanExecuteChanged();
 		NotifyFormatCommands();
 		NotifyHistory();
 	}
@@ -635,6 +638,14 @@ public partial class MainWindowViewModel : ObservableObject
 		MarkSaved();
 	}
 
+	[RelayCommand(CanExecute = nameof(CanShowSettings))]
+	private void ShowSettings()
+	{
+		SettingsRequested?.Invoke(this, EventArgs.Empty);
+	}
+
+	private bool CanShowSettings() => !IsCodeMode && _manager != null;
+
 	private void OpenPath(string path)
 	{
 		SetDocumentPath(path);
@@ -729,6 +740,7 @@ public partial class MainWindowViewModel : ObservableObject
 		}
 
 		NotifyHistory();
+		ShowSettingsCommand.NotifyCanExecuteChanged();
 		if (IsCodeMode && !_applyingCode)
 			CodeTextInvalidated?.Invoke(this, EventArgs.Empty);
 	}

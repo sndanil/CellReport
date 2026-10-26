@@ -35,7 +35,11 @@ namespace CellReport.Core
 			}
 		}
 
-		internal string RawDocumentName
+		/// <summary>
+		/// Имя документа как оно записано в шаблоне. В отличие от <see cref="DocumentName"/>
+		/// не разрешает ключи локализации вида <c>#ключ</c>, поэтому подходит для редактирования.
+		/// </summary>
+		public string RawDocumentName
 		{
 			get { return _documentName; }
 		}

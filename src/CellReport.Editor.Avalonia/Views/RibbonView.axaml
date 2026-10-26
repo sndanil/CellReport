@@ -19,16 +19,18 @@
 								<MenuItem Header="Сохранить" InputGesture="Ctrl+S" Command="{Binding SaveCommand}" />
 								<MenuItem Header="Сохранить как" InputGesture="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
 								<Separator />
-							<MenuItem Header="Предварительный просмотр" Command="{Binding PrintPreviewCommand}" />
-							<MenuItem Header="Печать" Command="{Binding PrintCommand}" />
-							<Separator />
-							<MenuItem Header="Экспорт">
-								<MenuItem Header="В Excel" Command="{Binding ExportExcelCommand}" />
-								<MenuItem Header="В HTML" Command="{Binding ExportHtmlCommand}" />
-								<MenuItem Header="В PDF" Command="{Binding ExportPdfCommand}" />
-								<MenuItem Header="В изображение" Command="{Binding ExportImageCommand}" />
-							</MenuItem>
-							<Separator />
+								<MenuItem Header="Предварительный просмотр" Command="{Binding PrintPreviewCommand}" />
+								<MenuItem Header="Печать" Command="{Binding PrintCommand}" />
+								<Separator />
+								<MenuItem Header="Экспорт">
+									<MenuItem Header="В Excel" Command="{Binding ExportExcelCommand}" />
+									<MenuItem Header="В HTML" Command="{Binding ExportHtmlCommand}" />
+									<MenuItem Header="В PDF" Command="{Binding ExportPdfCommand}" />
+									<MenuItem Header="В изображение" Command="{Binding ExportImageCommand}" />
+								</MenuItem>
+								<Separator />
+								<MenuItem Header="Свойства документа" InputGesture="Ctrl+," Command="{Binding ShowSettingsCommand}" />
+								<Separator />
 								<MenuItem Header="Выход" Command="{Binding ExitCommand}" />
 							</MenuFlyout>
 						</Button.Flyout>
@@ -48,6 +50,13 @@
 						              ToolTip.Tip="Инверсия отчёта">
 							<materialIcons:MaterialIcon Kind="InvertColors" />
 						</ToggleButton>
+						<Border Width="1"
+						        Margin="4,7"
+						        Opacity="0.4"
+						        Background="{DynamicResource CellReport.Ribbon.ChromeForeground}" />
+						<Button Classes="ribbon-chrome" Command="{Binding ShowSettingsCommand}" ToolTip.Tip="Свойства документа (Ctrl+,)">
+							<materialIcons:MaterialIcon Kind="Cog" />
+						</Button>
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<Button Classes="ribbon-tab"

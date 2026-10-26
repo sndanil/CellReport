@@ -33,6 +33,12 @@ public partial class DocumentSettingsViewModel : ObservableObject
 	private string _documentName = string.Empty;
 
 	[ObservableProperty]
+	private string _documentNamePreview = string.Empty;
+
+	[ObservableProperty]
+	private bool _hasDocumentNamePreview;
+
+	[ObservableProperty]
 	private string _culture = string.Empty;
 
 	[ObservableProperty]
@@ -159,6 +165,8 @@ public partial class DocumentSettingsViewModel : ObservableObject
 	private void Clear()
 	{
 		DocumentName = string.Empty;
+		DocumentNamePreview = string.Empty;
+		HasDocumentNamePreview = false;
 		Culture = string.Empty;
 		DefaultCulture = string.Empty;
 		DefaultColumnsCountText = string.Empty;
@@ -194,7 +202,7 @@ public partial class DocumentSettingsViewModel : ObservableObject
 	private void ReadProperties(CellManager manager)
 	{
 		var properties = manager.Properties;
-		DocumentName = properties.DocumentName ?? string.Empty;
+		DocumentName = properties.RawDocumentName ?? string.Empty;
 		Culture = properties.Culture ?? string.Empty;
 		DefaultCulture = properties.Localization?.DefaultCulture ?? string.Empty;
 		DefaultColumnsCountText = properties.DefaultColumnsCount.ToString(CultureInfo.CurrentCulture);
@@ -205,6 +213,7 @@ public partial class DocumentSettingsViewModel : ObservableObject
 		DefaultMarkerForHide = properties.DefaultColumn.MarkerForHide ?? string.Empty;
 		RunExcelAfterExport = manager.ExportSettings.RunExcelAfterExport;
 		Replace(Strings, properties.Localization?.GetStrings(), item => new LocalizationEdit(CommitLocalization, RemoveLocalization, item));
+		UpdateDocumentNamePreview();
 	}
 
 	private void ReadPrint(CellManager manager)
@@ -256,10 +265,27 @@ public partial class DocumentSettingsViewModel : ObservableObject
 
 	partial void OnDocumentNameChanged(string value)
 	{
-		if (_loading || _manager == null || _manager.Properties.DocumentName == value)
+		if (_loading || _manager == null || _manager.Properties.RawDocumentName == value)
 			return;
 
 		Write(() => _manager.Properties.DocumentName = value ?? string.Empty);
+		UpdateDocumentNamePreview();
+	}
+
+	private void UpdateDocumentNamePreview()
+	{
+		var properties = _manager?.Properties;
+		if (properties == null)
+		{
+			DocumentNamePreview = string.Empty;
+			HasDocumentNamePreview = false;
+			return;
+		}
+
+		var raw = properties.RawDocumentName ?? string.Empty;
+		var resolved = properties.DocumentName ?? string.Empty;
+		HasDocumentNamePreview = resolved.Length > 0 && !string.Equals(raw, resolved, StringComparison.Ordinal);
+		DocumentNamePreview = HasDocumentNamePreview ? resolved : string.Empty;
 	}
 
 	partial void OnCultureChanged(string value)

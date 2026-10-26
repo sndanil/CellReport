@@ -1,0 +1,41 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:CellReport.Editor.Avalonia.ViewModels"
+        xmlns:views="clr-namespace:CellReport.Editor.Avalonia.Views"
+        x:Class="CellReport.Editor.Avalonia.Views.SettingsWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Свойства документа"
+        Width="820"
+        Height="580"
+        MinWidth="640"
+        MinHeight="420"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False">
+	<Grid RowDefinitions="*,Auto">
+		<TabControl Grid.Row="0" Margin="8,8,8,0">
+			<TabItem Header="Документ">
+				<views:DocumentSettingsView />
+			</TabItem>
+			<TabItem Header="Печать">
+				<views:PrintSettingsView />
+			</TabItem>
+			<TabItem Header="Отображение">
+				<views:DisplaySettingsView />
+			</TabItem>
+			<TabItem Header="Выражения">
+				<views:ExpressionsView />
+			</TabItem>
+		</TabControl>
+
+		<Border Grid.Row="1"
+		        Padding="12,8"
+		        BorderThickness="0,1,0,0"
+		        BorderBrush="{DynamicResource CellReport.Ribbon.Border}">
+			<Button Content="Закрыть"
+			        MinWidth="96"
+			        HorizontalAlignment="Right"
+			        IsCancel="True"
+			        Click="OnCloseClick" />
+		</Border>
+	</Grid>
+</Window>
