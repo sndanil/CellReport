@@ -20,6 +20,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using SkiaSharp;
 
 namespace CellReport.Editor.Avalonia.ViewModels;
@@ -36,6 +37,10 @@ public partial class MainWindowViewModel : ObservableObject
 	private int _editDepth;
 	private bool _editDirty;
 	private string? _filePath;
+	private bool _documentModified;
+	private bool _codeModified;
+	private bool _suppressCodeTracking;
+	private readonly DispatcherTimer _typingTimer = new() { Interval = TimeSpan.FromMilliseconds(700) };
 
 	public MainWindowViewModel()
 	{
@@ -43,6 +48,7 @@ public partial class MainWindowViewModel : ObservableObject
 		Expressions = new ExpressionsViewModel(this);
 		Inspector = new InspectorViewModel(this);
 		Present.PresenterChanged += OnPresenterChanged;
+		_typingTimer.Tick += (_, _) => FlushTypingHistory();
 	}
 
 	public PresentControlViewModel Present { get; } = new();
@@ -60,6 +66,8 @@ public partial class MainWindowViewModel : ObservableObject
 	public Window? Window => _window;
 
 	public bool IsCodeMode { get; private set; }
+
+	public bool HasUnsavedChanges => _manager != null && (_documentModified || _codeModified);
 
 	public Func<string?>? ReadCode { get; set; }
 
@@ -202,8 +210,11 @@ public partial class MainWindowViewModel : ObservableObject
 	}
 
 	[RelayCommand]
-	private void Create()
+	private async Task Create()
 	{
+		if (!await ConfirmUnsavedChangesAsync())
+			return;
+
 		CreateDocument();
 	}
 
@@ -231,6 +242,9 @@ public partial class MainWindowViewModel : ObservableObject
 		});
 
 		if (files.Count == 0)
+			return;
+
+		if (!await ConfirmUnsavedChangesAsync())
 			return;
 
 		try
@@ -262,6 +276,9 @@ public partial class MainWindowViewModel : ObservableObject
 		if (files.Count == 0)
 			return;
 
+		if (!await ConfirmUnsavedChangesAsync())
+			return;
+
 		var source = files[0].Path.LocalPath;
 		var manager = ExcelImporter.Import(source);
 		if (manager == null)
@@ -274,6 +291,7 @@ public partial class MainWindowViewModel : ObservableObject
 		var directory = Path.GetDirectoryName(source) ?? string.Empty;
 		SetDocumentPath(Path.Combine(directory, Path.GetFileNameWithoutExtension(source) + ".tcr"));
 		ApplyDocument(manager, resetHistory: true, CellLocation.None);
+		MarkModified();
 	}
 
 	[RelayCommand]
@@ -294,6 +312,28 @@ public partial class MainWindowViewModel : ObservableObject
 
 		await ReportPrintService.PrintAsync(_window, _manager, custom: true);
 		_presenter?.Update();
+	}
+
+	[RelayCommand]
+	private Task ExportExcel() => ExportAsync(ReportExportService.ExportExcelAsync);
+
+	[RelayCommand]
+	private Task ExportHtml() => ExportAsync(ReportExportService.ExportHtmlAsync);
+
+	[RelayCommand]
+	private Task ExportPdf() => ExportAsync(ReportExportService.ExportPdfAsync);
+
+	[RelayCommand]
+	private Task ExportImage() => ExportAsync(ReportExportService.ExportImageAsync);
+
+	private async Task ExportAsync(Func<global::Avalonia.Visual, BaseDisplayPresenter, bool, Task> export)
+	{
+		if (_presenter == null || _window == null)
+			return;
+
+		FlushTypingHistory();
+		await export(_window, _presenter, true);
+		_presenter.Update();
 	}
 
 	private void ShowDesigner()
@@ -329,11 +369,13 @@ public partial class MainWindowViewModel : ObservableObject
 			return;
 		}
 
+		FlushTypingHistory();
 		if (!_history.CanUndo || _manager == null)
 			return;
 
 		var cell = _presenter?.CurrentCell ?? CellLocation.None;
 		ApplyDocument(_history.Undo(), resetHistory: false, cell);
+		NotifyDocumentEdited();
 	}
 
 	[RelayCommand(CanExecute = nameof(CanRedo))]
@@ -346,11 +388,13 @@ public partial class MainWindowViewModel : ObservableObject
 			return;
 		}
 
+		FlushTypingHistory();
 		if (!_history.CanRedo || _manager == null)
 			return;
 
 		var cell = _presenter?.CurrentCell ?? CellLocation.None;
 		ApplyDocument(_history.Redo(), resetHistory: false, cell);
+		NotifyDocumentEdited();
 	}
 
 	[RelayCommand]
@@ -386,13 +430,40 @@ public partial class MainWindowViewModel : ObservableObject
 
 	public bool TryLeaveCodeMode(out string? error)
 	{
-		if (!TryApplyXml(ReadCode?.Invoke() ?? string.Empty, resetHistory: true, out error))
+		var xml = ReadCode?.Invoke() ?? string.Empty;
+		var current = ExportCode();
+		if (current == null)
+		{
+			error = "Шаблон не открыт.";
 			return false;
+		}
+
+		if (!SameXml(xml, current))
+		{
+			if (!TryApplyXml(xml, resetHistory: false, out error))
+				return false;
+		}
+		else
+		{
+			error = null;
+			_codeModified = false;
+			NotifyModified();
+		}
 
 		IsCodeMode = false;
 		NotifyMode();
 		return true;
 	}
+
+	private static bool SameXml(string left, string right)
+	{
+		if (string.Equals(left, right, StringComparison.Ordinal))
+			return true;
+
+		return string.Equals(NormalizeNewLines(left), NormalizeNewLines(right), StringComparison.Ordinal);
+	}
+
+	private static string NormalizeNewLines(string text) => text.Replace("\r\n", "\n").Replace('\r', '\n');
 
 	private void NotifyMode()
 	{
@@ -458,11 +529,14 @@ public partial class MainWindowViewModel : ObservableObject
 			try
 			{
 				ApplyDocument(template.Manager, resetHistory, cell);
+				_codeModified = false;
 				if (!resetHistory)
 				{
 					_history.Push(_manager);
 					NotifyHistory();
 				}
+
+				MarkModified();
 			}
 			finally
 			{
@@ -542,7 +616,9 @@ public partial class MainWindowViewModel : ObservableObject
 
 		if (_editDirty && _manager != null)
 		{
+			_typingTimer.Stop();
 			_history.Push(_manager);
+			NotifyDocumentEdited();
 			NotifyHistory();
 		}
 
@@ -556,6 +632,7 @@ public partial class MainWindowViewModel : ObservableObject
 		var manager = new CellManager();
 		manager.AddExternalStyle(new ExternalStyle("file://DefaultStyles.xml"));
 		ApplyDocument(manager, resetHistory: true, CellLocation.None);
+		MarkSaved();
 	}
 
 	private void OpenPath(string path)
@@ -564,24 +641,27 @@ public partial class MainWindowViewModel : ObservableObject
 		var template = new CellTemplate();
 		template.Load(path);
 		ApplyDocument(template.Manager, resetHistory: true, CellLocation.None);
+		MarkSaved();
 	}
 
-	private async Task SaveDocumentAsync(bool saveAs)
+	private async Task<bool> SaveDocumentAsync(bool saveAs)
 	{
 		if (_manager == null || _window == null)
-			return;
+			return false;
+
+		FlushTypingHistory();
 
 		if (IsCodeMode && !TryApplyXml(ReadCode?.Invoke() ?? string.Empty, resetHistory: false, out var codeError))
 		{
 			await ShowErrorAsync("Код шаблона не применён." + Environment.NewLine + codeError);
-			return;
+			return false;
 		}
 
 		var path = _filePath;
 		if (saveAs || string.IsNullOrEmpty(path))
 		{
 			if (!_window.StorageProvider.CanSave)
-				return;
+				return false;
 
 			var suggested = string.IsNullOrEmpty(path)
 				? "Шаблон.tcr"
@@ -598,7 +678,7 @@ public partial class MainWindowViewModel : ObservableObject
 			});
 
 			if (file == null)
-				return;
+				return false;
 
 			path = file.Path.LocalPath;
 			if (string.IsNullOrEmpty(Path.GetExtension(path)))
@@ -612,16 +692,19 @@ public partial class MainWindowViewModel : ObservableObject
 				: TemplateType.Xml;
 			new CellTemplate(_manager).Save(path, type);
 			SetDocumentPath(path);
-			UpdateTitle();
+			MarkSaved();
+			return true;
 		}
 		catch (Exception ex)
 		{
 			await ShowErrorAsync("При сохранении произошла ошибка." + Environment.NewLine + ex.Message);
+			return false;
 		}
 	}
 
 	private void ApplyDocument(CellManager manager, bool resetHistory, CellLocation cell)
 	{
+		_typingTimer.Stop();
 		_applying = true;
 		if (_manager != null)
 			_manager.PropertyChanged -= OnManagerPropertyChanged;
@@ -637,7 +720,6 @@ public partial class MainWindowViewModel : ObservableObject
 		Expressions.Load(_manager);
 		RefreshCellFields();
 		Inspector.ReloadDocument();
-		UpdateTitle();
 		_applying = false;
 
 		if (resetHistory)
@@ -684,7 +766,9 @@ public partial class MainWindowViewModel : ObservableObject
 		if (sender is DisplaySettings)
 			Present.SyncFromPresenter();
 
+		_typingTimer.Stop();
 		_history.Push(_manager);
+		NotifyDocumentEdited();
 		NotifyHistory();
 		RefreshCellFields();
 		_presenter?.Update();
@@ -1110,6 +1194,8 @@ public partial class MainWindowViewModel : ObservableObject
 
 		content.Text = value;
 		_presenter.Update();
+		NotifyDocumentEdited();
+		QueueTypingHistory();
 	}
 
 	partial void OnCellWidthTextChanged(string value)
@@ -1142,11 +1228,9 @@ public partial class MainWindowViewModel : ObservableObject
 			return;
 
 		if (isWidth)
-			_manager.SetColumnWidth(location.Column, size);
+			CommitDocumentChange(() => _manager.SetColumnWidth(location.Column, size));
 		else
-			_manager.SetRowHeight(location.Row, size);
-
-		_presenter.Update();
+			CommitDocumentChange(() => _manager.SetRowHeight(location.Row, size));
 	}
 
 	private static bool TryParseSize(string? text, out float value)
@@ -1167,15 +1251,99 @@ public partial class MainWindowViewModel : ObservableObject
 
 	private void UpdateTitle()
 	{
-		Title = string.IsNullOrEmpty(_filePath)
+		var name = string.IsNullOrEmpty(_filePath)
 			? "Редактор отчетов"
-			: "Редактор отчетов " + _filePath;
+			: "Редактор отчетов — " + _filePath;
+		Title = (HasUnsavedChanges ? "*" : string.Empty) + name;
 	}
 
 	public void NotifyHistory()
 	{
 		UndoCommand.NotifyCanExecuteChanged();
 		RedoCommand.NotifyCanExecuteChanged();
+		NotifyModified();
+	}
+
+	private void MarkSaved()
+	{
+		_documentModified = false;
+		_codeModified = false;
+		NotifyModified();
+	}
+
+	private void MarkModified()
+	{
+		_documentModified = true;
+		NotifyModified();
+	}
+
+	private void NotifyDocumentEdited()
+	{
+		if (_documentModified)
+			return;
+
+		_documentModified = true;
+		NotifyModified();
+	}
+
+	private void QueueTypingHistory()
+	{
+		_typingTimer.Stop();
+		_typingTimer.Start();
+	}
+
+	private void FlushTypingHistory()
+	{
+		if (!_typingTimer.IsEnabled || _manager == null)
+			return;
+
+		_typingTimer.Stop();
+		_history.Push(_manager);
+		NotifyDocumentEdited();
+		NotifyHistory();
+	}
+
+	private void NotifyModified()
+	{
+		OnPropertyChanged(nameof(HasUnsavedChanges));
+		UpdateTitle();
+	}
+
+	public void BeginCodeUpdate() => _suppressCodeTracking = true;
+
+	public void EndCodeUpdate()
+	{
+		_suppressCodeTracking = false;
+		_codeModified = false;
+		NotifyModified();
+	}
+
+	public void NotifyCodeEdited()
+	{
+		if (_suppressCodeTracking || _codeModified)
+			return;
+
+		_codeModified = true;
+		NotifyModified();
+	}
+
+	public Task<bool> ConfirmCloseAsync() => ConfirmUnsavedChangesAsync();
+
+	private async Task<bool> ConfirmUnsavedChangesAsync()
+	{
+		if (!HasUnsavedChanges || _window == null)
+			return true;
+
+		var message = string.IsNullOrEmpty(_filePath)
+			? "В шаблоне есть несохранённые изменения." + Environment.NewLine + Environment.NewLine + "Сохранить их?"
+			: "В шаблоне «" + Path.GetFileName(_filePath) + "» есть несохранённые изменения."
+				+ Environment.NewLine + Environment.NewLine + "Сохранить их?";
+
+		var choice = await ConfirmDialog.AskSaveAsync(_window, "Несохранённые изменения", message);
+		if (choice == SaveChoice.Save)
+			return await SaveDocumentAsync(saveAs: false);
+
+		return choice == SaveChoice.Discard;
 	}
 
 	private byte[] ResolveExternalFile(string fileName)

@@ -8,7 +8,7 @@ Cross-platform .NET reporting framework (WinForms / WPF / Avalonia). Templates a
 - `src/CellReport.WinForms/` — **`net48` only**, packable.
 - `src/CellReport.WPF/` — `net8.0-windows;net48`, **not packable**, references WinForms.
 - `src/CellReport.Avalonia/` — `net8.0`, packable. Avalonia 12 (12.0.4), `CommunityToolkit.Mvvm`.
-- `src/CellReport.Editor/`, `src/CellReport.Viewer/`, `src/CellReport.Avalonia.Viewer/`, `src/CellReport.Editor.Avalonia/` — apps (not packable). `CellReport.Editor.Avalonia` is the Avalonia editor (`net10.0`), references `CellReport.Avalonia`.
+- `src/CellReport.Editor/`, `src/CellReport.Viewer/`, `src/CellReport.Avalonia.Viewer/`, `src/CellReport.Editor.Avalonia/` — apps (not packable). `CellReport.Editor.Avalonia` is the Avalonia editor (`net10.0`), references `CellReport.Avalonia`. Its shell is `MainWindow.axaml`; the UI pieces live in `Views/` (`RibbonView`, `DesignerView`, `DocumentSettingsView`, `PrintSettingsView`, `DisplaySettingsView`, `ExpressionsView`, `CodeView`, `StatusBarView`).
 - `Tests/` — MSTest, references only the core.
 
 ## Commands
@@ -32,3 +32,4 @@ dotnet test Tests/Tests.csproj       # MSTest suite (fast, no services needed; ~
 - Test exporters must pass a renderer — use `Tests/Helpers/TestExportHelper.Renderer` (`SkiaReportRenderer`). The global `BaseExporter.RendererFactory` is set once in `TestAssemblySetup` (`[AssemblyInitialize]`).
 - Template XML tests build templates in-memory via `TestTemplateFactory` string constants (`Tests/Helpers/TestTemplateFactory.cs`).
 - Core UI/localization strings route through `CellReport.Localization.LocalizationManager`.
+- **Do not hand-write `InitializeComponent()` (`AvaloniaXamlLoader.Load(this)`) in Avalonia views that use `x:Name`.** Defining it suppresses the generated method, and the generated fields for `x:Name` stay `null` at runtime. Just call `InitializeComponent()` from the constructor (`MainWindow` and `Views/*` do this). Library views under `CellReport.Avalonia/Views` sidestep the issue by resolving names with `Find<T>(...)`.

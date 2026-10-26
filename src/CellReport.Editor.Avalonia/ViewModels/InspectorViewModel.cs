@@ -460,18 +460,20 @@ public partial class InspectorViewModel : ObservableObject
 
 	partial void OnSectionNameChanged(string value)
 	{
-		if (IsSyncing || SelectedSection == null || SelectedSection.Name == value)
+		var section = SelectedSection;
+		if (IsSyncing || section == null || section.Name == value)
 			return;
 
-		SelectedSection.Name = value;
+		_owner.CommitDocumentChange(() => section.Name = value);
 	}
 
 	partial void OnSectionObjectNameChanged(string value)
 	{
-		if (IsSyncing || SelectedSection == null || SelectedSection.ObjectName == value)
+		var section = SelectedSection;
+		if (IsSyncing || section == null || section.ObjectName == value)
 			return;
 
-		SelectedSection.ObjectName = value ?? string.Empty;
+		_owner.CommitDocumentChange(() => section.ObjectName = value ?? string.Empty);
 	}
 
 	partial void OnSectionLeftChanged(string value) => SetSection(value, section => section.LeftDesign, (section, number) => section.LeftDesign = number);
@@ -489,11 +491,11 @@ public partial class InspectorViewModel : ObservableObject
 		if (IsSyncing || manager == null || presenter == null || !CanEdit())
 			return;
 
-		if (manager.IsAutoFitRow(presenter.CurrentCell.Row) == value)
+		var row = presenter.CurrentCell.Row;
+		if (manager.IsAutoFitRow(row) == value)
 			return;
 
-		manager.SetAutoFitRow(presenter.CurrentCell.Row, value);
-		presenter.Update();
+		_owner.CommitDocumentChange(() => manager.SetAutoFitRow(row, value));
 	}
 
 	partial void OnMarkerForShowChanged(string value)
@@ -507,8 +509,8 @@ public partial class InspectorViewModel : ObservableObject
 		if ((manager.GetColumnMarkerForShow(column) ?? string.Empty) == value)
 			return;
 
-		manager.SetColumnMarkerForShow(column, string.IsNullOrEmpty(value) ? null! : value);
-		presenter.Update();
+		_owner.CommitDocumentChange(() =>
+			manager.SetColumnMarkerForShow(column, string.IsNullOrEmpty(value) ? null! : value));
 	}
 
 	partial void OnMarkerForHideChanged(string value)
@@ -522,8 +524,8 @@ public partial class InspectorViewModel : ObservableObject
 		if ((manager.GetColumnMarkerForHide(column) ?? string.Empty) == value)
 			return;
 
-		manager.SetColumnMarkerForHide(column, string.IsNullOrEmpty(value) ? null! : value);
-		presenter.Update();
+		_owner.CommitDocumentChange(() =>
+			manager.SetColumnMarkerForHide(column, string.IsNullOrEmpty(value) ? null! : value));
 	}
 
 	[RelayCommand(CanExecute = nameof(CanEdit))]
@@ -1067,24 +1069,39 @@ public partial class InspectorViewModel : ObservableObject
 
 	private void SetParam(string value, Func<Param, string?> read, Action<Param, string> apply)
 	{
-		if (IsSyncing || SelectedParam == null)
+		var param = SelectedParam;
+		if (IsSyncing || param == null)
 			return;
 
-		if ((read(SelectedParam) ?? string.Empty) == value)
+		if ((read(param) ?? string.Empty) == value)
 			return;
 
-		apply(SelectedParam, value);
+		_owner.CommitDocumentChange(() => apply(param, value));
 	}
 
 	private void SetSection(string value, Func<TemplateSection, int> read, Action<TemplateSection, int> apply)
 	{
-		if (IsSyncing || SelectedSection == null || !int.TryParse(value, out var number))
+		var section = SelectedSection;
+		if (IsSyncing || section == null || !int.TryParse(value, out var number))
 			return;
 
-		if (read(SelectedSection) == number)
+		if (read(section) == number)
 			return;
 
-		apply(SelectedSection, number);
+		_owner.CommitDocumentChange(() => apply(section, number));
+		RefreshSectionSelection(section);
+	}
+
+	private void RefreshSectionSelection(TemplateSection section)
+	{
+		var presenter = _owner.Presenter;
+		if (presenter == null)
+			return;
+
+		presenter.BeginUpdate();
+		presenter.StartSelection = section.LeftTop;
+		presenter.EndSelection = section.RightBottom;
+		presenter.EndUpdate();
 	}
 
 	private async Task<bool> AskSectionsAsync()

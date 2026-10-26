@@ -13,11 +13,13 @@ public partial class MainWindow : Window
 	private XmlCodeEditor? _codeEditor;
 	private bool _modeReady;
 	private bool _modeGuard;
+	private bool _closeConfirmed;
 
 	public MainWindow()
 	{
 		InitializeComponent();
 		Opened += OnMainWindowOpened;
+		Closing += OnWindowClosing;
 	}
 
 	private async void OnMainWindowOpened(object? sender, EventArgs e)
@@ -36,7 +38,11 @@ public partial class MainWindow : Window
 		viewModel.CanRedoCode = () => _codeEditor.CanRedo;
 		viewModel.UndoCode = () => _codeEditor.UndoChange();
 		viewModel.RedoCode = () => _codeEditor.RedoChange();
-		_codeEditor.HistoryChanged += (_, _) => viewModel.NotifyHistory();
+		_codeEditor.HistoryChanged += (_, _) =>
+		{
+			viewModel.NotifyCodeEdited();
+			viewModel.NotifyHistory();
+		};
 		viewModel.PropertyChanged += (_, args) =>
 		{
 			if (args.PropertyName == nameof(MainWindowViewModel.InvertReport))
@@ -113,7 +119,30 @@ public partial class MainWindow : Window
 	private void ShowCurrentCode(MainWindowViewModel viewModel)
 	{
 		var xml = viewModel.ExportCode();
-		if (xml != null)
+		if (xml == null)
+			return;
+
+		viewModel.BeginCodeUpdate();
+		try
+		{
 			CodePane.Editor.Text = xml;
+		}
+		finally
+		{
+			viewModel.EndCodeUpdate();
+		}
+	}
+
+	private async void OnWindowClosing(object? sender, WindowClosingEventArgs e)
+	{
+		if (_closeConfirmed || DataContext is not MainWindowViewModel viewModel || !viewModel.HasUnsavedChanges)
+			return;
+
+		e.Cancel = true;
+		if (!await viewModel.ConfirmCloseAsync())
+			return;
+
+		_closeConfirmed = true;
+		Close();
 	}
 }
