@@ -1,0 +1,27 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:CellReport.Editor.Avalonia.ViewModels"
+             x:Class="CellReport.Editor.Avalonia.Views.DisplaySettingsView"
+             x:DataType="vm:MainWindowViewModel">
+	<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+		<StackPanel Margin="16" Spacing="8" MaxWidth="860" HorizontalAlignment="Left">
+			<Grid ColumnDefinitions="260,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="8">
+				<TextBlock VerticalAlignment="Center" Text="Масштаб" />
+				<TextBox Grid.Column="1" Margin="0,2" Text="{Binding Settings.DisplayScaleText, UpdateSourceTrigger=LostFocus}" />
+				<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Закреплённые столбцы" />
+				<TextBox Grid.Row="1" Grid.Column="1" Margin="0,2" Text="{Binding Settings.FrozenColumnsText, UpdateSourceTrigger=LostFocus}" />
+				<TextBlock Grid.Row="2" VerticalAlignment="Center" Text="Закреплённые строки" />
+				<TextBox Grid.Row="2" Grid.Column="1" Margin="0,2" Text="{Binding Settings.FrozenRowsText, UpdateSourceTrigger=LostFocus}" />
+				<TextBlock Grid.Row="3" VerticalAlignment="Center" Text="Цвет сетки" />
+				<TextBox Grid.Row="3" Grid.Column="1" Margin="0,2" Text="{Binding Settings.GridColor, UpdateSourceTrigger=LostFocus}" />
+			</Grid>
+			<CheckBox Content="Линии сетки" IsChecked="{Binding Settings.ShowGridLines}" />
+			<CheckBox Content="Линии сетки в конструкторе" IsChecked="{Binding Settings.ShowDesignerGridLines}" />
+			<CheckBox Content="Закладки" IsChecked="{Binding Settings.ShowBookMarks}" />
+			<CheckBox Content="Резайзеры" IsChecked="{Binding Settings.ShowResizers}" />
+			<CheckBox Content="Резайзеры в конструкторе" IsChecked="{Binding Settings.ShowDesignerResizers}" />
+			<CheckBox Content="Подсветка текущей строки" IsChecked="{Binding Settings.ShowCurrentRows}" />
+		</StackPanel>
+	</ScrollViewer>
+</UserControl>
+

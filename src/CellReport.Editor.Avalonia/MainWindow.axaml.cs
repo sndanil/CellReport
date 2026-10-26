@@ -1,4 +1,4 @@
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using CellReport.Avalonia;
 using CellReport.Avalonia.Services;
@@ -29,9 +29,9 @@ public partial class MainWindow : Window
 		viewModel.ShowDesignerRequested += (_, _) => ShowDesigner();
 		viewModel.CodeSearchRequested += (_, replace) => ShowCodeSearch(replace);
 		viewModel.FindRowInCodeRequested += (_, _) => FindRowInCode();
-		viewModel.ReadCode = () => CodeEditor.Text;
+		viewModel.ReadCode = () => CodePane.Editor.Text;
 		viewModel.CodeTextInvalidated += (_, _) => ShowCurrentCode(viewModel);
-		_codeEditor = new XmlCodeEditor(CodeEditor, () => viewModel.Manager, viewModel.CodeErrors);
+		_codeEditor = new XmlCodeEditor(CodePane.Editor, () => viewModel.Manager, viewModel.CodeErrors);
 		viewModel.CanUndoCode = () => _codeEditor.CanUndo;
 		viewModel.CanRedoCode = () => _codeEditor.CanRedo;
 		viewModel.UndoCode = () => _codeEditor.UndoChange();
@@ -49,7 +49,7 @@ public partial class MainWindow : Window
 
 	private void ApplyReportInversion(MainWindowViewModel viewModel)
 	{
-		ReportSurface.InvertContentMode = viewModel.InvertReport
+		DesignerPane.Surface.InvertContentMode = viewModel.InvertReport
 			? ContentInversionMode.Always
 			: ContentInversionMode.Never;
 	}
@@ -110,21 +110,10 @@ public partial class MainWindow : Window
 		await ReportExportService.ShowMessageAsync(this, "Код шаблона не применён." + Environment.NewLine + error);
 	}
 
-	private void OnErrorSelected(object? sender, SelectionChangedEventArgs e)
-	{
-		if (!ReferenceEquals(e.Source, ErrorList) || ErrorList.SelectedItem is not SchemaError error || error.LineNumber <= 0)
-			return;
-
-		CodeEditor.Focus();
-		CodeEditor.TextArea.Caret.Line = error.LineNumber;
-		CodeEditor.TextArea.Caret.Column = Math.Max(1, error.LinePosition);
-		CodeEditor.ScrollToLine(error.LineNumber);
-	}
-
 	private void ShowCurrentCode(MainWindowViewModel viewModel)
 	{
 		var xml = viewModel.ExportCode();
 		if (xml != null)
-			CodeEditor.Text = xml;
+			CodePane.Editor.Text = xml;
 	}
 }

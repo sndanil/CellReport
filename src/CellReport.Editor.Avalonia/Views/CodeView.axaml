@@ -1,0 +1,26 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:CellReport.Editor.Avalonia.ViewModels"
+             xmlns:edit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+             x:Class="CellReport.Editor.Avalonia.Views.CodeView"
+             x:DataType="vm:MainWindowViewModel">
+	<Grid RowDefinitions="*,6,160">
+		<edit:TextEditor x:Name="CodeEditor"
+		                 FontFamily="Consolas, Cascadia Mono, monospace"
+		                 FontSize="14"
+		                 HorizontalScrollBarVisibility="Auto"
+		                 VerticalScrollBarVisibility="Auto" />
+		<GridSplitter Grid.Row="1" ResizeDirection="Rows" />
+		<ListBox x:Name="ErrorList"
+		         Grid.Row="2"
+		         ItemsSource="{Binding CodeErrors}"
+		         SelectionChanged="OnErrorSelected">
+			<ListBox.ItemTemplate>
+				<DataTemplate x:DataType="vm:SchemaError">
+					<TextBlock Text="{Binding Display}" TextWrapping="Wrap" />
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
+	</Grid>
+</UserControl>
+

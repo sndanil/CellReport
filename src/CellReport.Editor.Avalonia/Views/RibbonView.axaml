@@ -1,0 +1,350 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:CellReport.Editor.Avalonia.ViewModels"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:gallery="clr-namespace:CellReport.Editor.Avalonia.Controls"
+             x:Class="CellReport.Editor.Avalonia.Views.RibbonView"
+             x:DataType="vm:MainWindowViewModel">
+	<Border Classes="ribbon">
+		<DockPanel>
+			<Border Classes="ribbon-tabs" DockPanel.Dock="Top">
+				<DockPanel>
+					<Button Classes="ribbon-ops" DockPanel.Dock="Left" Content="Файл">
+						<Button.Flyout>
+							<MenuFlyout Placement="BottomEdgeAlignedLeft">
+								<MenuItem Header="Создать" InputGesture="Ctrl+N" Command="{Binding CreateCommand}" />
+								<MenuItem Header="Открыть" InputGesture="Ctrl+O" Command="{Binding OpenCommand}" />
+								<MenuItem Header="Импорт" Command="{Binding ImportCommand}" />
+								<Separator />
+								<MenuItem Header="Сохранить" InputGesture="Ctrl+S" Command="{Binding SaveCommand}" />
+								<MenuItem Header="Сохранить как" InputGesture="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
+								<Separator />
+								<MenuItem Header="Предварительный просмотр" Command="{Binding PrintPreviewCommand}" />
+								<MenuItem Header="Печать" Command="{Binding PrintCommand}" />
+								<Separator />
+								<MenuItem Header="Выход" Command="{Binding ExitCommand}" />
+							</MenuFlyout>
+						</Button.Flyout>
+					</Button>
+					<StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+						<Button Classes="ribbon-chrome" Command="{Binding SaveCommand}" ToolTip.Tip="Сохранить">
+							<materialIcons:MaterialIcon Kind="ContentSave" />
+						</Button>
+						<Button Classes="ribbon-chrome" Command="{Binding UndoCommand}" ToolTip.Tip="Отменить">
+							<materialIcons:MaterialIcon Kind="Undo" />
+						</Button>
+						<Button Classes="ribbon-chrome" Command="{Binding RedoCommand}" ToolTip.Tip="Вернуть">
+							<materialIcons:MaterialIcon Kind="Redo" />
+						</Button>
+						<ToggleButton Classes="ribbon-chrome"
+						              IsChecked="{Binding InvertReport}"
+						              ToolTip.Tip="Инверсия отчёта">
+							<materialIcons:MaterialIcon Kind="InvertColors" />
+						</ToggleButton>
+					</StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<Button Classes="ribbon-tab"
+						        Classes.selected="{Binding IsHomeRibbon}"
+						        Content="Главная"
+						        Command="{Binding SelectRibbonTabCommand}"
+						        CommandParameter="0" />
+						<Button Classes="ribbon-tab"
+						        Classes.selected="{Binding IsCellsRibbon}"
+						        Content="Ячейки"
+						        Command="{Binding SelectRibbonTabCommand}"
+						        CommandParameter="1" />
+						<Button Classes="ribbon-tab"
+						        Classes.selected="{Binding IsContentRibbon}"
+						        Content="Содержимое"
+						        Command="{Binding SelectRibbonTabCommand}"
+						        CommandParameter="2" />
+					</StackPanel>
+				</DockPanel>
+			</Border>
+
+			<Border Classes="ribbon-content">
+				<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+					<Panel>
+						<StackPanel Classes="ribbon-groups" IsVisible="{Binding IsHomeRibbon}">
+							<Border Classes="ribbon-group">
+								<DockPanel LastChildFill="True">
+									<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Буфер обмена" />
+									<StackPanel Margin="4,4,4,2">
+										<Button Classes="ribbon-button compact" Command="{Binding Inspector.CutCommand}">
+											<StackPanel Orientation="Horizontal" Spacing="4">
+												<materialIcons:MaterialIcon Kind="ContentCut" Width="16" Height="16" Classes="icon-muted" />
+												<TextBlock Text="Вырезать" VerticalAlignment="Center" />
+											</StackPanel>
+										</Button>
+										<Button Classes="ribbon-button compact" Command="{Binding Inspector.CopyCommand}">
+											<StackPanel Orientation="Horizontal" Spacing="4">
+												<materialIcons:MaterialIcon Kind="ContentCopy" Width="16" Height="16" Classes="icon-muted" />
+												<TextBlock Text="Копировать" VerticalAlignment="Center" />
+											</StackPanel>
+										</Button>
+										<Button Classes="ribbon-button compact" Command="{Binding Inspector.PasteCommand}">
+											<StackPanel Orientation="Horizontal" Spacing="4">
+												<materialIcons:MaterialIcon Kind="ContentPaste" Width="16" Height="16" Classes="icon-muted" />
+												<TextBlock Text="Вставить" VerticalAlignment="Center" />
+											</StackPanel>
+										</Button>
+									</StackPanel>
+								</DockPanel>
+							</Border>
+							<Border Classes="ribbon-group">
+								<DockPanel LastChildFill="True">
+									<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Действия" />
+									<StackPanel Margin="4,4,4,2">
+										<Button Classes="ribbon-button compact" Command="{Binding UndoCommand}">
+											<StackPanel Orientation="Horizontal" Spacing="4">
+												<materialIcons:MaterialIcon Kind="Undo" Width="16" Height="16" Classes="icon-muted" />
+												<TextBlock Text="Отменить" VerticalAlignment="Center" />
+											</StackPanel>
+										</Button>
+										<Button Classes="ribbon-button compact" Command="{Binding RedoCommand}">
+											<StackPanel Orientation="Horizontal" Spacing="4">
+												<materialIcons:MaterialIcon Kind="Redo" Width="16" Height="16" Classes="icon-muted" />
+												<TextBlock Text="Вернуть" VerticalAlignment="Center" />
+											</StackPanel>
+										</Button>
+									</StackPanel>
+								</DockPanel>
+							</Border>
+							<Border Classes="ribbon-group">
+								<DockPanel LastChildFill="True">
+									<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Поиск" />
+									<StackPanel Margin="4,4,4,2">
+										<Button Classes="ribbon-button compact" Command="{Binding FindCommand}">
+											<StackPanel Orientation="Horizontal" Spacing="4">
+												<materialIcons:MaterialIcon Kind="Magnify" Width="16" Height="16" Classes="icon-muted" />
+												<TextBlock Text="Найти" VerticalAlignment="Center" />
+											</StackPanel>
+										</Button>
+										<Button Classes="ribbon-button compact" Command="{Binding FindAndReplaceCommand}">
+											<StackPanel Orientation="Horizontal" Spacing="4">
+												<materialIcons:MaterialIcon Kind="FindReplace" Width="16" Height="16" Classes="icon-muted" />
+												<TextBlock Text="Найти и заменить" VerticalAlignment="Center" />
+											</StackPanel>
+										</Button>
+										<Button Classes="ribbon-button compact" Command="{Binding FindInCodeCommand}">
+											<StackPanel Orientation="Horizontal" Spacing="4">
+												<materialIcons:MaterialIcon Kind="FileSearchOutline" Width="16" Height="16" Classes="icon-muted" />
+												<TextBlock Text="Найти строку в коде" VerticalAlignment="Center" />
+											</StackPanel>
+										</Button>
+									</StackPanel>
+								</DockPanel>
+							</Border>
+							<Border Classes="ribbon-group">
+								<DockPanel LastChildFill="True">
+									<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Шрифт" />
+									<StackPanel Margin="4,4,4,2" Orientation="Vertical" Spacing="2">
+										<StackPanel Orientation="Horizontal" Spacing="4">
+											<ComboBox Width="148"
+											          ItemsSource="{Binding Fonts}"
+											          SelectedItem="{Binding FontFamily}"
+											          IsEnabled="{Binding IsTextableContent}" />
+											<ComboBox Width="68"
+											          ItemsSource="{Binding FontSizes}"
+											          SelectedItem="{Binding FontSize}"
+											          IsEnabled="{Binding IsTextableContent}" />
+										</StackPanel>
+										<StackPanel Orientation="Horizontal" Spacing="2">
+											<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding FontBold}" IsEnabled="{Binding IsTextableContent}" ToolTip.Tip="Полужирный (Ctrl+B)">
+												<materialIcons:MaterialIcon Kind="FormatBold" Width="16" Height="16" />
+											</ToggleButton>
+											<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding FontItalic}" IsEnabled="{Binding IsTextableContent}" ToolTip.Tip="Курсив (Ctrl+I)">
+												<materialIcons:MaterialIcon Kind="FormatItalic" Width="16" Height="16" />
+											</ToggleButton>
+											<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding FontUnderline}" IsEnabled="{Binding IsTextableContent}" ToolTip.Tip="Подчёркивание (Ctrl+U)">
+												<materialIcons:MaterialIcon Kind="FormatUnderline" Width="16" Height="16" />
+											</ToggleButton>
+											<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding FontStrikeout}" IsEnabled="{Binding IsTextableContent}" ToolTip.Tip="Зачёркивание">
+												<materialIcons:MaterialIcon Kind="FormatStrikethrough" Width="16" Height="16" />
+											</ToggleButton>
+											<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding AutoFitFont}" IsEnabled="{Binding IsTextContent}" ToolTip.Tip="Автоматический размер шрифта">
+												<materialIcons:MaterialIcon Kind="FormatFontSizeDecrease" Width="16" Height="16" />
+											</ToggleButton>
+										</StackPanel>
+									</StackPanel>
+								</DockPanel>
+							</Border>
+							<Border Classes="ribbon-group">
+								<DockPanel LastChildFill="True">
+									<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Выравнивание" />
+									<StackPanel Orientation="Horizontal" Margin="4,4,4,2" Spacing="8">
+										<StackPanel Orientation="Vertical" Spacing="2" VerticalAlignment="Center">
+											<StackPanel Orientation="Horizontal" Spacing="2">
+												<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding AlignTop}" IsEnabled="{Binding IsTextableContent}" ToolTip.Tip="По верхнему краю">
+													<materialIcons:MaterialIcon Kind="FormatAlignTop" Width="16" Height="16" />
+												</ToggleButton>
+												<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding AlignMiddle}" IsEnabled="{Binding IsTextableContent}" ToolTip.Tip="По середине">
+													<materialIcons:MaterialIcon Kind="FormatAlignMiddle" Width="16" Height="16" />
+												</ToggleButton>
+												<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding AlignBottom}" IsEnabled="{Binding IsTextableContent}" ToolTip.Tip="По нижнему краю">
+													<materialIcons:MaterialIcon Kind="FormatAlignBottom" Width="16" Height="16" />
+												</ToggleButton>
+											</StackPanel>
+											<StackPanel Orientation="Horizontal" Spacing="2">
+												<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding AlignLeft}" IsEnabled="{Binding IsTextableContent}" ToolTip.Tip="По левому краю">
+													<materialIcons:MaterialIcon Kind="FormatAlignLeft" Width="16" Height="16" />
+												</ToggleButton>
+												<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding AlignCenter}" IsEnabled="{Binding IsTextableContent}" ToolTip.Tip="По центру">
+													<materialIcons:MaterialIcon Kind="FormatAlignCenter" Width="16" Height="16" />
+												</ToggleButton>
+												<ToggleButton Classes="ribbon-toggle" IsChecked="{Binding AlignRight}" IsEnabled="{Binding IsTextableContent}" ToolTip.Tip="По правому краю">
+													<materialIcons:MaterialIcon Kind="FormatAlignRight" Width="16" Height="16" />
+												</ToggleButton>
+											</StackPanel>
+										</StackPanel>
+										<Button Classes="ribbon-button compact" Command="{Binding Inspector.MergeCellsCommand}" VerticalAlignment="Center">
+											<StackPanel Orientation="Horizontal" Spacing="4">
+												<materialIcons:MaterialIcon Kind="TableMergeCells" Width="16" Height="16" Classes="icon-muted" />
+												<TextBlock Text="Объединить ячейки" VerticalAlignment="Center" />
+											</StackPanel>
+										</Button>
+									</StackPanel>
+								</DockPanel>
+							</Border>
+						</StackPanel>
+
+						<StackPanel Classes="ribbon-groups" IsVisible="{Binding IsCellsRibbon}">
+							<Border Classes="ribbon-group">
+								<DockPanel LastChildFill="True">
+									<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Ячейки" />
+									<StackPanel Orientation="Horizontal" Margin="4,4,4,2">
+										<Button Classes="ribbon-button large" Command="{Binding Inspector.DeleteCellCommand}">
+											<StackPanel Orientation="Vertical" Spacing="2" HorizontalAlignment="Center">
+												<materialIcons:MaterialIcon Kind="TableRemove" Width="32" Height="32" Classes="icon-danger" />
+												<TextBlock Text="Удалить" MaxWidth="72" />
+											</StackPanel>
+										</Button>
+									</StackPanel>
+								</DockPanel>
+							</Border>
+							<Border Classes="ribbon-group">
+								<DockPanel LastChildFill="True">
+									<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Строки и столбцы" />
+									<StackPanel Orientation="Horizontal" Margin="4,4,4,2">
+										<Button Classes="ribbon-button large">
+											<Button.Flyout>
+												<MenuFlyout Placement="BottomEdgeAlignedLeft">
+													<MenuItem Header="Вставить до" Command="{Binding Inspector.InsertRowBeforeCommand}" />
+													<MenuItem Header="Вставить после" Command="{Binding Inspector.InsertRowAfterCommand}" />
+												</MenuFlyout>
+											</Button.Flyout>
+											<StackPanel Orientation="Vertical" Spacing="2" HorizontalAlignment="Center">
+												<materialIcons:MaterialIcon Kind="TableRowPlusBefore" Width="32" Height="32" Classes="icon-success" />
+												<StackPanel Orientation="Horizontal" Spacing="2" HorizontalAlignment="Center">
+													<TextBlock Text="Добавить строку" MaxWidth="64" />
+													<materialIcons:MaterialIcon Kind="ChevronDown" Width="12" Height="12" VerticalAlignment="Center" />
+												</StackPanel>
+											</StackPanel>
+										</Button>
+										<Button Classes="ribbon-button large" Command="{Binding Inspector.DeleteRowsCommand}">
+											<StackPanel Orientation="Vertical" Spacing="2" HorizontalAlignment="Center">
+												<materialIcons:MaterialIcon Kind="TableRowRemove" Width="32" Height="32" Classes="icon-danger" />
+												<TextBlock Text="Удалить строку" MaxWidth="72" />
+											</StackPanel>
+										</Button>
+										<Button Classes="ribbon-button large">
+											<Button.Flyout>
+												<MenuFlyout Placement="BottomEdgeAlignedLeft">
+													<MenuItem Header="Вставить до" Command="{Binding Inspector.InsertColumnBeforeCommand}" />
+													<MenuItem Header="Вставить после" Command="{Binding Inspector.InsertColumnAfterCommand}" />
+												</MenuFlyout>
+											</Button.Flyout>
+											<StackPanel Orientation="Vertical" Spacing="2" HorizontalAlignment="Center">
+												<materialIcons:MaterialIcon Kind="TableColumnPlusBefore" Width="32" Height="32" Classes="icon-success" />
+												<StackPanel Orientation="Horizontal" Spacing="2" HorizontalAlignment="Center">
+													<TextBlock Text="Добавить столбец" MaxWidth="68" />
+													<materialIcons:MaterialIcon Kind="ChevronDown" Width="12" Height="12" VerticalAlignment="Center" />
+												</StackPanel>
+											</StackPanel>
+										</Button>
+										<Button Classes="ribbon-button large" Command="{Binding Inspector.DeleteColumnsCommand}">
+											<StackPanel Orientation="Vertical" Spacing="2" HorizontalAlignment="Center">
+												<materialIcons:MaterialIcon Kind="TableColumnRemove" Width="32" Height="32" Classes="icon-danger" />
+												<TextBlock Text="Удалить столбец" MaxWidth="72" />
+											</StackPanel>
+										</Button>
+									</StackPanel>
+								</DockPanel>
+							</Border>
+							<Border Classes="ribbon-group">
+								<DockPanel LastChildFill="True">
+									<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Стиль" />
+									<gallery:StyleGallery Margin="8,4,8,2"
+									                      VerticalAlignment="Center"
+									                      ItemsSource="{Binding Inspector.CellStyles}"
+									                      SelectedItem="{Binding Inspector.SelectedCellStyle}" />
+								</DockPanel>
+							</Border>
+						</StackPanel>
+
+						<StackPanel Classes="ribbon-groups" IsVisible="{Binding IsContentRibbon}">
+							<Border Classes="ribbon-group">
+								<DockPanel LastChildFill="True">
+									<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Контент" />
+									<StackPanel Orientation="Horizontal" Margin="4,4,4,2">
+										<Button Classes="ribbon-button large">
+											<Button.Flyout>
+												<MenuFlyout Placement="BottomEdgeAlignedLeft">
+													<MenuItem Header="Текст" Command="{Binding Inspector.AddTextCommand}" />
+													<MenuItem Header="Число" Command="{Binding Inspector.AddDecimalCommand}" />
+													<MenuItem Header="Дату и время" Command="{Binding Inspector.AddDateTimeCommand}" />
+													<MenuItem Header="Штрих-код" Command="{Binding Inspector.AddBarCodeCommand}" />
+													<MenuItem Header="Изображение" Command="{Binding Inspector.AddImageCommand}" />
+													<MenuItem Header="Действие" Command="{Binding Inspector.AddActionCommand}" />
+												</MenuFlyout>
+											</Button.Flyout>
+											<StackPanel Orientation="Vertical" Spacing="2" HorizontalAlignment="Center">
+												<materialIcons:MaterialIcon Kind="PlusBoxOutline" Width="32" Height="32" Classes="icon-success" />
+												<StackPanel Orientation="Horizontal" Spacing="2" HorizontalAlignment="Center">
+													<TextBlock Text="Добавить" MaxWidth="72" />
+													<materialIcons:MaterialIcon Kind="ChevronDown" Width="12" Height="12" VerticalAlignment="Center" />
+												</StackPanel>
+											</StackPanel>
+										</Button>
+										<Button Classes="ribbon-button large" Command="{Binding Inspector.DeleteContentCommand}">
+											<StackPanel Orientation="Vertical" Spacing="2" HorizontalAlignment="Center">
+												<materialIcons:MaterialIcon Kind="DeleteOutline" Width="32" Height="32" Classes="icon-danger" />
+												<TextBlock Text="Удалить все" MaxWidth="72" />
+											</StackPanel>
+										</Button>
+									</StackPanel>
+								</DockPanel>
+							</Border>
+							<Border Classes="ribbon-group">
+								<DockPanel LastChildFill="True">
+									<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Стиль" />
+									<StackPanel Orientation="Horizontal" Margin="4,8,4,2" VerticalAlignment="Center">
+										<StackPanel Width="168" Margin="4,0" VerticalAlignment="Center">
+											<TextBlock FontSize="11" Margin="0,0,0,2" Opacity="0.8" Text="Текст" />
+											<gallery:StyleGallery IsEnabled="{Binding Inspector.HasTextContent}"
+											                      ItemsSource="{Binding Inspector.TextStyles}"
+											                      SelectedItem="{Binding Inspector.SelectedTextStyle}" />
+										</StackPanel>
+										<StackPanel Width="168" Margin="4,0" VerticalAlignment="Center">
+											<TextBlock FontSize="11" Margin="0,0,0,2" Opacity="0.8" Text="Число" />
+											<gallery:StyleGallery IsEnabled="{Binding Inspector.HasDecimalContent}"
+											                      ItemsSource="{Binding Inspector.DecimalStyles}"
+											                      SelectedItem="{Binding Inspector.SelectedDecimalStyle}" />
+										</StackPanel>
+										<StackPanel Width="168" Margin="4,0" VerticalAlignment="Center">
+											<TextBlock FontSize="11" Margin="0,0,0,2" Opacity="0.8" Text="Дата" />
+											<gallery:StyleGallery IsEnabled="{Binding Inspector.HasDateTimeContent}"
+											                      ItemsSource="{Binding Inspector.DateTimeStyles}"
+											                      SelectedItem="{Binding Inspector.SelectedDateTimeStyle}" />
+										</StackPanel>
+									</StackPanel>
+								</DockPanel>
+							</Border>
+						</StackPanel>
+					</Panel>
+				</ScrollViewer>
+			</Border>
+		</DockPanel>
+	</Border>
+</UserControl>
+

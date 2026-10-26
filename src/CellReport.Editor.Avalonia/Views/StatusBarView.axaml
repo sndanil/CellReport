@@ -1,0 +1,30 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:CellReport.Editor.Avalonia.ViewModels"
+             x:Class="CellReport.Editor.Avalonia.Views.StatusBarView"
+             x:DataType="vm:MainWindowViewModel">
+	<Border Classes="toolbar" BorderThickness="0,1,0,0">
+		<Grid ColumnDefinitions="Auto,Auto,88,Auto,88,Auto,Auto,*,Auto,110" Margin="4,0">
+			<TextBlock Grid.Column="0" VerticalAlignment="Center" Margin="4,0" Text="{Binding CellAddress}" />
+			<TextBlock Grid.Column="1" VerticalAlignment="Center" Text="Ширина" />
+			<TextBox Grid.Column="2"
+			         Margin="6,4"
+			         VerticalAlignment="Center"
+			         Text="{Binding CellWidthText, UpdateSourceTrigger=LostFocus}" />
+			<TextBlock Grid.Column="3" VerticalAlignment="Center" Text="Высота" />
+			<TextBox Grid.Column="4"
+			         Margin="6,4"
+			         VerticalAlignment="Center"
+			         Text="{Binding CellHeightText, UpdateSourceTrigger=LostFocus}" />
+			<TextBlock Grid.Column="5" VerticalAlignment="Center" Text="мм" />
+			<TextBlock Grid.Column="6" VerticalAlignment="Center" Margin="8,0" Text="{Binding SelectionStatus}" />
+			<TextBlock Grid.Column="8" VerticalAlignment="Center" Margin="0,0,8,0" Text="Масштаб" />
+			<ComboBox Grid.Column="9"
+			          Margin="0,4,4,4"
+			          VerticalAlignment="Center"
+			          ItemsSource="{Binding Present.ScaleOptions}"
+			          SelectedIndex="{Binding Present.SelectedScaleIndex}" />
+		</Grid>
+	</Border>
+</UserControl>
+

@@ -1,0 +1,61 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:CellReport.Editor.Avalonia.ViewModels"
+             x:Class="CellReport.Editor.Avalonia.Views.PrintSettingsView"
+             x:DataType="vm:MainWindowViewModel">
+	<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+		<StackPanel Margin="16" Spacing="12" MaxWidth="980" HorizontalAlignment="Left">
+			<TextBlock FontWeight="SemiBold" Text="Страница" />
+			<Grid ColumnDefinitions="260,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+				<CheckBox Grid.ColumnSpan="2" Content="Альбомная ориентация" IsChecked="{Binding Settings.Landscape}" />
+				<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Копии" />
+				<TextBox Grid.Row="1" Grid.Column="1" Margin="0,2" Text="{Binding Settings.CopiesText, UpdateSourceTrigger=LostFocus}" />
+				<TextBlock Grid.Row="2" VerticalAlignment="Center" Text="Масштаб печати" />
+				<TextBox Grid.Row="2" Grid.Column="1" Margin="0,2" Text="{Binding Settings.PrintScaleText, UpdateSourceTrigger=LostFocus}" />
+				<TextBlock Grid.Row="3" VerticalAlignment="Center" Text="Страниц по ширине" />
+				<TextBox Grid.Row="3" Grid.Column="1" Margin="0,2" Text="{Binding Settings.AutoFitWidthPagesText, UpdateSourceTrigger=LostFocus}" />
+				<TextBlock Grid.Row="4" VerticalAlignment="Center" Text="Поле слева, мм" />
+				<TextBox Grid.Row="4" Grid.Column="1" Margin="0,2" Text="{Binding Settings.MarginLeftText, UpdateSourceTrigger=LostFocus}" />
+				<TextBlock Grid.Row="5" VerticalAlignment="Center" Text="Поле справа, мм" />
+				<TextBox Grid.Row="5" Grid.Column="1" Margin="0,2" Text="{Binding Settings.MarginRightText, UpdateSourceTrigger=LostFocus}" />
+				<TextBlock Grid.Row="6" VerticalAlignment="Center" Text="Поле сверху, мм" />
+				<TextBox Grid.Row="6" Grid.Column="1" Margin="0,2" Text="{Binding Settings.MarginTopText, UpdateSourceTrigger=LostFocus}" />
+				<TextBlock Grid.Row="7" VerticalAlignment="Center" Text="Поле снизу, мм" />
+				<TextBox Grid.Row="7" Grid.Column="1" Margin="0,2" Text="{Binding Settings.MarginBottomText, UpdateSourceTrigger=LostFocus}" />
+			</Grid>
+
+			<Grid ColumnDefinitions="*,Auto">
+				<TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="Фиксированные строки заголовка" />
+				<Button Grid.Column="1" Content="Добавить" Command="{Binding Settings.AddHeaderFixedRowCommand}" />
+			</Grid>
+			<ItemsControl ItemsSource="{Binding Settings.HeaderFixedRows}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="vm:RangeEdit">
+						<Grid Margin="0,0,0,6" ColumnDefinitions="160,160,Auto" ColumnSpacing="6">
+							<TextBox PlaceholderText="С строки" Text="{Binding FromText, UpdateSourceTrigger=LostFocus}" />
+							<TextBox Grid.Column="1" PlaceholderText="По строку" Text="{Binding ToText, UpdateSourceTrigger=LostFocus}" />
+							<Button Grid.Column="2" Content="Удалить" Command="{Binding RemoveCommand}" />
+						</Grid>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+
+			<Grid ColumnDefinitions="*,Auto">
+				<TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="Фиксированные строки подвала" />
+				<Button Grid.Column="1" Content="Добавить" Command="{Binding Settings.AddFooterFixedRowCommand}" />
+			</Grid>
+			<ItemsControl ItemsSource="{Binding Settings.FooterFixedRows}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="vm:RangeEdit">
+						<Grid Margin="0,0,0,6" ColumnDefinitions="160,160,Auto" ColumnSpacing="6">
+							<TextBox PlaceholderText="С строки" Text="{Binding FromText, UpdateSourceTrigger=LostFocus}" />
+							<TextBox Grid.Column="1" PlaceholderText="По строку" Text="{Binding ToText, UpdateSourceTrigger=LostFocus}" />
+							<Button Grid.Column="2" Content="Удалить" Command="{Binding RemoveCommand}" />
+						</Grid>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</StackPanel>
+	</ScrollViewer>
+</UserControl>
+
