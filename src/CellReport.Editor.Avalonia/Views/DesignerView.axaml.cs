@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using CellReport.Avalonia;
 using CellReport.Core;
@@ -12,6 +13,7 @@ using CellReport.Presenters;
 using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows.Input;
 using AvaloniaPoint = Avalonia.Point;
 
 namespace CellReport.Editor.Avalonia.Views;
@@ -24,6 +26,7 @@ public partial class DesignerView : UserControl
 	private MainWindowViewModel? _viewModel;
 	private BaseDisplayPresenter? _editingPresenter;
 	private CellLocation _editingCell = CellLocation.None;
+	private ContextMenu? _canvasMenu;
 	private bool _applyingLayout;
 	private bool _closingEditor;
 
@@ -43,7 +46,9 @@ public partial class DesignerView : UserControl
 		ReportSurface.AddHandler(PointerPressedEvent, OnCanvasPointerPressed, RoutingStrategies.Tunnel);
 		ReportSurface.PointerWheelChanged += (_, _) => CommitInlineEdit();
 		ReportSurface.SizeChanged += (_, _) => CommitInlineEdit();
+		ReportSurface.AttachedToVisualTree += (_, _) => Dispatcher.UIThread.Post(RebuildCanvasMenu, DispatcherPriority.Loaded);
 		DetachedFromVisualTree += (_, _) => CancelInlineEdit();
+		AttachedToVisualTree += (_, _) => RebuildCanvasMenu();
 	}
 
 	public PresentControl Surface => ReportSurface;
@@ -232,20 +237,130 @@ public partial class DesignerView : UserControl
 
 	private void OnCanvasPointerPressed(object? sender, PointerPressedEventArgs e)
 	{
-		if (e.ClickCount != 2 || e.Source is not CellControl cellControl)
+		if (e.Source is not CellControl cellControl)
 			return;
 
 		var presenter = ReportSurface.Presenter;
 		if (presenter == null)
 			return;
 
+		var properties = e.GetCurrentPoint(cellControl).Properties;
 		var position = e.GetPosition(cellControl);
 		var location = presenter.GetCellByDevicePoint((float)position.X, (float)position.Y, false);
 		if (location.Row < 0 || location.Column < 0)
 			return;
 
+		// как в Excel: правый клик сначала выделяет ячейку под курсором
+		if (properties.IsRightButtonPressed)
+		{
+			presenter.CurrentCell = location;
+			if (!ReferenceEquals(cellControl.ContextMenu, _canvasMenu))
+				AttachCanvasMenu(cellControl);
+			return;
+		}
+
+		if (e.ClickCount != 2)
+			return;
+
 		BeginInlineEdit(location);
 		e.Handled = true;
+	}
+
+	private void RebuildCanvasMenu()
+	{
+		var cellControl = FindCellControl();
+		if (_viewModel == null || cellControl == null)
+			return;
+
+		AttachCanvasMenu(cellControl);
+	}
+
+	private void AttachCanvasMenu(CellControl cellControl)
+	{
+		if (_viewModel == null)
+			return;
+
+		_canvasMenu = BuildCanvasMenu(_viewModel);
+		cellControl.ContextMenu = _canvasMenu;
+	}
+
+	private ContextMenu BuildCanvasMenu(MainWindowViewModel viewModel)
+	{
+		var menu = new ContextMenu();
+		var editItem = Item("Редактировать текст", null, "F2", () => BeginInlineEdit());
+
+		menu.Opening += (_, _) =>
+		{
+			var presenter = ReportSurface.Presenter;
+			editItem.IsEnabled = presenter != null && viewModel.CanEditCellText(presenter.CurrentCell);
+		};
+
+		menu.Items.Add(editItem);
+		menu.Items.Add(new Separator());
+		menu.Items.Add(Item("Вырезать", viewModel.Inspector.CutCommand, "Ctrl+X"));
+		menu.Items.Add(Item("Копировать", viewModel.Inspector.CopyCommand, "Ctrl+C"));
+		menu.Items.Add(Item("Вставить", viewModel.Inspector.PasteCommand, "Ctrl+V"));
+		menu.Items.Add(new Separator());
+		menu.Items.Add(Submenu("Добавить содержимое",
+			Item("Текст", viewModel.Inspector.AddTextCommand),
+			Item("Число", viewModel.Inspector.AddDecimalCommand),
+			Item("Дата и время", viewModel.Inspector.AddDateTimeCommand),
+			Item("Штрих-код", viewModel.Inspector.AddBarCodeCommand),
+			Item("Изображение", viewModel.Inspector.AddImageCommand),
+			Item("Действие", viewModel.Inspector.AddActionCommand)));
+		menu.Items.Add(Item("Очистить содержимое", viewModel.Inspector.DeleteContentCommand));
+		menu.Items.Add(Item("Удалить ячейку", viewModel.Inspector.DeleteCellCommand));
+		menu.Items.Add(new Separator());
+		menu.Items.Add(Item("Вставить строку до", viewModel.Inspector.InsertRowBeforeCommand));
+		menu.Items.Add(Item("Вставить строку после", viewModel.Inspector.InsertRowAfterCommand));
+		menu.Items.Add(Item("Удалить строку", viewModel.Inspector.DeleteRowsCommand));
+		menu.Items.Add(new Separator());
+		menu.Items.Add(Item("Вставить столбец до", viewModel.Inspector.InsertColumnBeforeCommand));
+		menu.Items.Add(Item("Вставить столбец после", viewModel.Inspector.InsertColumnAfterCommand));
+		menu.Items.Add(Item("Удалить столбец", viewModel.Inspector.DeleteColumnsCommand));
+		menu.Items.Add(new Separator());
+		menu.Items.Add(Item("Объединить ячейки", viewModel.Inspector.MergeCellsCommand));
+		menu.Items.Add(new Separator());
+		menu.Items.Add(Item("Свойства ячейки", null, null, ShowCellProperties));
+		menu.Items.Add(Item("Свойства документа…", viewModel.ShowSettingsCommand));
+		menu.Items.Add(Item("Найти…", viewModel.FindCommand, "Ctrl+F"));
+		menu.Items.Add(new Separator());
+		menu.Items.Add(Submenu("Печать и экспорт",
+			Item("Печать", viewModel.Present.PrintCommand),
+			Item("Предварительный просмотр", viewModel.Present.PrintPreviewCommand),
+			Item("Экспорт в Excel", viewModel.Present.ExportExcelCommand),
+			Item("Экспорт в HTML", viewModel.Present.ExportHtmlCommand),
+			Item("Экспорт в PDF", viewModel.Present.ExportPdfCommand),
+			Item("Экспорт в изображение", viewModel.Present.ExportImageCommand)));
+		menu.Items.Add(Item("Сохранить", viewModel.SaveCommand, "Ctrl+S"));
+
+		return menu;
+	}
+
+	private static MenuItem Item(string header, ICommand? command, string? gesture = null, Action? click = null)
+	{
+		var item = new MenuItem { Header = header, Command = command };
+		if (gesture != null)
+			item.InputGesture = KeyGesture.Parse(gesture);
+		if (command == null && click != null)
+			item.Click += (_, _) => click();
+		return item;
+	}
+
+	private static MenuItem Submenu(string header, params MenuItem[] items)
+	{
+		var item = new MenuItem { Header = header };
+		foreach (var child in items)
+			item.Items.Add(child);
+		return item;
+	}
+
+	private void ShowCellProperties()
+	{
+		if (_viewModel != null)
+			_viewModel.IsInspectorCollapsed = false;
+
+		InspectorTabs.SelectedIndex = 0;
 	}
 
 	private CellControl? FindCellControl() => ReportSurface.GetVisualDescendants().OfType<CellControl>().FirstOrDefault();
@@ -282,6 +397,7 @@ public partial class DesignerView : UserControl
 			_viewModel.PropertyChanged += OnViewModelPropertyChanged;
 
 		ApplyLayout();
+		RebuildCanvasMenu();
 	}
 
 	private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
