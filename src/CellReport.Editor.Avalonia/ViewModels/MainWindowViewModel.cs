@@ -1130,6 +1130,56 @@ public partial class MainWindowViewModel : ObservableObject
 			+ " мм)";
 	}
 
+	public bool CanEditCellText(CellLocation location)
+	{
+		if (_manager == null)
+			return false;
+
+		if (location.Row < 0 || location.Column < 0
+			|| location.Row >= _manager.RowsCount || location.Column >= _manager.ColumnsCount)
+			return false;
+
+		var cell = _manager.GetCell(location);
+		return cell?.Content == null || GetTextContent(location) != null;
+	}
+
+	public string GetCellText(CellLocation location) => GetTextContent(location)?.Text ?? string.Empty;
+
+	public void SetCellText(CellLocation location, string text)
+	{
+		if (_manager == null || !CanEditCellText(location))
+			return;
+
+		if ((GetTextContent(location)?.Text ?? string.Empty) == text)
+			return;
+
+		CommitDocumentChange(() =>
+		{
+			var cell = _manager.GetCell(location) ?? _manager.CreateCell(location);
+			if (cell == null)
+				return;
+
+			var content = cell.Content is CollectionContent collection
+				? collection.GetContents().OfType<TextContent>().FirstOrDefault()
+				: cell.Content as TextContent;
+
+			if (content != null)
+			{
+				content.Text = text;
+				return;
+			}
+
+			if (text.Length == 0)
+				return;
+
+			var created = new TextContent(_manager) { Text = text };
+			if (cell.Content is CollectionContent target)
+				target.Add(created);
+			else
+				cell.Content = created;
+		});
+	}
+
 	private TextContent? GetTextContent(CellLocation location)
 	{
 		if (_manager == null)

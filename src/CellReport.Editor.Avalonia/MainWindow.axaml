@@ -13,16 +13,8 @@
 		<KeyBinding Gesture="Ctrl+O" Command="{Binding OpenCommand}" />
 		<KeyBinding Gesture="Ctrl+S" Command="{Binding SaveCommand}" />
 		<KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
-		<KeyBinding Gesture="Ctrl+Z" Command="{Binding UndoCommand}" />
-		<KeyBinding Gesture="Ctrl+Y" Command="{Binding RedoCommand}" />
-		<KeyBinding Gesture="Ctrl+C" Command="{Binding Inspector.CopyCommand}" />
-		<KeyBinding Gesture="Ctrl+X" Command="{Binding Inspector.CutCommand}" />
-		<KeyBinding Gesture="Ctrl+V" Command="{Binding Inspector.PasteCommand}" />
 		<KeyBinding Gesture="Ctrl+F" Command="{Binding FindCommand}" />
 		<KeyBinding Gesture="Ctrl+H" Command="{Binding FindAndReplaceCommand}" />
-		<KeyBinding Gesture="Ctrl+B" Command="{Binding ToggleBoldCommand}" />
-		<KeyBinding Gesture="Ctrl+I" Command="{Binding ToggleItalicCommand}" />
-		<KeyBinding Gesture="Ctrl+U" Command="{Binding ToggleUnderlineCommand}" />
 		<KeyBinding Gesture="Ctrl+OemComma" Command="{Binding ShowSettingsCommand}" />
 	</Window.KeyBindings>
 
