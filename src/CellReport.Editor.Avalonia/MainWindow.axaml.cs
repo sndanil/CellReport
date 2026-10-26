@@ -32,6 +32,7 @@ public partial class MainWindow : Window
 		viewModel.ExitRequested += (_, _) => Close();
 		viewModel.ShowDesignerRequested += (_, _) => ShowDesigner();
 		viewModel.SettingsRequested += (_, _) => ShowSettings();
+		viewModel.FitToWidthRequested += (_, _) => DesignerPane.FitToWidth();
 		viewModel.CodeSearchRequested += (_, replace) => ShowCodeSearch(replace);
 		viewModel.FindRowInCodeRequested += (_, _) => FindRowInCode();
 		viewModel.ReadCode = () => CodePane.Editor.Text;
@@ -52,8 +53,22 @@ public partial class MainWindow : Window
 				ApplyReportInversion(viewModel);
 		};
 		ApplyReportInversion(viewModel);
+		ApplyWindowState(viewModel);
 		await viewModel.InitializeAsync(Program.StartupArgs, this);
 		_modeReady = true;
+	}
+
+	private void ApplyWindowState(MainWindowViewModel viewModel)
+	{
+		if (viewModel.WindowMaximized)
+		{
+			WindowState = WindowState.Maximized;
+			return;
+		}
+
+		WindowState = WindowState.Normal;
+		Width = viewModel.WindowWidth;
+		Height = viewModel.WindowHeight;
 	}
 
 	private void ApplyReportInversion(MainWindowViewModel viewModel)
@@ -168,7 +183,7 @@ public partial class MainWindow : Window
 		if (DataContext is not MainWindowViewModel viewModel)
 			return;
 
-		viewModel.FlushLayoutSettings();
+		viewModel.SaveWindowState(WindowState == WindowState.Maximized, Width, Height);
 		if (_closeConfirmed || !viewModel.HasUnsavedChanges)
 			return;
 

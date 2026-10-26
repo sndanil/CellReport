@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 
@@ -11,6 +12,14 @@ public sealed class EditorSettings
 	public double InspectorWidth { get; set; } = 300;
 
 	public bool InspectorCollapsed { get; set; }
+
+	public double WindowWidth { get; set; } = 1100;
+
+	public double WindowHeight { get; set; } = 720;
+
+	public bool WindowMaximized { get; set; } = true;
+
+	public List<string> RecentFiles { get; set; } = new();
 
 	private static string FilePath => Path.Combine(
 		Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),

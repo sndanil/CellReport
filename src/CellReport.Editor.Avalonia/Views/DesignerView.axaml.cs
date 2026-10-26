@@ -26,6 +26,21 @@ public partial class DesignerView : UserControl
 
 	private ColumnDefinition InspectorColumn => DesignerLayout.ColumnDefinitions[0];
 
+	public void FitToWidth()
+	{
+		var presenter = ReportSurface.Presenter;
+		if (presenter == null)
+			return;
+
+		var total = presenter.GetActualColumnsTotalWidth();
+		var available = ReportSurface.Bounds.Width - 46; // заголовки строк и вертикальный скроллбар
+		if (total <= 0 || available <= 0)
+			return;
+
+		presenter.Scale = Math.Clamp((float)(available / total), 0.25f, 5f);
+		presenter.Update();
+	}
+
 	private void OnDataContextChanged(object? sender, EventArgs e)
 	{
 		if (_viewModel != null)

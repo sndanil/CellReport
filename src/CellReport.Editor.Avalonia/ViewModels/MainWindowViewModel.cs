@@ -31,8 +31,10 @@ public partial class MainWindowViewModel : ObservableObject
 	private const double DefaultInspectorWidth = 300;
 	private const double MinInspectorWidth = 220;
 	private const double MaxInspectorWidth = 720;
+	private const int MaxRecentFiles = 10;
 
 	private readonly TemplateHistory _history = new();
+	private readonly EditorSettings _settings = EditorSettings.Load();
 	private CellManager? _manager;
 	private BaseDisplayPresenter? _presenter;
 	private Window? _window;
@@ -58,13 +60,23 @@ public partial class MainWindowViewModel : ObservableObject
 		_typingTimer.Tick += (_, _) => FlushTypingHistory();
 		_layoutTimer.Tick += (_, _) => SaveLayoutSettings();
 
-		var layout = EditorSettings.Load();
+		var layout = _settings;
 		InspectorWidth = Math.Clamp(layout.InspectorWidth, MinInspectorWidth, MaxInspectorWidth);
 		IsInspectorCollapsed = layout.InspectorCollapsed;
+
+		foreach (var path in layout.RecentFiles)
+		{
+			if (!string.IsNullOrWhiteSpace(path)
+				&& !RecentFiles.Any(item => string.Equals(item.Path, path, StringComparison.OrdinalIgnoreCase)))
+				RecentFiles.Add(new RecentFileEntry(path));
+		}
+
 		_layoutLoaded = true;
 	}
 
 	public PresentControlViewModel Present { get; } = new();
+
+	public ObservableCollection<RecentFileEntry> RecentFiles { get; } = new();
 
 	public DocumentSettingsViewModel Settings { get; }
 
@@ -81,6 +93,54 @@ public partial class MainWindowViewModel : ObservableObject
 	public bool IsCodeMode { get; private set; }
 
 	public bool HasUnsavedChanges => _manager != null && (_documentModified || _codeModified);
+
+	public string ModeLabel => IsCodeMode ? "Код" : "Конструктор";
+
+	public string SaveStateLabel => _manager == null
+		? string.Empty
+		: (HasUnsavedChanges ? "Изменено" : "Сохранено");
+
+	[ObservableProperty]
+	private string _contentTypeLabel = string.Empty;
+
+	[ObservableProperty]
+	private string _documentSizeLabel = string.Empty;
+
+	[ObservableProperty]
+	private string _zoomText = string.Empty;
+
+	[RelayCommand]
+	private void ZoomIn() => SetZoom((_presenter?.Scale ?? 1f) * 1.1f);
+
+	[RelayCommand]
+	private void ZoomOut() => SetZoom((_presenter?.Scale ?? 1f) / 1.1f);
+
+	[RelayCommand]
+	private void ZoomReset() => SetZoom(1f);
+
+	[RelayCommand]
+	private void FitToWidth() => FitToWidthRequested?.Invoke(this, EventArgs.Empty);
+
+	private void SetZoom(float scale)
+	{
+		if (_presenter == null)
+			return;
+
+		var value = Math.Clamp(scale, 0.25f, 5f);
+		if (Math.Abs(_presenter.Scale - value) < 0.001f)
+			return;
+
+		_presenter.Scale = value;
+		_presenter.Update();
+		UpdateZoomText();
+	}
+
+	private void UpdateZoomText()
+	{
+		ZoomText = _presenter == null
+			? string.Empty
+			: Math.Round(_presenter.Scale * 100).ToString(CultureInfo.InvariantCulture) + " %";
+	}
 
 	[ObservableProperty]
 	private double _inspectorWidth = DefaultInspectorWidth;
@@ -103,8 +163,6 @@ public partial class MainWindowViewModel : ObservableObject
 	[RelayCommand]
 	private void ToggleInspector() => IsInspectorCollapsed = !IsInspectorCollapsed;
 
-	public void FlushLayoutSettings() => SaveLayoutSettings();
-
 	private void QueueLayoutSave()
 	{
 		_layoutTimer.Stop();
@@ -114,11 +172,86 @@ public partial class MainWindowViewModel : ObservableObject
 	private void SaveLayoutSettings()
 	{
 		_layoutTimer.Stop();
-		new EditorSettings
+		_settings.InspectorWidth = Math.Clamp(InspectorWidth, MinInspectorWidth, MaxInspectorWidth);
+		_settings.InspectorCollapsed = IsInspectorCollapsed;
+		_settings.RecentFiles = RecentFiles.Select(item => item.Path).ToList();
+		_settings.Save();
+	}
+
+	public double WindowWidth => _settings.WindowWidth;
+
+	public double WindowHeight => _settings.WindowHeight;
+
+	public bool WindowMaximized => _settings.WindowMaximized;
+
+	public void SaveWindowState(bool maximized, double width, double height)
+	{
+		if (!maximized && width > 300 && height > 300)
 		{
-			InspectorWidth = Math.Clamp(InspectorWidth, MinInspectorWidth, MaxInspectorWidth),
-			InspectorCollapsed = IsInspectorCollapsed
-		}.Save();
+			_settings.WindowWidth = width;
+			_settings.WindowHeight = height;
+		}
+
+		_settings.WindowMaximized = maximized;
+		SaveLayoutSettings();
+	}
+
+	[RelayCommand]
+	private async Task OpenRecent(string? path)
+	{
+		if (string.IsNullOrEmpty(path))
+			return;
+
+		if (!File.Exists(path))
+		{
+			var missing = RecentFiles.FirstOrDefault(item => string.Equals(item.Path, path, StringComparison.OrdinalIgnoreCase));
+			if (missing != null)
+			{
+				RecentFiles.Remove(missing);
+				SaveLayoutSettings();
+			}
+
+			await ShowErrorAsync("Файл не найден:" + Environment.NewLine + path);
+			return;
+		}
+
+		if (!await ConfirmUnsavedChangesAsync())
+			return;
+
+		try
+		{
+			OpenPath(path);
+		}
+		catch (Exception ex)
+		{
+			await ShowErrorAsync("Не удалось открыть шаблон." + Environment.NewLine + ex.Message);
+		}
+	}
+
+	private void RememberRecentFile(string? path)
+	{
+		if (string.IsNullOrWhiteSpace(path))
+			return;
+
+		string fullPath;
+		try
+		{
+			fullPath = Path.GetFullPath(path);
+		}
+		catch (Exception)
+		{
+			return;
+		}
+
+		var existing = RecentFiles.FirstOrDefault(item => string.Equals(item.Path, fullPath, StringComparison.OrdinalIgnoreCase));
+		if (existing != null)
+			RecentFiles.Remove(existing);
+
+		RecentFiles.Insert(0, new RecentFileEntry(fullPath));
+		while (RecentFiles.Count > MaxRecentFiles)
+			RecentFiles.RemoveAt(RecentFiles.Count - 1);
+
+		SaveLayoutSettings();
 	}
 
 	public Func<string?>? ReadCode { get; set; }
@@ -140,6 +273,8 @@ public partial class MainWindowViewModel : ObservableObject
 	public event EventHandler? ShowDesignerRequested;
 
 	public event EventHandler? SettingsRequested;
+
+	public event EventHandler? FitToWidthRequested;
 
 	public event EventHandler<bool>? CodeSearchRequested;
 
@@ -527,6 +662,7 @@ public partial class MainWindowViewModel : ObservableObject
 		FindAndReplaceCommand.NotifyCanExecuteChanged();
 		FindInCodeCommand.NotifyCanExecuteChanged();
 		ShowSettingsCommand.NotifyCanExecuteChanged();
+		OnPropertyChanged(nameof(ModeLabel));
 		NotifyFormatCommands();
 		NotifyHistory();
 	}
@@ -705,6 +841,7 @@ public partial class MainWindowViewModel : ObservableObject
 		template.Load(path);
 		ApplyDocument(template.Manager, resetHistory: true, CellLocation.None);
 		MarkSaved();
+		RememberRecentFile(path);
 	}
 
 	private async Task<bool> SaveDocumentAsync(bool saveAs)
@@ -756,6 +893,7 @@ public partial class MainWindowViewModel : ObservableObject
 			new CellTemplate(_manager).Save(path, type);
 			SetDocumentPath(path);
 			MarkSaved();
+			RememberRecentFile(path);
 			return true;
 		}
 		catch (Exception ex)
@@ -806,6 +944,7 @@ public partial class MainWindowViewModel : ObservableObject
 		if (_presenter != null)
 			_presenter.PropertyChanged += OnPresenterPropertyChanged;
 
+		UpdateZoomText();
 		RefreshCellFields();
 	}
 
@@ -828,7 +967,10 @@ public partial class MainWindowViewModel : ObservableObject
 
 		Settings.ApplyExternalChange(sender, e.PropertyName);
 		if (sender is DisplaySettings)
+		{
 			Present.SyncFromPresenter();
+			UpdateZoomText();
+		}
 
 		_typingTimer.Stop();
 		_history.Push(_manager);
@@ -840,12 +982,18 @@ public partial class MainWindowViewModel : ObservableObject
 
 	private void RefreshCellFields()
 	{
+		DocumentSizeLabel = _manager == null
+			? string.Empty
+			: "Строк: " + _manager.RowsCount.ToString(CultureInfo.InvariantCulture)
+				+ " · Столбцов: " + _manager.ColumnsCount.ToString(CultureInfo.InvariantCulture);
+
 		try
 		{
 			if (_manager == null || _presenter == null)
 			{
 				CellAddress = string.Empty;
 				SelectionStatus = string.Empty;
+				ContentTypeLabel = string.Empty;
 				IsTextContent = false;
 				_syncing = true;
 				try
@@ -866,6 +1014,7 @@ public partial class MainWindowViewModel : ObservableObject
 			{
 				CellAddress = string.Empty;
 				SelectionStatus = string.Empty;
+				ContentTypeLabel = string.Empty;
 				IsTextContent = false;
 				_syncing = true;
 				try
@@ -892,6 +1041,7 @@ public partial class MainWindowViewModel : ObservableObject
 				IsTextContent = content != null;
 				ReadFormat();
 				CellAddress = "Ячейка " + location.Row + ", " + location.Column;
+				ContentTypeLabel = DescribeContent(location);
 				CellWidthText = _manager.GetColumnWidth(location.Column).ToString("0.##", CultureInfo.CurrentCulture);
 				CellHeightText = _manager.GetRowHeight(location.Row).ToString("0.##", CultureInfo.CurrentCulture);
 				SelectionStatus = BuildSelectionStatus();
@@ -906,6 +1056,31 @@ public partial class MainWindowViewModel : ObservableObject
 			Inspector.OnCellChanged();
 			NotifyFormatCommands();
 		}
+	}
+
+	private string DescribeContent(CellLocation location)
+	{
+		var content = _manager?.GetCell(location)?.Content;
+		if (content == null)
+			return "Пусто";
+
+		if (content is CollectionContent)
+			return "Набор";
+
+		if (content is TextContent)
+			return "Текст";
+		if (content is DecimalContent)
+			return "Число";
+		if (content is DateTimeContent)
+			return "Дата";
+		if (content is BarCodeContent)
+			return "Штрих-код";
+		if (content is ImageContent)
+			return "Изображение";
+		if (content is ActionContent)
+			return "Действие";
+
+		return "Содержимое";
 	}
 
 	private string BuildSelectionStatus()
@@ -1370,6 +1545,7 @@ public partial class MainWindowViewModel : ObservableObject
 	private void NotifyModified()
 	{
 		OnPropertyChanged(nameof(HasUnsavedChanges));
+		OnPropertyChanged(nameof(SaveStateLabel));
 		UpdateTitle();
 	}
 
@@ -1431,4 +1607,17 @@ public partial class MainWindowViewModel : ObservableObject
 		if (_window != null)
 			await ReportExportService.ShowMessageAsync(_window, message);
 	}
+}
+
+public sealed class RecentFileEntry
+{
+	public RecentFileEntry(string path)
+	{
+		Path = path;
+		Title = System.IO.Path.GetFileName(path);
+	}
+
+	public string Path { get; }
+
+	public string Title { get; }
 }

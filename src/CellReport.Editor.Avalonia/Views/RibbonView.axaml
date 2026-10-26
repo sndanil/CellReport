@@ -14,6 +14,7 @@
 							<MenuFlyout Placement="BottomEdgeAlignedLeft">
 								<MenuItem Header="Создать" InputGesture="Ctrl+N" Command="{Binding CreateCommand}" />
 								<MenuItem Header="Открыть" InputGesture="Ctrl+O" Command="{Binding OpenCommand}" />
+								<MenuItem x:Name="RecentMenu" Header="Недавние" />
 								<MenuItem Header="Импорт" Command="{Binding ImportCommand}" />
 								<Separator />
 								<MenuItem Header="Сохранить" InputGesture="Ctrl+S" Command="{Binding SaveCommand}" />
