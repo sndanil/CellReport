@@ -4,6 +4,7 @@
              xmlns:report="clr-namespace:CellReport.Avalonia;assembly=CellReport.Avalonia"
              xmlns:core="clr-namespace:CellReport.Core;assembly=CellReport"
              xmlns:contents="clr-namespace:CellReport.Core.Contents;assembly=CellReport"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              x:Class="CellReport.Editor.Avalonia.Views.DesignerView"
              x:DataType="vm:MainWindowViewModel">
 	<Grid RowDefinitions="Auto,*">
@@ -18,8 +19,14 @@
 			         Text="{Binding CurrentText, UpdateSourceTrigger=PropertyChanged}" />
 		</Grid>
 
-		<Grid Grid.Row="1" ColumnDefinitions="300,*">
-			<TabControl Margin="4,0,4,4">
+		<Grid Grid.Row="1" x:Name="DesignerLayout">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="300" MinWidth="220" MaxWidth="720" />
+				<ColumnDefinition Width="20" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+
+			<TabControl Grid.Column="0" Margin="4,0,4,4">
 				<TabItem Header="Параметры">
 					<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
 						<StackPanel Margin="8" Spacing="6">
@@ -109,8 +116,50 @@
 				</TabItem>
 			</TabControl>
 
+			<Border Grid.Column="1"
+			        Background="{DynamicResource CellReport.Ribbon.TabBg}"
+			        BorderBrush="{DynamicResource CellReport.Ribbon.Border}"
+			        BorderThickness="1,0,1,0"
+			        IsHitTestVisible="False" />
+
+			<GridSplitter Grid.Column="1"
+			              ResizeDirection="Columns"
+			              Background="Transparent"
+			              IsEnabled="{Binding !IsInspectorCollapsed}" />
+
+			<materialIcons:MaterialIcon Grid.Column="1"
+			                           Kind="DragVertical"
+			                           Width="12"
+			                           Height="18"
+			                           Opacity="0.4"
+			                           HorizontalAlignment="Center"
+			                           VerticalAlignment="Center"
+			                           IsHitTestVisible="False" />
+
+			<Button Grid.Column="1"
+			        Height="32"
+			        Padding="0"
+			        HorizontalAlignment="Stretch"
+			        VerticalAlignment="Top"
+			        Background="Transparent"
+			        BorderThickness="0"
+			        CornerRadius="0"
+			        Command="{Binding ToggleInspectorCommand}"
+			        ToolTip.Tip="Свернуть или развернуть панель">
+				<Panel>
+					<materialIcons:MaterialIcon Kind="ChevronLeft"
+					                           Width="16"
+					                           Height="16"
+					                           IsVisible="{Binding !IsInspectorCollapsed}" />
+					<materialIcons:MaterialIcon Kind="ChevronRight"
+					                           Width="16"
+					                           Height="16"
+					                           IsVisible="{Binding IsInspectorCollapsed}" />
+				</Panel>
+			</Button>
+
 			<report:PresentControl x:Name="ReportSurface"
-			                       Grid.Column="1"
+			                       Grid.Column="2"
 			                       DataContext="{Binding Present}"
 			                       InvertContentMode="Never" />
 		</Grid>

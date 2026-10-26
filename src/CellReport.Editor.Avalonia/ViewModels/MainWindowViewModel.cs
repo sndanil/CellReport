@@ -6,6 +6,7 @@ using CellReport.Core;
 using CellReport.Core.Contents;
 using CellReport.Editor.Avalonia.Editing;
 using CellReport.Editor.Avalonia.Import;
+using CellReport.Editor.Avalonia.Services;
 using CellReport.Export;
 using CellReport.Presenters;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -27,6 +28,10 @@ namespace CellReport.Editor.Avalonia.ViewModels;
 
 public partial class MainWindowViewModel : ObservableObject
 {
+	private const double DefaultInspectorWidth = 300;
+	private const double MinInspectorWidth = 220;
+	private const double MaxInspectorWidth = 720;
+
 	private readonly TemplateHistory _history = new();
 	private CellManager? _manager;
 	private BaseDisplayPresenter? _presenter;
@@ -41,6 +46,8 @@ public partial class MainWindowViewModel : ObservableObject
 	private bool _codeModified;
 	private bool _suppressCodeTracking;
 	private readonly DispatcherTimer _typingTimer = new() { Interval = TimeSpan.FromMilliseconds(700) };
+	private readonly DispatcherTimer _layoutTimer = new() { Interval = TimeSpan.FromMilliseconds(600) };
+	private bool _layoutLoaded;
 
 	public MainWindowViewModel()
 	{
@@ -49,6 +56,12 @@ public partial class MainWindowViewModel : ObservableObject
 		Inspector = new InspectorViewModel(this);
 		Present.PresenterChanged += OnPresenterChanged;
 		_typingTimer.Tick += (_, _) => FlushTypingHistory();
+		_layoutTimer.Tick += (_, _) => SaveLayoutSettings();
+
+		var layout = EditorSettings.Load();
+		InspectorWidth = Math.Clamp(layout.InspectorWidth, MinInspectorWidth, MaxInspectorWidth);
+		IsInspectorCollapsed = layout.InspectorCollapsed;
+		_layoutLoaded = true;
 	}
 
 	public PresentControlViewModel Present { get; } = new();
@@ -68,6 +81,45 @@ public partial class MainWindowViewModel : ObservableObject
 	public bool IsCodeMode { get; private set; }
 
 	public bool HasUnsavedChanges => _manager != null && (_documentModified || _codeModified);
+
+	[ObservableProperty]
+	private double _inspectorWidth = DefaultInspectorWidth;
+
+	[ObservableProperty]
+	private bool _isInspectorCollapsed;
+
+	partial void OnInspectorWidthChanged(double value)
+	{
+		if (_layoutLoaded)
+			QueueLayoutSave();
+	}
+
+	partial void OnIsInspectorCollapsedChanged(bool value)
+	{
+		if (_layoutLoaded)
+			QueueLayoutSave();
+	}
+
+	[RelayCommand]
+	private void ToggleInspector() => IsInspectorCollapsed = !IsInspectorCollapsed;
+
+	public void FlushLayoutSettings() => SaveLayoutSettings();
+
+	private void QueueLayoutSave()
+	{
+		_layoutTimer.Stop();
+		_layoutTimer.Start();
+	}
+
+	private void SaveLayoutSettings()
+	{
+		_layoutTimer.Stop();
+		new EditorSettings
+		{
+			InspectorWidth = Math.Clamp(InspectorWidth, MinInspectorWidth, MaxInspectorWidth),
+			InspectorCollapsed = IsInspectorCollapsed
+		}.Save();
+	}
 
 	public Func<string?>? ReadCode { get; set; }
 

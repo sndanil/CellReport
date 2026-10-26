@@ -165,7 +165,11 @@ public partial class MainWindow : Window
 
 	private async void OnWindowClosing(object? sender, WindowClosingEventArgs e)
 	{
-		if (_closeConfirmed || DataContext is not MainWindowViewModel viewModel || !viewModel.HasUnsavedChanges)
+		if (DataContext is not MainWindowViewModel viewModel)
+			return;
+
+		viewModel.FlushLayoutSettings();
+		if (_closeConfirmed || !viewModel.HasUnsavedChanges)
 			return;
 
 		e.Cancel = true;
