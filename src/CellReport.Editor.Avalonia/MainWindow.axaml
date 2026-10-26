@@ -18,6 +18,7 @@
 		<KeyBinding Gesture="Ctrl+H" Command="{Binding FindAndReplaceCommand}" />
 		<KeyBinding Gesture="Ctrl+F1" Command="{Binding ToggleRibbonCommand}" />
 		<KeyBinding Gesture="Alt+F" Command="{Binding OpenFileMenuCommand}" />
+		<KeyBinding Gesture="F7" Command="{Binding CheckTemplateCommand}" />
 		<KeyBinding Gesture="Alt+D1" Command="{Binding SelectRibbonTabCommand}" CommandParameter="0" />
 		<KeyBinding Gesture="Alt+D2" Command="{Binding SelectRibbonTabCommand}" CommandParameter="1" />
 		<KeyBinding Gesture="Alt+D3" Command="{Binding SelectRibbonTabCommand}" CommandParameter="2" />

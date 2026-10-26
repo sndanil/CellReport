@@ -13,6 +13,7 @@ public partial class MainWindow : Window
 {
 	private XmlCodeEditor? _codeEditor;
 	private SettingsWindow? _settingsWindow;
+	private CheckWindow? _checkWindow;
 	private bool _modeReady;
 	private bool _modeGuard;
 	private bool _closeConfirmed;
@@ -34,6 +35,7 @@ public partial class MainWindow : Window
 		viewModel.SettingsRequested += (_, _) => ShowSettings();
 		viewModel.AboutRequested += async (_, _) => await new AboutWindow().ShowDialog(this);
 		viewModel.FileMenuRequested += (_, _) => Ribbon.ShowFileMenu();
+		viewModel.CheckRequested += (_, _) => ShowTemplateCheck();
 		viewModel.FitToWidthRequested += (_, _) => DesignerPane.FitToWidth();
 		viewModel.CodeSearchRequested += (_, replace) => ShowCodeSearch(replace);
 		viewModel.FindRowInCodeRequested += (_, _) => FindRowInCode();
@@ -130,6 +132,24 @@ public partial class MainWindow : Window
 
 		_settingsWindow.Close();
 		_settingsWindow = null;
+	}
+
+	private void ShowTemplateCheck()
+	{
+		if (_checkWindow != null)
+		{
+			_checkWindow.Refresh();
+			_checkWindow.Activate();
+			return;
+		}
+
+		if (DataContext is not MainWindowViewModel viewModel)
+			return;
+
+		var window = new CheckWindow { DataContext = new CheckViewModel(viewModel) };
+		window.Closed += (_, _) => _checkWindow = null;
+		_checkWindow = window;
+		window.Show(this);
 	}
 
 	private async void OnModeChanged(object? sender, SelectionChangedEventArgs e)

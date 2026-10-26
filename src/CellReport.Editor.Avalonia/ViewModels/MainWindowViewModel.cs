@@ -360,6 +360,22 @@ public partial class MainWindowViewModel : ObservableObject
 	private void ShowAbout() => AboutRequested?.Invoke(this, EventArgs.Empty);
 
 	[RelayCommand]
+	private void CheckTemplate() => CheckRequested?.Invoke(this, EventArgs.Empty);
+
+	public bool GoToCell(CellLocation location)
+	{
+		if (_manager == null || _presenter == null)
+			return false;
+
+		if (IsCodeMode && !TryLeaveCodeMode(out _))
+			return false;
+
+		_presenter.CurrentCell = location;
+		ShowDesignerRequested?.Invoke(this, EventArgs.Empty);
+		return true;
+	}
+
+	[RelayCommand]
 	private void OpenFileMenu() => FileMenuRequested?.Invoke(this, EventArgs.Empty);
 
 	private void QueueLayoutSave()
@@ -501,6 +517,8 @@ public partial class MainWindowViewModel : ObservableObject
 	public event EventHandler? AboutRequested;
 
 	public event EventHandler? FileMenuRequested;
+
+	public event EventHandler? CheckRequested;
 
 	public event EventHandler<bool>? CodeSearchRequested;
 

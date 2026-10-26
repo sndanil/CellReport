@@ -31,6 +31,7 @@
 								</MenuItem>
 								<Separator />
 								<MenuItem Header="Свойства документа" InputGesture="Ctrl+," Command="{Binding ShowSettingsCommand}" />
+								<MenuItem Header="Проверить шаблон" InputGesture="F7" Command="{Binding CheckTemplateCommand}" />
 								<MenuItem Header="О программе" Command="{Binding ShowAboutCommand}" />
 								<Separator />
 								<MenuItem Header="Выход" Command="{Binding ExitCommand}" />
@@ -241,6 +242,19 @@
 											<StackPanel Orientation="Horizontal" Spacing="4">
 												<materialIcons:MaterialIcon Kind="TableMergeCells" Width="16" Height="16" Classes="icon-muted" />
 												<TextBlock Text="Объединить ячейки" VerticalAlignment="Center" />
+											</StackPanel>
+										</Button>
+									</StackPanel>
+								</DockPanel>
+							</Border>
+							<Border Classes="ribbon-group">
+								<DockPanel LastChildFill="True">
+									<TextBlock Classes="ribbon-group-title" DockPanel.Dock="Bottom" Text="Документ" />
+									<StackPanel Margin="4,4,4,2">
+										<Button Classes="ribbon-button large" Command="{Binding CheckTemplateCommand}" ToolTip.Tip="Проверить шаблон (F7)">
+											<StackPanel Orientation="Vertical" Spacing="2" HorizontalAlignment="Center">
+												<materialIcons:MaterialIcon Kind="CheckCircleOutline" Width="32" Height="32" Classes="icon-success" />
+												<TextBlock Text="Проверить" MaxWidth="72" />
 											</StackPanel>
 										</Button>
 									</StackPanel>
