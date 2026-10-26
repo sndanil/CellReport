@@ -33,7 +33,7 @@
 			<TabItem x:Name="DesignerTab" Header="Конструктор">
 				<views:DesignerView x:Name="DesignerPane" />
 			</TabItem>
-			<TabItem x:Name="CodeTab" Header="Код">
+			<TabItem x:Name="CodeTab" Header="{Binding CodeTabTitle}">
 				<views:CodeView x:Name="CodePane" />
 			</TabItem>
 		</TabControl>

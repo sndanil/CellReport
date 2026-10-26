@@ -10,6 +10,7 @@ using AvaloniaEdit.CodeCompletion;
 using AvaloniaEdit.Folding;
 using AvaloniaEdit.Highlighting;
 using AvaloniaEdit.Indentation;
+using AvaloniaEdit.Rendering;
 using AvaloniaEdit.Search;
 using CellReport.Core;
 using CellReport.Core.Contents;
@@ -40,6 +41,9 @@ public sealed class XmlCodeEditor
 	private readonly XmlFoldingStrategy _foldingStrategy = new();
 	private readonly FoldingManager _foldingManager;
 	private readonly SearchPanel _searchPanel;
+	private readonly ErrorMargin _errorMargin;
+	private readonly ErrorSquiggleRenderer _errorRenderer;
+	private readonly DispatcherTimer _validationTimer = new() { Interval = TimeSpan.FromMilliseconds(450) };
 	private bool _active;
 	private CellManager? _parsedManager;
 
@@ -65,13 +69,21 @@ public sealed class XmlCodeEditor
 		XmlCodeModel.Information = XsdParser.AnalyseSchema(_schemas);
 
 		_foldingManager = FoldingManager.Install(editor.TextArea);
-		var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
-		timer.Tick += (_, _) => Refresh();
-		timer.Start();
+		_validationTimer.Tick += (_, _) => Refresh();
+
+		_errorMargin = new ErrorMargin(errors);
+		editor.TextArea.LeftMargins.Add(_errorMargin);
+		_errorRenderer = new ErrorSquiggleRenderer(errors);
+		AttachErrorRenderer();
+		editor.AttachedToVisualTree += (_, _) => AttachErrorRenderer();
 
 		editor.TextArea.TextEntered += OnTextEntered;
 		editor.TextArea.KeyDown += OnKeyDown;
-		editor.TextChanged += (_, _) => HistoryChanged?.Invoke(this, EventArgs.Empty);
+		editor.TextChanged += (_, _) =>
+		{
+			HistoryChanged?.Invoke(this, EventArgs.Empty);
+			ScheduleValidation();
+		};
 		editor.ActualThemeVariantChanged += (_, _) => ApplyThemeColors();
 		ApplyThemeColors();
 	}
@@ -247,18 +259,41 @@ public sealed class XmlCodeEditor
 		_active = active;
 		if (active)
 		{
+			AttachErrorRenderer();
 			ApplyThemeColors();
 			Refresh();
 		}
 	}
 
+	private void AttachErrorRenderer()
+	{
+		var textView = _editor.TextArea?.TextView;
+		if (textView == null)
+			return;
+
+		if (!textView.BackgroundRenderers.Contains(_errorRenderer))
+			textView.BackgroundRenderers.Add(_errorRenderer);
+	}
+
 	private void Refresh()
 	{
+		_validationTimer.Stop();
 		if (!_active)
 			return;
 
 		_foldingStrategy.UpdateFoldings(_foldingManager, _editor.Document);
 		Validate();
+		_errorMargin.Invalidate();
+		_editor.TextArea.TextView.InvalidateLayer(KnownLayer.Selection);
+	}
+
+	private void ScheduleValidation()
+	{
+		if (!_active)
+			return;
+
+		_validationTimer.Stop();
+		_validationTimer.Start();
 	}
 
 	private void Validate()
@@ -287,6 +322,15 @@ public sealed class XmlCodeEditor
 				template.LoadFromXml(_editor.Text);
 				_parsedManager = template.Manager;
 			}
+		}
+		catch (XmlException ex)
+		{
+			_errors.Add(new SchemaError
+			{
+				Message = ex.Message,
+				LineNumber = ex.LineNumber,
+				LinePosition = ex.LinePosition
+			});
 		}
 		catch (Exception ex)
 		{

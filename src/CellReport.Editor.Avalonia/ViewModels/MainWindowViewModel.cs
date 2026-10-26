@@ -59,6 +59,11 @@ public partial class MainWindowViewModel : ObservableObject
 		Present.PresenterChanged += OnPresenterChanged;
 		_typingTimer.Tick += (_, _) => FlushTypingHistory();
 		_layoutTimer.Tick += (_, _) => SaveLayoutSettings();
+		CodeErrors.CollectionChanged += (_, _) =>
+		{
+			OnPropertyChanged(nameof(CodeTabTitle));
+			OnPropertyChanged(nameof(CodeErrorSummary));
+		};
 
 		var layout = _settings;
 		InspectorWidth = Math.Clamp(layout.InspectorWidth, MinInspectorWidth, MaxInspectorWidth);
@@ -267,6 +272,28 @@ public partial class MainWindowViewModel : ObservableObject
 	public event EventHandler? CodeTextInvalidated;
 
 	public ObservableCollection<SchemaError> CodeErrors { get; } = new();
+
+	public string CodeTabTitle => CodeErrors.Count == 0
+		? "Код"
+		: "Код · " + CodeErrors.Count.ToString(CultureInfo.InvariantCulture);
+
+	public string CodeErrorSummary => CodeErrors.Count == 0
+		? "Ошибок нет"
+		: ErrorsCountText(CodeErrors.Count);
+
+	private static string ErrorsCountText(int count)
+	{
+		var mod100 = count % 100;
+		var mod10 = count % 10;
+		var text = count.ToString(CultureInfo.InvariantCulture);
+
+		if (mod10 == 1 && mod100 != 11)
+			return text + " ошибка";
+		if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14))
+			return text + " ошибки";
+
+		return text + " ошибок";
+	}
 
 	public event EventHandler? ExitRequested;
 
