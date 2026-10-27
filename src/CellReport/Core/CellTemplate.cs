@@ -207,19 +207,9 @@ namespace CellReport.Core
 		private XElement GetStyles()
 		{
 			var result = new XElement("Styles");
-			var manager = new CellManager();
-			foreach (var style in _manager.GetExtStyles())
-			{
-				var data = _manager.GetDataByUri(style.Uri);
-				if (data != null)
-				{
-					var xDoc = XDocument.Load(new StreamReader(new MemoryStream(data)));
-					var element = xDoc.Element("CellReportTemplate");
-					ParseStyles(element, manager);
-				}
-			}
 			result.Add(_manager.GetExtStyles().Select(s => new XElement("ExternalStyle", new XAttribute("Uri", s.Uri))));
-			result.Add(_manager.GetStyles().Where(s => manager.GetStyles().Where(es => es.ID == s.ID && es.GetType() == s.GetType()).Count() == 0).Select(s => s.Serialize()));
+			// во внешних файлах стили не дублируются в шаблоне
+			result.Add(_manager.GetTemplateStyles().Select(s => s.Serialize()));
 			return result;
 		}
 

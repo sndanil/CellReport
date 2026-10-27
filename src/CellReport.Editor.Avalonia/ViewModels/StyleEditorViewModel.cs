@@ -3,95 +3,107 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using Avalonia;
 using Avalonia.Media;
 using CellReport.Core;
 using CellReport.Core.Contents;
-using CoreFontStyle = CellReport.Core.FontStyle;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using CoreFontStyle = CellReport.Core.FontStyle;
 
 namespace CellReport.Editor.Avalonia.ViewModels;
 
 /// <summary>
-/// Редактор стиля содержимого ячейки. Стили неизменяемые, поэтому при применении
-/// создаётся новый объект стиля и подменяет старый по идентификатору.
+/// Редактор стиля. Стили неизменяемые, поэтому при применении создаётся новый объект
+/// и подменяет старый по идентификатору.
 /// </summary>
 public partial class StyleEditorViewModel : ObservableObject
 {
 	private readonly MainWindowViewModel _owner;
-	private readonly BaseContent _content;
+	private readonly BaseStyle _source;
 	private readonly BaseStyle? _original;
 	private readonly Type _styleType;
 
-	public StyleEditorViewModel(MainWindowViewModel owner, BaseContent content)
+	public StyleEditorViewModel(MainWindowViewModel owner, BaseStyle style, bool isNew)
 	{
 		_owner = owner;
-		_content = content;
-		_original = content.GetStyle();
-		_styleType = StyleTypeOf(content);
+		_source = style;
+		_original = isNew ? null : style;
+		_styleType = style.GetType();
 
-		OverrideCount = content.GetParams().Count(item => (item.Target ?? string.Empty).StartsWith("Style", StringComparison.Ordinal));
+		IsText = style is TextContentStyle;
+		IsDecimal = style is DecimalContentStyle;
+		IsDate = style is DateTimeContentStyle;
+		IsCell = style is CellStyle;
+		IsLine = style is LineContentStyle;
 
-		if (_original == null || string.IsNullOrEmpty(_original.ID))
-			_original = null;
+		var textStyle = style as TextContentStyle;
+		if (textStyle != null)
+		{
+			FontFamily = textStyle.Font.Family;
+			FontSizeText = textStyle.Font.Size.ToString(CultureInfo.CurrentCulture);
+			Bold = (textStyle.Font.Style & CoreFontStyle.Bold) == CoreFontStyle.Bold;
+			Italic = (textStyle.Font.Style & CoreFontStyle.Italic) == CoreFontStyle.Italic;
+			Underline = (textStyle.Font.Style & CoreFontStyle.Underline) == CoreFontStyle.Underline;
+			Strikeout = (textStyle.Font.Style & CoreFontStyle.Strikeout) == CoreFontStyle.Strikeout;
+			Color = textStyle.Color ?? "Black";
+			AngleText = textStyle.Angle.ToString(CultureInfo.CurrentCulture);
+			SelectedHorizontal = FindHorizontal(textStyle.HAlignment);
+			SelectedVertical = FindVertical(textStyle.VAlignment);
+			SelectedDirection = FindDirection(textStyle.Direction);
+		}
+		else if (style is CellStyle cellStyle)
+		{
+			Color = string.IsNullOrEmpty(cellStyle.Color) ? "Transparent" : cellStyle.Color;
+		}
+		else if (style is LineContentStyle lineStyle)
+		{
+			Color = lineStyle.Color ?? "Black";
+			WidthText = lineStyle.Width.ToString(CultureInfo.CurrentCulture);
+		}
 
-		Id = _original?.ID ?? NextStyleId();
-		Title = "Стиль: " + StyleTypeTitle(_styleType);
-
-		var style = content.GetActualStyle() as TextContentStyle ?? TextBasedContent.DefaultStyle as TextContentStyle;
-		if (content.GetActualStyle() is TextContentStyle textStyle)
-			style = textStyle;
-
-		FontFamily = style?.Font.Family ?? FontInfo.Default.Family;
-		FontSizeText = (style?.Font.Size ?? FontInfo.Default.Size).ToString(CultureInfo.CurrentCulture);
-		Bold = style != null && (style.Font.Style & CoreFontStyle.Bold) == CoreFontStyle.Bold;
-		Italic = style != null && (style.Font.Style & CoreFontStyle.Italic) == CoreFontStyle.Italic;
-		Underline = style != null && (style.Font.Style & CoreFontStyle.Underline) == CoreFontStyle.Underline;
-		Strikeout = style != null && (style.Font.Style & CoreFontStyle.Strikeout) == CoreFontStyle.Strikeout;
-		Color = style?.Color ?? "Black";
-		AngleText = (style?.Angle ?? 0).ToString(CultureInfo.CurrentCulture);
-		SelectedHorizontal = FindHorizontal(style?.HAlignment ?? HorizontalAlignment.Left);
-		SelectedVertical = FindVertical(style?.VAlignment ?? VerticalAlignment.Middle);
-		SelectedDirection = FindDirection(style?.Direction ?? Direction.LeftToRight);
-
-		if (content.GetActualStyle() is DecimalContentStyle decimalStyle)
+		if (style is DecimalContentStyle decimalStyle)
 		{
 			Format = decimalStyle.Format ?? string.Empty;
 			Culture = decimalStyle.Culture ?? string.Empty;
 			NegativeColor = decimalStyle.NegativeColor ?? "Red";
 		}
-		else if (content.GetActualStyle() is DateTimeContentStyle dateStyle)
+		else if (style is DateTimeContentStyle dateStyle)
 		{
 			Format = dateStyle.Format ?? string.Empty;
 			Culture = dateStyle.Culture ?? string.Empty;
 		}
 
+		Id = _original == null || string.IsNullOrEmpty(_original.ID)
+			? NextStyleId(_styleType)
+			: _original.ID;
+
+		Title = (isNew ? "Новый стиль: " : "Стиль: ") + StyleTypeTitle(_styleType);
 		UpdatePreview();
 	}
 
 	public string Title { get; }
 
-	/// <summary>
-	/// Сколько параметров содержимого перекрывают оформление стиля.
-	/// </summary>
-	public int OverrideCount { get; }
+	public bool IsText { get; }
 
-	public bool HasOverrides => OverrideCount > 0;
+	public bool IsDecimal { get; }
 
-	public string OverridesHint => "Убрать параметры оформления содержимого (" + OverrideCount + ")";
+	public bool IsDate { get; }
 
-	[ObservableProperty]
-	private bool _replaceOverrides = true;
+	public bool IsCell { get; }
 
-	public bool IsText => _styleType == typeof(TextContentStyle);
+	public bool IsLine { get; }
 
-	public bool IsDecimal => _styleType == typeof(DecimalContentStyle);
-
-	public bool IsDate => _styleType == typeof(DateTimeContentStyle);
+	public bool ShowTextPreview => !IsLine;
 
 	public IReadOnlyList<string> Fonts => _owner.Fonts;
 
 	public IReadOnlyList<string> FontSizes => _owner.FontSizes;
+
+	public ObservableCollection<string> Cultures => _owner.Inspector.Cultures;
+
+	public IReadOnlyList<string> FormatPresets => IsDecimal
+		? ReportFormatPresets.Numbers
+		: ReportFormatPresets.Dates;
 
 	public Choice[] HorizontalAlignments { get; } =
 	{
@@ -114,17 +126,11 @@ public partial class StyleEditorViewModel : ObservableObject
 		new("TopToDown", "Сверху вниз")
 	};
 
-	public ObservableCollection<string> Cultures => _owner.Inspector.Cultures;
-
-	public IReadOnlyList<string> FormatPresets => IsDecimal
-		? ReportFormatPresets.Numbers
-		: ReportFormatPresets.Dates;
-
 	[ObservableProperty]
 	private string _id = string.Empty;
 
 	[ObservableProperty]
-	private string _fontFamily = string.Empty;
+	private string _fontFamily = FontInfo.Default.Family;
 
 	[ObservableProperty]
 	private string _fontSizeText = "10";
@@ -148,6 +154,9 @@ public partial class StyleEditorViewModel : ObservableObject
 	private string _angleText = "0";
 
 	[ObservableProperty]
+	private string _widthText = "0.25";
+
+	[ObservableProperty]
 	private Choice _selectedHorizontal;
 
 	[ObservableProperty]
@@ -169,13 +178,25 @@ public partial class StyleEditorViewModel : ObservableObject
 	private string _previewText = string.Empty;
 
 	[ObservableProperty]
+	private string _cultureName = string.Empty;
+
+	[ObservableProperty]
 	private IBrush _previewBrush = Brushes.Black;
+
+	[ObservableProperty]
+	private IBrush _previewBackground = Brushes.White;
+
+	[ObservableProperty]
+	private IBrush _previewBorderBrush = Brushes.Transparent;
+
+	[ObservableProperty]
+	private Thickness _previewBorderThickness = new Thickness(0);
 
 	[ObservableProperty]
 	private double _previewFontSize = 12;
 
 	[ObservableProperty]
-	private global::Avalonia.Media.FontWeight _previewWeight = global::Avalonia.Media.FontWeight.Normal;
+	private FontWeight _previewWeight = FontWeight.Normal;
 
 	[ObservableProperty]
 	private global::Avalonia.Media.FontStyle _previewFontStyle = global::Avalonia.Media.FontStyle.Normal;
@@ -185,8 +206,13 @@ public partial class StyleEditorViewModel : ObservableObject
 
 	public bool HasError => ErrorMessage.Length > 0;
 
-	[ObservableProperty]
-	private string _cultureName = string.Empty;
+	public bool CanEditText => IsText;
+
+	public bool CanEditFormat => IsDecimal || IsDate;
+
+	public bool CanEditNegativeColor => IsDecimal;
+
+	public bool CanEditWidth => IsLine;
 
 	partial void OnFontFamilyChanged(string value) => UpdatePreview();
 
@@ -208,6 +234,8 @@ public partial class StyleEditorViewModel : ObservableObject
 
 	partial void OnNegativeColorChanged(string value) => UpdatePreview();
 
+	partial void OnWidthTextChanged(string value) => UpdatePreview();
+
 	partial void OnErrorMessageChanged(string value) => OnPropertyChanged(nameof(HasError));
 
 	public bool TryApply()
@@ -225,8 +253,16 @@ public partial class StyleEditorViewModel : ObservableObject
 			return false;
 		}
 
-		float size;
-		if (!float.TryParse(FontSizeText, NumberStyles.Float, CultureInfo.CurrentCulture, out size) || size <= 0)
+		var existing = manager.GetStyles()
+			.FirstOrDefault(item => item.GetType() == _styleType && string.Equals(item.ID, id, StringComparison.Ordinal));
+		if (existing != null && !ReferenceEquals(existing, _original))
+		{
+			ErrorMessage = "Стиль «" + id + "» уже существует";
+			return false;
+		}
+
+		float size = 0;
+		if (IsText && (!float.TryParse(FontSizeText, NumberStyles.Float, CultureInfo.CurrentCulture, out size) || size <= 0))
 		{
 			ErrorMessage = "Размер шрифта должен быть больше нуля";
 			return false;
@@ -235,6 +271,13 @@ public partial class StyleEditorViewModel : ObservableObject
 		float angle;
 		if (!float.TryParse(AngleText, NumberStyles.Float, CultureInfo.CurrentCulture, out angle))
 			angle = 0;
+
+		float width = 0;
+		if (IsLine && (!float.TryParse(WidthText, NumberStyles.Float, CultureInfo.CurrentCulture, out width) || width <= 0))
+		{
+			ErrorMessage = "Толщина линии должна быть больше нуля";
+			return false;
+		}
 
 		if (!IsColorValid(Color, out var colorError))
 		{
@@ -248,77 +291,82 @@ public partial class StyleEditorViewModel : ObservableObject
 			return false;
 		}
 
-		var existing = manager.GetStyles().FirstOrDefault(item => item.GetType() == _styleType && item.ID == id);
-		if (existing != null && !ReferenceEquals(existing, _original))
-		{
-			ErrorMessage = "Стиль «" + id + "» уже существует";
-			return false;
-		}
-
-		var style = BuildStyle(id, size, angle);
+		var style = BuildStyle(id, size, angle, width);
 		if (style == null)
 		{
-			ErrorMessage = "Этот тип содержимого не поддерживает редактирование стиля";
+			ErrorMessage = "Этот тип стиля не поддерживает редактирование";
 			return false;
 		}
 
 		_owner.CommitDocumentChange(() =>
 		{
-			if (existing != null)
-				manager.ReplaceStyle(style);
-			else
-				manager.AddStyle(style);
-
-			_content.StyleID = id;
-
-			if (ReplaceOverrides && HasOverrides)
+			if (_original == null)
 			{
-				foreach (var param in _content.GetParams()
-					.Where(item => (item.Target ?? string.Empty).StartsWith("Style", StringComparison.Ordinal))
-					.ToList())
-				{
-					_content.RemoveParam(param);
-				}
+				manager.AddStyle(style);
+				return;
 			}
+
+			var oldId = _original.ID ?? string.Empty;
+			if (!string.Equals(oldId, id, StringComparison.Ordinal))
+			{
+				manager.ReplaceStyleReferences(_styleType, oldId, id);
+				manager.RemoveStyle(_original);
+			}
+
+			manager.ReplaceStyle(style);
 		});
 
 		return true;
 	}
 
-	private BaseStyle? BuildStyle(string id, float size, float angle)
+	private BaseStyle? BuildStyle(string id, float size, float angle, float width)
 	{
-		var fontStyle = CoreFontStyle.Regular;
-		if (Bold)
-			fontStyle |= CoreFontStyle.Bold;
-		if (Italic)
-			fontStyle |= CoreFontStyle.Italic;
-		if (Underline)
-			fontStyle |= CoreFontStyle.Underline;
-		if (Strikeout)
-			fontStyle |= CoreFontStyle.Strikeout;
-
-		var family = string.IsNullOrWhiteSpace(FontFamily) ? FontInfo.Default.Family : FontFamily;
-		var font = new FontInfo(family, size, fontStyle);
-		var horizontal = ParseEnum(SelectedHorizontal.Value, HorizontalAlignment.Left);
-		var vertical = ParseEnum(SelectedVertical.Value, VerticalAlignment.Middle);
-		var direction = ParseEnum(SelectedDirection.Value, Direction.LeftToRight);
 		var color = string.IsNullOrWhiteSpace(Color) ? "Black" : Color;
-
 		BaseStyle style;
-		if (IsText)
+
+		if (IsCell)
 		{
-			style = new TextContentStyle(horizontal, vertical, font, color, angle, direction);
+			// границы и отступы редактируются отдельно — сохраняем как есть
+			var cell = (CellStyle)_source;
+			style = new CellStyle(color, cell.Borders, cell.Paddings);
 		}
-		else if (IsDecimal)
+		else if (IsLine)
 		{
-			style = new DecimalContentStyle(horizontal, vertical, font, color,
-				string.IsNullOrWhiteSpace(NegativeColor) ? color : NegativeColor,
-				angle, Format ?? string.Empty, Culture ?? string.Empty, direction);
+			style = new LineContentStyle(color, width);
 		}
-		else if (IsDate)
+		else if (IsText)
 		{
-			style = new DateTimeContentStyle(horizontal, vertical, font, color,
-				angle, Format ?? string.Empty, Culture ?? string.Empty, direction);
+			var fontStyle = CoreFontStyle.Regular;
+			if (Bold)
+				fontStyle |= CoreFontStyle.Bold;
+			if (Italic)
+				fontStyle |= CoreFontStyle.Italic;
+			if (Underline)
+				fontStyle |= CoreFontStyle.Underline;
+			if (Strikeout)
+				fontStyle |= CoreFontStyle.Strikeout;
+
+			var family = string.IsNullOrWhiteSpace(FontFamily) ? FontInfo.Default.Family : FontFamily;
+			var font = new FontInfo(family, size, fontStyle);
+			var horizontal = ParseEnum(SelectedHorizontal.Value, HorizontalAlignment.Left);
+			var vertical = ParseEnum(SelectedVertical.Value, VerticalAlignment.Middle);
+			var direction = ParseEnum(SelectedDirection.Value, Direction.LeftToRight);
+
+			if (IsDecimal)
+			{
+				style = new DecimalContentStyle(horizontal, vertical, font, color,
+					string.IsNullOrWhiteSpace(NegativeColor) ? color : NegativeColor,
+					angle, Format ?? string.Empty, Culture ?? string.Empty, direction);
+			}
+			else if (IsDate)
+			{
+				style = new DateTimeContentStyle(horizontal, vertical, font, color,
+					angle, Format ?? string.Empty, Culture ?? string.Empty, direction);
+			}
+			else
+			{
+				style = new TextContentStyle(horizontal, vertical, font, color, angle, direction);
+			}
 		}
 		else
 		{
@@ -331,22 +379,31 @@ public partial class StyleEditorViewModel : ObservableObject
 
 	private void UpdatePreview()
 	{
-		PreviewText = FormatSample();
+		PreviewText = IsCell ? "Ячейка" : IsLine ? string.Empty : FormatSample();
 
 		float size;
 		PreviewFontSize = float.TryParse(FontSizeText, NumberStyles.Float, CultureInfo.CurrentCulture, out size) && size > 0
 			? size
 			: 10;
-		PreviewWeight = Bold ? global::Avalonia.Media.FontWeight.Bold : global::Avalonia.Media.FontWeight.Normal;
+		PreviewWeight = Bold ? FontWeight.Bold : FontWeight.Normal;
 		PreviewFontStyle = Italic ? global::Avalonia.Media.FontStyle.Italic : global::Avalonia.Media.FontStyle.Normal;
 
-		try
+		PreviewBrush = IsCell ? Brushes.Black : CreateBrush(Color, Brushes.Black);
+
+		if (IsCell)
 		{
-			PreviewBrush = string.IsNullOrWhiteSpace(Color) ? Brushes.Black : new SolidColorBrush(global::Avalonia.Media.Color.Parse(Color));
+			PreviewBackground = string.IsNullOrWhiteSpace(Color)
+				|| string.Equals(Color, "Transparent", StringComparison.OrdinalIgnoreCase)
+				? Brushes.White
+				: CreateBrush(Color, Brushes.White);
+			PreviewBorderBrush = Brushes.Gray;
+			PreviewBorderThickness = new Thickness(1);
 		}
-		catch (Exception)
+		else
 		{
-			PreviewBrush = Brushes.Black;
+			PreviewBackground = Brushes.White;
+			PreviewBorderBrush = Brushes.Transparent;
+			PreviewBorderThickness = new Thickness(0);
 		}
 
 		try
@@ -356,6 +413,21 @@ public partial class StyleEditorViewModel : ObservableObject
 		catch (CultureNotFoundException)
 		{
 			CultureName = "Неизвестная культура";
+		}
+	}
+
+	private static IBrush CreateBrush(string? color, IBrush fallback)
+	{
+		if (string.IsNullOrWhiteSpace(color))
+			return fallback;
+
+		try
+		{
+			return new SolidColorBrush(global::Avalonia.Media.Color.Parse(color));
+		}
+		catch (Exception)
+		{
+			return fallback;
 		}
 	}
 
@@ -402,19 +474,6 @@ public partial class StyleEditorViewModel : ObservableObject
 		return "Пример текста";
 	}
 
-	private static bool IsColorValid(string? value, out string error)
-	{
-		error = string.Empty;
-		if (string.IsNullOrWhiteSpace(value))
-			return true;
-
-		if (global::Avalonia.Media.Color.TryParse(value, out _))
-			return true;
-
-		error = "Неверный цвет «" + value + "»";
-		return false;
-	}
-
 	private static CultureInfo SafeCulture(string code)
 	{
 		try
@@ -427,14 +486,54 @@ public partial class StyleEditorViewModel : ObservableObject
 		}
 	}
 
-	private string NextStyleId()
+	private string NextStyleId(Type type)
 	{
+		var prefix = StyleIdPrefix(type);
 		var manager = _owner.Manager;
 		var index = 1;
-		while (manager != null && manager.GetStyles().Any(item => item.ID == "style" + index.ToString(CultureInfo.InvariantCulture)))
+		while (manager != null && manager.GetStyles().Any(item => item.GetType() == type && item.ID == prefix + index.ToString(CultureInfo.InvariantCulture)))
 			index++;
 
-		return "style" + index.ToString(CultureInfo.InvariantCulture);
+		return prefix + index.ToString(CultureInfo.InvariantCulture);
+	}
+
+	private static string StyleIdPrefix(Type type)
+	{
+		if (type == typeof(DecimalContentStyle))
+			return "number";
+		if (type == typeof(DateTimeContentStyle))
+			return "date";
+		if (type == typeof(CellStyle))
+			return "cell";
+		if (type == typeof(LineContentStyle))
+			return "line";
+		return "text";
+	}
+
+	private static string StyleTypeTitle(Type type)
+	{
+		if (type == typeof(DecimalContentStyle))
+			return "число";
+		if (type == typeof(DateTimeContentStyle))
+			return "дата и время";
+		if (type == typeof(CellStyle))
+			return "ячейка";
+		if (type == typeof(LineContentStyle))
+			return "линия";
+		return "текст";
+	}
+
+	private static bool IsColorValid(string? value, out string error)
+	{
+		error = string.Empty;
+		if (string.IsNullOrWhiteSpace(value))
+			return true;
+
+		if (global::Avalonia.Media.Color.TryParse(value, out _))
+			return true;
+
+		error = "Неверный цвет «" + value + "»";
+		return false;
 	}
 
 	private Choice FindHorizontal(HorizontalAlignment value)
@@ -457,23 +556,5 @@ public partial class StyleEditorViewModel : ObservableObject
 	{
 		T result;
 		return !string.IsNullOrEmpty(value) && Enum.TryParse(value, out result) ? result : fallback;
-	}
-
-	private static Type StyleTypeOf(BaseContent content)
-	{
-		if (content is DecimalContent)
-			return typeof(DecimalContentStyle);
-		if (content is DateTimeContent)
-			return typeof(DateTimeContentStyle);
-		return typeof(TextContentStyle);
-	}
-
-	private static string StyleTypeTitle(Type type)
-	{
-		if (type == typeof(DecimalContentStyle))
-			return "число";
-		if (type == typeof(DateTimeContentStyle))
-			return "дата и время";
-		return "текст";
 	}
 }

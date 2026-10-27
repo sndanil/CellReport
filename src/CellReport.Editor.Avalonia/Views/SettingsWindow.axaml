@@ -22,6 +22,9 @@
 			<TabItem Header="Закладки">
 				<views:BookmarkSettingsView />
 			</TabItem>
+			<TabItem Header="Стили">
+				<views:StylesView />
+			</TabItem>
 			<TabItem Header="Отображение">
 				<views:DisplaySettingsView />
 			</TabItem>

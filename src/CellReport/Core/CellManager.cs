@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -38,6 +38,8 @@ namespace CellReport.Core
 		private readonly HashSet<int> _pageBreakRows = new HashSet<int>();
 
 		private readonly List<BaseStyle> _stylesList = new List<BaseStyle>();
+		[NonSerialized]
+		private readonly HashSet<BaseStyle> _externalStyleObjects = new HashSet<BaseStyle>(ReferenceComparer.Instance);
 		private readonly List<ExternalStyle> _externalStyles = new List<ExternalStyle>();
 
 		public string TemplateDirectory { get; set; }
@@ -961,10 +963,19 @@ namespace CellReport.Core
 				data = this.GetDataByUri(style.Uri);
 			if (data != null)
 			{
+				var known = new HashSet<BaseStyle>(_stylesList, ReferenceComparer.Instance);
 				var template = new CellTemplate(this);
 				var xDoc = System.Xml.Linq.XDocument.Load(new System.IO.StreamReader(new System.IO.MemoryStream(data)));
 				var element = xDoc.Element("CellReportTemplate");
 				template.ParseStyles(element, this);
+
+				// запоминаем, какие стили пришли из внешнего файла — их нельзя
+				// редактировать в шаблоне и их можно вычистить «сжатием»
+				foreach (var parsed in _stylesList)
+				{
+					if (!known.Contains(parsed))
+						_externalStyleObjects.Add(parsed);
+				}
 			}
 			OnPropertyChanged("ExternalStyles");
 		}
@@ -973,6 +984,166 @@ namespace CellReport.Core
 		{
 			foreach (var style in _externalStyles)
 				yield return style;
+		}
+
+		/// <summary>
+		/// Стиль загружен из внешнего файла стилей.
+		/// </summary>
+		public bool IsExternalStyle(BaseStyle style)
+		{
+			return style != null && _externalStyleObjects.Contains(style);
+		}
+
+		/// <summary>
+		/// Стили, хранящиеся в самом шаблоне (доступны для изменения).
+		/// </summary>
+		public IEnumerable<BaseStyle> GetTemplateStyles()
+		{
+			foreach (var style in _stylesList)
+			{
+				if (!_externalStyleObjects.Contains(style))
+					yield return style;
+			}
+		}
+
+		/// <summary>
+		/// Стили, загруженные из внешних файлов (без дублей по идентификатору и типу).
+		/// </summary>
+		public IEnumerable<BaseStyle> GetExternalStyles()
+		{
+			var seen = new HashSet<string>(StringComparer.Ordinal);
+			foreach (var style in _stylesList)
+			{
+				if (!_externalStyleObjects.Contains(style))
+					continue;
+				if (!seen.Add(style.GetType().Name + "|" + (style.ID ?? string.Empty)))
+					continue;
+
+				yield return style;
+			}
+		}
+
+		/// <summary>
+		/// Описания внешних файлов стилей.
+		/// </summary>
+		public IEnumerable<ExternalStyle> GetExternalStyleSources()
+		{
+			foreach (var style in _externalStyles)
+				yield return style;
+		}
+
+		/// <summary>
+		/// Перенаправляет ссылки на стиль старого идентификатора к новому.
+		/// Возвращает количество изменённых ссылок.
+		/// </summary>
+		public int ReplaceStyleReferences(Type styleType, string oldId, string newId)
+		{
+			if (styleType == null || string.IsNullOrEmpty(oldId) || string.IsNullOrEmpty(newId) || oldId == newId)
+				return 0;
+
+			var isCellStyle = styleType == typeof(CellStyle);
+			var count = 0;
+
+			for (var row = 0; row < RowsCount; row++)
+			{
+				for (var column = 0; column < ColumnsCount; column++)
+				{
+					if (!TryGetCell(row, column, out var cell) || cell == null)
+						continue;
+					if (cell.Location.Row != row || cell.Location.Column != column)
+						continue;
+
+					if (isCellStyle && string.Equals(cell.StyleID, oldId, StringComparison.Ordinal))
+					{
+						cell.StyleID = newId;
+						count++;
+					}
+
+					count += ReplaceContentStyle(cell.Content, styleType, oldId, newId);
+				}
+			}
+
+			if (PrintSettings != null)
+			{
+				count += ReplacePagerStyle(PrintSettings.Headers, styleType, oldId, newId);
+				count += ReplacePagerStyle(PrintSettings.Footers, styleType, oldId, newId);
+			}
+
+			return count;
+		}
+
+		private static int ReplaceContentStyle(BaseContent content, Type styleType, string oldId, string newId)
+		{
+			if (content == null)
+				return 0;
+
+			if (content is CollectionContent collection)
+			{
+				var nested = 0;
+				foreach (var item in collection.GetContents())
+					nested += ReplaceContentStyle(item, styleType, oldId, newId);
+				return nested;
+			}
+
+			if (!string.Equals(content.StyleID, oldId, StringComparison.Ordinal))
+				return 0;
+
+			var style = content.GetStyle();
+			if (style == null || style.GetType() != styleType)
+				return 0;
+
+			content.StyleID = newId;
+			return 1;
+		}
+
+		private static int ReplacePagerStyle(IList<Pager> pagers, Type styleType, string oldId, string newId)
+		{
+			if (pagers == null)
+				return 0;
+
+			var count = 0;
+			foreach (var pager in pagers)
+			{
+				count += ReplaceContentStyle(pager.Left, styleType, oldId, newId);
+				count += ReplaceContentStyle(pager.Center, styleType, oldId, newId);
+				count += ReplaceContentStyle(pager.Right, styleType, oldId, newId);
+			}
+
+			return count;
+		}
+
+		/// <summary>
+		/// Удаляет стили шаблона, которые уже есть во внешних файлах. Если идентификаторы
+		/// различаются, ссылки в ячейках перенаправляются на внешний стиль.
+		/// </summary>
+		public StyleCompressionResult CompressStyles()
+		{
+			var result = new StyleCompressionResult();
+			var external = new List<BaseStyle>(GetExternalStyles());
+			if (external.Count == 0)
+				return result;
+
+			foreach (var style in new List<BaseStyle>(GetTemplateStyles()))
+			{
+				var source = external.FirstOrDefault(item =>
+						item.GetType() == style.GetType()
+						&& string.Equals(item.ID, style.ID, StringComparison.Ordinal))
+					?? external.FirstOrDefault(item => item.GetType() == style.GetType() && item.Equals(style));
+
+				if (source == null)
+					continue;
+
+				if (!string.Equals(style.ID, source.ID, StringComparison.Ordinal))
+				{
+					result.References += ReplaceStyleReferences(style.GetType(), style.ID ?? string.Empty, source.ID ?? string.Empty);
+					result.Remapped++;
+				}
+
+				RemoveStyle(style);
+				result.Removed++;
+			}
+
+			return result;
 		}
 
 		public void RemoveUnusedStyles()
@@ -988,7 +1159,7 @@ namespace CellReport.Core
 				RemoveStyle(style);
 		}
 
-		private bool IsStyleUsed(BaseStyle style)
+		public bool IsStyleUsed(BaseStyle style)
 		{
 			for (int i = 0; i < _originCells.Count; i++)
 			{
@@ -1033,6 +1204,24 @@ namespace CellReport.Core
 		public void OnDeserializedMethod()
 		{
 			OnDeserializedMethod(new StreamingContext());
+		}
+
+		/// <summary>
+		/// Сравнение стилей по ссылке: стили разных типов могут быть равны по значению.
+		/// </summary>
+		private sealed class ReferenceComparer : IEqualityComparer<BaseStyle>
+		{
+			public static readonly ReferenceComparer Instance = new ReferenceComparer();
+
+			public bool Equals(BaseStyle x, BaseStyle y)
+			{
+				return ReferenceEquals(x, y);
+			}
+
+			public int GetHashCode(BaseStyle obj)
+			{
+				return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj);
+			}
 		}
 	}
 }
