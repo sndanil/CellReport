@@ -18,7 +18,7 @@
 				           Opacity="0.75"
 				           Text="{Binding CellValueKindLabel}" />
 
-				<Grid Grid.Column="1">
+				<Grid Grid.Column="1" Height="26">
 					<TextBox x:Name="FormulaTextBox"
 					         IsVisible="{Binding IsTextValue}"
 					         MinHeight="26"
@@ -40,6 +40,7 @@
 
 					<TextBlock IsVisible="{Binding IsNoValue}"
 					           VerticalAlignment="Center"
+					           TextTrimming="CharacterEllipsis"
 					           Opacity="0.55"
 					           Text="В ячейке нет редактируемого значения" />
 				</Grid>
