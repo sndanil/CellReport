@@ -124,17 +124,23 @@
 				        Background="{Binding PreviewBackground}"
 				        BorderBrush="{Binding PreviewBorderBrush}"
 				        BorderThickness="{Binding PreviewBorderThickness}">
-					<StackPanel Spacing="6">
+					<Grid>
 						<TextBlock Text="{Binding PreviewText}"
 						           FontFamily="{Binding FontFamily}"
 						           FontSize="{Binding PreviewFontSize}"
 						           FontWeight="{Binding PreviewWeight}"
 						           FontStyle="{Binding PreviewFontStyle}"
 						           Foreground="{Binding PreviewBrush}"
+						           TextAlignment="{Binding PreviewTextAlignment}"
+						           TextDecorations="{Binding PreviewDecorations}"
+						           VerticalAlignment="{Binding PreviewVerticalAlignment}"
 						           IsVisible="{Binding ShowTextPreview}"
 						           TextWrapping="Wrap" />
-						<Border Height="3" Background="{Binding PreviewBrush}" IsVisible="{Binding IsLine}" />
-					</StackPanel>
+						<Border Height="3"
+						        Background="{Binding PreviewBrush}"
+						        VerticalAlignment="Center"
+						        IsVisible="{Binding IsLine}" />
+					</Grid>
 				</Border>
 
 				<TextBlock Foreground="#E5484D"

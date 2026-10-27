@@ -210,6 +210,15 @@ public partial class StyleEditorViewModel : ObservableObject
 	private global::Avalonia.Media.FontStyle _previewFontStyle = global::Avalonia.Media.FontStyle.Normal;
 
 	[ObservableProperty]
+	private TextAlignment _previewTextAlignment = TextAlignment.Left;
+
+	[ObservableProperty]
+	private global::Avalonia.Layout.VerticalAlignment _previewVerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center;
+
+	[ObservableProperty]
+	private TextDecorationCollection? _previewDecorations;
+
+	[ObservableProperty]
 	private string _errorMessage = string.Empty;
 
 	public bool HasError => ErrorMessage.Length > 0;
@@ -243,6 +252,10 @@ public partial class StyleEditorViewModel : ObservableObject
 	partial void OnNegativeColorChanged(string value) => UpdatePreview();
 
 	partial void OnWidthTextChanged(string value) => UpdatePreview();
+
+	partial void OnSelectedHorizontalChanged(Choice value) => UpdatePreview();
+
+	partial void OnSelectedVerticalChanged(Choice value) => UpdatePreview();
 
 	partial void OnErrorMessageChanged(string value) => OnPropertyChanged(nameof(HasError));
 
@@ -396,6 +409,9 @@ public partial class StyleEditorViewModel : ObservableObject
 			: 10;
 		PreviewWeight = Bold ? FontWeight.Bold : FontWeight.Normal;
 		PreviewFontStyle = Italic ? global::Avalonia.Media.FontStyle.Italic : global::Avalonia.Media.FontStyle.Normal;
+		PreviewTextAlignment = ResolveTextAlignment(SelectedHorizontal?.Value);
+		PreviewVerticalAlignment = ResolveVerticalAlignment(SelectedVertical?.Value);
+		PreviewDecorations = BuildDecorations();
 
 		PreviewBrush = IsCell ? Brushes.Black : CreateBrush(Color, Brushes.Black);
 
@@ -437,6 +453,54 @@ public partial class StyleEditorViewModel : ObservableObject
 		catch (Exception)
 		{
 			return fallback;
+		}
+	}
+
+	private TextDecorationCollection? BuildDecorations()
+	{
+		if (!Underline && !Strikeout)
+			return null;
+
+		var parts = new List<string>(2);
+		if (Underline)
+			parts.Add("Underline");
+		if (Strikeout)
+			parts.Add("Strikethrough");
+
+		try
+		{
+			return TextDecorationCollection.Parse(string.Join(",", parts));
+		}
+		catch (Exception)
+		{
+			return null;
+		}
+	}
+
+	private static TextAlignment ResolveTextAlignment(string? value)	{
+		switch (value)
+		{
+			case "Right":
+				return TextAlignment.Right;
+			case "Center":
+				return TextAlignment.Center;
+			case "Justify":
+				return TextAlignment.Justify;
+			default:
+				return TextAlignment.Left;
+		}
+	}
+
+	private static global::Avalonia.Layout.VerticalAlignment ResolveVerticalAlignment(string? value)
+	{
+		switch (value)
+		{
+			case "Top":
+				return global::Avalonia.Layout.VerticalAlignment.Top;
+			case "Bottom":
+				return global::Avalonia.Layout.VerticalAlignment.Bottom;
+			default:
+				return global::Avalonia.Layout.VerticalAlignment.Center;
 		}
 	}
 
