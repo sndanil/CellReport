@@ -213,6 +213,9 @@ public partial class StyleEditorViewModel : ObservableObject
 	private TextAlignment _previewTextAlignment = TextAlignment.Left;
 
 	[ObservableProperty]
+	private FontFamily _previewFontFamily = new FontFamily(FontInfo.Default.Family);
+
+	[ObservableProperty]
 	private global::Avalonia.Layout.VerticalAlignment _previewVerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center;
 
 	[ObservableProperty]
@@ -254,6 +257,8 @@ public partial class StyleEditorViewModel : ObservableObject
 	partial void OnWidthTextChanged(string value) => UpdatePreview();
 
 	partial void OnSelectedHorizontalChanged(Choice value) => UpdatePreview();
+
+	partial void OnSelectedDirectionChanged(Choice value) => UpdatePreview();
 
 	partial void OnSelectedVerticalChanged(Choice value) => UpdatePreview();
 
@@ -401,7 +406,7 @@ public partial class StyleEditorViewModel : ObservableObject
 
 	private void UpdatePreview()
 	{
-		PreviewText = IsCell ? "Ячейка" : IsLine ? string.Empty : FormatSample();
+		PreviewText = BuildPreviewText();
 
 		float size;
 		PreviewFontSize = float.TryParse(FontSizeText, NumberStyles.Float, CultureInfo.CurrentCulture, out size) && size > 0
@@ -409,6 +414,7 @@ public partial class StyleEditorViewModel : ObservableObject
 			: 10;
 		PreviewWeight = Bold ? FontWeight.Bold : FontWeight.Normal;
 		PreviewFontStyle = Italic ? global::Avalonia.Media.FontStyle.Italic : global::Avalonia.Media.FontStyle.Normal;
+		PreviewFontFamily = new FontFamily(string.IsNullOrWhiteSpace(FontFamily) ? FontInfo.Default.Family : FontFamily);
 		PreviewTextAlignment = ResolveTextAlignment(SelectedHorizontal?.Value);
 		PreviewVerticalAlignment = ResolveVerticalAlignment(SelectedVertical?.Value);
 		PreviewDecorations = BuildDecorations();
@@ -454,6 +460,20 @@ public partial class StyleEditorViewModel : ObservableObject
 		{
 			return fallback;
 		}
+	}
+
+	private string BuildPreviewText()
+	{
+		if (IsCell)
+			return "Ячейка";
+		if (IsLine)
+			return string.Empty;
+
+		var sample = FormatSample();
+		if (string.Equals(SelectedDirection?.Value, "TopToDown", StringComparison.Ordinal) && sample.Length > 0)
+			sample = string.Join(Environment.NewLine, sample.Select(item => item.ToString()));
+
+		return sample;
 	}
 
 	private TextDecorationCollection? BuildDecorations()

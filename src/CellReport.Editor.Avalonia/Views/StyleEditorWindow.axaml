@@ -126,7 +126,7 @@
 				        BorderThickness="{Binding PreviewBorderThickness}">
 					<Grid>
 						<TextBlock Text="{Binding PreviewText}"
-						           FontFamily="{Binding FontFamily}"
+						           FontFamily="{Binding PreviewFontFamily}"
 						           FontSize="{Binding PreviewFontSize}"
 						           FontWeight="{Binding PreviewWeight}"
 						           FontStyle="{Binding PreviewFontStyle}"
