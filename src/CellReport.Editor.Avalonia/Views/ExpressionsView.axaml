@@ -37,7 +37,10 @@
 									<TextBlock Grid.Row="1" VerticalAlignment="Center" IsVisible="{Binding ShowSecondValue}" Text="Второе значение" />
 									<TextBox Grid.Row="1" Grid.Column="1" Margin="0,4,0,0" IsVisible="{Binding ShowSecondValue}" Text="{Binding SecondValueText, UpdateSourceTrigger=LostFocus}" />
 									<TextBlock Grid.Row="2" VerticalAlignment="Center" Text="Предыдущее выражение" />
-									<TextBox Grid.Row="2" Grid.Column="1" Margin="0,4,0,0" Text="{Binding PrevExpression, UpdateSourceTrigger=LostFocus}" />
+									<AutoCompleteBox Grid.Row="2" Grid.Column="1" Margin="0,4,0,0"
+									                 ItemsSource="{Binding ExpressionIds}"
+									                 Text="{Binding PrevExpression, UpdateSourceTrigger=LostFocus}"
+									                 PlaceholderText="Идентификатор выражения" />
 								</Grid>
 							</StackPanel>
 						</Border>

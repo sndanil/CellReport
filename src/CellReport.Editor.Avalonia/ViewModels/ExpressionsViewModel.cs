@@ -27,6 +27,11 @@ public partial class ExpressionsViewModel : ObservableObject
 
 	public ObservableCollection<ExpressionEdit> Items { get; } = new();
 
+	/// <summary>
+	/// Идентификаторы выражений — для выбора предыдущего выражения.
+	/// </summary>
+	public ObservableCollection<string> ExpressionIds { get; } = new();
+
 	[ObservableProperty]
 	private ExpressionKindChoice _newKind;
 
@@ -42,10 +47,23 @@ public partial class ExpressionsViewModel : ObservableObject
 
 			foreach (var expression in manager.GetExpressions().OrderBy(item => item.ID, StringComparer.CurrentCulture))
 				Items.Add(new ExpressionEdit(this, expression));
+
+			ReloadIds();
 		}
 		finally
 		{
 			_loading = false;
+		}
+	}
+
+	private void ReloadIds()
+	{
+		ExpressionIds.Clear();
+		foreach (var item in Items)
+		{
+			var id = item.Expression?.ID;
+			if (!string.IsNullOrEmpty(id) && !ExpressionIds.Contains(id))
+				ExpressionIds.Add(id);
 		}
 	}
 
@@ -66,6 +84,7 @@ public partial class ExpressionsViewModel : ObservableObject
 		var expression = Create(NewKind.Key, NextId());
 		Commit(() => _manager.AddExpression(expression));
 		Items.Add(new ExpressionEdit(this, expression));
+		ReloadIds();
 	}
 
 	public void Remove(ExpressionEdit edit)
@@ -75,6 +94,7 @@ public partial class ExpressionsViewModel : ObservableObject
 
 		Commit(() => _manager.RemoveExpression(edit.Expression));
 		Items.Remove(edit);
+		ReloadIds();
 	}
 
 	public void ChangeKind(ExpressionEdit edit, string key)
@@ -117,6 +137,7 @@ public partial class ExpressionsViewModel : ObservableObject
 		foreach (var item in Items)
 			item.RefreshLinks();
 
+		ReloadIds();
 		return true;
 	}
 
@@ -198,6 +219,8 @@ public partial class ExpressionEdit : ObservableObject
 	public IReadOnlyList<ExpressionKindChoice> Kinds => ExpressionKindChoice.All;
 
 	public IReadOnlyList<OperationChoice> Operations => OperationChoice.All;
+
+	public ObservableCollection<string> ExpressionIds => _owner.ExpressionIds;
 
 	public IRelayCommand RemoveCommand { get; }
 

@@ -1,5 +1,6 @@
 using CellReport.Core;
 using CellReport.Core.Contents;
+using CellReport.Core.Expressions;
 using CellReport.Editor.Avalonia.Editing;
 using CellReport.Presenters;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -7,6 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,7 +23,18 @@ public partial class InspectorViewModel : ObservableObject
 	public InspectorViewModel(MainWindowViewModel owner)
 	{
 		_owner = owner;
+		foreach (var code in CultureCodes)
+			Cultures.Add(code);
+		foreach (var format in ReportFormatPresets.All)
+			FormatPresets.Add(format);
 	}
+
+	private static readonly string[] CultureCodes = CultureInfo.GetCultures(CultureTypes.AllCultures)
+		.Where(item => !string.IsNullOrEmpty(item.Name))
+		.Select(item => item.Name)
+		.Distinct(StringComparer.OrdinalIgnoreCase)
+		.OrderBy(item => item, StringComparer.OrdinalIgnoreCase)
+		.ToArray();
 
 	public ObservableCollection<ContentRow> Contents { get; } = new();
 
@@ -65,6 +78,48 @@ public partial class InspectorViewModel : ObservableObject
 		new("Decimal", "Число"),
 		new("DateTime", "Дата и время")
 	};
+
+	public Choice[] BarcodeTypes { get; } =
+	{
+		new("Auto", "Авто"),
+		new("EAN13", "EAN-13"),
+		new("EAN8", "EAN-8"),
+		new("UPCA", "UPC-A"),
+		new("UPCE", "UPC-E"),
+		new("Code39", "Code 39"),
+		new("Code128", "Code 128"),
+		new("QR", "QR"),
+		new("PDF417", "PDF417"),
+		new("UCC12", "UCC-12")
+	};
+
+	public Choice[] BarcodeOrientations { get; } =
+	{
+		new("Horizontal", "Горизонтально"),
+		new("Vertical", "Вертикально")
+	};
+
+	public Choice[] ActionTypes { get; } =
+	{
+		new("All", "Все"),
+		new("MouseDblClick", "Двойной клик"),
+		new("MouseLeftClick", "Один клик")
+	};
+
+	/// <summary>
+	/// Доступные выражения для привязки параметра.
+	/// </summary>
+	public ObservableCollection<Choice> Expressions { get; } = new();
+
+	/// <summary>
+	/// Коды культур для выбора.
+	/// </summary>
+	public ObservableCollection<string> Cultures { get; } = new();
+
+	/// <summary>
+	/// Готовые форматы под текущий тип значения.
+	/// </summary>
+	public ObservableCollection<string> FormatPresets { get; } = new();
 
 	[ObservableProperty]
 	private ContentRow? _selectedContent;
@@ -112,6 +167,36 @@ public partial class InspectorViewModel : ObservableObject
 	private bool _hasActionContent;
 
 	[ObservableProperty]
+	private string _barcodeCode = string.Empty;
+
+	[ObservableProperty]
+	private Choice? _selectedBarcodeType;
+
+	[ObservableProperty]
+	private Choice? _selectedBarcodeOrientation;
+
+	[ObservableProperty]
+	private string _imageUri = string.Empty;
+
+	[ObservableProperty]
+	private string _imageColSpanText = "0";
+
+	[ObservableProperty]
+	private string _imageRowSpanText = "0";
+
+	[ObservableProperty]
+	private Choice? _selectedActionType;
+
+	[ObservableProperty]
+	private bool _isSelectedBarCode;
+
+	[ObservableProperty]
+	private bool _isSelectedImage;
+
+	[ObservableProperty]
+	private bool _isSelectedAction;
+
+	[ObservableProperty]
 	private string _paramName = string.Empty;
 
 	[ObservableProperty]
@@ -121,13 +206,19 @@ public partial class InspectorViewModel : ObservableObject
 	private Choice? _selectedParamTarget;
 
 	[ObservableProperty]
-	private string _paramExpression = string.Empty;
+	private Choice? _selectedParamExpression;
 
 	[ObservableProperty]
 	private string _paramFormat = string.Empty;
 
 	[ObservableProperty]
 	private string _paramCulture = string.Empty;
+
+	[ObservableProperty]
+	private string _paramCultureName = string.Empty;
+
+	[ObservableProperty]
+	private string _paramFormatPreview = string.Empty;
 
 	[ObservableProperty]
 	private Choice? _selectedParamType;
@@ -167,7 +258,49 @@ public partial class InspectorViewModel : ObservableObject
 	public void ReloadDocument()
 	{
 		ReloadSections();
+		ReloadExpressions();
 		OnCellChanged();
+	}
+
+	private void ReloadExpressions()
+	{
+		var selected = SelectedParamExpression?.Value;
+		Expressions.Clear();
+		Expressions.Add(new Choice(string.Empty, "Не установлено"));
+
+		var manager = _owner.Manager;
+		if (manager != null)
+		{
+			foreach (var expression in manager.GetExpressions().OrderBy(item => item.ID, StringComparer.CurrentCulture))
+			{
+				var id = expression.ID ?? string.Empty;
+				if (id.Length == 0)
+					continue;
+
+				Expressions.Add(new Choice(id, id + " · " + ExpressionTitle(expression)));
+			}
+		}
+
+		if (!string.IsNullOrEmpty(selected) && Expressions.All(item => item.Value != selected))
+			Expressions.Add(new Choice(selected, selected + " · не найдено"));
+	}
+
+	private static string ExpressionTitle(BaseExpression expression)
+	{
+		if (expression is CountExpression)
+			return "счётчик";
+		if (expression is SumExpression)
+			return "сумма";
+		if (expression is DecimalExpression)
+			return "число";
+		if (expression is NowExpression)
+			return "дата и время";
+		if (expression is PagesCountExpression)
+			return "страниц";
+		if (expression is DocumentNameExpression)
+			return "имя документа";
+
+		return expression.GetType().Name;
 	}
 
 	public void OnCellChanged()
@@ -333,6 +466,47 @@ public partial class InspectorViewModel : ObservableObject
 		}
 	}
 
+	private void LoadContentFields()
+	{
+		var content = SelectedContent?.Content;
+		BeginSync();
+		try
+		{
+			BarcodeCode = string.Empty;
+			SelectedBarcodeType = null;
+			SelectedBarcodeOrientation = null;
+			ImageUri = string.Empty;
+			ImageColSpanText = "0";
+			ImageRowSpanText = "0";
+			SelectedActionType = null;
+
+			IsSelectedBarCode = content is BarCodeContent;
+			IsSelectedImage = content is ImageContent;
+			IsSelectedAction = content is ActionContent;
+
+			switch (content)
+			{
+				case BarCodeContent barCode:
+					BarcodeCode = barCode.GetCode();
+					SelectedBarcodeType = FindChoice(BarcodeTypes, barCode.GetBarCodeType().ToString());
+					SelectedBarcodeOrientation = FindChoice(BarcodeOrientations, barCode.Orientation.ToString());
+					break;
+				case ImageContent image:
+					ImageUri = image.Uri ?? string.Empty;
+					ImageColSpanText = image.ColSpan.ToString(CultureInfo.CurrentCulture);
+					ImageRowSpanText = image.RowSpan.ToString(CultureInfo.CurrentCulture);
+					break;
+				case ActionContent action:
+					SelectedActionType = FindChoice(ActionTypes, action.Type.ToString());
+					break;
+			}
+		}
+		finally
+		{
+			EndSync();
+		}
+	}
+
 	private void LoadParamFields()
 	{
 		var param = SelectedParam;
@@ -342,16 +516,124 @@ public partial class InspectorViewModel : ObservableObject
 			HasSelectedParam = param != null;
 			ParamName = param?.Name ?? string.Empty;
 			ParamValue = param?.Value?.ToString() ?? string.Empty;
-			ParamExpression = param?.ExpressionID ?? string.Empty;
 			ParamFormat = param?.Format ?? string.Empty;
 			ParamCulture = param?.Culture ?? string.Empty;
 			ParamAssign = param?.Assign ?? string.Empty;
 			SelectedParamTarget = FindChoice(ParamTargets, param?.Target);
 			SelectedParamType = FindChoice(ParamTypes, param?.Type);
+			SelectedParamExpression = FindExpression(param?.ExpressionID);
+
+			UpdateParamFormatPreview();
+			UpdateParamCultureName();
 		}
 		finally
 		{
 			EndSync();
+		}
+	}
+
+	private Choice? FindExpression(string? expressionId)
+	{
+		var id = expressionId ?? string.Empty;
+		var choice = Expressions.FirstOrDefault(item => item.Value == id);
+		if (choice == null && id.Length > 0)
+		{
+			choice = new Choice(id, id + " · не найдено");
+			Expressions.Add(choice);
+		}
+
+		return choice ?? Expressions.FirstOrDefault();
+	}
+
+	private void UpdateParamFormatPreview()
+	{
+		var format = (ParamFormat ?? string.Empty).Trim();
+		if (format.Length == 0)
+		{
+			ParamFormatPreview = string.Empty;
+			return;
+		}
+
+		if (format.StartsWith("currency", StringComparison.OrdinalIgnoreCase)
+			|| format.StartsWith("number", StringComparison.OrdinalIgnoreCase))
+		{
+			var cultureCode = string.IsNullOrEmpty(ParamCulture) ? null : ParamCulture;
+			string text;
+			if (format.Equals("numberString", StringComparison.OrdinalIgnoreCase))
+			{
+				text = CurrencyToString.GetString(1234.5m, null, cultureCode);
+			}
+			else
+			{
+				var parts = format.Split('|');
+				var currency = parts.Length > 1 ? parts[1] : "RUR";
+				text = CurrencyToString.GetString(1234.5m, currency, cultureCode);
+			}
+
+			ParamFormatPreview = text.Length > 0 ? "Пример: " + text : "Формат: число прописью";
+			return;
+		}
+
+		var culture = ResolveCulture(ParamCulture);
+		try
+		{
+			// тип значения задаёт цель параметра, а не содержимое ячейки,
+			// поэтому формат угадываем по самому шаблону
+			ParamFormatPreview = LooksLikeDateFormat(format)
+				? "Пример: " + DateTime.Now.ToString(format, culture)
+				: "Пример: " + 1234.5m.ToString(format, culture);
+		}
+		catch (FormatException)
+		{
+			ParamFormatPreview = "Неверный формат";
+		}
+	}
+
+	private static bool LooksLikeDateFormat(string format)
+	{
+		if (format.IndexOf('0') >= 0 || format.IndexOf('#') >= 0)
+			return false;
+
+		foreach (var symbol in format)
+		{
+			if ("dMyHhst".IndexOf(symbol) >= 0)
+				return true;
+		}
+
+		return false;
+	}
+
+	private void UpdateParamCultureName()
+	{
+		var code = ParamCulture ?? string.Empty;
+		if (code.Length == 0)
+		{
+			ParamCultureName = string.Empty;
+			return;
+		}
+
+		try
+		{
+			ParamCultureName = CultureInfo.GetCultureInfo(code).DisplayName;
+		}
+		catch (CultureNotFoundException)
+		{
+			ParamCultureName = "Неизвестная культура";
+		}
+	}
+
+	private static CultureInfo ResolveCulture(string? code)
+	{
+		if (string.IsNullOrEmpty(code))
+			return CultureInfo.CurrentCulture;
+
+		try
+		{
+			return CultureInfo.GetCultureInfo(code);
+		}
+		catch (CultureNotFoundException)
+		{
+			return CultureInfo.CurrentCulture;
 		}
 	}
 
@@ -378,6 +660,86 @@ public partial class InspectorViewModel : ObservableObject
 	partial void OnSelectedContentChanged(ContentRow? value)
 	{
 		LoadParams();
+		LoadContentFields();
+		RemoveSelectedContentCommand.NotifyCanExecuteChanged();
+	}
+
+	partial void OnBarcodeCodeChanged(string value)
+	{
+		if (IsSyncing || SelectedContent?.Content is not BarCodeContent barCode)
+			return;
+
+		var next = value ?? string.Empty;
+		if ((barCode.GetCode() ?? string.Empty) == next)
+			return;
+
+		_owner.CommitDocumentChange(() => barCode.Code = next);
+	}
+
+	partial void OnSelectedBarcodeTypeChanged(Choice? value)
+	{
+		if (IsSyncing || value == null || SelectedContent?.Content is not BarCodeContent barCode)
+			return;
+
+		BarCodeType type;
+		if (!Enum.TryParse(value.Value, out type) || barCode.GetBarCodeType() == type)
+			return;
+
+		_owner.CommitDocumentChange(() => barCode.Type = type);
+	}
+
+	partial void OnSelectedBarcodeOrientationChanged(Choice? value)
+	{
+		if (IsSyncing || value == null || SelectedContent?.Content is not BarCodeContent barCode)
+			return;
+
+		Orientation orientation;
+		if (!Enum.TryParse(value.Value, out orientation) || barCode.Orientation == orientation)
+			return;
+
+		_owner.CommitDocumentChange(() => barCode.Orientation = orientation);
+	}
+
+	partial void OnImageUriChanged(string value)
+	{
+		if (IsSyncing || SelectedContent?.Content is not ImageContent image)
+			return;
+
+		var next = value ?? string.Empty;
+		if ((image.Uri ?? string.Empty) == next)
+			return;
+
+		_owner.CommitDocumentChange(() => image.Uri = next);
+	}
+
+	partial void OnImageColSpanTextChanged(string value) => SetImageSpan(value, (image, span) => image.ColSpan = span, image => image.ColSpan);
+
+	partial void OnImageRowSpanTextChanged(string value) => SetImageSpan(value, (image, span) => image.RowSpan = span, image => image.RowSpan);
+
+	private void SetImageSpan(string value, Action<ImageContent, int> assign, Func<ImageContent, int> read)
+	{
+		if (IsSyncing || SelectedContent?.Content is not ImageContent image)
+			return;
+
+		if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.CurrentCulture, out var span) || span < 0)
+			return;
+
+		if (read(image) == span)
+			return;
+
+		_owner.CommitDocumentChange(() => assign(image, span));
+	}
+
+	partial void OnSelectedActionTypeChanged(Choice? value)
+	{
+		if (IsSyncing || value == null || SelectedContent?.Content is not ActionContent action)
+			return;
+
+		ActionType type;
+		if (!Enum.TryParse(value.Value, out type) || action.Type == type)
+			return;
+
+		_owner.CommitDocumentChange(() => action.Type = type);
 	}
 
 	partial void OnSelectedParamChanged(Param? value)
@@ -440,22 +802,56 @@ public partial class InspectorViewModel : ObservableObject
 
 	partial void OnParamValueChanged(string value) => SetParam(value, param => param.Value?.ToString(), (param, next) => param.Value = next);
 
-	partial void OnParamExpressionChanged(string value) => SetParam(value, param => param.ExpressionID, (param, next) => param.ExpressionID = next);
+	partial void OnSelectedParamExpressionChanged(Choice? value)
+	{
+		var param = SelectedParam;
+		if (IsSyncing || param == null)
+			return;
 
-	partial void OnParamFormatChanged(string value) => SetParam(value, param => param.Format, (param, next) => param.Format = next);
+		var id = value?.Value ?? string.Empty;
+		if ((param.ExpressionID ?? string.Empty) == id)
+			return;
 
-	partial void OnParamCultureChanged(string value) => SetParam(value, param => param.Culture, (param, next) => param.Culture = next);
+		var expression = string.IsNullOrEmpty(id) ? null : _owner.Manager?.GetExpressionByID(id);
+		if (!string.IsNullOrEmpty(id) && expression == null)
+			return;
+
+		// через свойство Expression: оно сбрасывает и кэш выражения, и идентификатор
+		_owner.CommitDocumentChange(() => param.Expression = expression);
+		LoadParamFields();
+	}
+
+	partial void OnParamFormatChanged(string value)
+	{
+		SetParam(value, param => param.Format, (param, next) => param.Format = next);
+		UpdateParamFormatPreview();
+	}
+
+	partial void OnParamCultureChanged(string value)
+	{
+		SetParam(value, param => param.Culture, (param, next) => param.Culture = next);
+		UpdateParamCultureName();
+		UpdateParamFormatPreview();
+	}
 
 	partial void OnParamAssignChanged(string value) => SetParam(value, param => param.Assign, (param, next) => param.Assign = next);
 
 	partial void OnSelectedParamTargetChanged(Choice? value)
 	{
+		if (IsSyncing)
+			return;
+
 		SetParam(value?.Value ?? string.Empty, param => param.Target, (param, next) => param.Target = next);
+		LoadParamFields();
 	}
 
 	partial void OnSelectedParamTypeChanged(Choice? value)
 	{
+		if (IsSyncing)
+			return;
+
 		SetParam(value?.Value ?? string.Empty, param => param.Type, (param, next) => param.Type = next);
+		LoadParamFields();
 	}
 
 	partial void OnSectionNameChanged(string value)
@@ -777,6 +1173,39 @@ public partial class InspectorViewModel : ObservableObject
 			_owner.EndEdit();
 		}
 	}
+
+	[RelayCommand(CanExecute = nameof(CanRemoveSelectedContent))]
+	private void RemoveSelectedContent()
+	{
+		var manager = _owner.Manager;
+		var presenter = _owner.Presenter;
+		var content = SelectedContent?.Content;
+		if (manager == null || presenter == null || content == null)
+			return;
+
+		_owner.BeginEdit();
+		try
+		{
+			ForEachSelectedCell(presenter, (row, column) =>
+			{
+				var cell = manager.GetCell(row, column);
+				if (cell?.Content is CollectionContent collection)
+				{
+					collection.Remove(content);
+					if (collection.Count == 0)
+						cell.Content = null!;
+				}
+				else if (ReferenceEquals(cell?.Content, content))
+					cell.Content = null!;
+			});
+		}
+		finally
+		{
+			_owner.EndEdit();
+		}
+	}
+
+	private bool CanRemoveSelectedContent() => SelectedContent != null && CanEdit();
 
 	[RelayCommand(CanExecute = nameof(CanAddText))]
 	private void AddText() => AddContent(manager => new TextContent(manager));
@@ -1130,6 +1559,7 @@ public partial class InspectorViewModel : ObservableObject
 		DeleteColumnsCommand.NotifyCanExecuteChanged();
 		DeleteCellCommand.NotifyCanExecuteChanged();
 		DeleteContentCommand.NotifyCanExecuteChanged();
+		RemoveSelectedContentCommand.NotifyCanExecuteChanged();
 		AddTextCommand.NotifyCanExecuteChanged();
 		AddDecimalCommand.NotifyCanExecuteChanged();
 		AddDateTimeCommand.NotifyCanExecuteChanged();
@@ -1278,13 +1708,72 @@ public sealed class ContentRow
 	{
 		Content = content;
 		Title = title;
+		Description = Describe(content);
+		ParamsLabel = FormatParams(content.GetParams().Count());
 	}
 
 	public BaseContent Content { get; }
 
 	public string Title { get; }
 
+	public string Description { get; }
+
+	public string ParamsLabel { get; }
+
+	public bool HasDescription => Description.Length > 0;
+
+	public bool HasParamsLabel => ParamsLabel.Length > 0;
+
 	public override string ToString() => Title;
+
+	private static string Describe(BaseContent content)
+	{
+		switch (content)
+		{
+			case TextContent text:
+				return Shorten(text.Text);
+			case DecimalContent number:
+				return number.GetValue().ToString(CultureInfo.CurrentCulture);
+			case DateTimeContent date:
+				return date.GetValue().ToString("g", CultureInfo.CurrentCulture);
+			case BarCodeContent barCode:
+				return Shorten(barCode.GetCode());
+			case ImageContent image:
+				return Shorten(image.Uri);
+			case ActionContent action:
+				return action.Type.ToString();
+			default:
+				return string.Empty;
+		}
+	}
+
+	private static string Shorten(string? text)
+	{
+		var value = (text ?? string.Empty).Replace("\r", " ").Replace("\n", " ").Trim();
+		return value.Length <= 60 ? value : value.Substring(0, 57) + "…";
+	}
+
+	private static string FormatParams(int count)
+	{
+		if (count <= 0)
+			return string.Empty;
+
+		var tail = count % 100;
+		if (tail >= 11 && tail <= 14)
+			return count + " параметров";
+
+		switch (count % 10)
+		{
+			case 1:
+				return count + " параметр";
+			case 2:
+			case 3:
+			case 4:
+				return count + " параметра";
+			default:
+				return count + " параметров";
+		}
+	}
 }
 
 public sealed class StyleChoice

@@ -76,12 +76,102 @@
 			<TabItem Header="Параметры">
 				<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
 					<StackPanel Margin="8" Spacing="6">
-						<TextBlock Text="Содержимое" />
-						<ListBox Height="90" ItemsSource="{Binding Inspector.Contents}" SelectedItem="{Binding Inspector.SelectedContent}" />
-						<Grid ColumnDefinitions="*,*">
-							<Button Content="Параметр" Command="{Binding Inspector.AddParamCommand}" />
-							<Button Grid.Column="1" Margin="6,0,0,0" Content="Удалить" Command="{Binding Inspector.DeleteParamCommand}" />
+						<Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+							<TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="Содержимое" />
+							<Button Grid.Column="1" Content="Добавить" ToolTip.Tip="Добавить содержимое">
+								<Button.Flyout>
+									<MenuFlyout Placement="BottomEdgeAlignedRight">
+										<MenuItem Header="Текст" Command="{Binding Inspector.AddTextCommand}" />
+										<MenuItem Header="Число" Command="{Binding Inspector.AddDecimalCommand}" />
+										<MenuItem Header="Дату и время" Command="{Binding Inspector.AddDateTimeCommand}" />
+										<MenuItem Header="Штрих-код" Command="{Binding Inspector.AddBarCodeCommand}" />
+										<MenuItem Header="Изображение" Command="{Binding Inspector.AddImageCommand}" />
+										<MenuItem Header="Действие" Command="{Binding Inspector.AddActionCommand}" />
+									</MenuFlyout>
+								</Button.Flyout>
+							</Button>
+							<Button Grid.Column="2" Content="Удалить" Command="{Binding Inspector.RemoveSelectedContentCommand}" />
 						</Grid>
+
+						<ListBox Height="110" ItemsSource="{Binding Inspector.Contents}" SelectedItem="{Binding Inspector.SelectedContent}">
+							<ListBox.ItemTemplate>
+								<DataTemplate x:DataType="vm:ContentRow">
+									<StackPanel Spacing="1">
+										<TextBlock Text="{Binding Title}" />
+										<TextBlock FontSize="11"
+										           Opacity="0.7"
+										           TextTrimming="CharacterEllipsis"
+										           IsVisible="{Binding HasDescription}"
+										           Text="{Binding Description}" />
+										<TextBlock FontSize="10"
+										           Opacity="0.5"
+										           IsVisible="{Binding HasParamsLabel}"
+										           Text="{Binding ParamsLabel}" />
+									</StackPanel>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+
+						<Grid IsVisible="{Binding Inspector.IsSelectedBarCode}" ColumnDefinitions="110,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="4">
+							<TextBlock VerticalAlignment="Center" Text="Код" />
+							<TextBox Grid.Column="1" Margin="0,2" Text="{Binding Inspector.BarcodeCode, UpdateSourceTrigger=LostFocus}" />
+							<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Тип" />
+							<ComboBox Grid.Row="1" Grid.Column="1" Margin="0,2"
+							          ItemsSource="{Binding Inspector.BarcodeTypes}"
+							          SelectedItem="{Binding Inspector.SelectedBarcodeType}">
+								<ComboBox.ItemTemplate>
+									<DataTemplate x:DataType="vm:Choice">
+										<TextBlock Text="{Binding Title}" />
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+							</ComboBox>
+							<TextBlock Grid.Row="2" VerticalAlignment="Center" Text="Ориентация" />
+							<ComboBox Grid.Row="2" Grid.Column="1" Margin="0,2"
+							          ItemsSource="{Binding Inspector.BarcodeOrientations}"
+							          SelectedItem="{Binding Inspector.SelectedBarcodeOrientation}">
+								<ComboBox.ItemTemplate>
+									<DataTemplate x:DataType="vm:Choice">
+										<TextBlock Text="{Binding Title}" />
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+							</ComboBox>
+						</Grid>
+
+						<Grid IsVisible="{Binding Inspector.IsSelectedImage}" ColumnDefinitions="110,*" RowDefinitions="Auto,Auto" RowSpacing="4">
+							<TextBlock VerticalAlignment="Center" Text="Адрес" />
+							<TextBox Grid.Column="1" Margin="0,2" PlaceholderText="file:// или resources://"
+							         Text="{Binding Inspector.ImageUri, UpdateSourceTrigger=LostFocus}" />
+							<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Объединение" />
+							<StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="6" Margin="0,2">
+								<TextBox Width="60" ToolTip.Tip="Столбцов" Text="{Binding Inspector.ImageColSpanText, UpdateSourceTrigger=LostFocus}" />
+								<TextBlock VerticalAlignment="Center" Opacity="0.7" Text="×" />
+								<TextBox Width="60" ToolTip.Tip="Строк" Text="{Binding Inspector.ImageRowSpanText, UpdateSourceTrigger=LostFocus}" />
+							</StackPanel>
+						</Grid>
+
+						<Grid IsVisible="{Binding Inspector.IsSelectedAction}" ColumnDefinitions="110,*" RowSpacing="4">
+							<TextBlock VerticalAlignment="Center" Text="Событие" />
+							<ComboBox Grid.Column="1" Margin="0,2"
+							          ItemsSource="{Binding Inspector.ActionTypes}"
+							          SelectedItem="{Binding Inspector.SelectedActionType}">
+								<ComboBox.ItemTemplate>
+									<DataTemplate x:DataType="vm:Choice">
+										<TextBlock Text="{Binding Title}" />
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+							</ComboBox>
+						</Grid>
+
+						<Separator Margin="0,2" />
+
+						<Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+							<TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="Параметры" />
+							<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
+								<Button Content="Добавить" Command="{Binding Inspector.AddParamCommand}" />
+								<Button Content="Удалить" Command="{Binding Inspector.DeleteParamCommand}" />
+							</StackPanel>
+						</Grid>
+
 						<ListBox Height="90" ItemsSource="{Binding Inspector.Params}" SelectedItem="{Binding Inspector.SelectedParam}">
 							<ListBox.ItemTemplate>
 								<DataTemplate x:DataType="contents:Param">
@@ -89,25 +179,67 @@
 								</DataTemplate>
 							</ListBox.ItemTemplate>
 						</ListBox>
-						<Grid ColumnDefinitions="110,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+
+						<Grid ColumnDefinitions="110,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="6">
 							<TextBlock VerticalAlignment="Center" Text="Имя" />
 							<TextBox Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedParam}" Text="{Binding Inspector.ParamName, UpdateSourceTrigger=LostFocus}" />
-							<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Значение" />
-							<TextBox Grid.Row="1" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedParam}" Text="{Binding Inspector.ParamValue, UpdateSourceTrigger=LostFocus}" />
-							<TextBlock Grid.Row="2" VerticalAlignment="Center" Text="Цель" />
-							<ComboBox Grid.Row="2" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedParam}"
+
+							<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Цель" />
+							<ComboBox Grid.Row="1" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedParam}"
 							          ItemsSource="{Binding Inspector.ParamTargets}"
-							          SelectedItem="{Binding Inspector.SelectedParamTarget}" />
+							          SelectedItem="{Binding Inspector.SelectedParamTarget}">
+								<ComboBox.ItemTemplate>
+									<DataTemplate x:DataType="vm:Choice">
+										<TextBlock Text="{Binding Title}" />
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+							</ComboBox>
+
+							<TextBlock Grid.Row="2" VerticalAlignment="Center" Text="Значение" />
+							<TextBox Grid.Row="2" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedParam}"
+							         Text="{Binding Inspector.ParamValue, UpdateSourceTrigger=LostFocus}" />
+
 							<TextBlock Grid.Row="3" VerticalAlignment="Center" Text="Выражение" />
-							<TextBox Grid.Row="3" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedParam}" Text="{Binding Inspector.ParamExpression, UpdateSourceTrigger=LostFocus}" />
-							<TextBlock Grid.Row="4" VerticalAlignment="Center" Text="Формат" />
-							<TextBox Grid.Row="4" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedParam}" Text="{Binding Inspector.ParamFormat, UpdateSourceTrigger=LostFocus}" />
-							<TextBlock Grid.Row="5" VerticalAlignment="Center" Text="Культура" />
-							<TextBox Grid.Row="5" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedParam}" Text="{Binding Inspector.ParamCulture, UpdateSourceTrigger=LostFocus}" />
+							<ComboBox Grid.Row="3" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedParam}"
+							          ItemsSource="{Binding Inspector.Expressions}"
+							          SelectedItem="{Binding Inspector.SelectedParamExpression}">
+								<ComboBox.ItemTemplate>
+									<DataTemplate x:DataType="vm:Choice">
+										<TextBlock Text="{Binding Title}" />
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+							</ComboBox>
+
+							<TextBlock Grid.Row="4" VerticalAlignment="Top" Margin="0,6,0,0" Text="Формат" />
+							<StackPanel Grid.Row="4" Grid.Column="1" Margin="0,2" Spacing="2">
+								<AutoCompleteBox IsEnabled="{Binding Inspector.HasSelectedParam}"
+								                Text="{Binding Inspector.ParamFormat, UpdateSourceTrigger=LostFocus}"
+								                ItemsSource="{Binding Inspector.FormatPresets}"
+								                MinimumPrefixLength="0"
+								                PlaceholderText="Например: #,##0.00" />
+								<TextBlock FontSize="11" Opacity="0.65" Text="{Binding Inspector.ParamFormatPreview}" />
+							</StackPanel>
+
+							<TextBlock Grid.Row="5" VerticalAlignment="Top" Margin="0,6,0,0" Text="Культура" />
+							<StackPanel Grid.Row="5" Grid.Column="1" Margin="0,2" Spacing="2">
+								<AutoCompleteBox IsEnabled="{Binding Inspector.HasSelectedParam}"
+								                Text="{Binding Inspector.ParamCulture, UpdateSourceTrigger=LostFocus}"
+								                ItemsSource="{Binding Inspector.Cultures}"
+								                PlaceholderText="ru-RU" />
+								<TextBlock FontSize="11" Opacity="0.65" Text="{Binding Inspector.ParamCultureName}" />
+							</StackPanel>
+
 							<TextBlock Grid.Row="6" VerticalAlignment="Center" Text="Тип" />
 							<ComboBox Grid.Row="6" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedParam}"
 							          ItemsSource="{Binding Inspector.ParamTypes}"
-							          SelectedItem="{Binding Inspector.SelectedParamType}" />
+							          SelectedItem="{Binding Inspector.SelectedParamType}">
+								<ComboBox.ItemTemplate>
+									<DataTemplate x:DataType="vm:Choice">
+										<TextBlock Text="{Binding Title}" />
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+							</ComboBox>
+
 							<TextBlock Grid.Row="7" VerticalAlignment="Center" Text="Присвоить" />
 							<TextBox Grid.Row="7" Grid.Column="1" Margin="0,2" IsEnabled="{Binding Inspector.HasSelectedParam}" Text="{Binding Inspector.ParamAssign, UpdateSourceTrigger=LostFocus}" />
 						</Grid>

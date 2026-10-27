@@ -54,19 +54,19 @@ namespace CellReport.Core.Contents
 		public BarCodeType Type
 		{
 			get;
-			private set;
+			set;
 		}
 
 		public Orientation Orientation
 		{
 			get;
-			private set;
+			set;
 		}
 
 		public string Code
 		{
 			get;
-			private set;
+			set;
 		}
 
 		public string GetCode()

@@ -1,0 +1,156 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:CellReport.Editor.Avalonia.ViewModels"
+        x:Class="CellReport.Editor.Avalonia.Views.StyleEditorWindow"
+        x:DataType="vm:StyleEditorViewModel"
+        Title="{Binding Title}"
+        Icon="avares://CellReport.Editor.Avalonia/Assets/Logo.png"
+        Width="640"
+        Height="720"
+        MinWidth="520"
+        MinHeight="480"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+	<Grid RowDefinitions="*,Auto">
+		<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+			<StackPanel Margin="16" Spacing="12">
+				<Grid ColumnDefinitions="170,*" ColumnSpacing="10">
+					<TextBlock VerticalAlignment="Center" Text="Идентификатор" />
+					<TextBox Grid.Column="1" Text="{Binding Id, UpdateSourceTrigger=PropertyChanged}" />
+				</Grid>
+
+				<TextBlock FontWeight="SemiBold" Text="Шрифт" />
+				<Grid ColumnDefinitions="170,*" ColumnSpacing="10" RowDefinitions="Auto,Auto" RowSpacing="6">
+					<TextBlock VerticalAlignment="Center" Text="Гарнитура" />
+					<AutoCompleteBox Grid.Column="1"
+					                 ItemsSource="{Binding Fonts}"
+					                 Text="{Binding FontFamily, UpdateSourceTrigger=PropertyChanged}"
+					                 PlaceholderText="Arial" />
+					<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Размер" />
+					<StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="8">
+						<AutoCompleteBox Width="110"
+						                 ItemsSource="{Binding FontSizes}"
+						                 Text="{Binding FontSizeText, UpdateSourceTrigger=PropertyChanged}" />
+						<CheckBox VerticalAlignment="Center" Content="Ж" IsChecked="{Binding Bold}" ToolTip.Tip="Полужирный" />
+						<CheckBox VerticalAlignment="Center" Content="К" IsChecked="{Binding Italic}" ToolTip.Tip="Курсив" />
+						<CheckBox VerticalAlignment="Center" Content="Ч" IsChecked="{Binding Underline}" ToolTip.Tip="Подчёркнутый" />
+						<CheckBox VerticalAlignment="Center" Content="З" IsChecked="{Binding Strikeout}" ToolTip.Tip="Зачёркнутый" />
+					</StackPanel>
+				</Grid>
+
+				<TextBlock FontWeight="SemiBold" Text="Оформление" />
+				<Grid ColumnDefinitions="170,*" ColumnSpacing="10" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="6">
+					<TextBlock VerticalAlignment="Center" Text="Цвет" />
+					<TextBox Grid.Column="1" Text="{Binding Color, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="#000000" />
+
+					<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Наклон, градусы" />
+					<TextBox Grid.Row="1" Grid.Column="1" Width="100" HorizontalAlignment="Left" Text="{Binding AngleText, UpdateSourceTrigger=PropertyChanged}" />
+
+					<TextBlock Grid.Row="2" VerticalAlignment="Center" Text="Выравнивание" />
+					<StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="6">
+						<ComboBox Width="180" ItemsSource="{Binding HorizontalAlignments}" SelectedItem="{Binding SelectedHorizontal}">
+							<ComboBox.ItemTemplate>
+								<DataTemplate x:DataType="vm:Choice">
+									<TextBlock Text="{Binding Title}" />
+								</DataTemplate>
+							</ComboBox.ItemTemplate>
+						</ComboBox>
+						<ComboBox Width="160" ItemsSource="{Binding VerticalAlignments}" SelectedItem="{Binding SelectedVertical}">
+							<ComboBox.ItemTemplate>
+								<DataTemplate x:DataType="vm:Choice">
+									<TextBlock Text="{Binding Title}" />
+								</DataTemplate>
+							</ComboBox.ItemTemplate>
+						</ComboBox>
+					</StackPanel>
+
+					<TextBlock Grid.Row="3" VerticalAlignment="Center" Text="Направление" />
+					<ComboBox Grid.Row="3" Grid.Column="1" Width="180" HorizontalAlignment="Left"
+					          ItemsSource="{Binding Directions}" SelectedItem="{Binding SelectedDirection}">
+						<ComboBox.ItemTemplate>
+							<DataTemplate x:DataType="vm:Choice">
+								<TextBlock Text="{Binding Title}" />
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+					</ComboBox>
+				</Grid>
+
+				<StackPanel IsVisible="{Binding IsDecimal}" Spacing="12">
+					<TextBlock FontWeight="SemiBold" Text="Число" />
+					<Grid ColumnDefinitions="170,*" ColumnSpacing="10" RowDefinitions="Auto,Auto,Auto" RowSpacing="6">
+						<TextBlock VerticalAlignment="Center" Text="Формат" />
+						<AutoCompleteBox Grid.Column="1"
+						                 ItemsSource="{Binding FormatPresets}"
+						                 Text="{Binding Format, UpdateSourceTrigger=PropertyChanged}"
+						                 MinimumPrefixLength="0"
+						                 PlaceholderText="#,##0.00" />
+						<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Культура" />
+						<StackPanel Grid.Row="1" Grid.Column="1" Spacing="2">
+							<AutoCompleteBox ItemsSource="{Binding Cultures}"
+							                 Text="{Binding Culture, UpdateSourceTrigger=PropertyChanged}"
+							                 PlaceholderText="ru-RU" />
+							<TextBlock FontSize="11" Opacity="0.65" Text="{Binding CultureName}" />
+						</StackPanel>
+						<TextBlock Grid.Row="2" VerticalAlignment="Center" Text="Цвет отрицательных" />
+						<TextBox Grid.Row="2" Grid.Column="1" Text="{Binding NegativeColor, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="Red" />
+					</Grid>
+				</StackPanel>
+
+				<StackPanel IsVisible="{Binding IsDate}" Spacing="12">
+					<TextBlock FontWeight="SemiBold" Text="Дата и время" />
+					<Grid ColumnDefinitions="170,*" ColumnSpacing="10" RowDefinitions="Auto,Auto" RowSpacing="6">
+						<TextBlock VerticalAlignment="Center" Text="Формат" />
+						<AutoCompleteBox Grid.Column="1"
+						                 ItemsSource="{Binding FormatPresets}"
+						                 Text="{Binding Format, UpdateSourceTrigger=PropertyChanged}"
+						                 MinimumPrefixLength="0"
+						                 PlaceholderText="dd.MM.yyyy" />
+						<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Культура" />
+						<StackPanel Grid.Row="1" Grid.Column="1" Spacing="2">
+							<AutoCompleteBox ItemsSource="{Binding Cultures}"
+							                 Text="{Binding Culture, UpdateSourceTrigger=PropertyChanged}"
+							                 PlaceholderText="ru-RU" />
+							<TextBlock FontSize="11" Opacity="0.65" Text="{Binding CultureName}" />
+						</StackPanel>
+					</Grid>
+				</StackPanel>
+
+				<TextBlock FontWeight="SemiBold" Text="Предпросмотр" />
+				<Border MinHeight="76"
+				        Padding="12"
+				        CornerRadius="4"
+				        BorderThickness="1"
+				        Background="White"
+				        BorderBrush="{DynamicResource CellReport.Ribbon.Border}">
+					<TextBlock Text="{Binding PreviewText}"
+					           FontFamily="{Binding FontFamily}"
+					           FontSize="{Binding PreviewFontSize}"
+					           FontWeight="{Binding PreviewWeight}"
+					           FontStyle="{Binding PreviewFontStyle}"
+					           Foreground="{Binding PreviewBrush}"
+					           TextWrapping="Wrap" />
+				</Border>
+
+				<CheckBox IsVisible="{Binding HasOverrides}"
+				          IsChecked="{Binding ReplaceOverrides}"
+				          Content="{Binding OverridesHint}"
+				          ToolTip.Tip="Параметры Style.* у содержимого имеют приоритет над стилем. Если снять флажок, они останутся и стиль может быть не виден." />
+
+				<TextBlock Foreground="#E5484D"
+				           TextWrapping="Wrap"
+				           IsVisible="{Binding HasError}"
+				           Text="{Binding ErrorMessage}" />
+			</StackPanel>
+		</ScrollViewer>
+
+		<Border Grid.Row="1"
+		        Padding="12,8"
+		        BorderBrush="{DynamicResource CellReport.Ribbon.Border}"
+		        BorderThickness="0,1,0,0">
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+				<Button Content="Применить" MinWidth="110" IsDefault="True" Click="OnApplyClick" />
+				<Button Content="Отмена" MinWidth="96" IsCancel="True" Click="OnCancelClick" />
+			</StackPanel>
+		</Border>
+	</Grid>
+</Window>
