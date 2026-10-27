@@ -3,69 +3,81 @@
              xmlns:vm="clr-namespace:CellReport.Editor.Avalonia.ViewModels"
              x:Class="CellReport.Editor.Avalonia.Views.StylesView"
              x:DataType="vm:MainWindowViewModel">
-	<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-		<StackPanel Margin="16" Spacing="10" MaxWidth="1000" HorizontalAlignment="Left">
-			<Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-				<StackPanel Spacing="2">
-					<TextBlock FontWeight="SemiBold" Text="Стили" />
-					<TextBlock FontSize="12" Opacity="0.7" TextWrapping="Wrap" Text="{Binding Styles.Summary}" />
-				</StackPanel>
-				<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-					<Button Content="Создать">
-						<Button.Flyout>
-							<MenuFlyout Placement="BottomEdgeAlignedRight">
-								<MenuItem Header="Текст" Command="{Binding Styles.CreateCommand}" CommandParameter="text" />
-								<MenuItem Header="Число" Command="{Binding Styles.CreateCommand}" CommandParameter="number" />
-								<MenuItem Header="Дата и время" Command="{Binding Styles.CreateCommand}" CommandParameter="date" />
-								<MenuItem Header="Ячейка" Command="{Binding Styles.CreateCommand}" CommandParameter="cell" />
-								<MenuItem Header="Линия" Command="{Binding Styles.CreateCommand}" CommandParameter="line" />
-							</MenuFlyout>
-						</Button.Flyout>
-					</Button>
-					<Button Content="Сжать стили"
-					        Command="{Binding Styles.CompressCommand}"
-					        ToolTip.Tip="Удалить стили шаблона, которые уже есть во внешнем файле. Ссылки на них будут заменены ссылками на внешние стили." />
-				</StackPanel>
-			</Grid>
+	<Grid Margin="16,12,16,0" RowDefinitions="Auto,Auto,*" RowSpacing="8">
+		<Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+			<StackPanel Spacing="2">
+				<TextBlock FontWeight="SemiBold" Text="Стили" />
+				<TextBlock FontSize="12" Opacity="0.7" TextWrapping="Wrap" Text="{Binding Styles.Summary}" />
+			</StackPanel>
+			<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+				<Button Content="Создать">
+					<Button.Flyout>
+						<MenuFlyout Placement="BottomEdgeAlignedRight">
+							<MenuItem Header="Текст" Command="{Binding Styles.CreateCommand}" CommandParameter="text" />
+							<MenuItem Header="Число" Command="{Binding Styles.CreateCommand}" CommandParameter="number" />
+							<MenuItem Header="Дата и время" Command="{Binding Styles.CreateCommand}" CommandParameter="date" />
+							<MenuItem Header="Ячейка" Command="{Binding Styles.CreateCommand}" CommandParameter="cell" />
+							<MenuItem Header="Линия" Command="{Binding Styles.CreateCommand}" CommandParameter="line" />
+						</MenuFlyout>
+					</Button.Flyout>
+				</Button>
+				<Button Content="Сжать стили"
+				        Command="{Binding Styles.CompressCommand}"
+				        ToolTip.Tip="Удалить стили шаблона, которые уже есть во внешнем файле. Ссылки на них будут заменены ссылками на внешние стили." />
+			</StackPanel>
+		</Grid>
 
-			<TextBlock FontSize="12"
-			           Opacity="0.85"
-			           TextWrapping="Wrap"
-			           IsVisible="{Binding Styles.HasMessage}"
-			           Text="{Binding Styles.Message}" />
+		<TextBlock Grid.Row="1"
+		           FontSize="12"
+		           Opacity="0.85"
+		           TextWrapping="Wrap"
+		           IsVisible="{Binding Styles.HasMessage}"
+		           Text="{Binding Styles.Message}" />
 
-			<ItemsControl ItemsSource="{Binding Styles.Styles}">
-				<ItemsControl.ItemTemplate>
-					<DataTemplate x:DataType="vm:StyleRow">
-						<Border Margin="0,0,0,6"
-						        Padding="10,8"
-						        CornerRadius="4"
-						        BorderThickness="1"
-						        BorderBrush="{DynamicResource CellReport.Ribbon.Border}">
-							<Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-								<StackPanel Spacing="2" VerticalAlignment="Center">
-									<TextBlock FontWeight="SemiBold"
-									           TextTrimming="CharacterEllipsis"
-									           Text="{Binding Id}" />
-									<TextBlock FontSize="11"
-									           Opacity="0.7"
-									           TextTrimming="CharacterEllipsis"
-									           Text="{Binding Details}" />
-								</StackPanel>
-								<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-									<Button Content="Изменить"
-									        Command="{Binding EditCommand}"
-									        IsVisible="{Binding !IsExternal}" />
-									<Button Content="Копировать" Command="{Binding CopyCommand}" />
-									<Button Content="Удалить"
-									        Command="{Binding DeleteCommand}"
-									        IsVisible="{Binding !IsExternal}" />
-								</StackPanel>
-							</Grid>
-						</Border>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
-		</StackPanel>
-	</ScrollViewer>
+		<ListBox x:Name="StylesList"
+		         Grid.Row="2"
+		         ItemsSource="{Binding Styles.Styles}"
+		         SelectedItem="{Binding Styles.SelectedStyle}"
+		         Background="Transparent"
+		         BorderThickness="0"
+		         Padding="0,0,4,0">
+			<ListBox.Styles>
+				<Style Selector="ListBoxItem">
+					<Setter Property="Padding" Value="0" />
+					<Setter Property="Margin" Value="0,0,0,6" />
+					<Setter Property="Background" Value="Transparent" />
+					<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+				</Style>
+			</ListBox.Styles>
+			<ListBox.ItemTemplate>
+				<DataTemplate x:DataType="vm:StyleRow">
+					<Border Padding="10,8"
+					        CornerRadius="4"
+					        BorderThickness="1"
+					        BorderBrush="{DynamicResource CellReport.Ribbon.Border}">
+						<Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+							<StackPanel Spacing="2" VerticalAlignment="Center">
+								<TextBlock FontWeight="SemiBold"
+								           TextTrimming="CharacterEllipsis"
+								           Text="{Binding Id}" />
+								<TextBlock FontSize="11"
+								           Opacity="0.7"
+								           TextTrimming="CharacterEllipsis"
+								           Text="{Binding Details}" />
+							</StackPanel>
+							<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+								<Button Content="Изменить"
+								        Command="{Binding EditCommand}"
+								        IsVisible="{Binding !IsExternal}" />
+								<Button Content="Копировать" Command="{Binding CopyCommand}" />
+								<Button Content="Удалить"
+								        Command="{Binding DeleteCommand}"
+								        IsVisible="{Binding !IsExternal}" />
+							</StackPanel>
+						</Grid>
+					</Border>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
+	</Grid>
 </UserControl>

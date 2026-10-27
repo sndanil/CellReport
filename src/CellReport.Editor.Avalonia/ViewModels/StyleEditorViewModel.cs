@@ -73,13 +73,21 @@ public partial class StyleEditorViewModel : ObservableObject
 			Culture = dateStyle.Culture ?? string.Empty;
 		}
 
-		Id = _original == null || string.IsNullOrEmpty(_original.ID)
-			? NextStyleId(_styleType)
-			: _original.ID;
+		if (!string.IsNullOrEmpty(_original?.ID))
+			Id = _original!.ID;
+		else if (!string.IsNullOrEmpty(style.ID))
+			Id = style.ID;
+		else
+			Id = NextStyleId(_styleType);
 
 		Title = (isNew ? "Новый стиль: " : "Стиль: ") + StyleTypeTitle(_styleType);
 		UpdatePreview();
 	}
+
+	/// <summary>
+	/// Идентификатор, с которым стиль был добавлен или сохранён. Заполняется после «Применить».
+	/// </summary>
+	public string? AppliedId { get; private set; }
 
 	public string Title { get; }
 
@@ -316,6 +324,7 @@ public partial class StyleEditorViewModel : ObservableObject
 			manager.ReplaceStyle(style);
 		});
 
+		AppliedId = id;
 		return true;
 	}
 

@@ -189,8 +189,12 @@ public partial class StylesViewModel : ObservableObject
 
 		var style = choice.CreateDefault();
 		var viewModel = new StyleEditorViewModel(_owner, style, isNew: true);
-		if (await ShowEditorAsync(viewModel))
-			RefreshAfterChange();
+		var appliedId = await ShowEditorAsync(viewModel);
+		if (appliedId == null)
+			return;
+
+		RefreshAfterChange();
+		SelectStyle(appliedId);
 	}
 
 	internal async Task EditAsync(StyleRow row)
@@ -199,11 +203,18 @@ public partial class StylesViewModel : ObservableObject
 			return;
 
 		var viewModel = new StyleEditorViewModel(_owner, row.Style, isNew: false);
-		if (await ShowEditorAsync(viewModel))
-			RefreshAfterChange();
+		var appliedId = await ShowEditorAsync(viewModel);
+		if (appliedId == null)
+			return;
+
+		RefreshAfterChange();
+		SelectStyle(appliedId);
 	}
 
-	internal void Copy(StyleRow row)
+	/// <summary>
+	/// Копия сначала открывается в редакторе и попадает в шаблон только после «Применить».
+	/// </summary>
+	internal async Task CopyAsync(StyleRow row)
 	{
 		var manager = _manager;
 		if (manager == null)
@@ -214,12 +225,13 @@ public partial class StylesViewModel : ObservableObject
 			return;
 
 		copy.ID = NextCopyId(row.Style, manager);
-		Commit(() => manager.AddStyle(copy));
-		RefreshAfterChange();
+		var viewModel = new StyleEditorViewModel(_owner, copy, isNew: true);
+		var appliedId = await ShowEditorAsync(viewModel);
+		if (appliedId == null)
+			return;
 
-		SelectedStyle = Styles.FirstOrDefault(item => ReferenceEquals(item.Style, copy)) ?? SelectedStyle;
-		Message = "Стиль скопирован: " + copy.ID;
-		HasMessage = true;
+		RefreshAfterChange();
+		SelectStyle(appliedId);
 	}
 
 	internal void Delete(StyleRow row)
@@ -280,14 +292,25 @@ public partial class StylesViewModel : ObservableObject
 		_owner.Inspector.OnCellChanged();
 	}
 
-	private async Task<bool> ShowEditorAsync(StyleEditorViewModel viewModel)
+	private async Task<string?> ShowEditorAsync(StyleEditorViewModel viewModel)
 	{
 		var window = _owner.Window;
 		if (window == null)
-			return false;
+			return null;
 
 		var dialog = new StyleEditorWindow { DataContext = viewModel };
-		return await dialog.ShowDialog<bool>(window);
+		var applied = await dialog.ShowDialog<bool>(window);
+		return applied ? viewModel.AppliedId : null;
+	}
+
+	private void SelectStyle(string? id)
+	{
+		if (string.IsNullOrEmpty(id))
+			return;
+
+		var row = Styles.FirstOrDefault(item => !item.IsExternal && string.Equals(item.Id, id, StringComparison.Ordinal));
+		if (row != null)
+			SelectedStyle = row;
 	}
 
 	private void Commit(Action change)
@@ -343,7 +366,7 @@ public sealed class StyleRow
 		CanDelete = !isExternal && usage == 0;
 
 		EditCommand = new RelayCommand(() => _ = _owner.EditAsync(this), () => CanEdit);
-		CopyCommand = new RelayCommand(() => _owner.Copy(this));
+		CopyCommand = new RelayCommand(() => _ = _owner.CopyAsync(this));
 		DeleteCommand = new RelayCommand(() => _owner.Delete(this), () => CanDelete);
 	}
 
