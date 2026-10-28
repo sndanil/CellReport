@@ -351,7 +351,7 @@ namespace CellReport.Core.Contents
 		{
 			string result;
 			var text = Text ?? string.Empty;
-			if (!CellManager.IsDesignMode && TemplateLocalizer.IsFullKey(text))
+			if (!_manager.IsDesignMode && TemplateLocalizer.IsFullKey(text))
 				return TemplateLocalizer.GetString(_manager.Properties.Localization, text, _manager.Properties.Culture);
 			if (string.IsNullOrEmpty(Text))
 			{
@@ -361,13 +361,13 @@ namespace CellReport.Core.Contents
 				else
 				{
 					result = GetFormattedParamValueByName(paramName) ?? text;
-					if (CellManager.IsDesignMode && string.IsNullOrEmpty(result))
+					if (_manager.IsDesignMode && string.IsNullOrEmpty(result))
 						result = $"[{paramName}]";
 				}
 			}
 			else
 			{
-				if (!CellManager.IsDesignMode)
+				if (!_manager.IsDesignMode)
 					text = TemplateLocalizer.ResolveInline(_manager.Properties.Localization, text, _manager.Properties.Culture);
 
 				var reg = new Regex(@"\[(?=[^\[]*\]).*?\]");
@@ -382,10 +382,10 @@ namespace CellReport.Core.Contents
 
 					var paramName = match.ToString().Replace("]", string.Empty).Replace("[", string.Empty);
 					var value = GetFormattedParamValueByName(paramName);
-					if (CellManager.IsDesignMode && !string.IsNullOrEmpty(value))
+					if (_manager.IsDesignMode && !string.IsNullOrEmpty(value))
 						text = text.Replace(match.ToString(), value);
 
-					if (!CellManager.IsDesignMode)
+					if (!_manager.IsDesignMode)
 						text = text.Replace(match.ToString(), value ?? string.Empty);
 				}
 

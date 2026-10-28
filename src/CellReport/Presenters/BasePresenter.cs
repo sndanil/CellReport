@@ -62,7 +62,7 @@ namespace CellReport.Presenters
 
 		protected void ProcessFit()
 		{
-			if (!_manager.AutoFitted && !CellManager.IsDesignMode)
+			if (!_manager.AutoFitted && !_manager.IsDesignMode)
 			{
 				var alreadyFit = new HashSet<Cell>();
 				foreach (var row in _manager.GetAutoFitRows())
@@ -619,7 +619,7 @@ namespace CellReport.Presenters
 
 		protected virtual void RenderGrid(object context, Rectangle rect)
 		{
-			if (ShowGridLines || Manager.DisplaySettings.ShowDesignerGridLines && CellManager.IsDesignMode)
+			if (ShowGridLines || Manager.DisplaySettings.ShowDesignerGridLines && Manager.IsDesignMode)
 			{
 				Renderer.RenderLines(context, GridColor, 1, LineStyle.Solid, new Point[]{
 										new Point(rect.X, rect.Bottom),

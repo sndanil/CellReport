@@ -34,7 +34,7 @@ namespace CellReport.Avalonia
 			{
 				var left = Presenter.GetLeftOffset(column);
 				var right = left + Presenter.GetColumnWidth(column);
-				var columnName = CellManager.IsDesignMode ? column.ToString() : (column + 1).ToString();
+				var columnName = Presenter.Manager.IsDesignMode ? column.ToString() : (column + 1).ToString();
 				RenderText(drawingContext, columnName, new AvaloniaRect(left, 0, right - left, Bounds.Height));
 				drawingContext.DrawLine(CreatePen(), new AvaloniaPoint(right, 0), new AvaloniaPoint(right, Bounds.Height));
 			}

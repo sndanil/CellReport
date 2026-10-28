@@ -175,6 +175,11 @@ namespace CellReport.Core
 			return OnSerialize(null);
 		}
 
+		internal BaseStyle Clone()
+		{
+			return Parse(Serialize());
+		}
+
 		protected virtual XElement OnSerialize(string styleName)
 		{
 			return new XElement(styleName ?? "BaseStyle", new XAttribute("ID", ID));

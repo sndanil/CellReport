@@ -25,7 +25,7 @@ namespace CellReport.Avalonia
 
 		public void BuildPages()
 		{
-			using (DesignModeScope.Suspend())
+			using (DesignModeScope.Suspend(Manager))
 			{
 				_pageImages.Clear();
 

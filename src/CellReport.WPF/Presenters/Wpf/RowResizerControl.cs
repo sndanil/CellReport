@@ -68,7 +68,7 @@ namespace CellReport.Presenters.Wpf
                     var top = Presenter.GetTopOffset(row) + TopOffset;
                     var bottom = top + Presenter.GetRowHeight(row);
 
-                    if (CellReport.Core.CellManager.IsDesignMode)
+                    if (Presenter.Manager.IsDesignMode)
                         RenderCell(drawingContext, top, bottom, row.ToString());
                     else
                         RenderCell(drawingContext, top, bottom, (row + 1).ToString());

@@ -19,7 +19,6 @@ public partial class StylesViewModel : ObservableObject
 {
 	private readonly MainWindowViewModel _owner;
 	private CellManager? _manager;
-	private bool _loading;
 	private bool _writing;
 
 	public StylesViewModel(MainWindowViewModel owner)
@@ -52,48 +51,40 @@ public partial class StylesViewModel : ObservableObject
 	public void Reload()
 	{
 		var previous = SelectedStyle;
-		_loading = true;
-		try
+		Styles.Clear();
+		Message = string.Empty;
+		HasMessage = false;
+
+		if (_manager == null)
 		{
-			Styles.Clear();
-			Message = string.Empty;
-			HasMessage = false;
-
-			if (_manager == null)
-			{
-				Summary = "Шаблон не открыт";
-				SelectedStyle = null;
-				return;
-			}
-
-			var sources = GetSourceLabel();
-			var template = 0;
-			var external = 0;
-
-			foreach (var style in _manager.GetTemplateStyles().OrderBy(item => item.ID, StringComparer.CurrentCulture))
-			{
-				Styles.Add(CreateRow(style, false, "шаблон"));
-				template++;
-			}
-
-			foreach (var style in _manager.GetExternalStyles().OrderBy(item => item.ID, StringComparer.CurrentCulture))
-			{
-				Styles.Add(CreateRow(style, true, sources));
-				external++;
-			}
-
-			Summary = "Стилей шаблона: " + template.ToString() + " · внешних: " + external.ToString();
-			if (external > 0 && sources.Length > 0)
-				Summary += " · " + sources;
-
-			SelectedStyle = previous != null
-				? Styles.FirstOrDefault(item => ReferenceEquals(item.Style, previous.Style)) ?? Styles.FirstOrDefault()
-				: Styles.FirstOrDefault();
+			Summary = "Шаблон не открыт";
+			SelectedStyle = null;
+			return;
 		}
-		finally
+
+		var sources = GetSourceLabel();
+		var template = 0;
+		var external = 0;
+
+		foreach (var style in _manager.GetTemplateStyles().OrderBy(item => item.ID, StringComparer.CurrentCulture))
 		{
-			_loading = false;
+			Styles.Add(CreateRow(style, false, "шаблон"));
+			template++;
 		}
+
+		foreach (var style in _manager.GetExternalStyles().OrderBy(item => item.ID, StringComparer.CurrentCulture))
+		{
+			Styles.Add(CreateRow(style, true, sources));
+			external++;
+		}
+
+		Summary = "Стилей шаблона: " + template.ToString() + " · внешних: " + external.ToString();
+		if (external > 0 && sources.Length > 0)
+			Summary += " · " + sources;
+
+		SelectedStyle = previous != null
+			? Styles.FirstOrDefault(item => ReferenceEquals(item.Style, previous.Style)) ?? Styles.FirstOrDefault()
+			: Styles.FirstOrDefault();
 	}
 
 	private string GetSourceLabel()

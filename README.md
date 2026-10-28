@@ -2,15 +2,15 @@
 
 **CellReport** — кроссплатформенный фреймворк для создания, просмотра и экспорта табличных отчётов. Шаблоны описываются в XML (`.tcr`, `.tcrp`), данные подставляются через API секций и параметров, результат выводится на экран или экспортируется в Excel, PDF, HTML и PNG.
 
-Поддерживаемые UI-стеки: **WinForms**, **WPF**, **Avalonia**. Ядро таргетит `net8.0` и `net48`.
+Поддерживаемые UI-стеки: **WinForms**, **WPF**, **Avalonia**. Ядро таргетит `net10.0` и `net48`.
 
 ## NuGet-пакеты
 
 | Пакет | Назначение |
 |-------|------------|
-| [CellReport](https://www.nuget.org/packages/KCellReport) | Ядро: шаблоны, `ReportDocument`, экспорт, Skia-рендерер |
-| [CellReport.WinForms](https://www.nuget.org/packages/KCellReport.WinForms) | Просмотр и печать в WinForms |
-| [CellReport.Avalonia](https://www.nuget.org/packages/KCellReport.Avalonia) | MVVM-компоненты для Avalonia 12 |
+| [KCellReport](https://www.nuget.org/packages/KCellReport) | Ядро: шаблоны, `ReportDocument`, экспорт, Skia-рендерер |
+| [KCellReport.WinForms](https://www.nuget.org/packages/KCellReport.WinForms) | Просмотр и печать в WinForms |
+| [KCellReport.Avalonia](https://www.nuget.org/packages/KCellReport.Avalonia) | MVVM-компоненты для Avalonia 12 |
 
 ## Структура репозитория
 
@@ -24,26 +24,24 @@ CellReport/
 │   ├── CellReport.Editor/          # редактор шаблонов (WPF)
 │   ├── CellReport.Viewer/          # WinForms viewer
 │   └── CellReport.Avalonia.Viewer/ # Avalonia viewer
-├── tests/
-│   └── Tests/                      # автоматические тесты (MSTest)
-├── lib/                            # сторонние сборки
+├── Tests/                          # автоматические тесты (MSTest)
 └── CellReport.sln
 ```
 
 ## Быстрый старт
 
 ```bash
-git clone https://github.com/Kayala-soft/CellReport.git
+git clone https://github.com/sndanil/CellReport.git
 cd CellReport
 dotnet build CellReport.sln
-dotnet test tests/Tests.csproj
+dotnet test Tests/Tests.csproj
 ```
 
 ## Примеры
 
 ### 1. Загрузка шаблона, заполнение данных и экспорт в PDF
 
-Пакет: **CellReport**
+Пакет: **KCellReport**
 
 ```csharp
 using CellReport;
@@ -93,7 +91,7 @@ using (var stream = File.Create(@"output\invoice.png"))
 
 ### 2. Просмотр отчёта в WinForms
 
-Пакеты: **CellReport**, **CellReport.WinForms**
+Пакеты: **KCellReport**, **KCellReport.WinForms**
 
 ```csharp
 using CellReport;
@@ -116,8 +114,8 @@ using (var form = new ReportForm())
 
 ```xml
 <!-- в .csproj -->
-<PackageReference Include="CellReport" Version="*" />
-<PackageReference Include="CellReport.WinForms" Version="*" />
+<PackageReference Include="KCellReport" Version="*" />
+<PackageReference Include="KCellReport.WinForms" Version="*" />
 ```
 
 ```csharp
@@ -129,11 +127,11 @@ Controls.Add(presentControl);
 
 ### 3. Avalonia: MVVM и встроенный просмотрщик
 
-Пакеты: **CellReport**, **CellReport.Avalonia**
+Пакеты: **KCellReport**, **KCellReport.Avalonia**
 
 ```xml
-<PackageReference Include="CellReport" Version="*" />
-<PackageReference Include="CellReport.Avalonia" Version="*" />
+<PackageReference Include="KCellReport" Version="*" />
+<PackageReference Include="KCellReport.Avalonia" Version="*" />
 ```
 
 ```csharp
@@ -161,11 +159,12 @@ var viewModel = new PresentControlViewModel(document.Manager);
 
 ### 4. WPF: встраивание в окно приложения
 
-Пакеты: **CellReport**, **CellReport.WPF**
+WPF-компонент пока не публикуется в NuGet и подключается из исходников вместе с проектами `CellReport.WPF`, `CellReport.WinForms` и `CellReport`.
 
 ```xml
-<PackageReference Include="CellReport" Version="*" />
-<PackageReference Include="CellReport.WPF" Version="*" />
+<ProjectReference Include="..\CellReport\src\CellReport\CellReport.csproj" />
+<ProjectReference Include="..\CellReport\src\CellReport.WinForms\CellReport.WinForms.csproj" />
+<ProjectReference Include="..\CellReport\src\CellReport.WPF\CellReport.WPF.csproj" />
 ```
 
 ```xml
@@ -187,7 +186,7 @@ new DisplayPresenter(document.Manager, reportView);
 
 ### 5. Горизонтальное объединение секций
 
-Пакет: **CellReport**
+Пакет: **KCellReport**
 
 ```csharp
 var document = new ReportDocument(templateStream);
@@ -211,6 +210,33 @@ document.SetParameter("Товар", "Кабель");
 
 Редактирование: проект `CellReport.Editor` в `src/` или визуальный редактор из дистрибутива.
 
+## Безопасность шаблонов
+
+Внешние `file://` и `http(s)://` ресурсы по умолчанию отключены. Для доверенного
+шаблона их нужно разрешить явно до загрузки:
+
+```csharp
+var template = new CellTemplate
+{
+    ExternalResourceOptions = new UriDataLoaderOptions
+    {
+        AllowFile = true,
+        AllowedFileRoot = Path.GetFullPath("Templates"),
+        MaxDataBytes = 10 * 1024 * 1024
+    }
+};
+template.Load(@"Templates\Invoice.tcr");
+```
+
+Для HTTP дополнительно задаются `AllowHttp = true` и точный список
+`AllowedHttpHosts`. Размер XML, таблицы и ресурсов ограничивается через
+`TemplateLoadOptions`.
+
+`CellManager`, `ReportDocument` и presenter-ы не предназначены для одновременного
+изменения из нескольких потоков. Отдельные документы можно формировать и
+экспортировать параллельно; один экземпляр документа следует использовать
+последовательно.
+
 ## Сборка и тесты
 
 ```bash
@@ -221,7 +247,7 @@ dotnet build CellReport.sln
 dotnet build src/CellReport/CellReport.csproj
 
 # тесты
-dotnet test tests/Tests.csproj
+dotnet test Tests/Tests.csproj
 ```
 
 ## Лицензия

@@ -5,20 +5,24 @@ namespace CellReport.Avalonia.Services
 {
 	public static class DesignModeScope
 	{
-		public static IDisposable Suspend()
+		public static IDisposable Suspend(CellManager manager)
 		{
-			return new Suspension();
+			if (manager == null)
+				throw new ArgumentNullException(nameof(manager));
+			return new Suspension(manager);
 		}
 
 		private sealed class Suspension : IDisposable
 		{
+			private readonly CellManager _manager;
 			private readonly bool _previous;
 			private bool _disposed;
 
-			public Suspension()
+			public Suspension(CellManager manager)
 			{
-				_previous = CellManager.IsDesignMode;
-				CellManager.IsDesignMode = false;
+				_manager = manager;
+				_previous = manager.IsDesignMode;
+				manager.IsDesignMode = false;
 			}
 
 			public void Dispose()
@@ -27,7 +31,7 @@ namespace CellReport.Avalonia.Services
 					return;
 
 				_disposed = true;
-				CellManager.IsDesignMode = _previous;
+				_manager.IsDesignMode = _previous;
 			}
 		}
 	}

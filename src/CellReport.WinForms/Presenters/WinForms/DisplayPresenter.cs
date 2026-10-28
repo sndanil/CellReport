@@ -112,7 +112,7 @@ namespace CellReport.Presenters.WinForms
 					case Keys.End: MoveToLastRow(); return true;
 					case Keys.C:
 					case Keys.Insert:
-						var data = CellManager.IsDesignMode ? GetCurrentForClipBoard() : GetSelectionForClipboard();
+						var data = Manager.IsDesignMode ? GetCurrentForClipBoard() : GetSelectionForClipboard();
 						if (data != null)
 						{
 							if (data is byte[])

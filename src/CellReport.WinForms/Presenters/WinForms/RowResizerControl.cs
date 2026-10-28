@@ -55,7 +55,7 @@ namespace CellReport.Presenters.WinForms
 				using (var brush = new SolidBrush(Color.FromArgb(0x36, 0x36, 0x36)))
 				using (var pen = new Pen(Color.FromArgb(0xB1, 0xB5, 0xBA)))
 				{
-					if (CellManager.IsDesignMode)
+					if (Presenter.Manager.IsDesignMode)
 						g.DrawString(row.ToString(), Font, brush, rect, stringFormat);
 					else
 						g.DrawString((row + 1).ToString(), Font, brush, rect, stringFormat);

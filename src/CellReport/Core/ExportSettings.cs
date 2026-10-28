@@ -45,5 +45,10 @@ namespace CellReport.Core
                 new XAttribute("RunExcelAfterExport", RunExcelAfterExport)
                 );
         }
+
+        internal ExportSettings Clone()
+        {
+            return Parse(Serialize());
+        }
     }
 }

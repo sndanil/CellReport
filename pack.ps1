@@ -45,8 +45,14 @@ foreach ($package in $packages) {
 }
 
 if ($Push) {
+    if ([string]::IsNullOrWhiteSpace($env:NUGET_API_KEY)) {
+        throw 'NUGET_API_KEY must be set when -Push is used.'
+    }
     foreach ($package in $packages) {
         Write-Host "Pushing $($package.Name)..."
-        dotnet nuget push $package.FullName --source https://api.nuget.org/v3/index.json
+        dotnet nuget push $package.FullName `
+            --source https://api.nuget.org/v3/index.json `
+            --api-key $env:NUGET_API_KEY `
+            --skip-duplicate
     }
 }

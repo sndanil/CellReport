@@ -11,6 +11,8 @@ namespace CellReport.Presenters.Skia
 {
 	public class SkiaReportRenderer : BaseRenderer
 	{
+		private static readonly object ImageRenderLock = new object();
+
 		public bool InvertColors { get; set; }
 
 		public static Size GetTextSize(Rectangle rect, string text, string fontFamily, float fontSize, FontStyle fontStyle)
@@ -372,18 +374,23 @@ namespace CellReport.Presenters.Skia
 			if (width <= 0 || height <= 0)
 				return new byte[0];
 
-			using (var surface = SKSurface.Create(new SKImageInfo(width, height)))
+			// RichTextKit/Skia font resolution can deadlock when independent reports
+			// initialize and render text concurrently. Keep image rendering process-safe.
+			lock (ImageRenderLock)
 			{
-				var canvas = surface.Canvas;
-				canvas.Clear(SKColors.White);
-				renderAction(canvas);
-
-				using (var image = surface.Snapshot())
-				using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
+				using (var surface = SKSurface.Create(new SKImageInfo(width, height)))
 				{
-					if (data == null)
-						return new byte[0];
-					return data.ToArray();
+					var canvas = surface.Canvas;
+					canvas.Clear(SKColors.White);
+					renderAction(canvas);
+
+					using (var image = surface.Snapshot())
+					using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
+					{
+						if (data == null)
+							return new byte[0];
+						return data.ToArray();
+					}
 				}
 			}
 		}

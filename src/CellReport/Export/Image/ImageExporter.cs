@@ -15,6 +15,8 @@ namespace CellReport.Export.Image
         {
             if (renderer == null && BaseExporter.RendererFactory != null)
                 renderer = BaseExporter.RendererFactory.Create();
+			if (renderer == null)
+				throw new ArgumentNullException(nameof(renderer));
 
 			_presenter = new ImagePresenter(manager, renderer);
         }

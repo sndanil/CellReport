@@ -29,6 +29,16 @@ namespace CellReportTests
 		}
 
 		[TestMethod]
+		public void DesignMode_IsScopedToManagerInstance()
+		{
+			var designer = new CellManager { IsDesignMode = true };
+			var runtime = new CellManager();
+
+			Assert.IsTrue(designer.IsDesignMode);
+			Assert.IsFalse(runtime.IsDesignMode);
+		}
+
+		[TestMethod]
 		public void CellSpan_CoversMergedArea()
 		{
 			var manager = new CellManager(10, 10);

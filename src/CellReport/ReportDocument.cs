@@ -78,17 +78,22 @@ namespace CellReport
 			var colsCount = Math.Max(1, _template.GetMaxColumnsCountInSections());
 			Manager = new CellManager(rowsCount, colsCount, _template.Manager.Properties.DefaultRowHeight, _template.Manager.Properties.DefaultColumn)
 			{
-				DisplaySettings = _template.Manager.DisplaySettings,
-				ExportSettings = _template.Manager.ExportSettings
+				DisplaySettings = _template.Manager.DisplaySettings.Clone(),
+				ExportSettings = _template.Manager.ExportSettings.Clone(),
+				TemplateDirectory = _template.Manager.TemplateDirectory,
+				UriDataLoaderOptions = _template.Manager.UriDataLoaderOptions.Clone()
 			};
 			Manager.PrintSettings = _template.Manager.PrintSettings.Clone(Manager);
-			Manager.Properties = _template.Manager.Properties;
+			Manager.Properties = _template.Manager.Properties.Clone();
 			foreach (var resourceName in _template.Manager.GetResourceNames())
-				Manager.AddResource(resourceName, _template.Manager.GetResource(resourceName));
+			{
+				var resource = _template.Manager.GetResource(resourceName);
+				Manager.AddResource(resourceName, (byte[])resource.Clone());
+			}
 			foreach (var expr in _template.Manager.GetExpressions())
 				Manager.AddExpression(expr.Clone());
 			foreach (var style in _template.Manager.GetStyles())
-				Manager.AddStyle(style);
+				Manager.AddStyle(style.Clone());
 			//foreach (var style in _template.Manager.GetExtStyles())
 			//	Manager.AddExternalStyle(style);
 

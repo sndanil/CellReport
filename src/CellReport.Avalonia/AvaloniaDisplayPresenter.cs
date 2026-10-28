@@ -157,7 +157,7 @@ namespace CellReport.Avalonia
 						return true;
 					case Key.C:
 					case Key.Insert:
-						if (CellManager.IsDesignMode)
+						if (Manager.IsDesignMode)
 							return false;
 						CopySelectionToClipboard();
 						return true;
@@ -169,7 +169,7 @@ namespace CellReport.Avalonia
 
 		private void CopySelectionToClipboard()
 		{
-			var data = CellManager.IsDesignMode ? GetCurrentForClipBoard() : GetSelectionForClipboard();
+			var data = Manager.IsDesignMode ? GetCurrentForClipBoard() : GetSelectionForClipboard();
 			if (data == null)
 				return;
 

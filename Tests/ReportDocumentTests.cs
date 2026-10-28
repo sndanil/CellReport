@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using CellReport;
 using CellReport.Core;
@@ -103,6 +104,29 @@ namespace CellReportTests
 
 			Assert.AreEqual(expectedRows, reloaded.Manager.RowsCount);
 			Assert.AreEqual(report.Manager.ColumnsCount, reloaded.Manager.ColumnsCount);
+		}
+
+		[TestMethod]
+		public void ReportsFromSameTemplate_DoNotShareMutableSettingsOrStyles()
+		{
+			var template = new CellTemplate();
+			template.Load(new MemoryStream(Encoding.UTF8.GetBytes(TestTemplateFactory.HeaderAndCellSections)));
+			var first = new ReportDocument(template);
+			var second = new ReportDocument(template);
+
+			first.Culture = "ru-RU";
+			first.Manager.DisplaySettings.Scale = 2f;
+			first.Manager.ExportSettings.RunExcelAfterExport = false;
+			var firstStyle = first.Manager.GetStyles().First();
+			var secondStyle = second.Manager.GetStyles().First();
+			firstStyle.ID = "changed";
+
+			Assert.IsNull(second.Culture);
+			Assert.AreEqual(1f, second.Manager.DisplaySettings.Scale);
+			Assert.IsTrue(second.Manager.ExportSettings.RunExcelAfterExport);
+			Assert.AreNotEqual("changed", secondStyle.ID);
+			Assert.AreNotSame(first.Manager.Properties, second.Manager.Properties);
+			Assert.AreNotSame(firstStyle, secondStyle);
 		}
 
 		private static string GetCellText(CellManager manager, int row, int column)

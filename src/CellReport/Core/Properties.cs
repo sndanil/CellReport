@@ -168,5 +168,12 @@ namespace CellReport.Core
 				result.Add(new XAttribute("DefaultColumnWidth", DefaultColumn.Width.ToString(CultureInfo.InvariantCulture)));
 			return result;
 		}
+
+		internal Properties Clone()
+		{
+			var result = Parse(Serialize());
+			result.Culture = Culture;
+			return result;
+		}
 	}
 }

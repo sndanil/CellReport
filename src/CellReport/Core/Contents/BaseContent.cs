@@ -47,7 +47,7 @@ namespace CellReport.Core.Contents
 			if (!string.IsNullOrEmpty(styleId) && styleId != StyleID)
 				_style = null;
 			styleId = styleId ?? StyleID;
-			if (_style == null || styleId != _style.ID || CellManager.IsDesignMode)
+			if (_style == null || styleId != _style.ID || _manager.IsDesignMode)
 				_style = _manager.GetStyleByID<T>(styleId);
 
 			return (T)_style;

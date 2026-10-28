@@ -84,7 +84,7 @@ namespace CellReport.Core.Expressions
 					case Operation.DecimalPartAndShift:
 						{
 							var decimalPart = (decimalValue - Math.Truncate(decimalValue)) * 10m;
-							while (decimalPart - Math.Truncate(decimalValue) > 0)
+							while (decimalPart != Math.Truncate(decimalPart))
 							{
 								decimalPart *= 10m;
 							}

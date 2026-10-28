@@ -23,6 +23,20 @@ namespace CellReport.Core
 	{
 		private CellManager _manager = null;
 		private string _templateDirectory;
+		private TemplateLoadOptions _loadOptions = new TemplateLoadOptions();
+		private UriDataLoaderOptions _externalResourceOptions = new UriDataLoaderOptions();
+
+		public TemplateLoadOptions LoadOptions
+		{
+			get { return _loadOptions; }
+			set { _loadOptions = value ?? new TemplateLoadOptions(); }
+		}
+
+		public UriDataLoaderOptions ExternalResourceOptions
+		{
+			get { return _externalResourceOptions; }
+			set { _externalResourceOptions = value ?? new UriDataLoaderOptions(); }
+		}
 
 		public string TemplateDirectory
 		{
@@ -227,45 +241,88 @@ namespace CellReport.Core
 
 		public void Load(Stream stream)
 		{
-			LoadFromStream(stream);
+			if (stream == null)
+				throw new ArgumentNullException(nameof(stream));
+			try
+			{
+				LoadFromStream(stream);
+			}
+			catch (TemplateLoadException)
+			{
+				throw;
+			}
+			catch (Exception ex)
+			{
+				throw new TemplateLoadException("Failed to load the report template.", ex);
+			}
 		}
 
 		public void LoadFromXml(string xml)
 		{
-			var xDoc = XDocument.Parse(xml);
-			LoadFromXDoc(xDoc, new Dictionary<string, byte[]>());
+			if (xml == null)
+				throw new ArgumentNullException(nameof(xml));
+			if (Encoding.UTF8.GetByteCount(xml) > _loadOptions.MaxXmlBytes)
+				throw new TemplateLoadException("The template XML exceeds the configured size limit.");
+			try
+			{
+				XDocument xDoc;
+				using (var reader = new StringReader(xml))
+					xDoc = LoadXml(reader);
+				LoadFromXDoc(xDoc, new Dictionary<string, byte[]>());
+			}
+			catch (TemplateLoadException)
+			{
+				throw;
+			}
+			catch (Exception ex)
+			{
+				throw new TemplateLoadException("Failed to parse the report template XML.", ex);
+			}
 		}
 
 
 		private void LoadFromStream(Stream stream)
 		{
-			var type = TemplateType.Xml;
-			var reader = new StreamReader(stream);
-			char[] buffer = new char[2];
-			reader.Read(buffer, 0, 2);
-			var str = new string(buffer);
-			type = str == "PK" ? TemplateType.Package : TemplateType.Xml;
-			stream.Position = 0;
+			var templateData = ReadLimited(stream, _loadOptions.MaxTemplateBytes, "template");
+			var type = templateData.Length >= 2 && templateData[0] == (byte)'P' && templateData[1] == (byte)'K'
+				? TemplateType.Package
+				: TemplateType.Xml;
 
 			var resources = new Dictionary<string, byte[]>();
 			XDocument xDoc = null;
 			if (type == TemplateType.Xml)
 			{
-				xDoc = XDocument.Load(new StreamReader(stream));
+				if (templateData.LongLength > _loadOptions.MaxXmlBytes)
+					throw new TemplateLoadException("The template XML exceeds the configured size limit.");
+				using (var xmlStream = new MemoryStream(templateData, false))
+					xDoc = LoadXml(xmlStream);
 			}
 			else
 			{
-				using (Package package = Package.Open(stream, FileMode.Open, FileAccess.Read))
+				using (var packageStream = new MemoryStream(templateData, false))
+				using (Package package = Package.Open(packageStream, FileMode.Open, FileAccess.Read))
 				{
 					Uri partUriDocument = PackUriHelper.CreatePartUri(new Uri("Content\\Document.xml", UriKind.Relative));
-					xDoc = XDocument.Load(new StreamReader(package.GetPart(partUriDocument).GetStream()));
+					if (!package.PartExists(partUriDocument))
+						throw new TemplateLoadException("The template package does not contain Content/Document.xml.");
+					using (var documentStream = package.GetPart(partUriDocument).GetStream())
+					using (var limitedDocumentStream = new MemoryStream(
+						ReadLimited(documentStream, _loadOptions.MaxXmlBytes, "template XML"), false))
+						xDoc = LoadXml(limitedDocumentStream);
+
+					long totalResourceBytes = 0;
 					foreach (var part in package.GetParts())
 					{
-						if (part.ContentType.ToUpper().StartsWith("IMAGE") && part.Uri.ToString().StartsWith("/Resources/"))
+						if (part.ContentType.StartsWith("image", StringComparison.OrdinalIgnoreCase)
+							&& part.Uri.ToString().StartsWith("/Resources/", StringComparison.OrdinalIgnoreCase))
 						{
-							var name = part.Uri.ToString().Replace("/Resources/", string.Empty);
-							var data = new byte[part.GetStream().Length];
-							part.GetStream().Read(data, 0, data.Length);
+							var name = part.Uri.ToString().Substring("/Resources/".Length);
+							byte[] data;
+							using (var resourceStream = part.GetStream())
+								data = ReadLimited(resourceStream, _loadOptions.MaxResourceBytes, "template resource");
+							totalResourceBytes += data.LongLength;
+							if (totalResourceBytes > _loadOptions.MaxTotalResourceBytes)
+								throw new TemplateLoadException("Template resources exceed the configured total size limit.");
 							resources[name] = data;
 						}
 					}
@@ -277,14 +334,30 @@ namespace CellReport.Core
 		private void LoadFromXDoc(XDocument xDoc, Dictionary<string, byte[]> resources)
 		{
 			var templElement = xDoc.Element("CellReportTemplate");
+			if (templElement == null)
+				throw new TemplateLoadException("The root CellReportTemplate element is missing.");
 			var properties = Properties.Parse(templElement.Element("Properties"));
 			var tableElement = templElement.Element("Table");
+			if (tableElement == null)
+				throw new TemplateLoadException("The Table element is missing.");
 
-			var rowsCount = Convert.ToInt32(tableElement.Attribute("RowsCount").Value);
-			var columnsCount = Convert.ToInt32(tableElement.Attribute("ColumnsCount").Value);
+			var rowsAttribute = tableElement.Attribute("RowsCount");
+			var columnsAttribute = tableElement.Attribute("ColumnsCount");
+			if (rowsAttribute == null || columnsAttribute == null)
+				throw new TemplateLoadException("Table must define RowsCount and ColumnsCount.");
+			int rowsCount;
+			int columnsCount;
+			if (!int.TryParse(rowsAttribute.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out rowsCount)
+				|| !int.TryParse(columnsAttribute.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out columnsCount)
+				|| rowsCount < 0 || columnsCount < 0)
+				throw new TemplateLoadException("RowsCount and ColumnsCount must be non-negative integers.");
+			if (rowsCount > _loadOptions.MaxRows || columnsCount > _loadOptions.MaxColumns
+				|| (long)rowsCount * columnsCount > _loadOptions.MaxCells)
+				throw new TemplateLoadException("The template table exceeds the configured dimensions.");
 
 			_manager = new CellManager(properties);
 			_manager.TemplateDirectory = _templateDirectory;
+			_manager.UriDataLoaderOptions = _externalResourceOptions.Clone();
 			_manager.RowsCount = rowsCount;
 			_manager.ColumnsCount = columnsCount;
 			foreach (KeyValuePair<string, byte[]> res in resources)
@@ -301,6 +374,48 @@ namespace CellReport.Core
 			_manager.DisplaySettings = DisplaySettings.Parse(templElement.Element("DisplaySettings"));
 			_manager.BookmarkSettings = BookmarkSettings.Parse(templElement.Element("BookmarkSettings"));
 
+		}
+
+		private static byte[] ReadLimited(Stream stream, long limit, string description)
+		{
+			if (limit < 0)
+				throw new ArgumentOutOfRangeException(nameof(limit));
+			using (var output = new MemoryStream())
+			{
+				var buffer = new byte[81920];
+				long total = 0;
+				int read;
+				while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
+				{
+					total += read;
+					if (total > limit)
+						throw new TemplateLoadException("The " + description + " exceeds the configured size limit.");
+					output.Write(buffer, 0, read);
+				}
+				return output.ToArray();
+			}
+		}
+
+		private XDocument LoadXml(Stream stream)
+		{
+			using (var reader = XmlReader.Create(stream, CreateXmlReaderSettings()))
+				return XDocument.Load(reader);
+		}
+
+		private XDocument LoadXml(TextReader textReader)
+		{
+			using (var reader = XmlReader.Create(textReader, CreateXmlReaderSettings()))
+				return XDocument.Load(reader);
+		}
+
+		private XmlReaderSettings CreateXmlReaderSettings()
+		{
+			return new XmlReaderSettings
+			{
+				DtdProcessing = DtdProcessing.Prohibit,
+				XmlResolver = null,
+				MaxCharactersInDocument = _loadOptions.MaxXmlBytes
+			};
 		}
 
 		private void ParseRows(XElement tableElement)

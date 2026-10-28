@@ -11,7 +11,7 @@ namespace CellReport.Core
 	[Serializable]
 	public class CellManager : NotifyPropertyChanged
 	{
-		public static bool IsDesignMode = false;
+		public bool IsDesignMode { get; set; }
 
 		private Column[] _columns;
 		private float[] _rows;
@@ -51,6 +51,17 @@ namespace CellReport.Core
 		private HashSet<string> _pendingPropertyChanges;
 		[NonSerialized]
 		private UriDataLoader _uriDataLoader;
+		private UriDataLoaderOptions _uriDataLoaderOptions = new UriDataLoaderOptions();
+
+		public UriDataLoaderOptions UriDataLoaderOptions
+		{
+			get { return _uriDataLoaderOptions ?? (_uriDataLoaderOptions = new UriDataLoaderOptions()); }
+			set
+			{
+				_uriDataLoaderOptions = value ?? new UriDataLoaderOptions();
+				_uriDataLoader = null;
+			}
+		}
 
 		public CellManager()
 		{
@@ -187,7 +198,7 @@ namespace CellReport.Core
 		private UriDataLoader GetUriDataLoader()
 		{
 			if (_uriDataLoader == null)
-				_uriDataLoader = new UriDataLoader(GetResource);
+				_uriDataLoader = new UriDataLoader(GetResource, UriDataLoaderOptions);
 			return _uriDataLoader;
 		}
 
@@ -225,6 +236,161 @@ namespace CellReport.Core
 		{
 			foreach (var name in _resources.Keys)
 				yield return name;
+		}
+
+		/// <summary>
+		/// Сбрасывает кэш изображений, ссылающихся на указанный URI.
+		/// </summary>
+		public int InvalidateImageCaches(string uri)
+		{
+			if (string.IsNullOrEmpty(uri))
+				return 0;
+
+			var count = 0;
+			foreach (var image in EnumerateImages())
+			{
+				if (!string.Equals(image.ActualUri, uri, StringComparison.OrdinalIgnoreCase))
+					continue;
+
+				image.InvalidateCache();
+				count++;
+			}
+
+			return count;
+		}
+
+		/// <summary>
+		/// URI изображений, используемых в документе, и количество ссылок на каждый.
+		/// </summary>
+		public IReadOnlyList<KeyValuePair<string, int>> GetUriReferenceCounts()
+		{
+			var counts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			foreach (var image in EnumerateImages())
+			{
+				var uri = image.ActualUri;
+				if (string.IsNullOrEmpty(uri))
+					continue;
+
+				int count;
+				counts.TryGetValue(uri, out count);
+				counts[uri] = count + 1;
+			}
+
+			var result = new List<KeyValuePair<string, int>>(counts);
+			result.Sort((left, right) => string.Compare(left.Key, right.Key, StringComparison.CurrentCultureIgnoreCase));
+			return result;
+		}
+
+		/// <summary>
+		/// Заменяет ссылки на изображение старого URI новым.
+		/// Возвращает количество изменённых изображений.
+		/// </summary>
+		public int ReplaceUriReferences(string oldUri, string newUri)
+		{
+			if (string.IsNullOrEmpty(oldUri) || string.IsNullOrEmpty(newUri)
+				|| string.Equals(oldUri, newUri, StringComparison.OrdinalIgnoreCase))
+				return 0;
+
+			var replaced = 0;
+			foreach (var image in EnumerateImages())
+			{
+				var changed = false;
+				if (string.Equals(image.Uri, oldUri, StringComparison.OrdinalIgnoreCase))
+				{
+					image.Uri = newUri;
+					changed = true;
+				}
+
+				foreach (var param in image.GetParams())
+				{
+					if (!string.Equals(param.Target, "Uri", StringComparison.Ordinal))
+						continue;
+
+					var value = param.Value as string;
+					if (!string.Equals(value, oldUri, StringComparison.OrdinalIgnoreCase))
+						continue;
+
+					param.Value = newUri;
+					changed = true;
+				}
+
+				if (!changed)
+					continue;
+
+				image.InvalidateCache();
+				replaced++;
+			}
+
+			return replaced;
+		}
+
+		private IEnumerable<ImageContent> EnumerateImages()
+		{
+			for (var row = 0; row < RowsCount; row++)
+			{
+				for (var column = 0; column < ColumnsCount; column++)
+				{
+					if (!TryGetCell(row, column, out var cell) || cell == null)
+						continue;
+					if (cell.Location.Row != row || cell.Location.Column != column)
+						continue;
+
+					foreach (var content in cell.GetContents())
+					{
+						var image = content as ImageContent;
+						if (image != null)
+							yield return image;
+					}
+				}
+			}
+
+			var print = PrintSettings;
+			if (print == null)
+				yield break;
+
+			foreach (var image in EnumeratePagerImages(print.Headers))
+				yield return image;
+			foreach (var image in EnumeratePagerImages(print.Footers))
+				yield return image;
+		}
+
+		private static IEnumerable<ImageContent> EnumeratePagerImages(IList<Pager> pagers)
+		{
+			if (pagers == null)
+				yield break;
+
+			foreach (var pager in pagers)
+			{
+				foreach (var image in EnumerateImagesIn(pager.Left))
+					yield return image;
+				foreach (var image in EnumerateImagesIn(pager.Center))
+					yield return image;
+				foreach (var image in EnumerateImagesIn(pager.Right))
+					yield return image;
+			}
+		}
+
+		private static IEnumerable<ImageContent> EnumerateImagesIn(BaseContent content)
+		{
+			if (content == null)
+				yield break;
+
+			var image = content as ImageContent;
+			if (image != null)
+			{
+				yield return image;
+				yield break;
+			}
+
+			var collection = content as CollectionContent;
+			if (collection == null)
+				yield break;
+
+			foreach (var item in collection.GetContents())
+			{
+				foreach (var nested in EnumerateImagesIn(item))
+					yield return nested;
+			}
 		}
 
 		public void AddExpression(BaseExpression expression)

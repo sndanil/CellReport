@@ -118,6 +118,7 @@ namespace CellReport.Editor.ViewModel
 		public static void ApplyReport(CellManager manager, CellLocation currentCell = new CellLocation())
 		{
 			EditorModel.ReportContainer.Focus();
+			manager.IsDesignMode = true;
 
 			EditorModel.State.Presenter = new DisplayPresenter(manager, EditorModel.ReportContainer) { CurrentCell = currentCell };
 			EditorModel.State.Clear();

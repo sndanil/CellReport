@@ -41,7 +41,7 @@ namespace CellReport.Avalonia
 			{
 				var top = Presenter.GetTopOffset(row) + (float)TopOffset;
 				var bottom = top + Presenter.GetRowHeight(row);
-				var rowName = CellManager.IsDesignMode ? row.ToString() : (row + 1).ToString();
+				var rowName = Presenter.Manager.IsDesignMode ? row.ToString() : (row + 1).ToString();
 				RenderText(drawingContext, rowName, new AvaloniaRect(0, top, Bounds.Width, bottom - top));
 				drawingContext.DrawLine(CreatePen(), new AvaloniaPoint(0, bottom), new AvaloniaPoint(Bounds.Width, bottom));
 			}

@@ -69,7 +69,7 @@ namespace CellReport.Presenters.Wpf
 					var left = Presenter.GetLeftOffset(column) + XOffset;
 					var right = left + Presenter.GetColumnWidth(column);
 
-					if (CellReport.Core.CellManager.IsDesignMode)
+					if (Presenter.Manager.IsDesignMode)
 						RenderCell(drawingContext, left, right, column.ToString());
 					else
 						RenderCell(drawingContext, left, right, (column + 1).ToString());

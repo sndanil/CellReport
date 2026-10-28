@@ -7,10 +7,11 @@
     <RepositoryType>git</RepositoryType>
     <LangVersion>latest</LangVersion>
     <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
 
     <!-- NuGet defaults (override in packable projects) -->
     <IsPackable>false</IsPackable>
-    <Version Condition="'$(Version)' == ''">0.13.1</Version>
+    <Version Condition="'$(Version)' == ''">0.14.0</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/sndanil/CellReport</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -21,8 +22,4 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(IsPackable)' == 'true'">
-    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" />
-    <None Include="$(MSBuildThisFileDirectory)LICENSE" Pack="true" PackagePath="\" />
-  </ItemGroup>
 </Project>

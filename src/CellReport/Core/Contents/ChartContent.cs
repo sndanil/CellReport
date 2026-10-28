@@ -189,14 +189,11 @@ namespace CellReport.Core.Contents
                     series.XDataType = Type.GetType(seriesElement.Attribute("XDataType").Value);
                 if (seriesElement.Attribute("YDataType") != null)
                     series.YDataType = Type.GetType(seriesElement.Attribute("YDataType").Value);
-                var oldCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
-                System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
                 foreach (var dataElement in seriesElement.Elements("Data"))
                 {
-                    series.AddXData(Convert.ChangeType(dataElement.Element("X").Value, series.XDataType));
-                    series.AddYData(Convert.ChangeType(dataElement.Element("Y").Value, series.YDataType));
+                    series.AddXData(Convert.ChangeType(dataElement.Element("X").Value, series.XDataType, CultureInfo.InvariantCulture));
+                    series.AddYData(Convert.ChangeType(dataElement.Element("Y").Value, series.YDataType, CultureInfo.InvariantCulture));
                 }
-                System.Threading.Thread.CurrentThread.CurrentCulture = oldCulture;
 
                 content._series.Add(series);
             }

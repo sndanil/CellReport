@@ -1568,6 +1568,7 @@ namespace CellReport.Editor.ViewModel
 			var template = new CellTemplate();
 			States[_current].Position = 0;
 			template.Load(States[_current]);
+			template.Manager.IsDesignMode = true;
 			_presenter.Manager.PropertyChanged -= ManagerOnPropertyChanged;
 			_presenter.Manager = template.Manager;
 			Presenter = _presenter;

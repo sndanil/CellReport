@@ -19,7 +19,6 @@ namespace CellReport.Editor
 		{
 			InitializeComponent();
 
-			CellManager.IsDesignMode = true;
 			Export.BaseExporter.RendererFactory = new Presenters.WinForms.RendererFactory();
 			EditorModel.State = new EditorState();
 

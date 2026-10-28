@@ -135,7 +135,6 @@ namespace CellReportTests
 		public void Cleanup()
 		{
 			TemplateLocalizer.Resolver = null;
-			CellManager.IsDesignMode = false;
 		}
 
 		[TestMethod]
@@ -204,8 +203,8 @@ namespace CellReportTests
 		[TestMethod]
 		public void DesignMode_ShowsRawKey()
 		{
-			CellManager.IsDesignMode = true;
 			var report = TestTemplateFactory.LoadReport(LocalizedTemplate);
+			report.Manager.IsDesignMode = true;
 			report.AddSection("main");
 			report.Culture = "en";
 

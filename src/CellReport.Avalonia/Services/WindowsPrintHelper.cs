@@ -10,79 +10,89 @@ namespace CellReport.Avalonia.Services
 {
 	internal static class WindowsPrintHelper
 	{
-		private static IList<byte[]> _pages = Array.Empty<byte[]>();
-		private static int _pageIndex;
-		private static CellManager _manager = null!;
-		private static int _fromPage = 1;
-		private static int _toPage = int.MaxValue;
-
 		public static void Print(CellManager manager, IReadOnlyList<byte[]> pages, bool useCustom, string? printerName, int fromPage = 1, int toPage = int.MaxValue)
 		{
 			if (pages.Count == 0)
 				return;
 
-			_manager = manager;
-			_pages = pages.ToList();
-			_pageIndex = 0;
-			_fromPage = Math.Max(1, fromPage);
-			_toPage = Math.Min(pages.Count, toPage <= 0 ? pages.Count : toPage);
-
-			using var document = CreateDocument();
-			if (!string.IsNullOrEmpty(printerName) &&
-			    PrinterSettings.InstalledPrinters.Cast<string>().Any(p => p == printerName))
-			{
-				document.PrinterSettings.PrinterName = printerName;
-			}
-
-			if (useCustom)
-			{
-				document.PrinterSettings.PrintRange = PrintRange.SomePages;
-				document.PrinterSettings.FromPage = _fromPage;
-				document.PrinterSettings.ToPage = _toPage;
-			}
-
-			document.Print();
+			new PrintOperation(manager, pages, fromPage, toPage).Run(useCustom, printerName);
 		}
 
-		private static PrintDocument CreateDocument()
+		private sealed class PrintOperation
 		{
-			var document = new PrintDocument
+			private readonly IList<byte[]> _pages;
+			private readonly CellManager _manager;
+			private readonly int _fromPage;
+			private readonly int _toPage;
+			private int _pageIndex;
+
+			public PrintOperation(CellManager manager, IReadOnlyList<byte[]> pages, int fromPage, int toPage)
 			{
-				DocumentName = _manager.Properties.DocumentName,
-				DefaultPageSettings =
+				_manager = manager;
+				_pages = pages.ToList();
+				_fromPage = Math.Max(1, fromPage);
+				_toPage = Math.Min(pages.Count, toPage <= 0 ? pages.Count : toPage);
+			}
+
+			public void Run(bool useCustom, string? printerName)
+			{
+				using var document = CreateDocument();
+				if (!string.IsNullOrEmpty(printerName) &&
+				    PrinterSettings.InstalledPrinters.Cast<string>().Any(p => p == printerName))
 				{
-					Landscape = _manager.PrintSettings.Landscape,
-					Margins = new System.Drawing.Printing.Margins(0, 0, 0, 0)
+					document.PrinterSettings.PrinterName = printerName;
 				}
-			};
-			document.PrinterSettings.Copies = _manager.PrintSettings.Copies;
-			document.PrintPage += OnPrintPage;
-			return document;
-		}
 
-		private static void OnPrintPage(object sender, PrintPageEventArgs e)
-		{
-			var currentPageNumber = _pageIndex + 1;
+				if (useCustom)
+				{
+					document.PrinterSettings.PrintRange = PrintRange.SomePages;
+					document.PrinterSettings.FromPage = _fromPage;
+					document.PrinterSettings.ToPage = _toPage;
+				}
 
-			if (currentPageNumber < _fromPage)
+				document.Print();
+			}
+
+			private PrintDocument CreateDocument()
 			{
+				var document = new PrintDocument
+				{
+					DocumentName = _manager.Properties.DocumentName,
+					DefaultPageSettings =
+					{
+						Landscape = _manager.PrintSettings.Landscape,
+						Margins = new System.Drawing.Printing.Margins(0, 0, 0, 0)
+					}
+				};
+				document.PrinterSettings.Copies = _manager.PrintSettings.Copies;
+				document.PrintPage += OnPrintPage;
+				return document;
+			}
+
+			private void OnPrintPage(object sender, PrintPageEventArgs e)
+			{
+				var currentPageNumber = _pageIndex + 1;
+
+				if (currentPageNumber < _fromPage)
+				{
+					_pageIndex++;
+					e.HasMorePages = _pageIndex < _pages.Count;
+					return;
+				}
+
+				if (currentPageNumber > _toPage)
+				{
+					e.HasMorePages = false;
+					return;
+				}
+
+				using var stream = new MemoryStream(_pages[_pageIndex]);
+				using var image = Image.FromStream(stream);
+				e.Graphics!.DrawImage(image, e.MarginBounds);
+
 				_pageIndex++;
-				e.HasMorePages = _pageIndex < _pages.Count;
-				return;
+				e.HasMorePages = _pageIndex < _pages.Count && (_pageIndex + 1) <= _toPage;
 			}
-
-			if (currentPageNumber > _toPage)
-			{
-				e.HasMorePages = false;
-				return;
-			}
-
-			using var stream = new MemoryStream(_pages[_pageIndex]);
-			using var image = Image.FromStream(stream);
-			e.Graphics!.DrawImage(image, e.MarginBounds);
-
-			_pageIndex++;
-			e.HasMorePages = _pageIndex < _pages.Count && (_pageIndex + 1) <= _toPage;
 		}
 	}
 }

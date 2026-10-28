@@ -26,7 +26,7 @@ using SkiaSharp;
 
 namespace CellReport.Editor.Avalonia.ViewModels;
 
-public partial class MainWindowViewModel : ObservableObject
+public partial class MainWindowViewModel : ObservableObject, IDisposable
 {
 	private const double DefaultInspectorWidth = 300;
 	private const double MinInspectorWidth = 220;
@@ -43,19 +43,23 @@ public partial class MainWindowViewModel : ObservableObject
 	private bool _syncing;
 	private int _editDepth;
 	private bool _editDirty;
-	private string? _filePath;
+	private readonly DocumentSession _documentSession = new();
+	private string? _filePath => _documentSession.FilePath;
 	private bool _documentModified;
 	private bool _codeModified;
 	private bool _suppressCodeTracking;
 	private readonly DispatcherTimer _typingTimer = new() { Interval = TimeSpan.FromMilliseconds(700) };
 	private readonly DispatcherTimer _layoutTimer = new() { Interval = TimeSpan.FromMilliseconds(600) };
 	private bool _layoutLoaded;
+	private bool _resolverRegistered;
+	private bool _disposed;
 
 	public MainWindowViewModel()
 	{
 		Settings = new DocumentSettingsViewModel(this);
 		Bookmarks = new BookmarkSettingsViewModel(this);
 		Styles = new StylesViewModel(this);
+		Resources = new ResourcesViewModel(this);
 		Expressions = new ExpressionsViewModel(this);
 		Inspector = new InspectorViewModel(this);
 		Present.PresenterChanged += OnPresenterChanged;
@@ -92,11 +96,24 @@ public partial class MainWindowViewModel : ObservableObject
 
 	public StylesViewModel Styles { get; }
 
+	public ResourcesViewModel Resources { get; }
+
 	public ExpressionsViewModel Expressions { get; }
 
 	public InspectorViewModel Inspector { get; }
 
 	public CellManager? Manager => _manager;
+
+	/// <summary>
+	/// Путь к текущему файлу шаблона (null — документ ещё не сохранён).
+	/// </summary>
+	public string? DocumentPath => _filePath;
+
+	/// <summary>
+	/// Шаблон сохранён как упакованный файл (.tcrp) и может хранить ресурсы.
+	/// </summary>
+	public bool IsPackageDocument => !string.IsNullOrEmpty(_filePath)
+		&& _filePath.EndsWith(".tcrp", StringComparison.OrdinalIgnoreCase);
 
 	public BaseDisplayPresenter? Presenter => _presenter;
 
@@ -630,7 +647,11 @@ public partial class MainWindowViewModel : ObservableObject
 	{
 		_window = window;
 		BaseExporter.RendererFactory = new AvaloniaRendererFactory();
-		FileResolver.OnResolve += ResolveExternalFile;
+		if (!_resolverRegistered)
+		{
+			FileResolver.OnResolve += _documentSession.ResolveExternalFile;
+			_resolverRegistered = true;
+		}
 
 		if (args.Length > 0 && File.Exists(args[0]))
 		{
@@ -796,6 +817,51 @@ public partial class MainWindowViewModel : ObservableObject
 	private async Task SaveAs()
 	{
 		await SaveDocumentAsync(saveAs: true);
+	}
+
+	/// <summary>
+	/// Сохраняет шаблон как упакованный файл (.tcrp), чтобы ресурсы попали в документ.
+	/// </summary>
+	public async Task<bool> SaveAsPackageAsync()
+	{
+		if (_manager == null || _window == null || !_window.StorageProvider.CanSave)
+			return false;
+
+		var suggested = string.IsNullOrEmpty(_filePath)
+			? "Шаблон.tcrp"
+			: Path.GetFileNameWithoutExtension(_filePath) + ".tcrp";
+
+		var file = await _window.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+		{
+			Title = "Сохранить шаблон как пакет",
+			SuggestedFileName = suggested,
+			DefaultExtension = "tcrp",
+			FileTypeChoices = new[]
+			{
+				new FilePickerFileType("CellReport шаблон упакованный") { Patterns = new[] { "*.tcrp" } }
+			}
+		});
+
+		if (file == null)
+			return false;
+
+		var path = file.Path.LocalPath;
+		if (!path.EndsWith(".tcrp", StringComparison.OrdinalIgnoreCase))
+			path += ".tcrp";
+
+		try
+		{
+			new CellTemplate(_manager).Save(path, TemplateType.Package);
+			SetDocumentPath(path);
+			MarkSaved();
+			RememberRecentFile(path);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			await ShowErrorAsync("При сохранении произошла ошибка." + Environment.NewLine + ex.Message);
+			return false;
+		}
 	}
 
 	[RelayCommand(CanExecute = nameof(CanUndo))]
@@ -1161,6 +1227,7 @@ public partial class MainWindowViewModel : ObservableObject
 			_manager.PropertyChanged -= OnManagerPropertyChanged;
 
 		_manager = manager;
+		_documentSession.ConfigureManager(_manager);
 		Present.Load(manager, designMode: true);
 
 		if (_presenter != null && !cell.Equals(CellLocation.None))
@@ -1170,6 +1237,7 @@ public partial class MainWindowViewModel : ObservableObject
 		Settings.Load(_manager);
 		Bookmarks.Load(_manager);
 		Styles.Load(_manager);
+		Resources.Load(_manager);
 		Expressions.Load(_manager);
 		RefreshCellFields();
 		Inspector.ReloadDocument();
@@ -1208,7 +1276,7 @@ public partial class MainWindowViewModel : ObservableObject
 
 	private void OnManagerPropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		if (_applying || _manager == null || !CellManager.IsDesignMode)
+		if (_applying || _manager == null || !_manager.IsDesignMode)
 			return;
 
 		if (_editDepth > 0)
@@ -1792,10 +1860,15 @@ public partial class MainWindowViewModel : ObservableObject
 
 	private void SetDocumentPath(string? path)
 	{
-		_filePath = path;
+		_documentSession.SetPath(path);
 		ExternalStyleSearch.DocumentDirectory = string.IsNullOrEmpty(path)
 			? null
 			: Path.GetDirectoryName(Path.GetFullPath(path));
+		if (_manager != null)
+			_documentSession.ConfigureManager(_manager);
+
+		OnPropertyChanged(nameof(DocumentPath));
+		OnPropertyChanged(nameof(IsPackageDocument));
 	}
 
 	private void UpdateTitle()
@@ -1896,20 +1969,22 @@ public partial class MainWindowViewModel : ObservableObject
 		return choice == SaveChoice.Discard;
 	}
 
-	private byte[] ResolveExternalFile(string fileName)
+	public void Dispose()
 	{
-		if (string.IsNullOrEmpty(_filePath) || !File.Exists(_filePath))
-			return null!;
+		if (_disposed)
+			return;
 
-		var directory = Path.GetDirectoryName(_filePath);
-		if (directory == null)
-			return null!;
-
-		var path = Path.Combine(directory, fileName);
-		if (!File.Exists(path))
-			return null!;
-
-		return File.ReadAllBytes(path);
+		_disposed = true;
+		_typingTimer.Stop();
+		_layoutTimer.Stop();
+		Present.PresenterChanged -= OnPresenterChanged;
+		if (_manager != null)
+			_manager.PropertyChanged -= OnManagerPropertyChanged;
+		if (_resolverRegistered)
+		{
+			FileResolver.OnResolve -= _documentSession.ResolveExternalFile;
+			_resolverRegistered = false;
+		}
 	}
 
 	private async Task ShowErrorAsync(string message)

@@ -43,6 +43,8 @@ artifacts/
 Temp/
 Release/
 Secure/
+.tmpbuild/
+.probe/
 .svn/
 Local.testsettings
 Performance.psess

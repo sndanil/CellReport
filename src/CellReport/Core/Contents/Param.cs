@@ -138,7 +138,7 @@ namespace CellReport.Core.Contents
 		{
 			get
 			{
-				if (CellManager.IsDesignMode && !string.IsNullOrEmpty(ExpressionID))
+				if (_manager.IsDesignMode && !string.IsNullOrEmpty(ExpressionID))
 					return _manager.GetExpressionByID(ExpressionID);
 
 				if (_expression == null && !string.IsNullOrEmpty(ExpressionID))

@@ -64,6 +64,14 @@ namespace CellReport.Core.Contents
 
 		public string ActualUri => (string) GetParamValueByTarget("Uri") ?? Uri;
 
+		/// <summary>
+		/// Сбрасывает загруженные байты изображения (например, после замены ресурса).
+		/// </summary>
+		public void InvalidateCache()
+		{
+			_cache = null;
+		}
+
 		public byte[] GetImageData()
 		{
 			var uri = ActualUri;

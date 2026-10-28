@@ -154,10 +154,11 @@ namespace CellReport.Avalonia.Services
 
 		private static async Task ExportToFileAsync(BaseExporter exporter, string path, bool openAfterExport)
 		{
-			using (DesignModeScope.Suspend())
+			await Task.Run(() =>
 			{
-				await Task.Run(() => ExportToFile(exporter, path, openAfterExport));
-			}
+				using (DesignModeScope.Suspend(exporter.Manager))
+					ExportToFile(exporter, path, openAfterExport);
+			});
 		}
 
 		private static void ExportToFile(BaseExporter exporter, string path, bool openAfterExport)

@@ -23,6 +23,16 @@ public partial class MainWindow : Window
 		InitializeComponent();
 		Opened += OnMainWindowOpened;
 		Closing += OnWindowClosing;
+		Closed += OnWindowClosed;
+	}
+
+	private void OnWindowClosed(object? sender, EventArgs e)
+	{
+		_settingsWindow?.Close();
+		_checkWindow?.Close();
+		_codeEditor = null;
+		if (DataContext is IDisposable disposable)
+			disposable.Dispose();
 	}
 
 	private async void OnMainWindowOpened(object? sender, EventArgs e)

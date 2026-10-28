@@ -25,6 +25,9 @@
 			<TabItem Header="Стили">
 				<views:StylesView />
 			</TabItem>
+			<TabItem Header="Ресурсы">
+				<views:ResourcesView />
+			</TabItem>
 			<TabItem Header="Отображение">
 				<views:DisplaySettingsView />
 			</TabItem>

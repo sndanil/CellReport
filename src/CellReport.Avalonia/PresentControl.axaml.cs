@@ -121,7 +121,7 @@ namespace CellReport.Avalonia
 
 			foreach (var printerName in _viewModel.Printers)
 			{
-				var item = new MenuItem { Header = printerName, Tag = "PrinterMenuItem" };
+				var item = new MenuItem { Header = printerName, Tag = printerName };
 				item.Click += OnPrinterMenuClick;
 				flyout.Items.Add(item);
 				_printerMenuItems.Add(item);
@@ -196,7 +196,10 @@ namespace CellReport.Avalonia
 			WatchManager(manager);
 
 			var designMode = _viewModel?.DesignMode == true;
-			CellManager.IsDesignMode = designMode;
+			manager.IsDesignMode = designMode;
+			_cellControl.Presenter = null;
+			_columnsResizer.Presenter = null;
+			_rowsResizer.Presenter = null;
 			_presenter = new AvaloniaDisplayPresenter(manager, this, _cellControl);
 			_cellControl.Presenter = _presenter;
 			_columnsResizer.Presenter = _presenter;
@@ -240,7 +243,7 @@ namespace CellReport.Avalonia
 				return false;
 
 			var settings = _presenter.Manager.DisplaySettings;
-			var designMode = _viewModel?.DesignMode == true || CellManager.IsDesignMode;
+			var designMode = _viewModel?.DesignMode == true || _presenter.Manager.IsDesignMode;
 			return settings.ShowResizers || (settings.ShowDesignerResizers && designMode);
 		}
 

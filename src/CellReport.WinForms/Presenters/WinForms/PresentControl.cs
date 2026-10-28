@@ -19,7 +19,7 @@ namespace CellReport.Presenters.WinForms
 	{
 		private BaseDisplayPresenter _presenter;
 		private readonly Dictionary<string, int> _bookMarkImages = new Dictionary<string, int>();
-		private bool ShowResizers => Manager.DisplaySettings.ShowResizers && !CellManager.IsDesignMode;
+		private bool ShowResizers => Manager.DisplaySettings.ShowResizers && !Manager.IsDesignMode;
 		private CellManager Manager => _presenter.Manager;
 
 		private readonly Timer _moveTimer = new Timer();

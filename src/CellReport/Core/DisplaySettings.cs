@@ -192,8 +192,13 @@ namespace CellReport.Core
                 new XAttribute("ShowResizers", ShowResizers),
                 new XAttribute("ShowDesignerResizers", ShowDesignerResizers),
                 new XAttribute("Scale", Scale.ToString(CultureInfo.InvariantCulture)),
-                GridColor != DefaultGridColor ? new XAttribute("GidColor", GridColor) : null
+                GridColor != DefaultGridColor ? new XAttribute("GridColor", GridColor) : null
                 );
+        }
+
+        internal DisplaySettings Clone()
+        {
+            return Parse(Serialize());
         }
     }
 }

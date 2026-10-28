@@ -100,7 +100,7 @@ namespace CellReport.Core
 			{
 				// в конструкторе стиль читается из менеджера каждый раз: так правка
 				// стиля сразу видна во всех ячейках, которые на него ссылаются
-				if (CellManager.IsDesignMode)
+				if (_manager.IsDesignMode)
 					return _manager.GetStyleByID<CellStyle>(StyleID) ?? DefaultStyle;
 
 				return _style ?? (_style = _manager.GetStyleByID<CellStyle>(StyleID) ?? DefaultStyle);

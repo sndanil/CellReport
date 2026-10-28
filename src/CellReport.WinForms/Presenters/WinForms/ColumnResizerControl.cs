@@ -76,7 +76,7 @@ namespace CellReport.Presenters.WinForms
 					var left = Presenter.GetLeftOffset(column);
 					var right = left + Presenter.GetColumnWidth(column);
 
-					if (CellManager.IsDesignMode)
+					if (Presenter.Manager.IsDesignMode)
 						DrawCell(e.Graphics, left, right, column.ToString());
 					else
 						DrawCell(e.Graphics, left, right, (column + 1).ToString());

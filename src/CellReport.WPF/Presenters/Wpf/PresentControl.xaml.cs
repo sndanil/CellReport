@@ -39,7 +39,7 @@ namespace CellReport.Presenters.Wpf
 			_cellControl.Invalidate(true);
 		}
 
-		private bool ShowResizers { get { return Manager.DisplaySettings.ShowResizers || Manager.DisplaySettings.ShowDesignerResizers && CellManager.IsDesignMode; } }
+		private bool ShowResizers { get { return Manager.DisplaySettings.ShowResizers || Manager.DisplaySettings.ShowDesignerResizers && Manager.IsDesignMode; } }
 		private CellManager Manager { get { return _presenter.Manager; } }
 
 		private void HScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
