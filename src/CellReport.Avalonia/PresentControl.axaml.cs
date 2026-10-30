@@ -171,8 +171,9 @@ namespace CellReport.Avalonia
 
 		private void PrintSplitButton_Click(object? sender, RoutedEventArgs e)
 		{
-			if (_printSplitButton.Flyout != null && !_printSplitButton.Flyout.IsOpen)
-				_printSplitButton.Flyout.ShowAt(_printSplitButton);
+			// WinForms PresentControl: the print button starts printing with the selected
+			// (or OS default) printer; the printer list is on the drop-down chevron only.
+			_viewModel?.PrintCommand.Execute(null);
 		}
 
 		private void UpdatePrinterCheckmarks()
