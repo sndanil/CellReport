@@ -12,6 +12,11 @@ namespace CellReport.Avalonia
 		{
 			return SkiaReportRenderer.GetTextSize(rect, text, fontFamily, fontSize, fontStyle);
 		}
+
+		public static Size GetTextSize(Rectangle rect, string text, string fontFamily, float fontSize, FontStyle fontStyle, float dpi)
+		{
+			return SkiaReportRenderer.GetTextSize(rect, text, fontFamily, fontSize, fontStyle, dpi);
+		}
 	}
 
 	public static class AvaloniaRectHelper

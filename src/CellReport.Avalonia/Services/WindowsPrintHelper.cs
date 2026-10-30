@@ -24,6 +24,7 @@ namespace CellReport.Avalonia.Services
 			private readonly int _requestedFromPage;
 			private readonly int _requestedToPage;
 			private IReadOnlyList<byte[]> _pages = Array.Empty<byte[]>();
+			private float _pageDpi = 96f;
 			private int _fromPage;
 			private int _toPage;
 			private int _pageIndex;
@@ -48,7 +49,8 @@ namespace CellReport.Avalonia.Services
 				// Ширина рулона (и любой другой бумаги) должна браться у принтера,
 				// иначе страница A4 растягивается/сжимается драйвером до ленты.
 				var pageSize = GetPageSize(document);
-				_presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm);
+				_pageDpi = pageSize.Dpi;
+				_presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm, pageSize.Dpi);
 				_pages = _presenter.PageImages;
 				if (_pages.Count == 0)
 					return;
@@ -92,9 +94,10 @@ namespace CellReport.Avalonia.Services
 					{
 						var widthMm = paper.Width * 25.4f / 100f;
 						var heightMm = paper.Height * 25.4f / 100f;
+						var dpi = WindowsPrinterService.GetDpi(settings);
 						return settings.Landscape
-							? new PrinterPageSize(heightMm, widthMm)
-							: new PrinterPageSize(widthMm, heightMm);
+							? new PrinterPageSize(heightMm, widthMm, dpi)
+							: new PrinterPageSize(widthMm, heightMm, dpi);
 					}
 
 					return WindowsPrinterService.GetPageSize(document.PrinterSettings.PrinterName, settings.Landscape);
@@ -125,17 +128,26 @@ namespace CellReport.Avalonia.Services
 				using var stream = new MemoryStream(_pages[_pageIndex]);
 				using var image = Image.FromStream(stream);
 
-				// Страница строится в размере бумаги, поэтому рисуем её на всю
-				// физическую страницу. Сдвиг на hard margin компенсирует начало
-				// координат Graphics в области печати.
-				var pageBounds = e.PageBounds;
-				var destination = new RectangleF(
-					-e.PageSettings.HardMarginX,
-					-e.PageSettings.HardMarginY,
-					pageBounds.Width,
-					pageBounds.Height);
+				// Страница строится в разрешении принтера. Пиксельные координаты
+				// позволяют на термопринтере отрисовать её 1:1, без повторной
+				// интерполяции, которая даёт «грязные» полутона.
+				var dpiX = e.Graphics!.DpiX;
+				var dpiY = e.Graphics.DpiY;
+				if (dpiX <= 0)
+					dpiX = _pageDpi;
+				if (dpiY <= 0)
+					dpiY = _pageDpi;
 
-				e.Graphics!.InterpolationMode = InterpolationMode.HighQualityBicubic;
+				var scaleX = dpiX / _pageDpi;
+				var scaleY = dpiY / _pageDpi;
+				var destination = new RectangleF(
+					-e.PageSettings.HardMarginX * dpiX / 100f,
+					-e.PageSettings.HardMarginY * dpiY / 100f,
+					image.Width * scaleX,
+					image.Height * scaleY);
+
+				e.Graphics.PageUnit = System.Drawing.GraphicsUnit.Pixel;
+				e.Graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
 				e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 				e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
 				e.Graphics.DrawImage(image, destination);

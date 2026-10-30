@@ -2,6 +2,8 @@ using CellReport.Avalonia.Services;
 using CellReport.Core;
 using CellReport.Export.Pdf;
 using CellReport.Presenters;
+using CellReport.Presenters.Skia;
+using System;
 using System.Collections.Generic;
 
 namespace CellReport.Avalonia
@@ -25,22 +27,41 @@ namespace CellReport.Avalonia
 
 		public void BuildPages()
 		{
-			BuildPages(0, 0);
+			BuildPages(0, 0, 96f);
+		}
+
+		public void BuildPages(float pageWidthMm, float pageHeightMm)
+		{
+			BuildPages(pageWidthMm, pageHeightMm, 96f);
 		}
 
 		/// <summary>
-		/// Строит страницы под конкретный размер бумаги (в миллиметрах).
-		/// Нулевые размеры означают стандартный лист A4.
+		/// Строит страницы под конкретный размер бумаги (в миллиметрах) и
+		/// разрешение принтера. Нулевые размеры означают стандартный лист A4.
 		/// </summary>
-		public void BuildPages(float pageWidthMm, float pageHeightMm)
+		public void BuildPages(float pageWidthMm, float pageHeightMm, float dpi)
 		{
 			using (DesignModeScope.Suspend(Manager))
 			{
 				_pageImages.Clear();
 
-				var builder = pageWidthMm > 0 && pageHeightMm > 0
-					? new PrintPageImageBuilder(Manager, Renderer, AvaloniaRenderer.GetTextSize, pageWidthMm, pageHeightMm)
-					: new PrintPageImageBuilder(Manager, Renderer, AvaloniaRenderer.GetTextSize);
+				if (Renderer is SkiaReportRenderer skiaRenderer)
+				{
+					skiaRenderer.Dpi = dpi;
+					skiaRenderer.TextAntialias = dpi <= 96f;
+				}
+
+				Func<Rectangle, string, string, float, FontStyle, Size> getTextSize =
+					(rect, text, family, size, style) => AvaloniaRenderer.GetTextSize(rect, text, family, size, style, dpi);
+
+				var builder = new PrintPageImageBuilder(
+					Manager,
+					Renderer,
+					getTextSize,
+					pageWidthMm,
+					pageHeightMm,
+					null,
+					dpi);
 				builder.BuildPages();
 				_pageImages.AddRange(builder.Pages);
 			}

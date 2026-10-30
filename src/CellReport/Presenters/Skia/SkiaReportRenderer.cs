@@ -15,12 +15,25 @@ namespace CellReport.Presenters.Skia
 
 		public bool InvertColors { get; set; }
 
+		public float Dpi { get; set; } = 96f;
+
+		/// <summary>
+		/// Сглаживание текста. Для печати на термопринтере отключается,
+		/// чтобы полутона не превращались в «грязные» точки.
+		/// </summary>
+		public bool TextAntialias { get; set; } = true;
+
 		public static Size GetTextSize(Rectangle rect, string text, string fontFamily, float fontSize, FontStyle fontStyle)
+		{
+			return GetTextSize(rect, text, fontFamily, fontSize, fontStyle, 96f);
+		}
+
+		public static Size GetTextSize(Rectangle rect, string text, string fontFamily, float fontSize, FontStyle fontStyle, float dpi)
 		{
 			if (string.IsNullOrEmpty(text) || rect.Width <= 0)
 				return new Size(rect.Width, rect.Height);
 
-			fontSize = UnitsConverter.ConvertValue(fontSize, GraphicsUnit.Point, GraphicsUnit.WpfPoint, 96);
+			fontSize = UnitsConverter.ConvertValue(fontSize, GraphicsUnit.Point, GraphicsUnit.Pixel, dpi);
 
 			var rs = new RichString()
 				.FontFamily(fontFamily)
@@ -293,10 +306,15 @@ namespace CellReport.Presenters.Skia
 			if (string.IsNullOrEmpty(text) || textRect.Width < 1 || textRect.Height < 1)
 				return;
 
-			textRect = new Rectangle(textRect.X + 3, textRect.Y + 1, textRect.Width - 6, textRect.Height - 2);
+			var scale = Dpi / 96f;
+			textRect = new Rectangle(
+				textRect.X + 3 * scale,
+				textRect.Y + 1 * scale,
+				textRect.Width - 6 * scale,
+				textRect.Height - 2 * scale);
 
 			var dc = (SKCanvas)context;
-			fontSize = UnitsConverter.ConvertValue(fontSize, GraphicsUnit.Point, GraphicsUnit.WpfPoint, 96);
+			fontSize = UnitsConverter.ConvertValue(fontSize, GraphicsUnit.Point, GraphicsUnit.Pixel, Dpi);
 
 			dc.Save();
 			dc.ClipRect(textRect.ToRect(), SKClipOperation.Intersect, antialias: false);
@@ -328,7 +346,7 @@ namespace CellReport.Presenters.Skia
 			rs.Add(text);
 
 			rs.MaxWidth = textRect.Width;
-			rs.MaxHeight = textRect.Height + 5;
+			rs.MaxHeight = textRect.Height + 5 * scale;
 
 			var y = textRect.Y;
 			if (v == VerticalAlignment.Middle)
@@ -336,17 +354,28 @@ namespace CellReport.Presenters.Skia
 			else if (v == VerticalAlignment.Bottom)
 				y += Math.Max(0, textRect.Height - rs.MeasuredHeight);
 
+			var paintOptions = new TextPaintOptions
+			{
+				IsAntialias = TextAntialias
+			};
+			if (!TextAntialias)
+			{
+				paintOptions.Hinting = SKFontHinting.Full;
+				paintOptions.SubpixelPositioning = false;
+				paintOptions.Edging = SKFontEdging.Alias;
+			}
+
 			if (InvertColors)
 			{
 				using (var layerPaint = new SKPaint { ColorFilter = SkiaColorFilters.CreateInvert() })
 				{
 					dc.SaveLayer(textRect.ToRect(), layerPaint);
-					rs.Paint(dc, new SKPoint(textRect.X, y));
+					rs.Paint(dc, new SKPoint(textRect.X, y), paintOptions);
 					dc.Restore();
 				}
 			}
 			else
-				rs.Paint(dc, new SKPoint(textRect.X, y));
+				rs.Paint(dc, new SKPoint(textRect.X, y), paintOptions);
 
 			dc.Restore();
 		}
@@ -357,7 +386,21 @@ namespace CellReport.Presenters.Skia
 			if (canvas == null || rect.Width < 1 || rect.Height < 1 || content == null)
 				return;
 
-			SkiaChartRenderer.Render(canvas, rect, content, InvertColors);
+			var scale = Dpi / 96f;
+			if (Math.Abs(scale - 1f) < 0.001f)
+			{
+				SkiaChartRenderer.Render(canvas, rect, content, InvertColors);
+				return;
+			}
+
+			canvas.Save();
+			canvas.Scale(scale, scale);
+			SkiaChartRenderer.Render(
+				canvas,
+				new Rectangle(rect.X / scale, rect.Y / scale, rect.Width / scale, rect.Height / scale),
+				content,
+				InvertColors);
+			canvas.Restore();
 		}
 
 		public override void SetClip(object context, Rectangle rect)

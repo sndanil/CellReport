@@ -29,6 +29,17 @@ namespace CellReportTests
 		}
 
 		[TestMethod]
+		public void GetTextSize_ScalesWithDpi()
+		{
+			var rect = new Rectangle(0, 0, 5000, 1000);
+			var at96 = SkiaReportRenderer.GetTextSize(rect, "Sample text", "Arial", 12, FontStyle.Regular, 96);
+			var at203 = SkiaReportRenderer.GetTextSize(rect, "Sample text", "Arial", 12, FontStyle.Regular, 203);
+
+			Assert.IsTrue(at203.Height > at96.Height * 1.9f, "текст должен масштабироваться под DPI принтера");
+			Assert.IsTrue(at203.Height < at96.Height * 2.3f);
+		}
+
+		[TestMethod]
 		public void GetTextSize_BoldText_IsNotSmallerThanRegular()
 		{
 			var rect = new Rectangle(0, 0, 300, 200);

@@ -36,6 +36,24 @@ namespace CellReportTests
 		}
 
 		[TestMethod]
+		public void ExplicitDpi_ScalesPagePixels()
+		{
+			var builder = new PrintPageImageBuilder(
+				new CellManager(1, 1),
+				TestExportHelper.Renderer,
+				null,
+				88f,
+				200f,
+				null,
+				203f);
+
+			var size = builder.GetPagePixelSize();
+
+			Assert.AreEqual(704, size.Width, "88 мм при 203 dpi");
+			Assert.AreEqual(1599, size.Height, "200 мм при 203 dpi");
+		}
+
+		[TestMethod]
 		public void ExplicitMargins_AreUsedForPrintableBounds()
 		{
 			var builder = new PrintPageImageBuilder(

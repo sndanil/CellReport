@@ -12,7 +12,7 @@ namespace CellReport.Export.Pdf
 		private const float A4WidthMm = 210f;
 		private const float A4HeightMm = 297f;
 		private const float PdfDpi = 72f;
-		private const float RenderDpi = 96f;
+		private const float DefaultRenderDpi = 96f;
 		private const string PageBackground = "#FFFFFFFF";
 
 		private readonly Func<Rectangle, string, string, float, FontStyle, Size> _getTextSize;
@@ -21,6 +21,7 @@ namespace CellReport.Export.Pdf
 		private readonly float _pageHeightMm;
 		private readonly bool _hasExplicitPageSize;
 		private readonly Margins _margins;
+		private readonly float _renderDpi;
 
 		public PrintPageImageBuilder(
 			CellManager manager,
@@ -40,7 +41,8 @@ namespace CellReport.Export.Pdf
 			Func<Rectangle, string, string, float, FontStyle, Size> getTextSize,
 			float pageWidthMm,
 			float pageHeightMm,
-			Margins margins = null)
+			Margins margins = null,
+			float renderDpi = DefaultRenderDpi)
 				: base(manager)
 		{
 			if (renderer == null)
@@ -52,8 +54,9 @@ namespace CellReport.Export.Pdf
 			_pageHeightMm = pageHeightMm;
 			_hasExplicitPageSize = pageWidthMm > 0 && pageHeightMm > 0;
 			_margins = margins;
-			DeviceDpiX = RenderDpi;
-			DeviceDpiY = RenderDpi;
+			_renderDpi = renderDpi > 0 ? renderDpi : DefaultRenderDpi;
+			DeviceDpiX = _renderDpi;
+			DeviceDpiY = _renderDpi;
 			CurrentUnit = GraphicsUnit.Pixel;
 		}
 
@@ -75,9 +78,9 @@ namespace CellReport.Export.Pdf
 			PageWidthPx = pageSize.Width;
 			PageHeightPx = pageSize.Height;
 
-			var widthPt = pageSize.Width * PdfDpi / RenderDpi;
-			var heightPt = pageSize.Height * PdfDpi / RenderDpi;
-			var pdfScale = PdfDpi / RenderDpi;
+			var widthPt = pageSize.Width * PdfDpi / _renderDpi;
+			var heightPt = pageSize.Height * PdfDpi / _renderDpi;
+			var pdfScale = PdfDpi / _renderDpi;
 
 			using (var document = SKDocument.CreatePdf(stream))
 			{

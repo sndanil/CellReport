@@ -8,15 +8,18 @@ namespace CellReport.Avalonia.Services
 {
 	internal readonly struct PrinterPageSize
 	{
-		public PrinterPageSize(float widthMm, float heightMm)
+		public PrinterPageSize(float widthMm, float heightMm, float dpi)
 		{
 			WidthMm = widthMm;
 			HeightMm = heightMm;
+			Dpi = dpi;
 		}
 
 		public float WidthMm { get; }
 
 		public float HeightMm { get; }
+
+		public float Dpi { get; }
 	}
 
 	internal static class WindowsPrinterService
@@ -71,14 +74,16 @@ namespace CellReport.Avalonia.Services
 
 					if (settings.IsValid)
 					{
-						var paper = settings.DefaultPageSettings.PaperSize;
+						var page = settings.DefaultPageSettings;
+						var paper = page.PaperSize;
 						if (paper != null && paper.Width > 0 && paper.Height > 0)
 						{
 							var widthMm = paper.Width * 25.4f / 100f;
 							var heightMm = paper.Height * 25.4f / 100f;
+							var dpi = GetDpi(page);
 							return landscape
-								? new PrinterPageSize(heightMm, widthMm)
-								: new PrinterPageSize(widthMm, heightMm);
+								? new PrinterPageSize(heightMm, widthMm, dpi)
+								: new PrinterPageSize(widthMm, heightMm, dpi);
 						}
 					}
 				}
@@ -89,8 +94,26 @@ namespace CellReport.Avalonia.Services
 			}
 
 			return landscape
-				? new PrinterPageSize(297f, 210f)
-				: new PrinterPageSize(210f, 297f);
+				? new PrinterPageSize(297f, 210f, 96f)
+				: new PrinterPageSize(210f, 297f, 96f);
+		}
+
+		public static float GetDpi(PageSettings page)
+		{
+			try
+			{
+				var resolution = page.PrinterResolution;
+				var dpi = Math.Max(resolution.X, resolution.Y);
+				if (dpi <= 0)
+					return 96f;
+
+				// Ограничение защищает от гигантских растровых страниц на 600–1200 dpi.
+				return Math.Min(dpi, 300f);
+			}
+			catch
+			{
+				return 96f;
+			}
 		}
 	}
 }
