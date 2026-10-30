@@ -1126,6 +1126,14 @@ namespace CellReport.Core
 			_externalStyles.Add(style);
 			var data = ExternalStyleSearch.TryLoad(style.Uri, TemplateDirectory);
 			if (data == null)
+			{
+				// Хостовый резолвер (например, Kayala отдаёт DefaultStyles.xml из рабочего каталога Config).
+				// UriDataLoader по умолчанию запрещает file://-URI, поэтому хук вызываем напрямую.
+				var fileName = ExternalStyleSearch.BareFileName(style.Uri);
+				if (fileName != null)
+					data = FileResolver.Resolve(fileName);
+			}
+			if (data == null)
 				data = this.GetDataByUri(style.Uri);
 			if (data != null)
 			{

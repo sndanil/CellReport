@@ -44,6 +44,7 @@ Temp/
 Release/
 Secure/
 .tmpbuild/
+build-editors.ps1
 .probe/
 .svn/
 Local.testsettings

@@ -107,6 +107,58 @@ namespace CellReportTests
 			}
 		}
 
+		[TestMethod]
+		public void Load_StreamTemplate_FallsBackToFileResolver()
+		{
+			var styleName = "host-style-" + Guid.NewGuid().ToString("N") + ".xml";
+			Func<string, byte[]> resolver = name => name == styleName
+				? Encoding.UTF8.GetBytes(StyleXml("from-host"))
+				: null;
+
+			FileResolver.OnResolve += resolver;
+			try
+			{
+				var template = new CellTemplate();
+				using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(TemplateXml("file://" + styleName))))
+					template.Load(stream);
+
+				Assert.IsNotNull(template.Manager.GetStyleByID<CellStyle>("from-host"));
+			}
+			finally
+			{
+				FileResolver.OnResolve -= resolver;
+			}
+		}
+
+		[TestMethod]
+		public void Load_StreamTemplate_FileResolverDoesNotOverrideFileNextToTemplate()
+		{
+			var root = CreateDirectory();
+			var styleName = "host-style-" + Guid.NewGuid().ToString("N") + ".xml";
+			Func<string, byte[]> resolver = name => name == styleName
+				? Encoding.UTF8.GetBytes(StyleXml("from-host"))
+				: null;
+
+			FileResolver.OnResolve += resolver;
+			try
+			{
+				WriteStyle(Path.Combine(root, styleName), "from-file");
+				var templatePath = Path.Combine(root, "template.tcr");
+				WriteTemplate(templatePath, "file://" + styleName);
+
+				var template = new CellTemplate();
+				template.Load(templatePath);
+
+				Assert.IsNotNull(template.Manager.GetStyleByID<CellStyle>("from-file"));
+				Assert.IsNull(template.Manager.GetStyleByID<CellStyle>("from-host"));
+			}
+			finally
+			{
+				FileResolver.OnResolve -= resolver;
+				Directory.Delete(root, true);
+			}
+		}
+
 		private static string CreateDirectory()
 		{
 			var path = Path.Combine(Path.GetTempPath(), "cellreport-styles-" + Guid.NewGuid().ToString("N"));
@@ -116,17 +168,25 @@ namespace CellReportTests
 
 		private static void WriteStyle(string path, string id)
 		{
-			var xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-				+ "<CellReportTemplate><Styles><CellStyle ID=\"" + id + "\" Color=\"Red\" /></Styles></CellReportTemplate>";
-			File.WriteAllText(path, xml, Encoding.UTF8);
+			File.WriteAllText(path, StyleXml(id), Encoding.UTF8);
 		}
 
 		private static void WriteTemplate(string path, string uri)
 		{
-			var xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+			File.WriteAllText(path, TemplateXml(uri), Encoding.UTF8);
+		}
+
+		private static string StyleXml(string id)
+		{
+			return "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+				+ "<CellReportTemplate><Styles><CellStyle ID=\"" + id + "\" Color=\"Red\" /></Styles></CellReportTemplate>";
+		}
+
+		private static string TemplateXml(string uri)
+		{
+			return "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
 				+ "<CellReportTemplate><Table RowsCount=\"1\" ColumnsCount=\"1\" />"
 				+ "<Styles><ExternalStyle Uri=\"" + uri + "\" /></Styles></CellReportTemplate>";
-			File.WriteAllText(path, xml, Encoding.UTF8);
 		}
 	}
 }
