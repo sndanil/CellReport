@@ -121,7 +121,15 @@ namespace CellReport.Avalonia
 
 			foreach (var printerName in _viewModel.Printers)
 			{
-				var item = new MenuItem { Header = printerName, Tag = printerName };
+				// Fluent MenuItem renders the check glyph only for ToggleType != None
+				// (:checked:toggle / :checked:radio). WinForms ToolStripMenuItem.Checked
+				// shows a check without extra setup.
+				var item = new MenuItem
+				{
+					Header = printerName,
+					Tag = printerName,
+					ToggleType = MenuItemToggleType.CheckBox
+				};
 				item.Click += OnPrinterMenuClick;
 				flyout.Items.Add(item);
 				_printerMenuItems.Add(item);
