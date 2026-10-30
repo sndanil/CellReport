@@ -25,11 +25,22 @@ namespace CellReport.Avalonia
 
 		public void BuildPages()
 		{
+			BuildPages(0, 0);
+		}
+
+		/// <summary>
+		/// Строит страницы под конкретный размер бумаги (в миллиметрах).
+		/// Нулевые размеры означают стандартный лист A4.
+		/// </summary>
+		public void BuildPages(float pageWidthMm, float pageHeightMm)
+		{
 			using (DesignModeScope.Suspend(Manager))
 			{
 				_pageImages.Clear();
 
-				var builder = new PrintPageImageBuilder(Manager, Renderer, AvaloniaRenderer.GetTextSize);
+				var builder = pageWidthMm > 0 && pageHeightMm > 0
+					? new PrintPageImageBuilder(Manager, Renderer, AvaloniaRenderer.GetTextSize, pageWidthMm, pageHeightMm)
+					: new PrintPageImageBuilder(Manager, Renderer, AvaloniaRenderer.GetTextSize);
 				builder.BuildPages();
 				_pageImages.AddRange(builder.Pages);
 			}
@@ -37,14 +48,13 @@ namespace CellReport.Avalonia
 
 		protected override void OnPrint(bool useCustom, string? printerName = null)
 		{
-			BuildPages();
-			ReportPrintPlatform.PrintPages(Manager, _pageImages, useCustom, printerName);
+			ReportPrintPlatform.Print(this, useCustom, printerName);
 		}
 
 		public void PrintPages(int fromPage, int toPage, string? printerName, short copies)
 		{
 			Manager.PrintSettings.Copies = copies;
-			ReportPrintPlatform.PrintPages(Manager, _pageImages, useCustom: true, printerName, fromPage, toPage);
+			ReportPrintPlatform.Print(this, useCustom: true, printerName, fromPage, toPage);
 		}
 
 		public override void ShowCustomPage()

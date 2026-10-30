@@ -18,9 +18,9 @@ namespace CellReport.Avalonia.Views
 
 		public int Copies => _viewModel.Copies;
 
-		public PrintOptionsDialog(int totalPages, PrintSettings printSettings)
+		public PrintOptionsDialog(int totalPages, PrintSettings printSettings, string? printerName = null)
 		{
-			_viewModel = new PrintOptionsDialogViewModel(totalPages, printSettings.Copies);
+			_viewModel = new PrintOptionsDialogViewModel(totalPages, printSettings.Copies, printerName);
 			InitializeComponent();
 			DataContext = _viewModel;
 		}

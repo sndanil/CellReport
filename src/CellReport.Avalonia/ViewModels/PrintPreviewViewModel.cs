@@ -16,11 +16,13 @@ namespace CellReport.Avalonia.ViewModels
 	{
 		private readonly AvaloniaPrintPresenter _presenter;
 		private readonly Visual _host;
+		private readonly string? _printerName;
 
-		public PrintPreviewViewModel(AvaloniaPrintPresenter presenter, Visual host)
+		public PrintPreviewViewModel(AvaloniaPrintPresenter presenter, Visual host, string? printerName = null)
 		{
 			_presenter = presenter;
 			_host = host;
+			_printerName = printerName;
 			TotalPages = Math.Max(1, presenter.PageCount);
 			CurrentPage = presenter.PageCount > 0 ? 1 : 0;
 			AutoFitWidth = presenter.Manager.PrintSettings.AutoFitWidthPages > 0;
@@ -104,7 +106,8 @@ namespace CellReport.Avalonia.ViewModels
 
 		private void RebuildPages()
 		{
-			_presenter.BuildPages();
+			var pageSize = WindowsPrinterService.GetPageSize(_printerName, _presenter.Manager.PrintSettings.Landscape);
+			_presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm);
 			TotalPages = Math.Max(1, _presenter.PageCount);
 			if (CurrentPage > TotalPages)
 				CurrentPage = TotalPages;
@@ -143,7 +146,7 @@ namespace CellReport.Avalonia.ViewModels
 		[RelayCommand]
 		private async Task PrintAsync()
 		{
-			await ReportPrintService.PrintAsync(_host, _presenter.Manager, custom: false);
+			await ReportPrintService.PrintAsync(_host, _presenter.Manager, custom: false, printerName: _printerName);
 		}
 
 		[RelayCommand]

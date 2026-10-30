@@ -298,7 +298,7 @@ namespace CellReport.Avalonia.ViewModels
 			if (_presenter == null || _host == null)
 				return;
 
-			await ReportPrintService.PrintAsync(_host, _presenter.Manager, custom: true);
+			await ReportPrintService.PrintAsync(_host, _presenter.Manager, custom: true, printerName: SelectedPrinter);
 			RefreshSurface();
 		}
 
@@ -308,7 +308,7 @@ namespace CellReport.Avalonia.ViewModels
 			if (_presenter == null || _host == null)
 				return;
 
-			await ReportPrintService.ShowPreviewAsync(_host, _presenter.Manager);
+			await ReportPrintService.ShowPreviewAsync(_host, _presenter.Manager, SelectedPrinter);
 			RefreshSurface();
 		}
 

@@ -1,7 +1,9 @@
+using CellReport.Avalonia;
 using CellReport.Core;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
@@ -10,28 +12,28 @@ namespace CellReport.Avalonia.Services
 {
 	internal static class WindowsPrintHelper
 	{
-		public static void Print(CellManager manager, IReadOnlyList<byte[]> pages, bool useCustom, string? printerName, int fromPage = 1, int toPage = int.MaxValue)
+		public static void Print(AvaloniaPrintPresenter presenter, bool useCustom, string? printerName, int fromPage = 1, int toPage = int.MaxValue)
 		{
-			if (pages.Count == 0)
-				return;
-
-			new PrintOperation(manager, pages, fromPage, toPage).Run(useCustom, printerName);
+			new PrintOperation(presenter, fromPage, toPage).Run(useCustom, printerName);
 		}
 
 		private sealed class PrintOperation
 		{
-			private readonly IList<byte[]> _pages;
+			private readonly AvaloniaPrintPresenter _presenter;
 			private readonly CellManager _manager;
-			private readonly int _fromPage;
-			private readonly int _toPage;
+			private readonly int _requestedFromPage;
+			private readonly int _requestedToPage;
+			private IReadOnlyList<byte[]> _pages = Array.Empty<byte[]>();
+			private int _fromPage;
+			private int _toPage;
 			private int _pageIndex;
 
-			public PrintOperation(CellManager manager, IReadOnlyList<byte[]> pages, int fromPage, int toPage)
+			public PrintOperation(AvaloniaPrintPresenter presenter, int fromPage, int toPage)
 			{
-				_manager = manager;
-				_pages = pages.ToList();
-				_fromPage = Math.Max(1, fromPage);
-				_toPage = Math.Min(pages.Count, toPage <= 0 ? pages.Count : toPage);
+				_presenter = presenter;
+				_manager = presenter.Manager;
+				_requestedFromPage = Math.Max(1, fromPage);
+				_requestedToPage = toPage <= 0 ? int.MaxValue : toPage;
 			}
 
 			public void Run(bool useCustom, string? printerName)
@@ -42,6 +44,17 @@ namespace CellReport.Avalonia.Services
 				{
 					document.PrinterSettings.PrinterName = printerName;
 				}
+
+				// Ширина рулона (и любой другой бумаги) должна браться у принтера,
+				// иначе страница A4 растягивается/сжимается драйвером до ленты.
+				var pageSize = GetPageSize(document);
+				_presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm);
+				_pages = _presenter.PageImages;
+				if (_pages.Count == 0)
+					return;
+
+				_fromPage = Math.Min(Math.Max(1, _requestedFromPage), _pages.Count);
+				_toPage = Math.Min(_pages.Count, Math.Max(_requestedToPage, _fromPage));
 
 				if (useCustom)
 				{
@@ -69,6 +82,29 @@ namespace CellReport.Avalonia.Services
 				return document;
 			}
 
+			private static PrinterPageSize GetPageSize(PrintDocument document)
+			{
+				try
+				{
+					var settings = document.DefaultPageSettings;
+					var paper = settings.PaperSize;
+					if (paper != null && paper.Width > 0 && paper.Height > 0)
+					{
+						var widthMm = paper.Width * 25.4f / 100f;
+						var heightMm = paper.Height * 25.4f / 100f;
+						return settings.Landscape
+							? new PrinterPageSize(heightMm, widthMm)
+							: new PrinterPageSize(widthMm, heightMm);
+					}
+
+					return WindowsPrinterService.GetPageSize(document.PrinterSettings.PrinterName, settings.Landscape);
+				}
+				catch
+				{
+					return WindowsPrinterService.GetPageSize(null, false);
+				}
+			}
+
 			private void OnPrintPage(object sender, PrintPageEventArgs e)
 			{
 				var currentPageNumber = _pageIndex + 1;
@@ -88,7 +124,21 @@ namespace CellReport.Avalonia.Services
 
 				using var stream = new MemoryStream(_pages[_pageIndex]);
 				using var image = Image.FromStream(stream);
-				e.Graphics!.DrawImage(image, e.MarginBounds);
+
+				// Страница строится в размере бумаги, поэтому рисуем её на всю
+				// физическую страницу. Сдвиг на hard margin компенсирует начало
+				// координат Graphics в области печати.
+				var pageBounds = e.PageBounds;
+				var destination = new RectangleF(
+					-e.PageSettings.HardMarginX,
+					-e.PageSettings.HardMarginY,
+					pageBounds.Width,
+					pageBounds.Height);
+
+				e.Graphics!.InterpolationMode = InterpolationMode.HighQualityBicubic;
+				e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+				e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
+				e.Graphics.DrawImage(image, destination);
 
 				_pageIndex++;
 				e.HasMorePages = _pageIndex < _pages.Count && (_pageIndex + 1) <= _toPage;

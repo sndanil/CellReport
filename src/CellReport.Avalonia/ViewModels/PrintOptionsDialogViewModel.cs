@@ -7,7 +7,7 @@ namespace CellReport.Avalonia.ViewModels
 {
 	public partial class PrintOptionsDialogViewModel : ObservableObject
 	{
-		public PrintOptionsDialogViewModel(int totalPages, short defaultCopies)
+		public PrintOptionsDialogViewModel(int totalPages, short defaultCopies, string? printerName = null)
 		{
 			TotalPages = totalPages;
 			FromPage = 1;
@@ -17,7 +17,9 @@ namespace CellReport.Avalonia.ViewModels
 			foreach (var printer in WindowsPrinterService.GetInstalledPrinters())
 				Printers.Add(printer);
 
-			SelectedPrinter = WindowsPrinterService.GetDefaultPrinter();
+			SelectedPrinter = !string.IsNullOrWhiteSpace(printerName) && Printers.Contains(printerName)
+				? printerName
+				: WindowsPrinterService.GetDefaultPrinter();
 			if (!string.IsNullOrEmpty(SelectedPrinter) && !Printers.Contains(SelectedPrinter))
 				Printers.Insert(0, SelectedPrinter);
 			else if (Printers.Count > 0 && string.IsNullOrEmpty(SelectedPrinter))

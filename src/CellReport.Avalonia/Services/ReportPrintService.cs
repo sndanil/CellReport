@@ -10,16 +10,17 @@ namespace CellReport.Avalonia
 {
 	public static class ReportPrintService
 	{
-		public static async Task ShowPreviewAsync(Visual host, CellManager manager)
+		public static async Task ShowPreviewAsync(Visual host, CellManager manager, string? printerName = null)
 		{
 			var window = TopLevel.GetTopLevel(host) as Window;
 			if (window == null)
 				return;
 
 			var presenter = new AvaloniaPrintPresenter(manager);
-			presenter.BuildPages();
+			var pageSize = WindowsPrinterService.GetPageSize(printerName, manager.PrintSettings.Landscape);
+			presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm);
 
-			var preview = new PrintPreviewWindow(presenter);
+			var preview = new PrintPreviewWindow(presenter, printerName);
 			await preview.ShowDialog(window);
 		}
 
@@ -41,12 +42,13 @@ namespace CellReport.Avalonia
 				var presenter = new AvaloniaPrintPresenter(manager);
 				if (custom)
 				{
-					presenter.BuildPages();
+					var pageSize = WindowsPrinterService.GetPageSize(printerName, manager.PrintSettings.Landscape);
+					presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm);
 					var window = TopLevel.GetTopLevel(host) as Window;
 					if (window == null)
 						return;
 
-					var options = new PrintOptionsDialog(presenter.PageCount, manager.PrintSettings);
+					var options = new PrintOptionsDialog(presenter.PageCount, manager.PrintSettings, printerName);
 					var result = await options.ShowDialog<bool?>(window);
 					if (result != true)
 						return;

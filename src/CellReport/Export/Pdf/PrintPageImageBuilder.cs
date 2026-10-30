@@ -17,11 +17,30 @@ namespace CellReport.Export.Pdf
 
 		private readonly Func<Rectangle, string, string, float, FontStyle, Size> _getTextSize;
 		private readonly List<byte[]> _pages = new List<byte[]>();
+		private readonly float _pageWidthMm;
+		private readonly float _pageHeightMm;
+		private readonly bool _hasExplicitPageSize;
+		private readonly Margins _margins;
 
 		public PrintPageImageBuilder(
 			CellManager manager,
 			BaseRenderer renderer,
 			Func<Rectangle, string, string, float, FontStyle, Size> getTextSize = null)
+				: this(manager, renderer, getTextSize, 0, 0, null)
+		{
+		}
+
+		/// <summary>
+		/// Создаёт построитель страниц с явно заданным размером бумаги.
+		/// Размеры задаются в миллиметрах уже с учётом ориентации.
+		/// </summary>
+		public PrintPageImageBuilder(
+			CellManager manager,
+			BaseRenderer renderer,
+			Func<Rectangle, string, string, float, FontStyle, Size> getTextSize,
+			float pageWidthMm,
+			float pageHeightMm,
+			Margins margins = null)
 				: base(manager)
 		{
 			if (renderer == null)
@@ -29,6 +48,10 @@ namespace CellReport.Export.Pdf
 
 			Renderer = renderer;
 			_getTextSize = getTextSize;
+			_pageWidthMm = pageWidthMm;
+			_pageHeightMm = pageHeightMm;
+			_hasExplicitPageSize = pageWidthMm > 0 && pageHeightMm > 0;
+			_margins = margins;
 			DeviceDpiX = RenderDpi;
 			DeviceDpiY = RenderDpi;
 			CurrentUnit = GraphicsUnit.Pixel;
@@ -144,7 +167,7 @@ namespace CellReport.Export.Pdf
 			float pageWidthMm;
 			float pageHeightMm;
 			GetPageSizeMm(out pageWidthMm, out pageHeightMm);
-			var margins = Manager.PrintSettings.Margins;
+			var margins = _margins ?? Manager.PrintSettings.Margins ?? new Margins(0);
 
 			var left = UnitsConverter.ConvertValue(margins.Left, GraphicsUnit.Millimeter, CurrentUnit, DeviceDpiX);
 			var top = UnitsConverter.ConvertValue(margins.Top, GraphicsUnit.Millimeter, CurrentUnit, DeviceDpiY);
@@ -168,6 +191,13 @@ namespace CellReport.Export.Pdf
 
 		private void GetPageSizeMm(out float pageWidthMm, out float pageHeightMm)
 		{
+			if (_hasExplicitPageSize)
+			{
+				pageWidthMm = _pageWidthMm;
+				pageHeightMm = _pageHeightMm;
+				return;
+			}
+
 			if (Manager.PrintSettings.Landscape)
 			{
 				pageWidthMm = A4HeightMm;
