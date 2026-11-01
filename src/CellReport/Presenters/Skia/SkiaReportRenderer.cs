@@ -480,7 +480,7 @@ namespace CellReport.Presenters.Skia
 				rs.EllipsisEnabled = true;
 			}
 			else if (options.NoWrap)
-				rs.MaxWidth = 1000000f;
+				rs.MaxWidth = Math.Max(1f, layout.Width + 4f);
 			else
 				rs.MaxWidth = Math.Max(1f, layout.Width);
 

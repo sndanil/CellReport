@@ -624,6 +624,19 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
 	[ObservableProperty]
 	private bool _alignBottom;
 
+	public Choice[] TextOverflowModes { get; } =
+	{
+		new("Clip", "Обрезать (как сейчас)"),
+		new("Ellipsis", "Многоточие"),
+		new("Auto", "Авто (в пустые ячейки)"),
+		new("Right", "Только вправо"),
+		new("Left", "Только влево"),
+		new("Both", "В обе стороны")
+	};
+
+	[ObservableProperty]
+	private Choice? _selectedTextOverflow;
+
 	public IReadOnlyList<string> Fonts { get; } = LoadFonts();
 
 	public IReadOnlyList<string> FontSizes { get; } =
@@ -1541,6 +1554,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
 		AlignTop = HasAlignment(content, "Style.VAlignment", style.VAlignment, VerticalAlignment.Top);
 		AlignMiddle = HasAlignment(content, "Style.VAlignment", style.VAlignment, VerticalAlignment.Middle);
 		AlignBottom = HasAlignment(content, "Style.VAlignment", style.VAlignment, VerticalAlignment.Bottom);
+		SelectedTextOverflow = FindChoice(TextOverflowModes, ReadParam(content, "Style.Overflow") ?? style.Overflow.ToString());
 	}
 
 	private void ClearFormat()
@@ -1559,12 +1573,21 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
 		AlignTop = false;
 		AlignMiddle = false;
 		AlignBottom = false;
+		SelectedTextOverflow = null;
 	}
 
 	private static string? ReadParam(TextBasedContent content, string target)
 	{
 		var param = content.GetParams().FirstOrDefault(item => item.Target == target);
 		return param?.Value as string;
+	}
+
+	private static Choice? FindChoice(IEnumerable<Choice> choices, string? value)
+	{
+		if (string.IsNullOrEmpty(value))
+			return null;
+
+		return choices.FirstOrDefault(choice => string.Equals(choice.Value, value, StringComparison.OrdinalIgnoreCase));
 	}
 
 	private static bool HasFontStyle(TextBasedContent content, TextContentStyle style, string name, FontStyle part)
@@ -1633,6 +1656,14 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
 	partial void OnAlignMiddleChanged(bool value) => SetVerticalAlignment(VerticalAlignment.Middle, value);
 
 	partial void OnAlignBottomChanged(bool value) => SetVerticalAlignment(VerticalAlignment.Bottom, value);
+
+	partial void OnSelectedTextOverflowChanged(Choice? value)
+	{
+		if (_syncing || value == null)
+			return;
+
+		SetStyleParam("Style.Overflow", "Переполнение", value.Value, style => style.Overflow.ToString());
+	}
 
 	private void SetHorizontalAlignment(HorizontalAlignment alignment, bool value)
 	{

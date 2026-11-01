@@ -65,6 +65,7 @@ public partial class InspectorViewModel : ObservableObject
 		new("Style.VAlignment", "Выравнивание по вертикали"),
 		new("Style.Direction", "Направление"),
 		new("Style.Angle", "Угол наклона"),
+		new("Style.Overflow", "Переполнение текста"),
 		new("Style.Font.Size", "Размер шрифта"),
 		new("Style.Font.Family", "Шрифт"),
 		new("Style.Font.Style", "Стиль шрифта"),
@@ -97,6 +98,27 @@ public partial class InspectorViewModel : ObservableObject
 	{
 		new("Horizontal", "Горизонтально"),
 		new("Vertical", "Вертикально")
+	};
+
+	public Choice[] ImageSizeModes { get; } =
+	{
+		new("Stretch", "Растянуть"),
+		new("Fit", "Вписать"),
+		new("Actual", "Натуральный"),
+		new("Scale", "Масштаб, %")
+	};
+
+	public Choice[] ImageAnchors { get; } =
+	{
+		new("TopLeft", "Слева сверху"),
+		new("TopCenter", "Сверху"),
+		new("TopRight", "Справа сверху"),
+		new("MiddleLeft", "Слева"),
+		new("Center", "По центру"),
+		new("MiddleRight", "Справа"),
+		new("BottomLeft", "Слева снизу"),
+		new("BottomCenter", "Снизу"),
+		new("BottomRight", "Справа снизу")
 	};
 
 	public Choice[] ActionTypes { get; } =
@@ -183,6 +205,18 @@ public partial class InspectorViewModel : ObservableObject
 
 	[ObservableProperty]
 	private string _imageRowSpanText = "0";
+
+	[ObservableProperty]
+	private string _imageScaleText = "100";
+
+	[ObservableProperty]
+	private Choice? _selectedImageSizeMode;
+
+	[ObservableProperty]
+	private Choice? _selectedImageAnchor;
+
+	[ObservableProperty]
+	private bool _imageOverflow;
 
 	[ObservableProperty]
 	private Choice? _selectedActionType;
@@ -478,6 +512,10 @@ public partial class InspectorViewModel : ObservableObject
 			ImageUri = string.Empty;
 			ImageColSpanText = "0";
 			ImageRowSpanText = "0";
+			ImageScaleText = "100";
+			SelectedImageSizeMode = null;
+			SelectedImageAnchor = null;
+			ImageOverflow = false;
 			SelectedActionType = null;
 
 			IsSelectedBarCode = content is BarCodeContent;
@@ -495,6 +533,10 @@ public partial class InspectorViewModel : ObservableObject
 					ImageUri = image.Uri ?? string.Empty;
 					ImageColSpanText = image.ColSpan.ToString(CultureInfo.CurrentCulture);
 					ImageRowSpanText = image.RowSpan.ToString(CultureInfo.CurrentCulture);
+					ImageScaleText = image.Scale.ToString(CultureInfo.CurrentCulture);
+					SelectedImageSizeMode = FindChoice(ImageSizeModes, image.SizeMode.ToString());
+					SelectedImageAnchor = FindChoice(ImageAnchors, image.Anchor.ToString());
+					ImageOverflow = image.Overflow;
 					break;
 				case ActionContent action:
 					SelectedActionType = FindChoice(ActionTypes, action.Type.ToString());
@@ -715,6 +757,52 @@ public partial class InspectorViewModel : ObservableObject
 	partial void OnImageColSpanTextChanged(string value) => SetImageSpan(value, (image, span) => image.ColSpan = span, image => image.ColSpan);
 
 	partial void OnImageRowSpanTextChanged(string value) => SetImageSpan(value, (image, span) => image.RowSpan = span, image => image.RowSpan);
+
+	partial void OnSelectedImageSizeModeChanged(Choice? value)
+	{
+		if (IsSyncing || value == null || SelectedContent?.Content is not ImageContent image)
+			return;
+
+		ImageSizeMode sizeMode;
+		if (!Enum.TryParse(value.Value, out sizeMode) || image.SizeMode == sizeMode)
+			return;
+
+		_owner.CommitDocumentChange(() => image.SizeMode = sizeMode);
+	}
+
+	partial void OnSelectedImageAnchorChanged(Choice? value)
+	{
+		if (IsSyncing || value == null || SelectedContent?.Content is not ImageContent image)
+			return;
+
+		ImageAnchor anchor;
+		if (!Enum.TryParse(value.Value, out anchor) || image.Anchor == anchor)
+			return;
+
+		_owner.CommitDocumentChange(() => image.Anchor = anchor);
+	}
+
+	partial void OnImageScaleTextChanged(string value)
+	{
+		if (IsSyncing || SelectedContent?.Content is not ImageContent image)
+			return;
+
+		if (!float.TryParse(value, NumberStyles.Float, CultureInfo.CurrentCulture, out var scale) || scale <= 0)
+			return;
+
+		if (Math.Abs(image.Scale - scale) < 0.001f)
+			return;
+
+		_owner.CommitDocumentChange(() => image.Scale = scale);
+	}
+
+	partial void OnImageOverflowChanged(bool value)
+	{
+		if (IsSyncing || SelectedContent?.Content is not ImageContent image || image.Overflow == value)
+			return;
+
+		_owner.CommitDocumentChange(() => image.Overflow = value);
+	}
 
 	private void SetImageSpan(string value, Action<ImageContent, int> assign, Func<ImageContent, int> read)
 	{

@@ -269,6 +269,34 @@ namespace CellReportTests
 		}
 
 		[TestMethod]
+		public void ImageSpans_ExtendBaseRect()
+		{
+			var geometry = CreateGeometry(3, 2);
+			var cell = geometry.Manager.CreateCell(0, 0);
+
+			var result = new OverflowLayout(geometry).ComputeImage(
+				cell, ImageSizeMode.Stretch, 100f, ImageAnchor.Center, false,
+				new Size(10f, 10f), geometry.Pane, 1, 1);
+
+			Assert.AreEqual(ColumnWidth * 2f, result.Rect.Width, "картинка занимает свою колонку и одну соседнюю");
+			Assert.AreEqual(RowHeight * 2f, result.Rect.Height, "картинка занимает свою строку и одну соседнюю");
+		}
+
+		[TestMethod]
+		public void ImageSpans_AreClampedToGrid()
+		{
+			var geometry = CreateGeometry(2, 2);
+			var cell = geometry.Manager.CreateCell(0, 0);
+
+			var result = new OverflowLayout(geometry).ComputeImage(
+				cell, ImageSizeMode.Stretch, 100f, ImageAnchor.Center, false,
+				new Size(10f, 10f), geometry.Pane, 10, 10);
+
+			Assert.AreEqual(ColumnWidth * 2f, result.Rect.Width);
+			Assert.AreEqual(RowHeight * 2f, result.Rect.Height);
+		}
+
+		[TestMethod]
 		public void ImageOverflow_ClipsToPane_OtherwiseToCell()
 		{
 			var geometry = CreateGeometry(2);

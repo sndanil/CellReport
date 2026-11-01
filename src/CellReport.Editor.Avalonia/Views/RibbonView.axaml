@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:CellReport.Editor.Avalonia.ViewModels"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
@@ -238,6 +238,18 @@
 												</ToggleButton>
 											</StackPanel>
 										</StackPanel>
+										<ComboBox Width="156"
+										          VerticalAlignment="Center"
+										          ToolTip.Tip="Переполнение текста за границы ячейки"
+										          IsEnabled="{Binding IsTextableContent}"
+										          ItemsSource="{Binding TextOverflowModes}"
+										          SelectedItem="{Binding SelectedTextOverflow}">
+											<ComboBox.ItemTemplate>
+												<DataTemplate x:DataType="vm:Choice">
+													<TextBlock Text="{Binding Title}" />
+												</DataTemplate>
+											</ComboBox.ItemTemplate>
+										</ComboBox>
 										<Button Classes="ribbon-button compact" Command="{Binding Inspector.MergeCellsCommand}" VerticalAlignment="Center">
 											<StackPanel Orientation="Horizontal" Spacing="4">
 												<materialIcons:MaterialIcon Kind="TableMergeCells" Width="16" Height="16" Classes="icon-muted" />

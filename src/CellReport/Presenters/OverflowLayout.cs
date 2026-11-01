@@ -214,13 +214,15 @@ namespace CellReport.Presenters
 			ImageAnchor anchor,
 			bool overflow,
 			Size naturalSize,
-			Rectangle paneRect)
+			Rectangle paneRect,
+			int extraColumns = 0,
+			int extraRows = 0)
 		{
 			if (cell == null)
 				throw new ArgumentNullException(nameof(cell));
 
 			var result = new ImageOverflowGeometry();
-			var baseRect = GetImageBaseRect(cell);
+			var baseRect = GetImageBaseRect(cell, extraColumns, extraRows);
 			if (baseRect.Width <= 0 || baseRect.Height <= 0 || naturalSize.Width <= 0 || naturalSize.Height <= 0)
 			{
 				result.Rect = baseRect;
@@ -386,13 +388,34 @@ namespace CellReport.Presenters
 			return null;
 		}
 
-		private Rectangle GetImageBaseRect(Cell cell)
+		/// <summary>
+		/// Базовый прямоугольник изображения: ячейка (с учётом её cell-span) плюс
+		/// <paramref name="extraColumns"/> столбцов и <paramref name="extraRows"/> строк справа/снизу.
+		/// Это «объединение» изображения (ImageContent.ColSpan/RowSpan), а не объединение ячеек.
+		/// </summary>
+		public Rectangle GetImageBaseRect(Cell cell, int extraColumns, int extraRows)
 		{
 			var rect = _grid.GetInnerCellRect(cell);
-			for (var i = 0; i < cell.Span.RowSpan; i++)
-				rect.Height += _grid.GetCellRect(cell.Location.Row + i + 1, cell.Location.Column).Height;
-			for (var i = 0; i < cell.Span.ColSpan; i++)
-				rect.Width += _grid.GetCellRect(cell.Location.Row, cell.Location.Column + i + 1).Width;
+			var lastRow = cell.Location.Row + cell.Span.RowSpan;
+			var lastColumn = cell.Location.Column + cell.Span.ColSpan;
+
+			for (var i = 1; i <= extraRows; i++)
+			{
+				var row = lastRow + i;
+				if (row >= _grid.RowsCount)
+					break;
+
+				rect.Height += _grid.GetCellRect(row, cell.Location.Column).Height;
+			}
+
+			for (var i = 1; i <= extraColumns; i++)
+			{
+				var column = lastColumn + i;
+				if (column >= _grid.ColumnsCount)
+					break;
+
+				rect.Width += _grid.GetCellRect(cell.Location.Row, column).Width;
+			}
 
 			return rect;
 		}

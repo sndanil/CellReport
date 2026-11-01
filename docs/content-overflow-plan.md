@@ -19,11 +19,11 @@
 - [x] Excel: `wrapText=0` для `Overflow != Clip`.
 - [x] Тесты: `OverflowLayoutTests`, `OverflowModelTests`, `CellOccupancyTests`, `AvaloniaOverflowRenderTests` (headless, пиксельные), `OverflowExportTests` (PNG/Excel), `SkiaRendererTests.RenderText_WithClipRect`.
 - [x] `ProcessFit` не подгоняет шрифт/высоту для overflow-ячеек.
-- [ ] Редактор Avalonia: ribbon/инспектор, свойства изображения, валидатор, автодополнение.
+- [x] Редактор Avalonia: режим переполнения в ленте, свойства изображения в инспекторе, скрытие overlay при inline-редактировании, валидатор, автодополнение XML/схема.
 - [ ] Runtime-параметры для свойств изображения (`Image.SizeMode` и т.п.).
 - [ ] HTML-экспорт (вне v1).
 
-Тесты: `dotnet test Tests/Tests.csproj -f net10.0` — 179, `-f net48` — 174 (на момент написания).
+Тесты: `dotnet test Tests/Tests.csproj -f net10.0` — 183, `-f net48` — 174 (на момент написания).
 
 ---
 

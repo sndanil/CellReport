@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -97,6 +97,8 @@ public partial class DesignerView : UserControl
 
 		presenter.CurrentCell = location;
 		_editingCell = location;
+		presenter.EditingCell = location;
+		presenter.Update();
 		SubscribePresenter(presenter);
 
 		InlineEditor.Text = _viewModel.GetCellText(location);
@@ -152,6 +154,11 @@ public partial class DesignerView : UserControl
 	private void HideInlineEditor()
 	{
 		InlineEditor.IsVisible = false;
+		if (_editingPresenter != null)
+		{
+			_editingPresenter.EditingCell = CellLocation.None;
+			_editingPresenter.Update();
+		}
 		_editingCell = CellLocation.None;
 		UnsubscribePresenter();
 	}

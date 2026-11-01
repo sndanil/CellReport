@@ -1,4 +1,4 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
+<?xml version='1.0' encoding='utf-8'?>
 <xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'>
 	<xs:element name='CellReportTemplate'>
 		<xs:complexType>
@@ -245,6 +245,10 @@
 		<xs:attribute name='Uri' type='xs:string'/>
     <xs:attribute name='ColSpan' type='xs:int'/>
     <xs:attribute name='RowSpan' type='xs:int'/>
+    <xs:attribute name='SizeMode' type='xs:string'/>
+    <xs:attribute name='Scale' type='xs:double'/>
+    <xs:attribute name='Anchor' type='xs:string'/>
+    <xs:attribute name='Overflow' type='xs:boolean'/>
   </xs:complexType>
 
 	<xs:complexType name='ChartContentType'>
@@ -340,6 +344,7 @@
 		<xs:attribute name='Direction' type='xs:string'/>
 		<xs:attribute name='Angle' type='xs:string'/>
 		<xs:attribute name='Color' type='xs:string'/>
+		<xs:attribute name='Overflow' type='xs:string'/>
 	</xs:complexType>
 
 	<xs:complexType name='AlignmentType'>
@@ -365,6 +370,7 @@
 		<xs:attribute name='NegativeColor' type='xs:string'/>
 		<xs:attribute name='Format' type='xs:string'/>
 		<xs:attribute name='Culture' type='xs:string'/>
+		<xs:attribute name='Overflow' type='xs:string'/>
 	</xs:complexType>
 
 	<xs:complexType name='DateTimeContentStyleType'>
@@ -378,6 +384,7 @@
 		<xs:attribute name='Color' type='xs:string'/>
 		<xs:attribute name='Format' type='xs:string'/>
 		<xs:attribute name='Culture' type='xs:string'/>
+		<xs:attribute name='Overflow' type='xs:string'/>
 	</xs:complexType>
 
 	<xs:complexType name='LineContentStyleType'>

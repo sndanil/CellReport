@@ -74,6 +74,12 @@ namespace CellReport.Presenters
 		/// </summary>
 		protected Rectangle CurrentPaneRect { get; set; }
 
+		/// <summary>
+		/// Ячейка, которая сейчас редактируется inline. Её переполнение не показываем,
+		/// чтобы не дублировать текст под редактором.
+		/// </summary>
+		public CellLocation EditingCell { get; set; } = CellLocation.None;
+
 		protected OverflowLayout Overflow
 		{
 			get { return _overflowLayout ?? (_overflowLayout = new OverflowLayout(this)); }
@@ -669,24 +675,8 @@ namespace CellReport.Presenters
 				if (TryQueueImageOverflow(cell, imageContent))
 					return;
 
-				if (imageContent.ColSpan > 0 || imageContent.RowSpan > 0)
-				{
-					for (int i = 0; i < imageContent.RowSpan; i++)
-					{
-						var rect = GetRect(new CellLocation { Row = cell.Location.Row + i + 1, Column = cell.Location.Column });
-						cellRect.Height += rect.Height;
-					}
-					for (int i = 0; i < imageContent.ColSpan; i++)
-					{
-						var rect = GetRect(new CellLocation { Row = cell.Location.Row, Column = cell.Location.Column + i + 1 });
-						cellRect.Width += rect.Width;
-					}
-					Renderer.RenderImage(context, cellRect, imageContent.GetImageData());
-				}
-				else
-				{
-					Renderer.RenderImage(context, cellRect, imageContent.GetImageData());
-				}
+				var imageRect = Overflow.GetImageBaseRect(cell, imageContent.ColSpan, imageContent.RowSpan);
+				Renderer.RenderImage(context, imageRect, imageContent.GetImageData());
 			}
 			else if (content is ChartContent)
 			{
@@ -730,7 +720,7 @@ namespace CellReport.Presenters
 
 		private bool TryQueueTextOverflow(Cell cell, TextBasedContent content)
 		{
-			if (!OverflowRenderingEnabled || Renderer == null || !Renderer.SupportsOverflow)
+			if (!OverflowRenderingEnabled || Renderer == null || !Renderer.SupportsOverflow || IsEditingCell(cell))
 				return false;
 
 			var style = content.GetActualStyle() as TextContentStyle;
@@ -765,10 +755,11 @@ namespace CellReport.Presenters
 
 		private bool TryQueueImageOverflow(Cell cell, ImageContent content)
 		{
-			if (!OverflowRenderingEnabled || Renderer == null || !Renderer.SupportsOverflow)
+			if (!OverflowRenderingEnabled || Renderer == null || !Renderer.SupportsOverflow || IsEditingCell(cell))
 				return false;
 
-			if (content.SizeMode == ImageSizeMode.Stretch && !content.Overflow)
+			if (content.SizeMode == ImageSizeMode.Stretch && !content.Overflow
+					&& content.ColSpan == 0 && content.RowSpan == 0)
 				return false;
 
 			var naturalSize = GetImageNaturalSize(content);
@@ -776,7 +767,7 @@ namespace CellReport.Presenters
 				return false;
 
 			var geometry = Overflow.ComputeImage(cell, content.SizeMode, content.Scale, content.Anchor, content.Overflow,
-				naturalSize, CurrentPaneRect);
+				naturalSize, CurrentPaneRect, content.ColSpan, content.RowSpan);
 			if (geometry.Rect.Width < 1 || geometry.Rect.Height < 1
 					|| geometry.ClipRect.Width < 1 || geometry.ClipRect.Height < 1)
 				return false;
@@ -841,6 +832,13 @@ namespace CellReport.Presenters
 				return text;
 
 			return text.Replace("\r\n", " ").Replace('\n', ' ').Replace('\r', ' ');
+		}
+
+		private bool IsEditingCell(Cell cell)
+		{
+			return !EditingCell.Equals(CellLocation.None)
+					&& EditingCell.Row == cell.Location.Row
+					&& EditingCell.Column == cell.Location.Column;
 		}
 
 		/// <summary>

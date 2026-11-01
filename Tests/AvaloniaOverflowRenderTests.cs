@@ -147,6 +147,31 @@ namespace CellReportTests
 		}
 
 		[TestMethod]
+		public void EditingCell_SuppressesOverflow()
+		{
+			var manager = CreateManager(3, TextOverflow.Auto);
+			manager.DisplaySettings.ShowCurrentRows = false;
+
+			var presentControl = new PresentControl();
+			var cellControl = new CellControl { Width = CellWidth * 3, Height = CellHeight };
+			cellControl.Measure(new global::Avalonia.Size(CellWidth * 3, CellHeight));
+			cellControl.Arrange(new global::Avalonia.Rect(0, 0, CellWidth * 3, CellHeight));
+
+			var presenter = new AvaloniaDisplayPresenter(manager, presentControl, cellControl);
+			presenter.EditingCell = new CellLocation { Row = 0, Column = 0 };
+
+			using (var surface = SKSurface.Create(new SKImageInfo(CellWidth * 3, CellHeight)))
+			{
+				surface.Canvas.Clear(SKColors.White);
+				presenter.Render(cellControl, surface.Canvas);
+
+				Assert.IsTrue(CountTextPixels(surface, 1, CellWidth) > 0, "текст редактируемой ячейки остаётся в ячейке");
+				Assert.AreEqual(0, CountTextPixels(surface, CellWidth + 1, CellWidth * 3),
+					"переполнение редактируемой ячейки скрывается");
+			}
+		}
+
+		[TestMethod]
 		public void VerticalSeed_ImageScrolledAbove_StillVisible()
 		{
 			var manager = new CellManager(3, 1);
@@ -209,6 +234,154 @@ namespace CellReportTests
 				using (var image = SKImage.FromBitmap(bitmap))
 				using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
 					return data.ToArray();
+			}
+		}
+
+		[TestMethod]
+		public void ImageSpan_DrawsAcrossNeighbourCell()
+		{
+			var manager = new CellManager(1, 3);
+			for (var column = 0; column < 3; column++)
+				manager.SetColumnWidth(column, CellWidthMm);
+			manager.SetRowHeight(0, CellHeightMm);
+			manager.AddResource("img", CreateSolidPng(20, 20, SKColors.Red));
+
+			var cell = manager.CreateCell(0, 0);
+			cell.Content = new ImageContent(manager)
+			{
+				Uri = "RESOURCE://img",
+				SizeMode = ImageSizeMode.Stretch,
+				ColSpan = 1,
+				Overflow = true
+			};
+			manager.DisplaySettings.ShowCurrentRows = false;
+
+			var presentControl = new PresentControl();
+			var cellControl = new CellControl { Width = CellWidth * 3, Height = CellHeight };
+			cellControl.Measure(new global::Avalonia.Size(CellWidth * 3, CellHeight));
+			cellControl.Arrange(new global::Avalonia.Rect(0, 0, CellWidth * 3, CellHeight));
+
+			var presenter = new AvaloniaDisplayPresenter(manager, presentControl, cellControl);
+			using (var surface = SKSurface.Create(new SKImageInfo(CellWidth * 3, CellHeight)))
+			{
+				surface.Canvas.Clear(SKColors.White);
+				presenter.Render(cellControl, surface.Canvas);
+
+				using (var image = surface.Snapshot())
+				using (var pixels = image.PeekPixels())
+				{
+					var red = 0;
+					for (var y = 0; y < CellHeight; y++)
+					{
+						for (var x = CellWidth + 1; x < CellWidth * 2; x++)
+						{
+							var pixel = pixels.GetPixelColor(x, y);
+							if (pixel.Red > 200 && pixel.Green < 60 && pixel.Blue < 60)
+								red++;
+						}
+					}
+
+					Assert.IsTrue(red > 0, "картинка с ColSpan=1 должна занимать соседнюю колонку");
+				}
+			}
+		}
+
+		[TestMethod]
+		public void DesignMode_AutoParam_Renders()
+		{
+			var manager = CreateManager(3, TextOverflow.Clip);
+			manager.IsDesignMode = true;
+			var content = (TextContent)manager.GetCell(0, 0).Content;
+			content.Text = string.Empty;
+			content.AddParam(new Param(manager, content)
+			{
+				Name = "Текст",
+				Target = "Text",
+				Value = "qweqwe qweqweqwe qweq qwe eqwe qweqweqwe"
+			});
+			content.AddParam(new Param(manager, content)
+			{
+				Name = "Переполнение",
+				Target = "Style.Overflow",
+				Value = "Auto"
+			});
+
+			using (var surface = Render(manager, 3))
+			{
+				Assert.IsTrue(CountTextPixels(surface, 1, CellWidth * 3) > 0, "текст должен отображаться");
+			}
+		}
+
+		[TestMethod]
+		public void OverflowAuto_ScaledCanvas_Renders()
+		{
+			var manager = CreateManager(3, TextOverflow.Auto);
+			manager.DisplaySettings.ShowCurrentRows = false;
+
+			var presentControl = new PresentControl();
+			var cellControl = new CellControl { Width = CellWidth * 3, Height = CellHeight };
+			cellControl.Measure(new global::Avalonia.Size(CellWidth * 3, CellHeight));
+			cellControl.Arrange(new global::Avalonia.Rect(0, 0, CellWidth * 3, CellHeight));
+
+			var presenter = new AvaloniaDisplayPresenter(manager, presentControl, cellControl);
+
+			using (var surface = SKSurface.Create(new SKImageInfo(CellWidth * 3 * 2, CellHeight * 2)))
+			{
+				surface.Canvas.Clear(SKColors.White);
+				surface.Canvas.Scale(1.25f);
+				presenter.Render(cellControl, surface.Canvas);
+
+				using (var image = surface.Snapshot())
+				using (var pixels = image.PeekPixels())
+				{
+					var dark = 0;
+					for (var y = 0; y < CellHeight * 2; y++)
+					{
+						for (var x = 0; x < CellWidth * 3 * 2; x++)
+						{
+							var pixel = pixels.GetPixelColor(x, y);
+							if (pixel.Red < 100 && pixel.Green < 100 && pixel.Blue < 100)
+								dark++;
+						}
+					}
+
+					Assert.IsTrue(dark > 0, "текст должен рисоваться при масштабированной канве");
+				}
+			}
+		}
+
+		[TestMethod]
+		public void DefaultCenterStyle_AutoOverflow_Renders()
+		{
+			var manager = new CellManager(1, 3);
+			for (var column = 0; column < 3; column++)
+				manager.SetColumnWidth(column, CellWidthMm);
+			manager.SetRowHeight(0, CellHeightMm);
+			manager.IsDesignMode = true;
+
+			var cell = manager.CreateCell(0, 0);
+			var content = new TextContent(manager) { Text = "qweqwe qweqweqwe qweq qwe eqwe qweqweqwe" };
+			content.AddParam(new Param(manager, content)
+			{
+				Name = "Переполнение",
+				Target = "Style.Overflow",
+				Value = "Auto"
+			});
+			cell.Content = content;
+			manager.DisplaySettings.ShowCurrentRows = false;
+
+			var presentControl = new PresentControl();
+			var cellControl = new CellControl { Width = CellWidth * 3, Height = CellHeight };
+			cellControl.Measure(new global::Avalonia.Size(CellWidth * 3, CellHeight));
+			cellControl.Arrange(new global::Avalonia.Rect(0, 0, CellWidth * 3, CellHeight));
+
+			var presenter = new AvaloniaDisplayPresenter(manager, presentControl, cellControl);
+			using (var surface = SKSurface.Create(new SKImageInfo(CellWidth * 3, CellHeight)))
+			{
+				surface.Canvas.Clear(SKColors.White);
+				presenter.Render(cellControl, surface.Canvas);
+
+				Assert.IsTrue(CountTextPixels(surface, 0, CellWidth * 3) > 0, "текст должен отображаться");
 			}
 		}
 

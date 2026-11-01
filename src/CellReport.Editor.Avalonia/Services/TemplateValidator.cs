@@ -206,6 +206,16 @@ public static class TemplateValidator
 
 		if (!exists)
 			issues.Add(Error("Стили", "Стиль содержимого «" + styleId + "» не найден", location));
+
+		var textStyle = content.GetStyle() as TextContentStyle;
+		if (textStyle == null || textStyle.Overflow == TextOverflow.Clip)
+			return;
+
+		if (Math.Abs(textStyle.Angle) > float.Epsilon || textStyle.Direction == Direction.TopToDown)
+			issues.Add(Warning("Стили", "Стиль «" + styleId + "»: переполнение не действует для повёрнутого или вертикального текста", location));
+
+		if (content is TextContent { AutoSizeFont: true })
+			issues.Add(Warning("Стили", "Стиль «" + styleId + "»: автоподбор шрифта не действует при переполнении", location));
 	}
 
 	private static void ValidateSections(List<TemplateIssue> issues, CellManager manager)
