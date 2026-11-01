@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +19,21 @@ namespace CellReport.Core.Contents
 				string format,
 				string culture,
 				Direction direction)
-				: base(h, v, font, color, angle, format, culture, direction)
+				: this(h, v, font, color, negativeColor, angle, format, culture, direction, TextOverflow.Clip)
+		{
+		}
+
+		public DecimalContentStyle(HorizontalAlignment h,
+				VerticalAlignment v,
+				FontInfo font,
+				string color,
+				string negativeColor,
+				float angle,
+				string format,
+				string culture,
+				Direction direction,
+				TextOverflow overflow)
+				: base(h, v, font, color, angle, format, culture, direction, overflow)
 		{
 			NegativeColor = negativeColor;
 		}
@@ -58,7 +72,7 @@ namespace CellReport.Core.Contents
 			if (element.Attribute("NegativeColor") != null)
 				negativeColor = element.Attribute("NegativeColor").Value;
 			return new DecimalContentStyle(halign, dcs.VAlignment, dcs.Font, dcs.Color,
-					negativeColor, dcs.Angle, dcs.Format, dcs.Culture, dcs.Direction);
+					negativeColor, dcs.Angle, dcs.Format, dcs.Culture, dcs.Direction, dcs.Overflow);
 		}
 
 		protected override XElement OnSerialize(string styleName)

@@ -26,6 +26,7 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <ProjectReference Include="..\src\CellReport.WinForms\CellReport.WinForms.csproj" />
   </ItemGroup>
 
 </Project>

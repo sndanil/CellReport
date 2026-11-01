@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CellReport.Core;
@@ -25,6 +25,7 @@ namespace CellReport.Presenters
 		protected BasePrintPresenter(CellManager manager)
 				: base(manager)
 		{
+			OverflowRenderingEnabled = true;
 			_emptyAction = (sender, e) =>
 			{
 				if (e.Cell != null && !e.AlreadyPaintedCells.ContainsKey(e.Cell))
@@ -210,7 +211,11 @@ namespace CellReport.Presenters
 			var alreadyPaintedCells = new Dictionary<Cell, bool>();
 			var rightBottom = DoCellsRange(context, alreadyPaintedCells, bounds, renderGridAction);
 			alreadyPaintedCells.Clear();
+			CurrentPaneRect = bounds;
 			DoCellsRange(context, alreadyPaintedCells, bounds, renderCellAction);
+
+			if (context != null)
+				FlushOverflowItems(context);
 
 			return rightBottom;
 		}
@@ -390,7 +395,7 @@ namespace CellReport.Presenters
 			bounds = RenderHeaderFixedRows(context, bounds, renderGridAction, renderCellAction);
 			bounds = RenderFooterFixedRows(context, bounds, renderGridAction, renderCellAction);
 
-			Renderer.SetClip(context, new Rectangle(bounds.X, bounds.Y, GetCurrentPageWidth(bounds), bounds.Height));
+			Renderer.SetClip(context, new Rectangle(bounds.X, bounds.Y, bounds.Width, bounds.Height));
 
 			DeviceOffsetX = bounds.X;
 			DeviceOffsetY = bounds.Y;

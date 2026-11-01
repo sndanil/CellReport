@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -71,6 +71,14 @@ namespace CellReport.Core
                             return value / dpi * 25.4f;
                         case GraphicsUnit.Pixel:
                             return value;
+                        case GraphicsUnit.WpfPoint:
+                            return value / dpi * 96;
+                        case GraphicsUnit.Display:
+                            return value / dpi * 100;
+                        case GraphicsUnit.Point:
+                            return value / dpi * 72;
+                        case GraphicsUnit.Inch:
+                            return value / dpi;
                         default:
                             throw new ArgumentException("toUnit");
                     }
@@ -99,6 +107,14 @@ namespace CellReport.Core
                             return value / 96 * 25.4f;
                         case GraphicsUnit.WpfPoint:
                             return value;
+                        case GraphicsUnit.Pixel:
+                            return value / 96 * dpi;
+                        case GraphicsUnit.Display:
+                            return value / 96 * 100;
+                        case GraphicsUnit.Point:
+                            return value / 96 * 72;
+                        case GraphicsUnit.Inch:
+                            return value / 96;
                         default:
                             throw new ArgumentException("toUnit");
                     }

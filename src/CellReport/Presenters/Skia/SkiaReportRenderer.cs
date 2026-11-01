@@ -1,4 +1,4 @@
-﻿using CellReport.Core;
+using CellReport.Core;
 using CellReport.Core.Contents;
 using CellReport.Presenters;
 using SkiaSharp;
@@ -378,6 +378,177 @@ namespace CellReport.Presenters.Skia
 				rs.Paint(dc, new SKPoint(textRect.X, y), paintOptions);
 
 			dc.Restore();
+		}
+
+		public override bool SupportsOverflow
+		{
+			get { return true; }
+		}
+
+		public override Size GetImageSize(byte[] data)
+		{
+			if (data == null || data.Length == 0)
+				return Size.Empty;
+
+			try
+			{
+				using (var bitmap = SKBitmap.Decode(data))
+				{
+					if (bitmap == null)
+						return Size.Empty;
+
+					return new Size(bitmap.Width, bitmap.Height);
+				}
+			}
+			catch
+			{
+				return Size.Empty;
+			}
+		}
+
+		public override Size MeasureText(string text, string fontFamily, float fontSize, FontStyle fontStyle, float dpi)
+		{
+			return GetTextSize(new Rectangle(0, 0, 1000000f, 1000000f), text, fontFamily, fontSize, fontStyle, dpi);
+		}
+
+		public override object SaveClip(object context)
+		{
+			var canvas = context as SKCanvas;
+			if (canvas != null)
+				canvas.Save();
+
+			return null;
+		}
+
+		public override void RestoreClip(object context, object state)
+		{
+			var canvas = context as SKCanvas;
+			if (canvas != null)
+				canvas.Restore();
+		}
+
+		public override void RenderText(object context, TextRenderOptions options, string text, string color,
+			HorizontalAlignment h, VerticalAlignment v, float angle, string fontFamily, float fontSize,
+			FontStyle fontStyle, Direction direction)
+		{
+			if (options == null || string.IsNullOrEmpty(text))
+				return;
+
+			var layout = options.LayoutRect;
+			var clip = options.ClipRect;
+			if (layout.Width < 1 || layout.Height < 1 || clip.Width < 1 || clip.Height < 1)
+				return;
+
+			var dc = context as SKCanvas;
+			if (dc == null)
+				return;
+
+			fontSize = UnitsConverter.ConvertValue(fontSize, GraphicsUnit.Point, GraphicsUnit.Pixel, Dpi);
+
+			dc.Save();
+			dc.ClipRect(clip.ToRect(), SKClipOperation.Intersect, antialias: false);
+
+			TextAlignment alignment;
+			switch (h)
+			{
+				case HorizontalAlignment.Left:
+					alignment = TextAlignment.Left;
+					break;
+				case HorizontalAlignment.Center:
+					alignment = TextAlignment.Center;
+					break;
+				case HorizontalAlignment.Right:
+					alignment = TextAlignment.Right;
+					break;
+				default:
+					alignment = TextAlignment.Auto;
+					break;
+			}
+
+			var rs = new RichString()
+				.FontFamily(fontFamily)
+				.FontSize(fontSize)
+				.FontItalic(fontStyle.HasFlag(FontStyle.Italic))
+				.FontWeight(fontStyle.HasFlag(FontStyle.Bold) ? (int)SKFontStyleWeight.Bold : (int)SKFontStyleWeight.Normal)
+				.Alignment(alignment);
+
+			rs.Add(text);
+
+			if (options.Ellipsis)
+			{
+				rs.MaxWidth = Math.Max(1f, clip.Width);
+				rs.EllipsisEnabled = true;
+			}
+			else if (options.NoWrap)
+				rs.MaxWidth = 1000000f;
+			else
+				rs.MaxWidth = Math.Max(1f, layout.Width);
+
+			rs.MaxLines = 1;
+
+			var y = layout.Y;
+			if (v == VerticalAlignment.Middle)
+				y += Math.Max(0f, (layout.Height - rs.MeasuredHeight) / 2f);
+			else if (v == VerticalAlignment.Bottom)
+				y += Math.Max(0f, layout.Height - rs.MeasuredHeight);
+
+			var paintOptions = new TextPaintOptions
+			{
+				IsAntialias = TextAntialias
+			};
+			if (!TextAntialias)
+			{
+				paintOptions.Hinting = SKFontHinting.Full;
+				paintOptions.SubpixelPositioning = false;
+				paintOptions.Edging = SKFontEdging.Alias;
+			}
+
+			if (InvertColors)
+			{
+				using (var layerPaint = new SKPaint { ColorFilter = SkiaColorFilters.CreateInvert() })
+				{
+					dc.SaveLayer(clip.ToRect(), layerPaint);
+					rs.Paint(dc, new SKPoint(layout.X, y), paintOptions);
+					dc.Restore();
+				}
+			}
+			else
+				rs.Paint(dc, new SKPoint(layout.X, y), paintOptions);
+
+			dc.Restore();
+		}
+
+		public override void RenderImage(object context, ImageRenderOptions options, byte[] data)
+		{
+			if (options == null || data == null || data.Length == 0)
+				return;
+
+			var rect = options.Rect;
+			var clip = options.ClipRect;
+			if (rect.Width < 1 || rect.Height < 1 || clip.Width < 1 || clip.Height < 1)
+				return;
+
+			var dc = context as SKCanvas;
+			if (dc == null)
+				return;
+
+			using (var bitmap = SKBitmap.Decode(data))
+			{
+				if (bitmap == null)
+					return;
+
+				dc.Save();
+				dc.ClipRect(clip.ToRect(), SKClipOperation.Intersect, antialias: false);
+				if (InvertColors)
+				{
+					using (var paint = new SKPaint { ColorFilter = SkiaColorFilters.CreateInvert() })
+						dc.DrawBitmap(bitmap, rect.ToRect(), paint);
+				}
+				else
+					dc.DrawBitmap(bitmap, rect.ToRect());
+
+				dc.Restore();
+			}
 		}
 
 		public override void RenderChart(object context, Rectangle rect, ChartContent content)

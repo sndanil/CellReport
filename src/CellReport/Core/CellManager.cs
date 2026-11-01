@@ -20,6 +20,8 @@ namespace CellReport.Core
 		private Cell[][] _cells;
 		[NonSerialized]
 		private readonly List<Cell> _originCells = new List<Cell>();
+		[NonSerialized]
+		private Dictionary<int, List<Cell>> _spanCellsByRow;
 		private PrintSettings _printSettings;
 		private DisplaySettings _displaySettings;
 		private ExportSettings _exportSettings;
@@ -826,6 +828,7 @@ namespace CellReport.Core
 				_cells[originRow][originCol] = null;
 				_originCells.Remove(cell);
 				CellGridHelper.ClearSpanSlotReferences(_cells, cell.Location, oldSpan, cell);
+				InvalidateSpanCellsIndex();
 
 				if (row >= _actualRowsCount - 1 || column >= _actualColumnsCount - 1)
 					RecalculateActualDimensions();
@@ -849,6 +852,7 @@ namespace CellReport.Core
 			cell.PropertyChanged += OnPropertyChanged;
 			_cells[row][column] = cell;
 			_originCells.Add(cell);
+			InvalidateSpanCellsIndex();
 
 			OnPropertyChanged("Cells");
 			return cell;
@@ -938,6 +942,89 @@ namespace CellReport.Core
 			return null;
 		}
 
+		/// <summary>
+		/// Возвращает ячейку, занимающую слот: собственную ячейку слота или merged-ячейку,
+		/// покрывающую этот слот.
+		/// </summary>
+		public bool TryGetOccupiedCell(int row, int column, out Cell cell)
+		{
+			cell = null;
+			if (row < 0 || column < 0 || row >= RowsCount || column >= ColumnsCount)
+				return false;
+
+			var stored = _cells[row][column];
+			if (stored != null)
+			{
+				cell = stored;
+				return true;
+			}
+
+			List<Cell> candidates;
+			if (!GetSpanCellsByRow().TryGetValue(row, out candidates))
+				return false;
+
+			for (var i = 0; i < candidates.Count; i++)
+			{
+				var candidate = candidates[i];
+				if (CellGridHelper.Covers(candidate, row, column))
+				{
+					cell = candidate;
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Занят ли слот ячейкой (собственной или покрывающей merged-ячейкой).
+		/// </summary>
+		public bool IsSlotOccupied(int row, int column)
+		{
+			Cell cell;
+			return TryGetOccupiedCell(row, column, out cell);
+		}
+
+		/// <summary>
+		/// Индекс merged-ячеек по строкам: нужен, чтобы не сканировать все origin-ячейки
+		/// на каждый пустой слот при поиске границ переполнения.
+		/// </summary>
+		private Dictionary<int, List<Cell>> GetSpanCellsByRow()
+		{
+			if (_spanCellsByRow != null)
+				return _spanCellsByRow;
+
+			_spanCellsByRow = new Dictionary<int, List<Cell>>();
+			for (var i = 0; i < _originCells.Count; i++)
+			{
+				var cell = _originCells[i];
+				if (cell == null)
+					continue;
+
+				var span = cell.SpanInternal;
+				if (span.RowSpan <= 0 && span.ColSpan <= 0)
+					continue;
+
+				for (var row = cell.Location.Row; row <= cell.Location.Row + span.RowSpan; row++)
+				{
+					List<Cell> cells;
+					if (!_spanCellsByRow.TryGetValue(row, out cells))
+					{
+						cells = new List<Cell>();
+						_spanCellsByRow[row] = cells;
+					}
+					cells.Add(cell);
+				}
+			}
+
+			return _spanCellsByRow;
+		}
+
+		private void InvalidateSpanCellsIndex()
+		{
+			_spanCellsByRow = null;
+		}
+
 		public void SetSpansForCell(CellLocation location, CellSpan span)
 		{
 			CheckRowAndColumn(location.Row + span.RowSpan, location.Column + span.ColSpan);
@@ -946,6 +1033,7 @@ namespace CellReport.Core
 			var oldSpan = cell.SpanInternal;
 			CellGridHelper.ClearSpanSlotReferences(_cells, cell.Location, oldSpan, cell);
 			cell.SpanInternal = span;
+			InvalidateSpanCellsIndex();
 
 			_actualRowsCount = System.Math.Max(_actualRowsCount, location.Row + span.RowSpan + 1);
 			_actualColumnsCount = System.Math.Max(_actualColumnsCount, location.Column + span.ColSpan + 1);
@@ -980,6 +1068,7 @@ namespace CellReport.Core
 			}
 
 			RecalculateActualDimensions();
+			InvalidateSpanCellsIndex();
 		}
 
 		public float GetRowHeight(int index)

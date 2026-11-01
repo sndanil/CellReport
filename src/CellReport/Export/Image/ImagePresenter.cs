@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 using CellReport.Core;
@@ -19,6 +19,7 @@ namespace CellReport.Export.Image
 						: base(manager)
 		{
 			Renderer = renderer;
+			OverflowRenderingEnabled = true;
 			DeviceDpiX = ImageDpi;
 			DeviceDpiY = ImageDpi;
 			CurrentUnit = ImageUnit;
@@ -65,6 +66,7 @@ namespace CellReport.Export.Image
 		private void RenderImage(object context)
 		{
 			Renderer.RenderFillRect(context, new Rectangle(0, 0, _imageWidth, _imageHeight), 0, ImageBackground);
+			CurrentPaneRect = new Rectangle(0, 0, _imageWidth, _imageHeight);
 
 			var alreadyPaintedCells = new Dictionary<Cell, bool>();
 			for (int row = 0; row < Manager.RowsCount; row++)
@@ -99,6 +101,8 @@ namespace CellReport.Export.Image
 					}
 				}
 			}
+
+			FlushOverflowItems(context);
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +11,71 @@ namespace CellReport.Presenters
 	public abstract class BaseRenderer
 	{
 		public BaseRenderer()
+		{
+		}
+
+		/// <summary>
+		/// Рендерер умеет рисовать содержимое за границами ячейки.
+		/// </summary>
+		public virtual bool SupportsOverflow
+		{
+			get { return false; }
+		}
+
+		/// <summary>
+		/// Натуральный размер изображения в пикселях; <see cref="Size.Empty"/>, если неизвестен.
+		/// </summary>
+		public virtual Size GetImageSize(byte[] data)
+		{
+			return Size.Empty;
+		}
+
+		/// <summary>
+		/// Естественный размер текста в одну строку (без переноса), в единицах презентера.
+		/// </summary>
+		public virtual Size MeasureText(string text, string fontFamily, float fontSize, FontStyle fontStyle, float dpi)
+		{
+			return Size.Empty;
+		}
+
+		/// <summary>
+		/// Рисует текст по готовой геометрии переполнения. Базовая реализация
+		/// деградирует к старому поведению (клип по <see cref="TextRenderOptions.LayoutRect"/>).
+		/// </summary>
+		public virtual void RenderText(object context, TextRenderOptions options, string text, string color,
+				HorizontalAlignment h, VerticalAlignment v, float angle,
+				string fontFamily, float fontSize, FontStyle fontStyle, Direction direction)
+		{
+			if (options == null)
+				return;
+
+			RenderText(context, options.LayoutRect, text, color, h, v, angle, fontFamily, fontSize, fontStyle, direction);
+		}
+
+		/// <summary>
+		/// Рисует изображение по готовому прямоугольнику. Базовая реализация
+		/// деградирует к старому поведению (растягивание в <see cref="ImageRenderOptions.CellRect"/>).
+		/// </summary>
+		public virtual void RenderImage(object context, ImageRenderOptions options, byte[] data)
+		{
+			if (options == null)
+				return;
+
+			RenderImage(context, options.CellRect, data);
+		}
+
+		/// <summary>
+		/// Сохраняет текущий клип. Возвращённый токен передаётся в <see cref="RestoreClip"/>.
+		/// </summary>
+		public virtual object SaveClip(object context)
+		{
+			return null;
+		}
+
+		/// <summary>
+		/// Восстанавливает клип, сохранённый <see cref="SaveClip"/>.
+		/// </summary>
+		public virtual void RestoreClip(object context, object state)
 		{
 		}
 

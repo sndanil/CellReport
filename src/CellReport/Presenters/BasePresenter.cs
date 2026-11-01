@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +7,7 @@ using CellReport.Core.Contents;
 
 namespace CellReport.Presenters
 {
-	public abstract class BasePresenter : NotifyPropertyChanged
+	public abstract class BasePresenter : NotifyPropertyChanged, ICellGridGeometry
 	{
 		private CellManager _manager = null;
 
@@ -28,6 +28,10 @@ namespace CellReport.Presenters
 		private Dictionary<int, float> _leftOffsets = new Dictionary<int, float>();
 		private float[] _topPrefixSums;
 		private float[] _leftPrefixSums;
+
+		private OverflowLayout _overflowLayout;
+		private readonly List<Action<object>> _overflowActions = new List<Action<object>>();
+		private readonly Dictionary<BaseContent, Size> _imageSizeCache = new Dictionary<BaseContent, Size>();
 
 		public BasePresenter(CellManager manager)
 		{
@@ -58,6 +62,47 @@ namespace CellReport.Presenters
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Разрешено ли откладывать переполняющийся контент в отдельный overlay-проход.
+		/// </summary>
+		protected bool OverflowRenderingEnabled { get; set; }
+
+		/// <summary>
+		/// Клип текущей панели (frozen-квадранта) или страницы.
+		/// </summary>
+		protected Rectangle CurrentPaneRect { get; set; }
+
+		protected OverflowLayout Overflow
+		{
+			get { return _overflowLayout ?? (_overflowLayout = new OverflowLayout(this)); }
+		}
+
+		public int RowsCount
+		{
+			get { return Manager == null ? 0 : Manager.RowsCount; }
+		}
+
+		public int ColumnsCount
+		{
+			get { return Manager == null ? 0 : Manager.ColumnsCount; }
+		}
+
+		public bool TryGetOccupiedCell(int row, int column, out Cell cell)
+		{
+			if (Manager == null)
+			{
+				cell = null;
+				return false;
+			}
+
+			return Manager.TryGetOccupiedCell(row, column, out cell);
+		}
+
+		public Rectangle GetCellRect(int row, int column)
+		{
+			return GetRect(new CellLocation { Row = row, Column = column });
 		}
 
 		protected void ProcessFit()
@@ -112,7 +157,7 @@ namespace CellReport.Presenters
 
 		private void FitCellFontSize(int row, int col, TextContent content)
 		{
-			if (!content.AutoSizeFont)
+			if (!content.AutoSizeFont || HasOverflow(content))
 				return;
 
 			BeginUpdate();
@@ -137,6 +182,9 @@ namespace CellReport.Presenters
 
 		private void FitCell(int row, int col, TextBasedContent content)
 		{
+			if (HasOverflow(content))
+				return;
+
 			BeginUpdate();
 			var text = content.GetTextForRender();
 			var style = (TextContentStyle)content.GetActualStyle();
@@ -149,7 +197,31 @@ namespace CellReport.Presenters
 			EndUpdate();
 		}
 
+		/// <summary>
+		/// Текст с правом переполнения не подгоняется по высоте строки и размеру шрифта.
+		/// </summary>
+		private static bool HasOverflow(TextBasedContent content)
+		{
+			var style = content.GetActualStyle() as TextContentStyle;
+			return style != null && style.Overflow != TextOverflow.Clip;
+		}
+
 		protected abstract Size GetTextSize(Rectangle rect, string text, string fontFamily, float fontSize, FontStyle fontStyle);
+
+		/// <summary>
+		/// Естественный размер текста в одну строку (без переноса).
+		/// </summary>
+		protected virtual Size GetTextSizeNoWrap(string text, string fontFamily, float fontSize, FontStyle fontStyle)
+		{
+			if (Renderer != null)
+			{
+				var measured = Renderer.MeasureText(text, fontFamily, fontSize, fontStyle, DeviceDpiX);
+				if (measured.Width > 0 && measured.Height > 0)
+					return measured;
+			}
+
+			return GetTextSize(new Rectangle(0, 0, 1000000f, 1000000f), text, fontFamily, fontSize, fontStyle);
+		}
 
 		protected virtual void OnManagerChanging()
 		{
@@ -524,6 +596,9 @@ namespace CellReport.Presenters
 			int rowsCount = Manager.RowsCount;
 			int colsCount = Manager.ColumnsCount;
 
+			_overflowActions.Clear();
+			_imageSizeCache.Clear();
+
 			_topPrefixSums = new float[rowsCount + 1];
 			for (int i = 1; i <= rowsCount; i++)
 				_topPrefixSums[i] = _topPrefixSums[i - 1] + Manager.GetRowHeight(i - 1);
@@ -555,10 +630,16 @@ namespace CellReport.Presenters
 			if (content is CollectionContent)
 			{
 				foreach (var item in ((CollectionContent)content).GetContents())
-					RenderContent(context, item, cell);
+				{
+					if (!TryQueueOverflowContent(cell, item))
+						RenderContent(context, item, cell);
+				}
 			}
 			else if (content is TextBasedContent)
 			{
+				if (TryQueueTextOverflow(cell, (TextBasedContent)content))
+					return;
+
 				var textContent = (TextBasedContent)content;
 				var style = (TextContentStyle)textContent.GetActualStyle();
 				var fontSize = Scale * style.Font.Size;
@@ -585,6 +666,9 @@ namespace CellReport.Presenters
 			}
 			else if (content is ImageContent imageContent)
 			{
+				if (TryQueueImageOverflow(cell, imageContent))
+					return;
+
 				if (imageContent.ColSpan > 0 || imageContent.RowSpan > 0)
 				{
 					for (int i = 0; i < imageContent.RowSpan; i++)
@@ -609,6 +693,165 @@ namespace CellReport.Presenters
 				var chart = (ChartContent)content;
 				Renderer.RenderChart(context, cellRect, chart);
 			}
+		}
+
+		/// <summary>
+		/// Ставит в очередь переполняющийся контент ячейки (например, для ячейки-источника,
+		/// прокрученной за край). Обычный контент не рисуется.
+		/// </summary>
+		protected void QueueOverflowContent(Cell cell)
+		{
+			if (cell == null || cell.Content == null)
+				return;
+
+			var collection = cell.Content as CollectionContent;
+			if (collection != null)
+			{
+				foreach (var item in collection.GetContents())
+					TryQueueOverflowContent(cell, item);
+				return;
+			}
+
+			TryQueueOverflowContent(cell, cell.Content);
+		}
+
+		private bool TryQueueOverflowContent(Cell cell, BaseContent content)
+		{
+			var text = content as TextBasedContent;
+			if (text != null)
+				return TryQueueTextOverflow(cell, text);
+
+			var image = content as ImageContent;
+			if (image != null)
+				return TryQueueImageOverflow(cell, image);
+
+			return false;
+		}
+
+		private bool TryQueueTextOverflow(Cell cell, TextBasedContent content)
+		{
+			if (!OverflowRenderingEnabled || Renderer == null || !Renderer.SupportsOverflow)
+				return false;
+
+			var style = content.GetActualStyle() as TextContentStyle;
+			if (style == null || style.Overflow == TextOverflow.Clip)
+				return false;
+
+			if (Math.Abs(style.Angle) > float.Epsilon || style.Direction != Direction.LeftToRight)
+				return false;
+
+			var text = GetOverflowText(content);
+			if (string.IsNullOrEmpty(text))
+				return false;
+
+			var fontSize = Scale * style.Font.Size;
+			var naturalSize = GetTextSizeNoWrap(text, style.Font.Family, fontSize, style.Font.Style);
+			if (naturalSize.Width <= 0 || naturalSize.Height <= 0)
+				return false;
+
+			var geometry = Overflow.ComputeText(cell, style.Overflow, style.HAlignment, style.VAlignment, naturalSize, CurrentPaneRect);
+			if (!geometry.NeedsOverflow)
+				return false;
+
+			if (geometry.ClipRect.Width < 1 || geometry.ClipRect.Height < 1)
+				return false;
+
+			var textGeometry = geometry;
+			var textStyle = style;
+			var overflowText = text;
+			_overflowActions.Add(context => RenderTextOverflow(context, overflowText, textStyle, textGeometry));
+			return true;
+		}
+
+		private bool TryQueueImageOverflow(Cell cell, ImageContent content)
+		{
+			if (!OverflowRenderingEnabled || Renderer == null || !Renderer.SupportsOverflow)
+				return false;
+
+			if (content.SizeMode == ImageSizeMode.Stretch && !content.Overflow)
+				return false;
+
+			var naturalSize = GetImageNaturalSize(content);
+			if (naturalSize.Width <= 0 || naturalSize.Height <= 0)
+				return false;
+
+			var geometry = Overflow.ComputeImage(cell, content.SizeMode, content.Scale, content.Anchor, content.Overflow,
+				naturalSize, CurrentPaneRect);
+			if (geometry.Rect.Width < 1 || geometry.Rect.Height < 1
+					|| geometry.ClipRect.Width < 1 || geometry.ClipRect.Height < 1)
+				return false;
+
+			var cellRect = GetInnerCellRect(cell);
+			var image = content;
+			var imageGeometry = geometry;
+			_overflowActions.Add(context => RenderImageOverflow(context, image, cellRect, imageGeometry));
+			return true;
+		}
+
+		private void RenderTextOverflow(object context, string text, TextContentStyle style, TextOverflowGeometry geometry)
+		{
+			var options = new TextRenderOptions
+			{
+				LayoutRect = geometry.LayoutRect,
+				ClipRect = geometry.ClipRect,
+				NoWrap = geometry.NoWrap,
+				Ellipsis = geometry.Ellipsis
+			};
+
+			Renderer.RenderText(context, options, text, style.Color, style.HAlignment, style.VAlignment, style.Angle,
+				style.Font.Family, Scale * style.Font.Size, style.Font.Style, style.Direction);
+		}
+
+		private void RenderImageOverflow(object context, ImageContent content, Rectangle cellRect, ImageOverflowGeometry geometry)
+		{
+			var options = new ImageRenderOptions
+			{
+				CellRect = cellRect,
+				Rect = geometry.Rect,
+				ClipRect = geometry.ClipRect
+			};
+
+			Renderer.RenderImage(context, options, content.GetImageData());
+		}
+
+		private Size GetImageNaturalSize(ImageContent content)
+		{
+			Size cached;
+			if (_imageSizeCache.TryGetValue(content, out cached))
+				return cached;
+
+			var data = content.GetImageData();
+			var pixelSize = data != null && data.Length > 0 ? Renderer.GetImageSize(data) : Size.Empty;
+			var result = Size.Empty;
+			if (pixelSize.Width > 0 && pixelSize.Height > 0)
+			{
+				result = new Size(
+					UnitsConverter.ConvertValue(pixelSize.Width, GraphicsUnit.Pixel, CurrentUnit, DeviceDpiX),
+					UnitsConverter.ConvertValue(pixelSize.Height, GraphicsUnit.Pixel, CurrentUnit, DeviceDpiY));
+			}
+
+			_imageSizeCache[content] = result;
+			return result;
+		}
+
+		private static string GetOverflowText(TextBasedContent content)
+		{
+			var text = content.GetTextForRender();
+			if (string.IsNullOrEmpty(text))
+				return text;
+
+			return text.Replace("\r\n", " ").Replace('\n', ' ').Replace('\r', ' ');
+		}
+
+		/// <summary>
+		/// Рисует накопленный overlay-контент в текущем клипе.
+		/// </summary>
+		protected void FlushOverflowItems(object context)
+		{
+			foreach (var action in _overflowActions)
+				action(context);
+
+			_overflowActions.Clear();
 		}
 
 		protected virtual void RenderCellBackgroung(object context, Cell cell)

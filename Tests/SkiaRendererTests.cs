@@ -1,4 +1,6 @@
 using CellReport.Core;
+using CellReport.Core.Contents;
+using CellReport.Presenters;
 using CellReport.Presenters.Skia;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SkiaSharp;
@@ -60,6 +62,48 @@ namespace CellReportTests
 		{
 			Assert.AreEqual(SKColors.White, RenderFillAndSample(new SKColor(0, 0, 0), true));
 			Assert.AreEqual(new SKColor(255, 255, 0), RenderFillAndSample(new SKColor(0, 0, 255), true));
+		}
+
+		[TestMethod]
+		public void RenderText_WithClipRect_DrawsInsideClipOnly()
+		{
+			var renderer = new SkiaReportRenderer();
+			using (var surface = SKSurface.Create(new SKImageInfo(200, 30)))
+			{
+				surface.Canvas.Clear(SKColors.White);
+				renderer.RenderText(surface.Canvas,
+					new TextRenderOptions
+					{
+						LayoutRect = new Rectangle(0, 0, 200, 20),
+						ClipRect = new Rectangle(0, 0, 100, 30),
+						NoWrap = true
+					},
+					"AAAAAAAAAAAAAAAAAAAA", "Black",
+					HorizontalAlignment.Left, VerticalAlignment.Middle, 0,
+					"Arial", 10, FontStyle.Regular, Direction.LeftToRight);
+
+				using (var image = surface.Snapshot())
+				using (var pixels = image.PeekPixels())
+				{
+					var inside = 0;
+					var outside = 0;
+					for (var y = 0; y < 30; y++)
+					{
+						for (var x = 0; x < 200; x++)
+						{
+							var pixel = pixels.GetPixelColor(x, y);
+							if (pixel.Red < 100 && pixel.Green < 100 && pixel.Blue < 100)
+							{
+								if (x < 100) inside++;
+								else outside++;
+							}
+						}
+					}
+
+					Assert.IsTrue(inside > 0, "текст должен рисоваться внутри ClipRect");
+					Assert.AreEqual(0, outside, "текст не должен выходить за ClipRect");
+				}
+			}
 		}
 
 		private static SKColor RenderFillAndSample(SKColor color, bool invertColors)

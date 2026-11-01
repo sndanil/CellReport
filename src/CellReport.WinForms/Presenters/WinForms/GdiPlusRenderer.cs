@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -208,6 +208,132 @@ namespace CellReport.Presenters.WinForms
 					using (var font = new Font(fontFamily, fontSize, (System.Drawing.FontStyle)fontStyle))
 					using (var brush = new SolidBrush(GetColor(color)))
 						g.DrawString(text, font, brush, textRect.ToRectangleF(), stringFormat);
+				}
+			}
+		}
+
+		public override bool SupportsOverflow
+		{
+			get { return true; }
+		}
+
+		public override Core.Size GetImageSize(byte[] data)
+		{
+			if (data == null || data.Length == 0)
+				return Core.Size.Empty;
+
+			try
+			{
+				using (var image = Image.FromStream(new MemoryStream(data)))
+					return new Core.Size(image.Width, image.Height);
+			}
+			catch
+			{
+				return Core.Size.Empty;
+			}
+		}
+
+		public override Core.Size MeasureText(string text, string fontFamily, float fontSize, Core.FontStyle fontStyle, float dpi)
+		{
+			return GetTextSize(new Core.Rectangle(0, 0, 1000000f, 1000000f), text, fontFamily, fontSize, fontStyle);
+		}
+
+		public override object SaveClip(object context)
+		{
+			var g = context as Graphics;
+			return g != null ? g.Save() : null;
+		}
+
+		public override void RestoreClip(object context, object state)
+		{
+			var g = context as Graphics;
+			if (g != null && state is GraphicsState)
+				g.Restore((GraphicsState)state);
+		}
+
+		public override void RenderText(object context, TextRenderOptions options, string text, string color,
+				HorizontalAlignment h, VerticalAlignment v, float angle, string fontFamily, float fontSize,
+				Core.FontStyle fontStyle, Direction direction)
+		{
+			if (options == null || string.IsNullOrEmpty(text))
+				return;
+
+			var layout = options.LayoutRect;
+			var clip = options.ClipRect;
+			if (layout.Width < 1 || layout.Height < 1 || clip.Width < 1 || clip.Height < 1)
+				return;
+
+			var g = context as Graphics;
+			if (g == null)
+				return;
+
+			var stringFormat = new StringFormat
+			{
+				FormatFlags = StringFormatFlags.NoWrap | StringFormatFlags.MeasureTrailingSpaces,
+				Alignment = StringAlignment.Near,
+				LineAlignment = StringAlignment.Near,
+				Trimming = options.Ellipsis ? StringTrimming.EllipsisCharacter : StringTrimming.None
+			};
+
+			switch (h)
+			{
+				case HorizontalAlignment.Center:
+					stringFormat.Alignment = StringAlignment.Center;
+					break;
+				case HorizontalAlignment.Right:
+					stringFormat.Alignment = StringAlignment.Far;
+					break;
+			}
+
+			switch (v)
+			{
+				case VerticalAlignment.Middle:
+					stringFormat.LineAlignment = StringAlignment.Center;
+					break;
+				case VerticalAlignment.Bottom:
+					stringFormat.LineAlignment = StringAlignment.Far;
+					break;
+			}
+
+			var state = g.Save();
+			try
+			{
+				g.SetClip(clip.ToRectangleF());
+				using (var font = new Font(fontFamily, fontSize, (System.Drawing.FontStyle)fontStyle))
+				using (var brush = new SolidBrush(GetColor(color)))
+					g.DrawString(text, font, brush, layout.ToRectangleF(), stringFormat);
+			}
+			finally
+			{
+				g.Restore(state);
+			}
+		}
+
+		public override void RenderImage(object context, ImageRenderOptions options, byte[] data)
+		{
+			if (options == null || data == null || data.Length == 0)
+				return;
+
+			var rect = options.Rect;
+			var clip = options.ClipRect;
+			if (rect.Width < 1 || rect.Height < 1 || clip.Width < 1 || clip.Height < 1)
+				return;
+
+			var g = context as Graphics;
+			if (g == null)
+				return;
+
+			using (var image = Image.FromStream(new MemoryStream(data)))
+			{
+				var state = g.Save();
+				try
+				{
+					g.SetClip(clip.ToRectangleF());
+					g.DrawImage(image, rect.ToRectangle());
+				}
+				finally
+				{
+					g.Restore(state);
 				}
 			}
 		}
