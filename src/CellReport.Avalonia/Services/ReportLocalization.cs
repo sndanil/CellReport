@@ -48,6 +48,8 @@ namespace CellReport.Avalonia.Services
 			LocalizationManager.AddDefaultString("Report/AutoFitPage", "Автоширина по странице");
 			LocalizationManager.AddDefaultString("Report/Print/NotSupported", "Печать поддерживается только в Windows.");
 			LocalizationManager.AddDefaultString("Report/Print/Printer", "Принтер");
+			LocalizationManager.AddDefaultString("Report/Preview/Paper", "{0} · {1} × {2} мм");
+			LocalizationManager.AddDefaultString("Report/Preview/CustomPaper", "Произвольная");
 			LocalizationManager.AddDefaultString("Report/Print/PageRange", "Диапазон страниц");
 			LocalizationManager.AddDefaultString("Report/Print/From", "с");
 			LocalizationManager.AddDefaultString("Report/Print/To", "по");

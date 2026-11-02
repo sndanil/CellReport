@@ -4,11 +4,11 @@ using CellReport.Core;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 
 namespace CellReport.Avalonia.ViewModels
@@ -17,16 +17,32 @@ namespace CellReport.Avalonia.ViewModels
 	{
 		private readonly AvaloniaPrintPresenter _presenter;
 		private readonly Visual _host;
-		private readonly string? _printerName;
+		private bool _applyPrinter;
+		private string? _builtForPrinter;
 
 		public PrintPreviewViewModel(AvaloniaPrintPresenter presenter, Visual host, string? printerName = null)
 		{
 			_presenter = presenter;
 			_host = host;
-			_printerName = printerName;
 			TotalPages = Math.Max(1, presenter.PageCount);
 			CurrentPage = presenter.PageCount > 0 ? 1 : 0;
-			AutoFitWidth = presenter.Manager.PrintSettings.AutoFitWidthPages > 0;
+			_autoFitWidth = presenter.Manager.PrintSettings.AutoFitWidthPages > 0;
+
+			foreach (var printer in WindowsPrinterService.GetInstalledPrinters())
+				Printers.Add(printer);
+
+			var selected = !string.IsNullOrWhiteSpace(printerName) && Printers.Contains(printerName)
+				? printerName
+				: WindowsPrinterService.GetDefaultPrinter();
+			if (!string.IsNullOrEmpty(selected) && !Printers.Contains(selected))
+				Printers.Insert(0, selected);
+			else if (Printers.Count > 0 && string.IsNullOrEmpty(selected))
+				selected = Printers[0];
+
+			SelectedPrinter = selected;
+			_builtForPrinter = selected;
+			_applyPrinter = true;
+			ShowPaper(WindowsPrinterService.GetPageSize(selected, presenter.Manager.PrintSettings.Landscape));
 			UpdatePageImage();
 		}
 
@@ -34,11 +50,21 @@ namespace CellReport.Avalonia.ViewModels
 
 		public string PrintLabel => ReportLocalization.Get("Report/Print");
 
+		public string PrinterLabel => ReportLocalization.Get("Report/Print/Printer");
+
 		public string PageSetupLabel => ReportLocalization.Get("Report/PageSettings");
 
 		public string AutoFitLabel => ReportLocalization.Get("Report/AutoFitPage");
 
 		public string[] ZoomOptions { get; } = { "Авто", "25%", "50%", "75%", "100%", "150%", "200%", "250%" };
+
+		public ObservableCollection<string> Printers { get; } = new();
+
+		[ObservableProperty]
+		private string? _selectedPrinter;
+
+		[ObservableProperty]
+		private string _paperDescription = string.Empty;
 
 		public int TotalPages { get; private set; }
 
@@ -69,6 +95,14 @@ namespace CellReport.Avalonia.ViewModels
 		}
 
 		partial void OnSelectedZoomIndexChanged(int value) => ApplyZoom();
+
+		partial void OnSelectedPrinterChanged(string? value)
+		{
+			if (!_applyPrinter || string.Equals(value, _builtForPrinter, StringComparison.Ordinal))
+				return;
+
+			RebuildPages();
+		}
 
 		partial void OnAutoFitWidthChanged(bool value)
 		{
@@ -105,9 +139,25 @@ namespace CellReport.Avalonia.ViewModels
 			PageImage = new Bitmap(stream);
 		}
 
+		private void ShowPaper(PrinterPageSize page)
+		{
+			var name = string.IsNullOrWhiteSpace(page.PaperName)
+				? ReportLocalization.Get("Report/Preview/CustomPaper")
+				: page.PaperName;
+			PaperDescription = string.Format(
+				CultureInfo.CurrentCulture,
+				ReportLocalization.Get("Report/Preview/Paper"),
+				name,
+				page.WidthMm.ToString("0.#", CultureInfo.CurrentCulture),
+				page.HeightMm.ToString("0.#", CultureInfo.CurrentCulture));
+		}
+
 		private void RebuildPages()
 		{
-			var pageSize = WindowsPrinterService.GetPageSize(_printerName, _presenter.Manager.PrintSettings.Landscape);
+			var landscape = _presenter.Manager.PrintSettings.Landscape;
+			var pageSize = WindowsPrinterService.GetPageSize(SelectedPrinter, landscape);
+			_builtForPrinter = SelectedPrinter;
+			ShowPaper(pageSize);
 			var margins = _presenter.Manager.PrintSettings.Margins ?? new Margins(0);
 			_presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm, 96f, margins);
 			TotalPages = Math.Max(1, _presenter.PageCount);
@@ -148,7 +198,7 @@ namespace CellReport.Avalonia.ViewModels
 		[RelayCommand]
 		private async Task PrintAsync()
 		{
-			await ReportPrintService.PrintAsync(_host, _presenter.Manager, custom: false, printerName: _printerName);
+			await ReportPrintService.PrintAsync(_host, _presenter.Manager, custom: false, printerName: SelectedPrinter);
 		}
 
 		[RelayCommand]

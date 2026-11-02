@@ -9,11 +9,12 @@ namespace CellReport.Avalonia.Services
 {
 	internal readonly struct PrinterPageSize
 	{
-		public PrinterPageSize(float widthMm, float heightMm, float dpi)
+		public PrinterPageSize(float widthMm, float heightMm, float dpi, string? paperName = null)
 		{
 			WidthMm = widthMm;
 			HeightMm = heightMm;
 			Dpi = dpi;
+			PaperName = paperName;
 		}
 
 		public float WidthMm { get; }
@@ -21,6 +22,8 @@ namespace CellReport.Avalonia.Services
 		public float HeightMm { get; }
 
 		public float Dpi { get; }
+
+		public string? PaperName { get; }
 	}
 
 	internal static class WindowsPrinterService
@@ -82,9 +85,10 @@ namespace CellReport.Avalonia.Services
 							var widthMm = paper.Width * 25.4f / 100f;
 							var heightMm = paper.Height * 25.4f / 100f;
 							var dpi = GetDpi(page);
+							var name = string.IsNullOrWhiteSpace(paper.PaperName) ? null : paper.PaperName;
 							return landscape
-								? new PrinterPageSize(heightMm, widthMm, dpi)
-								: new PrinterPageSize(widthMm, heightMm, dpi);
+								? new PrinterPageSize(heightMm, widthMm, dpi, name)
+								: new PrinterPageSize(widthMm, heightMm, dpi, name);
 						}
 					}
 				}
@@ -95,8 +99,8 @@ namespace CellReport.Avalonia.Services
 			}
 
 			return landscape
-				? new PrinterPageSize(297f, 210f, 96f)
-				: new PrinterPageSize(210f, 297f, 96f);
+				? new PrinterPageSize(297f, 210f, 96f, "A4")
+				: new PrinterPageSize(210f, 297f, 96f, "A4");
 		}
 
 		/// <summary>
@@ -110,7 +114,8 @@ namespace CellReport.Avalonia.Services
 			return new PrinterPageSize(
 				Math.Max(1f, page.WidthMm - margins.Left - margins.Right),
 				Math.Max(1f, page.HeightMm - margins.Top - margins.Bottom),
-				page.Dpi);
+				page.Dpi,
+				page.PaperName);
 		}
 
 		public static float GetDpi(PageSettings page)
