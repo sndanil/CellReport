@@ -41,6 +41,16 @@ namespace CellReport.Avalonia
 		/// </summary>
 		public void BuildPages(float pageWidthMm, float pageHeightMm, float dpi)
 		{
+			BuildPages(pageWidthMm, pageHeightMm, dpi, null);
+		}
+
+		/// <summary>
+		/// Строит страницы под конкретную печатную область. Если <paramref name="margins"/>
+		/// заданы, размеры страницы считаются уже без полей; для печати по фактическому
+		/// MarginBounds передаются нулевые поля.
+		/// </summary>
+		public void BuildPages(float pageWidthMm, float pageHeightMm, float dpi, Margins? margins)
+		{
 			using (DesignModeScope.Suspend(Manager))
 			{
 				_pageImages.Clear();
@@ -60,7 +70,7 @@ namespace CellReport.Avalonia
 					getTextSize,
 					pageWidthMm,
 					pageHeightMm,
-					null,
+					margins,
 					dpi);
 				builder.BuildPages();
 				_pageImages.AddRange(builder.Pages);

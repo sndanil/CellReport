@@ -255,14 +255,24 @@ namespace CellReport.Presenters
 
 		protected void RecalcScale(Rectangle bounds)
 		{
+			// Scale из настроек — базовый масштаб (например, 0.83 для плотных форм).
+			// AutoFitWidthPages дополнительно уменьшает его, если колонки не
+			// помещаются в фактическую печатную область (узкая бумага/рулон).
+			var configuredScale = Manager.PrintSettings.Scale;
+			if (configuredScale <= 0)
+				configuredScale = 1f;
+			Scale = configuredScale;
+
 			if (Manager.PrintSettings.AutoFitWidthPages > 0)
 			{
 				var totalWidth = GetActualColumnsTotalWidth();
-				if (totalWidth > bounds.Width)
-					Scale = bounds.Width * Manager.PrintSettings.AutoFitWidthPages / totalWidth;
+				if (totalWidth > 0)
+				{
+					var fitScale = bounds.Width * Manager.PrintSettings.AutoFitWidthPages / totalWidth;
+					if (fitScale < Scale)
+						Scale = fitScale;
+				}
 			}
-			else
-				Scale = Manager.PrintSettings.Scale;
 		}
 
 		protected Rectangle RenderHeaderAndFooter(object context, Rectangle bounds, EventHandler<DoCellsEventArgs> renderGridAction, EventHandler<DoCellsEventArgs> renderCellAction)

@@ -1,3 +1,4 @@
+using CellReport.Core;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Printing;
@@ -96,6 +97,20 @@ namespace CellReport.Avalonia.Services
 			return landscape
 				? new PrinterPageSize(297f, 210f, 96f)
 				: new PrinterPageSize(210f, 297f, 96f);
+		}
+
+		/// <summary>
+		/// Размер печатной области: бумага минус поля отчёта. Именно этот размер
+		/// используется при построении страниц для печати (MarginBounds).
+		/// </summary>
+		public static PrinterPageSize GetContentPageSize(string? printerName, CellManager manager)
+		{
+			var page = GetPageSize(printerName, manager.PrintSettings.Landscape);
+			var margins = manager.PrintSettings.Margins ?? new CellReport.Core.Margins(0);
+			return new PrinterPageSize(
+				Math.Max(1f, page.WidthMm - margins.Left - margins.Right),
+				Math.Max(1f, page.HeightMm - margins.Top - margins.Bottom),
+				page.Dpi);
 		}
 
 		public static float GetDpi(PageSettings page)

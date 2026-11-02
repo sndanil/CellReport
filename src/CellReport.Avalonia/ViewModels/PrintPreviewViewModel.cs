@@ -1,5 +1,6 @@
 using CellReport.Avalonia;
 using CellReport.Avalonia.Services;
+using CellReport.Core;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
@@ -106,8 +107,8 @@ namespace CellReport.Avalonia.ViewModels
 
 		private void RebuildPages()
 		{
-			var pageSize = WindowsPrinterService.GetPageSize(_printerName, _presenter.Manager.PrintSettings.Landscape);
-			_presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm, 96f);
+			var pageSize = WindowsPrinterService.GetContentPageSize(_printerName, _presenter.Manager);
+			_presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm, 96f, new Margins(0));
 			TotalPages = Math.Max(1, _presenter.PageCount);
 			if (CurrentPage > TotalPages)
 				CurrentPage = TotalPages;

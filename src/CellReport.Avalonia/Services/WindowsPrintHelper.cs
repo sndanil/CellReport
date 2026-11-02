@@ -24,7 +24,6 @@ namespace CellReport.Avalonia.Services
 			private readonly int _requestedFromPage;
 			private readonly int _requestedToPage;
 			private IReadOnlyList<byte[]> _pages = Array.Empty<byte[]>();
-			private float _pageDpi = 96f;
 			private int _fromPage;
 			private int _toPage;
 			private int _pageIndex;
@@ -46,37 +45,32 @@ namespace CellReport.Avalonia.Services
 					document.PrinterSettings.PrinterName = printerName;
 				}
 
-				// Ширина рулона (и любой другой бумаги) должна браться у принтера,
-				// иначе страница A4 растягивается/сжимается драйвером до ленты.
-				var pageSize = GetPageSize(document);
-				_pageDpi = pageSize.Dpi;
-				_presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm, pageSize.Dpi);
-				_pages = _presenter.PageImages;
-				if (_pages.Count == 0)
-					return;
-
-				_fromPage = Math.Min(Math.Max(1, _requestedFromPage), _pages.Count);
-				_toPage = Math.Min(_pages.Count, Math.Max(_requestedToPage, _fromPage));
-
-				if (useCustom)
+				if (useCustom && _requestedToPage != int.MaxValue)
 				{
 					document.PrinterSettings.PrintRange = PrintRange.SomePages;
-					document.PrinterSettings.FromPage = _fromPage;
-					document.PrinterSettings.ToPage = _toPage;
+					document.PrinterSettings.FromPage = _requestedFromPage;
+					document.PrinterSettings.ToPage = _requestedToPage;
 				}
 
+				// Страницы строятся не здесь, а в первом PrintPage: только там
+				// доступны фактические PageSettings и MarginBounds драйвера.
 				document.Print();
 			}
 
 			private PrintDocument CreateDocument()
 			{
+				var reportMargins = _manager.PrintSettings.Margins ?? new CellReport.Core.Margins(0);
 				var document = new PrintDocument
 				{
 					DocumentName = _manager.Properties.DocumentName,
 					DefaultPageSettings =
 					{
 						Landscape = _manager.PrintSettings.Landscape,
-						Margins = new System.Drawing.Printing.Margins(0, 0, 0, 0)
+						Margins = new System.Drawing.Printing.Margins(
+							MillimetersToHundredthsInch(reportMargins.Left),
+							MillimetersToHundredthsInch(reportMargins.Right),
+							MillimetersToHundredthsInch(reportMargins.Top),
+							MillimetersToHundredthsInch(reportMargins.Bottom))
 					}
 				};
 				document.PrinterSettings.Copies = _manager.PrintSettings.Copies;
@@ -84,34 +78,41 @@ namespace CellReport.Avalonia.Services
 				return document;
 			}
 
-			private static PrinterPageSize GetPageSize(PrintDocument document)
+			private static int MillimetersToHundredthsInch(float millimeters)
 			{
-				try
-				{
-					var settings = document.DefaultPageSettings;
-					var paper = settings.PaperSize;
-					if (paper != null && paper.Width > 0 && paper.Height > 0)
-					{
-						var widthMm = paper.Width * 25.4f / 100f;
-						var heightMm = paper.Height * 25.4f / 100f;
-						var dpi = WindowsPrinterService.GetDpi(settings);
-						return settings.Landscape
-							? new PrinterPageSize(heightMm, widthMm, dpi)
-							: new PrinterPageSize(widthMm, heightMm, dpi);
-					}
+				return (int)Math.Round(millimeters * 100f / 25.4f);
+			}
 
-					return WindowsPrinterService.GetPageSize(document.PrinterSettings.PrinterName, settings.Landscape);
-				}
-				catch
-				{
-					return WindowsPrinterService.GetPageSize(null, false);
-				}
+			private void EnsurePages(PrintPageEventArgs e)
+			{
+				if (_pages.Count > 0)
+					return;
+
+				// MarginBounds уже учитывает поля из DefaultPageSettings и
+				// фактическую печатную область конкретного драйвера/бумаги.
+				var bounds = e.MarginBounds;
+				var widthMm = Math.Max(1f, bounds.Width * 25.4f / 100f);
+				var heightMm = Math.Max(1f, bounds.Height * 25.4f / 100f);
+				var dpi = Math.Max(e.Graphics!.DpiX, e.Graphics.DpiY);
+				if (dpi <= 0)
+					dpi = 96f;
+
+				// Поля уже вычтены из MarginBounds, поэтому построителю
+				// передаются нулевые поля.
+				_presenter.BuildPages(widthMm, heightMm, dpi, new CellReport.Core.Margins(0));
+				_pages = _presenter.PageImages;
+
+				_fromPage = Math.Min(Math.Max(1, _requestedFromPage), Math.Max(1, _pages.Count));
+				_toPage = _pages.Count == 0
+					? 0
+					: Math.Min(_pages.Count, Math.Max(_requestedToPage, _fromPage));
 			}
 
 			private void OnPrintPage(object sender, PrintPageEventArgs e)
 			{
-				var currentPageNumber = _pageIndex + 1;
+				EnsurePages(e);
 
+				var currentPageNumber = _pageIndex + 1;
 				if (currentPageNumber < _fromPage)
 				{
 					_pageIndex++;
@@ -119,7 +120,7 @@ namespace CellReport.Avalonia.Services
 					return;
 				}
 
-				if (currentPageNumber > _toPage)
+				if (currentPageNumber > _toPage || _pages.Count == 0)
 				{
 					e.HasMorePages = false;
 					return;
@@ -128,25 +129,17 @@ namespace CellReport.Avalonia.Services
 				using var stream = new MemoryStream(_pages[_pageIndex]);
 				using var image = Image.FromStream(stream);
 
-				// Страница строится в разрешении принтера. Пиксельные координаты
-				// позволяют на термопринтере отрисовать её 1:1, без повторной
-				// интерполяции, которая даёт «грязные» полутона.
-				var dpiX = e.Graphics!.DpiX;
-				var dpiY = e.Graphics.DpiY;
-				if (dpiX <= 0)
-					dpiX = _pageDpi;
-				if (dpiY <= 0)
-					dpiY = _pageDpi;
-
-				var scaleX = dpiX / _pageDpi;
-				var scaleY = dpiY / _pageDpi;
+				// Страница построена ровно под фактическую печатную область.
+				// Начало координат Graphics у PrintDocument находится в
+				// печатной области (hard margin), а MarginBounds — от края
+				// страницы, поэтому компенсируем hard margin.
 				var destination = new RectangleF(
-					-e.PageSettings.HardMarginX * dpiX / 100f,
-					-e.PageSettings.HardMarginY * dpiY / 100f,
-					image.Width * scaleX,
-					image.Height * scaleY);
+					e.MarginBounds.X - e.PageSettings.HardMarginX,
+					e.MarginBounds.Y - e.PageSettings.HardMarginY,
+					e.MarginBounds.Width,
+					e.MarginBounds.Height);
 
-				e.Graphics.PageUnit = System.Drawing.GraphicsUnit.Pixel;
+				e.Graphics!.PageUnit = System.Drawing.GraphicsUnit.Display;
 				e.Graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
 				e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 				e.Graphics.SmoothingMode = SmoothingMode.HighQuality;

@@ -17,10 +17,10 @@ namespace CellReport.Avalonia
 				return;
 
 			var presenter = new AvaloniaPrintPresenter(manager);
-			var pageSize = WindowsPrinterService.GetPageSize(printerName, manager.PrintSettings.Landscape);
-			// Предпросмотр показываем в экранном разрешении; печать заново
-			// строится в разрешении принтера.
-			presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm, 96f);
+			var pageSize = WindowsPrinterService.GetContentPageSize(printerName, manager);
+			// Предпросмотр строим по той же печатной области, что и печать:
+			// бумага минус поля отчёта, без повторного применения полей.
+			presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm, 96f, new Margins(0));
 
 			var preview = new PrintPreviewWindow(presenter, printerName);
 			await preview.ShowDialog(window);
@@ -44,10 +44,10 @@ namespace CellReport.Avalonia
 				var presenter = new AvaloniaPrintPresenter(manager);
 				if (custom)
 				{
-					var pageSize = WindowsPrinterService.GetPageSize(printerName, manager.PrintSettings.Landscape);
+					var pageSize = WindowsPrinterService.GetContentPageSize(printerName, manager);
 					// Для диалога нужен только счётчик страниц; печать затем
 					// перестраивается в разрешении выбранного принтера.
-					presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm, 96f);
+					presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm, 96f, new Margins(0));
 					var window = TopLevel.GetTopLevel(host) as Window;
 					if (window == null)
 						return;
