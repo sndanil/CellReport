@@ -475,6 +475,19 @@ public sealed class XmlCodeEditor
 			case "Direction" when elementName is "TextContentStyle" or "DecimalContentStyle" or "DateTimeContentStyle":
 				Complete(Values("LeftToRight", "TopToDown"), XmlCompletionDataType.AttributeValue, valueStart: insideValue);
 				break;
+			case "Overflow" when elementName is "TextContentStyle" or "DecimalContentStyle" or "DateTimeContentStyle":
+				Complete(Values("Clip", "Ellipsis", "Auto", "Right", "Left", "Both"), XmlCompletionDataType.AttributeValue, valueStart: insideValue);
+				break;
+			case "SizeMode" when elementName == "ImageContent":
+				Complete(Values("Stretch", "Fit", "Actual", "Scale"), XmlCompletionDataType.AttributeValue, valueStart: insideValue);
+				break;
+			case "Anchor" when elementName == "ImageContent":
+				Complete(Values("TopLeft", "TopCenter", "TopRight", "MiddleLeft", "Center", "MiddleRight",
+					"BottomLeft", "BottomCenter", "BottomRight"), XmlCompletionDataType.AttributeValue, valueStart: insideValue);
+				break;
+			case "Overflow" when elementName == "ImageContent":
+				Complete(Values("true", "false"), XmlCompletionDataType.AttributeValue, valueStart: insideValue);
+				break;
 			case "Color" when elementName is "CellStyle" or "Border" or "TextContentStyle" or "DecimalContentStyle" or "DateTimeContentStyle" or "LineContentStyle":
 				Complete(ColorNames(), XmlCompletionDataType.AttributeValue, ColorContent, insideValue);
 				break;
@@ -532,7 +545,8 @@ public sealed class XmlCodeEditor
 			Pair("Style.HAlignment"),
 			Pair("Style.VAlignment"),
 			Pair("Style.Direction"),
-			Pair("Style.Angle")
+			Pair("Style.Angle"),
+			Pair("Style.Overflow")
 		};
 
 		switch (parent)

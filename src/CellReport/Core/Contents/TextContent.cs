@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Xml.Linq;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -37,10 +37,16 @@ namespace CellReport.Core.Contents
 	public class TextContentStyle : BaseStyle
 	{
 		public TextContentStyle(HorizontalAlignment h, VerticalAlignment v, FontInfo font, string color, float angle, Direction direction)
+				: this(h, v, font, color, angle, direction, TextOverflow.Clip)
+		{
+		}
+
+		public TextContentStyle(HorizontalAlignment h, VerticalAlignment v, FontInfo font, string color, float angle, Direction direction, TextOverflow overflow)
 		{
 			Direction = direction;
 			HAlignment = h;
 			VAlignment = v;
+			Overflow = overflow;
 
 			Font = font ?? throw new ArgumentNullException(nameof(font));
 			Color = color ?? throw new ArgumentNullException(nameof(color));
@@ -49,6 +55,11 @@ namespace CellReport.Core.Contents
 
 		public TextContentStyle(HorizontalAlignment h, VerticalAlignment v, FontInfo font, string color) :
 				this(h, v, font, color, 0, Direction.LeftToRight)
+		{
+		}
+
+		public TextContentStyle(HorizontalAlignment h, VerticalAlignment v, FontInfo font, string color, TextOverflow overflow) :
+				this(h, v, font, color, 0, Direction.LeftToRight, overflow)
 		{
 		}
 
@@ -82,6 +93,14 @@ namespace CellReport.Core.Contents
 			get;
 		}
 
+		/// <summary>
+		/// Режим отображения текста, не помещающегося в ячейку.
+		/// </summary>
+		public TextOverflow Overflow
+		{
+			get;
+		}
+
 		public override bool Equals(object obj)
 		{
 			if (base.Equals(obj))
@@ -94,6 +113,7 @@ namespace CellReport.Core.Contents
 						&& Direction == other.Direction
 						&& HAlignment == other.HAlignment
 						&& VAlignment == other.VAlignment
+						&& Overflow == other.Overflow
 						&& Math.Abs(Angle - other.Angle) < float.Epsilon
 						&& Font.Equals(other.Font)
 						&& GetType() == other.GetType();
@@ -104,7 +124,7 @@ namespace CellReport.Core.Contents
 		public override int GetHashCode()
 		{
 			return Color.GetHashCode() + HAlignment.GetHashCode() + VAlignment.GetHashCode()
-					+ Font.GetHashCode() + Direction.GetHashCode() + Angle.GetHashCode();
+					+ Font.GetHashCode() + Direction.GetHashCode() + Angle.GetHashCode() + Overflow.GetHashCode();
 		}
 
 		internal new static TextContentStyle Parse(XElement element)
@@ -129,7 +149,16 @@ namespace CellReport.Core.Contents
 			}
 			var font = FontInfo.Parse(element.Element("Font"));
 
-			return new TextContentStyle(halign, valign, font, color, angle, direction);
+			var overflow = TextOverflow.Clip;
+			if (element.Attribute("Overflow") != null)
+			{
+				TextOverflow parsedOverflow;
+				if (Enum.TryParse(element.Attribute("Overflow").Value, out parsedOverflow)
+						&& Enum.IsDefined(typeof(TextOverflow), parsedOverflow))
+					overflow = parsedOverflow;
+			}
+
+			return new TextContentStyle(halign, valign, font, color, angle, direction, overflow);
 		}
 
 		protected override XElement OnSerialize(string styleName)
@@ -139,6 +168,7 @@ namespace CellReport.Core.Contents
 					new XAttribute("Color", Color),
 					new XAttribute("Direction", Direction),
 					new XAttribute("Angle", Angle.ToString(CultureInfo.InvariantCulture)),
+					Overflow != TextOverflow.Clip ? new XAttribute("Overflow", Overflow) : null,
 					new XElement("Alignment", new XAttribute("Horizontal", HAlignment), new XAttribute("Vertical", VAlignment)),
 					Font.Serialize()
 					);
@@ -243,8 +273,11 @@ namespace CellReport.Core.Contents
 				obj = GetParamValueByTarget("Style.Angle");
 				var angle = ConvertToSingle(obj, style.Angle);
 
+				obj = GetParamValueByTarget("Style.Overflow");
+				var overflow = (TextOverflow)ConvertToEnum(typeof(TextOverflow), obj, (int)style.Overflow);
+
 				var font = new FontInfo(fontFamily, fontSize, fontStyle);
-				return new TextContentStyle(hAlign, vAlign, font, color, angle, direction);
+				return new TextContentStyle(hAlign, vAlign, font, color, angle, direction, overflow);
 			}
 			catch
 			{

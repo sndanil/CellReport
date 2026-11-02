@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,7 +18,20 @@ namespace CellReport.Core.Contents
 						string format,
 						string culture,
 						Direction direction)
-						: base(h, v, font, color, angle, direction)
+						: this(h, v, font, color, angle, format, culture, direction, TextOverflow.Clip)
+		{
+		}
+
+		public FormatContentStyle(HorizontalAlignment h,
+						VerticalAlignment v,
+						FontInfo font,
+						string color,
+						float angle,
+						string format,
+						string culture,
+						Direction direction,
+						TextOverflow overflow)
+						: base(h, v, font, color, angle, direction, overflow)
 		{
 			Format = format;
 			if (!string.IsNullOrEmpty(culture))
@@ -67,7 +80,7 @@ namespace CellReport.Core.Contents
 			if (element.Attribute("Culture") != null)
 				culture = element.Attribute("Culture").Value;
 			return new FormatContentStyle(tcs.HAlignment, tcs.VAlignment, tcs.Font, tcs.Color,
-								tcs.Angle, format, culture, tcs.Direction);
+								tcs.Angle, format, culture, tcs.Direction, tcs.Overflow);
 		}
 
 		protected override XElement OnSerialize(string styleName)
@@ -92,7 +105,20 @@ namespace CellReport.Core.Contents
 				string format,
 				string culture,
 				Direction direction)
-			: base(h, v, font, color, angle, format, culture, direction)
+			: this(h, v, font, color, angle, format, culture, direction, TextOverflow.Clip)
+		{
+		}
+
+		public DateTimeContentStyle(HorizontalAlignment h,
+				VerticalAlignment v,
+				FontInfo font,
+				string color,
+				float angle,
+				string format,
+				string culture,
+				Direction direction,
+				TextOverflow overflow)
+			: base(h, v, font, color, angle, format, culture, direction, overflow)
 		{
 			if (!string.IsNullOrEmpty(this.Format))
 				return;
@@ -107,7 +133,7 @@ namespace CellReport.Core.Contents
 		{
 			var fcs = FormatContentStyle.Parse(element);
 			return new DateTimeContentStyle(fcs.HAlignment, fcs.VAlignment, fcs.Font, fcs.Color,
-				fcs.Angle, fcs.Format, fcs.Culture, fcs.Direction);
+				fcs.Angle, fcs.Format, fcs.Culture, fcs.Direction, fcs.Overflow);
 		}
 
 		protected override XElement OnSerialize(string styleName)

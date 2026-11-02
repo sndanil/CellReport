@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:CellReport.Editor.Avalonia.ViewModels"
              xmlns:report="clr-namespace:CellReport.Avalonia;assembly=CellReport.Avalonia"
@@ -138,16 +138,43 @@
 							</ComboBox>
 						</Grid>
 
-						<Grid IsVisible="{Binding Inspector.IsSelectedImage}" ColumnDefinitions="110,*" RowDefinitions="Auto,Auto" RowSpacing="4">
+						<Grid IsVisible="{Binding Inspector.IsSelectedImage}" ColumnDefinitions="110,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="4">
 							<TextBlock VerticalAlignment="Center" Text="Адрес" />
 							<TextBox Grid.Column="1" Margin="0,2" PlaceholderText="file:// или resources://"
 							         Text="{Binding Inspector.ImageUri, UpdateSourceTrigger=LostFocus}" />
-							<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Объединение" />
+							<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Занимает ячеек"
+							           ToolTip.Tip="Изображение растягивается на указанное число соседних столбцов и строк. Ячейки при этом не объединяются — для этого есть кнопка «Объединить ячейки»." />
 							<StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="6" Margin="0,2">
-								<TextBox Width="60" ToolTip.Tip="Столбцов" Text="{Binding Inspector.ImageColSpanText, UpdateSourceTrigger=LostFocus}" />
+								<TextBox Width="60" ToolTip.Tip="Дополнительных столбцов" Text="{Binding Inspector.ImageColSpanText, UpdateSourceTrigger=LostFocus}" />
 								<TextBlock VerticalAlignment="Center" Opacity="0.7" Text="×" />
-								<TextBox Width="60" ToolTip.Tip="Строк" Text="{Binding Inspector.ImageRowSpanText, UpdateSourceTrigger=LostFocus}" />
+								<TextBox Width="60" ToolTip.Tip="Дополнительных строк" Text="{Binding Inspector.ImageRowSpanText, UpdateSourceTrigger=LostFocus}" />
 							</StackPanel>
+							<TextBlock Grid.Row="2" VerticalAlignment="Center" Text="Размер" />
+							<ComboBox Grid.Row="2" Grid.Column="1" Margin="0,2"
+							          ItemsSource="{Binding Inspector.ImageSizeModes}"
+							          SelectedItem="{Binding Inspector.SelectedImageSizeMode}">
+								<ComboBox.ItemTemplate>
+									<DataTemplate x:DataType="vm:Choice">
+										<TextBlock Text="{Binding Title}" />
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+							</ComboBox>
+							<TextBlock Grid.Row="3" VerticalAlignment="Center" Text="Масштаб, %" />
+							<TextBox Grid.Row="3" Grid.Column="1" Margin="0,2"
+							         Text="{Binding Inspector.ImageScaleText, UpdateSourceTrigger=LostFocus}" />
+							<TextBlock Grid.Row="4" VerticalAlignment="Center" Text="Положение" />
+							<ComboBox Grid.Row="4" Grid.Column="1" Margin="0,2"
+							          ItemsSource="{Binding Inspector.ImageAnchors}"
+							          SelectedItem="{Binding Inspector.SelectedImageAnchor}">
+								<ComboBox.ItemTemplate>
+									<DataTemplate x:DataType="vm:Choice">
+										<TextBlock Text="{Binding Title}" />
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+							</ComboBox>
+							<CheckBox Grid.Row="5" Grid.Column="1" Margin="0,2"
+							          Content="Разрешить выход за границы"
+							          IsChecked="{Binding Inspector.ImageOverflow}" />
 						</Grid>
 
 						<Grid IsVisible="{Binding Inspector.IsSelectedAction}" ColumnDefinitions="110,*" RowSpacing="4">

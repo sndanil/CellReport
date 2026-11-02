@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CellReport.Core;
@@ -28,6 +28,8 @@ namespace CellReport.Presenters
 		protected BaseDisplayPresenter(CellManager manager)
 				: base(manager)
 		{
+			OverflowRenderingEnabled = true;
+			ImagesRenderedSeparately = true;
 		}
 
 		protected override void OnManagerChanging()
@@ -244,6 +246,7 @@ namespace CellReport.Presenters
 		protected CellLocation RenderCellsRange(object context, Rectangle bounds, int fromRow, int toRow, int fromCol, int toCol)
 		{
 			var rightBottom = new CellLocation { Row = fromRow, Column = fromCol };
+			CurrentPaneRect = GetPaneRect(bounds, fromRow, toRow, fromCol, toCol);
 
 			_alreadyPaintedCells.Clear();
 			for (int row = fromRow; row < toRow; row++)
@@ -277,6 +280,24 @@ namespace CellReport.Presenters
 				float top = GetTopOffset(row);
 				for (int col = fromCol; col < toCol; col++)
 				{
+					if (GetLeftOffset(col) > bounds.Right)
+						break;
+
+					var cell = Manager.GetCell(row, col);
+					if (cell != null && _alreadyPaintedCells.Add(cell))
+						RenderCellImages(context, cell);
+				}
+				if (top > bounds.Bottom)
+					break;
+			}
+			AddImageOverflowSeeds(context, bounds, fromRow, toRow, fromCol, toCol);
+
+			_alreadyPaintedCells.Clear();
+			for (int row = fromRow; row < toRow; row++)
+			{
+				float top = GetTopOffset(row);
+				for (int col = fromCol; col < toCol; col++)
+				{
 					float left = GetLeftOffset(col);
 					if (left > bounds.Right)
 						break;
@@ -293,7 +314,118 @@ namespace CellReport.Presenters
 					break;
 			}
 
+			AddTextOverflowSeeds(bounds, fromRow, toRow, fromCol);
+			FlushOverflowItems(context);
+
 			return rightBottom;
+		}
+
+		/// <summary>
+		/// Клип панели (frozen-квадранта): переполнение не пересекает границы панелей.
+		/// </summary>
+		protected Rectangle GetPaneRect(Rectangle bounds, int fromRow, int toRow, int fromCol, int toCol)
+		{
+			var left = 0f;
+			if (fromCol != 0 && FrozenColumnsCount > 0)
+				left = GetLeftOffset(FrozenColumnsCount);
+
+			var top = 0f;
+			if (fromRow != 0 && FrozenRowsCount > 0)
+				top = GetTopOffset(FrozenRowsCount);
+
+			var right = bounds.Right;
+			if (toCol <= FrozenColumnsCount)
+				right = Math.Min(right, GetLeftOffset(FrozenColumnsCount));
+
+			var bottom = bounds.Bottom;
+			if (toRow <= FrozenRowsCount)
+				bottom = Math.Min(bottom, GetTopOffset(FrozenRowsCount));
+
+			return new Rectangle(left, top,
+				Math.Max(0f, right - left),
+				Math.Max(0f, bottom - top));
+		}
+
+		/// <summary>
+		/// Рисует изображения ячеек, прокрученных за край, но всё ещё видимых
+		/// за счёт ColSpan/RowSpan или Overflow.
+		/// </summary>
+		private void AddImageOverflowSeeds(object context, Rectangle bounds, int fromRow, int toRow, int fromCol, int toCol)
+		{
+			if (!ImagesRenderedSeparately || fromRow != TopNoFrozenRow || fromCol != LeftNoFrozenColumn)
+				return;
+
+			if (fromCol <= FrozenColumnsCount && fromRow <= FrozenRowsCount)
+				return;
+
+			HashSet<Cell> seeds = null;
+
+			if (fromCol > FrozenColumnsCount)
+			{
+				for (var row = fromRow; row < toRow; row++)
+				{
+					if (GetTopOffset(row) > bounds.Bottom)
+						break;
+
+					var seed = Overflow.FindOverflowSeed(row, fromCol, FrozenColumnsCount);
+					if (seed == null)
+						continue;
+
+					if (seeds == null)
+						seeds = new HashSet<Cell>();
+					if (seeds.Add(seed))
+						RenderCellImages(context, seed);
+				}
+			}
+
+			if (fromRow > FrozenRowsCount)
+			{
+				for (var column = fromCol; column < toCol; column++)
+				{
+					if (GetLeftOffset(column) > bounds.Right)
+						break;
+
+					var seed = Overflow.FindOverflowSeedUp(column, fromRow, FrozenRowsCount);
+					if (seed == null)
+						continue;
+
+					if (seeds == null)
+						seeds = new HashSet<Cell>();
+					if (seeds.Add(seed))
+						RenderCellImages(context, seed);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Добавляет в overlay переполняющийся текст ячеек, прокрученных за левый край.
+		/// </summary>
+		private void AddTextOverflowSeeds(Rectangle bounds, int fromRow, int toRow, int fromCol)
+		{
+			if (!OverflowRenderingEnabled || Renderer == null || !Renderer.SupportsOverflow)
+				return;
+
+			if (fromCol != LeftNoFrozenColumn || fromRow != TopNoFrozenRow)
+				return;
+
+			if (fromCol <= FrozenColumnsCount)
+				return;
+
+			HashSet<Cell> seeds = null;
+			for (var row = fromRow; row < toRow; row++)
+			{
+				if (GetTopOffset(row) > bounds.Bottom)
+					break;
+
+				var seed = Overflow.FindOverflowSeed(row, fromCol, FrozenColumnsCount);
+				if (seed == null)
+					continue;
+
+				if (seeds == null)
+					seeds = new HashSet<Cell>();
+				if (seeds.Add(seed))
+					QueueOverflowContent(seed);
+			}
 		}
 
 		protected abstract Rectangle GetHostBounds();

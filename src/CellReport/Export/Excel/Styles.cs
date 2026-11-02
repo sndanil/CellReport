@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO.Packaging;
@@ -253,7 +253,8 @@ namespace CellReport.Export.Excel
 						var fontId = fontsList.IndexOf(excelFont) + 1;
 						xf.Add(new XAttribute("fontId", fontId), new XAttribute("applyFont", 1));
 						xf.Add(new XAttribute("applyAlignment", 1),
-								new XElement(ExcelExporter.schemaMain + "alignment", new XAttribute("wrapText", 1),
+								new XElement(ExcelExporter.schemaMain + "alignment",
+										new XAttribute("wrapText", textStyle.Overflow == TextOverflow.Clip ? 1 : 0),
 										new XAttribute("vertical", textStyle.VAlignment == VerticalAlignment.Top ?
 												"top" : (textStyle.VAlignment == VerticalAlignment.Bottom ? "bottom" : "center")),
 										new XAttribute("horizontal", textStyle.HAlignment == HorizontalAlignment.Right ?
