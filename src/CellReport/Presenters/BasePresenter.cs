@@ -220,6 +220,8 @@ namespace CellReport.Presenters
 				if (leftColumn != _leftColumn)
 				{
 					_leftColumn = leftColumn;
+					// Смещения посчитаны от предыдущей левой колонки.
+					_leftOffsets.Clear();
 					Update();
 				}
 			}
@@ -234,6 +236,9 @@ namespace CellReport.Presenters
 				if (topRow != _topRow)
 				{
 					_topRow = topRow;
+					// Смещения посчитаны от предыдущей верхней строки.
+					// Иначе хвост многостраничного отчёта рисуется поверх первой страницы.
+					_topOffsets.Clear();
 					Update();
 				}
 			}
@@ -540,6 +545,8 @@ namespace CellReport.Presenters
 		{
 			_topPrefixSums = null;
 			_leftPrefixSums = null;
+			_topOffsets.Clear();
+			_leftOffsets.Clear();
 		}
 
 		protected void RenderCell(object context, Cell cell)

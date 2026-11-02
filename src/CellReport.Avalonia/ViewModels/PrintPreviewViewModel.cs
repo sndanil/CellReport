@@ -107,8 +107,9 @@ namespace CellReport.Avalonia.ViewModels
 
 		private void RebuildPages()
 		{
-			var pageSize = WindowsPrinterService.GetContentPageSize(_printerName, _presenter.Manager);
-			_presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm, 96f, new Margins(0));
+			var pageSize = WindowsPrinterService.GetPageSize(_printerName, _presenter.Manager.PrintSettings.Landscape);
+			var margins = _presenter.Manager.PrintSettings.Margins ?? new Margins(0);
+			_presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm, 96f, margins);
 			TotalPages = Math.Max(1, _presenter.PageCount);
 			if (CurrentPage > TotalPages)
 				CurrentPage = TotalPages;

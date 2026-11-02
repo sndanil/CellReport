@@ -57,3 +57,4 @@ Performance.psess
 # Other binaries
 *.exe
 *.obj
+/pack-local.*

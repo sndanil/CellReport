@@ -17,10 +17,11 @@ namespace CellReport.Avalonia
 				return;
 
 			var presenter = new AvaloniaPrintPresenter(manager);
-			var pageSize = WindowsPrinterService.GetContentPageSize(printerName, manager);
-			// Предпросмотр строим по той же печатной области, что и печать:
-			// бумага минус поля отчёта, без повторного применения полей.
-			presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm, 96f, new Margins(0));
+			// Лист целиком, поля отчёта внутри. Иначе белая страница — это уже
+			// область без полей, и форма выглядит крупнее, чем на бумаге.
+			var pageSize = WindowsPrinterService.GetPageSize(printerName, manager.PrintSettings.Landscape);
+			var margins = manager.PrintSettings.Margins ?? new Margins(0);
+			presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm, 96f, margins);
 
 			var preview = new PrintPreviewWindow(presenter, printerName);
 			await preview.ShowDialog(window);

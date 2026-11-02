@@ -54,6 +54,30 @@ namespace CellReportTests
 		}
 
 		[TestMethod]
+		public void TallDocument_IsSplitAcrossPages()
+		{
+			var manager = new CellManager(8, 1);
+			for (var row = 0; row < 8; row++)
+			{
+				manager.SetRowHeight(row, 40);
+				manager.CreateCell(row, 0);
+			}
+
+			var builder = new PrintPageImageBuilder(
+				manager,
+				TestExportHelper.Renderer,
+				null,
+				210f,
+				100f,
+				new Margins(0),
+				96f);
+
+			builder.BuildPages();
+
+			Assert.IsTrue(builder.Pages.Count > 1, "320 мм текста на листе высотой 100 мм должны занять больше одной страницы.");
+		}
+
+		[TestMethod]
 		public void ExplicitMargins_AreUsedForPrintableBounds()
 		{
 			var builder = new PrintPageImageBuilder(
