@@ -29,6 +29,7 @@ namespace CellReport.Presenters
 				: base(manager)
 		{
 			OverflowRenderingEnabled = true;
+			ImagesRenderedSeparately = true;
 		}
 
 		protected override void OnManagerChanging()
@@ -279,6 +280,24 @@ namespace CellReport.Presenters
 				float top = GetTopOffset(row);
 				for (int col = fromCol; col < toCol; col++)
 				{
+					if (GetLeftOffset(col) > bounds.Right)
+						break;
+
+					var cell = Manager.GetCell(row, col);
+					if (cell != null && _alreadyPaintedCells.Add(cell))
+						RenderCellImages(context, cell);
+				}
+				if (top > bounds.Bottom)
+					break;
+			}
+			AddImageOverflowSeeds(context, bounds, fromRow, toRow, fromCol, toCol);
+
+			_alreadyPaintedCells.Clear();
+			for (int row = fromRow; row < toRow; row++)
+			{
+				float top = GetTopOffset(row);
+				for (int col = fromCol; col < toCol; col++)
+				{
 					float left = GetLeftOffset(col);
 					if (left > bounds.Right)
 						break;
@@ -295,7 +314,7 @@ namespace CellReport.Presenters
 					break;
 			}
 
-			AddOverflowSeeds(bounds, fromRow, toRow, fromCol, toCol);
+			AddTextOverflowSeeds(bounds, fromRow, toRow, fromCol);
 			FlushOverflowItems(context);
 
 			return rightBottom;
@@ -328,15 +347,12 @@ namespace CellReport.Presenters
 		}
 
 		/// <summary>
-		/// Добавляет в overlay содержимое ячеек, прокрученных за левый край,
-		/// но всё ещё видимых за счёт переполнения.
+		/// Рисует изображения ячеек, прокрученных за край, но всё ещё видимых
+		/// за счёт ColSpan/RowSpan или Overflow.
 		/// </summary>
-		private void AddOverflowSeeds(Rectangle bounds, int fromRow, int toRow, int fromCol, int toCol)
+		private void AddImageOverflowSeeds(object context, Rectangle bounds, int fromRow, int toRow, int fromCol, int toCol)
 		{
-			if (!OverflowRenderingEnabled || Renderer == null || !Renderer.SupportsOverflow)
-				return;
-
-			if (fromCol != LeftNoFrozenColumn || fromRow != TopNoFrozenRow)
+			if (!ImagesRenderedSeparately || fromRow != TopNoFrozenRow || fromCol != LeftNoFrozenColumn)
 				return;
 
 			if (fromCol <= FrozenColumnsCount && fromRow <= FrozenRowsCount)
@@ -344,7 +360,6 @@ namespace CellReport.Presenters
 
 			HashSet<Cell> seeds = null;
 
-			// Источники, прокрученные за левый край (текст и изображения).
 			if (fromCol > FrozenColumnsCount)
 			{
 				for (var row = fromRow; row < toRow; row++)
@@ -359,11 +374,10 @@ namespace CellReport.Presenters
 					if (seeds == null)
 						seeds = new HashSet<Cell>();
 					if (seeds.Add(seed))
-						QueueOverflowContent(seed);
+						RenderCellImages(context, seed);
 				}
 			}
 
-			// Источники, прокрученные за верхний край (изображения с вертикальным переполнением).
 			if (fromRow > FrozenRowsCount)
 			{
 				for (var column = fromCol; column < toCol; column++)
@@ -378,8 +392,39 @@ namespace CellReport.Presenters
 					if (seeds == null)
 						seeds = new HashSet<Cell>();
 					if (seeds.Add(seed))
-						QueueOverflowContent(seed);
+						RenderCellImages(context, seed);
 				}
+			}
+		}
+
+		/// <summary>
+		/// Добавляет в overlay переполняющийся текст ячеек, прокрученных за левый край.
+		/// </summary>
+		private void AddTextOverflowSeeds(Rectangle bounds, int fromRow, int toRow, int fromCol)
+		{
+			if (!OverflowRenderingEnabled || Renderer == null || !Renderer.SupportsOverflow)
+				return;
+
+			if (fromCol != LeftNoFrozenColumn || fromRow != TopNoFrozenRow)
+				return;
+
+			if (fromCol <= FrozenColumnsCount)
+				return;
+
+			HashSet<Cell> seeds = null;
+			for (var row = fromRow; row < toRow; row++)
+			{
+				if (GetTopOffset(row) > bounds.Bottom)
+					break;
+
+				var seed = Overflow.FindOverflowSeed(row, fromCol, FrozenColumnsCount);
+				if (seed == null)
+					continue;
+
+				if (seeds == null)
+					seeds = new HashSet<Cell>();
+				if (seeds.Add(seed))
+					QueueOverflowContent(seed);
 			}
 		}
 

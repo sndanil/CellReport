@@ -97,6 +97,109 @@ namespace CellReportTests
 		}
 
 		[TestMethod]
+		public void Image_Export_TextInNeighbourDrawnOverSpanningImage()
+		{
+			var manager = new CellManager(1, 3);
+			for (var column = 0; column < 3; column++)
+				manager.SetColumnWidth(column, CellWidthMm);
+			manager.SetRowHeight(0, CellHeightMm);
+
+			var png = CreateRedPng();
+			manager.AddResource("img", png);
+
+			var imageCell = manager.CreateCell(0, 0);
+			imageCell.Content = new ImageContent(manager)
+			{
+				Uri = "RESOURCE://img",
+				SizeMode = ImageSizeMode.Stretch,
+				ColSpan = 1,
+				Overflow = true
+			};
+
+			var textCell = manager.CreateCell(0, 1);
+			textCell.Content = new TextContent(manager) { Text = "TEXT" };
+
+			var data = TestExportHelper.ExportToBytes(new ImageExporter(manager, TestExportHelper.Renderer));
+			using (var bitmap = SKBitmap.Decode(data))
+			{
+				var text = 0;
+				var red = 0;
+				for (var y = 0; y < CellHeightPx; y++)
+				{
+					for (var x = CellWidthPx + 1; x < CellWidthPx * 2; x++)
+					{
+						var pixel = bitmap.GetPixel(x, y);
+						if (pixel.Red < 100 && pixel.Green < 100 && pixel.Blue < 100)
+							text++;
+						if (pixel.Red > 200 && pixel.Green < 60 && pixel.Blue < 60)
+							red++;
+					}
+				}
+
+				Assert.IsTrue(text > 0, "текст должен быть поверх картинки");
+				Assert.IsTrue(red > 0, "картинка должна быть видна под текстом");
+			}
+		}
+
+		private static byte[] CreateRedPng()
+		{
+			using (var bitmap = new SKBitmap(20, 20))
+			using (var canvas = new SKCanvas(bitmap))
+			{
+				canvas.Clear(SKColors.Red);
+				using (var image = SKImage.FromBitmap(bitmap))
+				using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
+					return data.ToArray();
+			}
+		}
+
+		[TestMethod]
+		public void Pdf_Page_DrawsTextOverSpanningImage()
+		{
+			var manager = new CellManager(1, 3);
+			for (var column = 0; column < 3; column++)
+				manager.SetColumnWidth(column, CellWidthMm);
+			manager.SetRowHeight(0, CellHeightMm);
+			manager.AddResource("img", CreateRedPng());
+
+			var imageCell = manager.CreateCell(0, 0);
+			imageCell.Content = new ImageContent(manager)
+			{
+				Uri = "RESOURCE://img",
+				SizeMode = ImageSizeMode.Stretch,
+				ColSpan = 1,
+				Overflow = true
+			};
+			var textCell = manager.CreateCell(0, 1);
+			textCell.Content = new TextContent(manager) { Text = "TEXT" };
+
+			var builder = new CellReport.Export.Pdf.PrintPageImageBuilder(
+				manager, TestExportHelper.Renderer, null, 210f, 297f, new Margins(0));
+			builder.BuildPages();
+			Assert.IsTrue(builder.Pages.Count > 0);
+
+			using (var bitmap = SKBitmap.Decode(builder.Pages[0]))
+			{
+				var text = 0;
+				var red = 0;
+				for (var y = 0; y < CellHeightPx; y++)
+				{
+					for (var x = CellWidthPx + 1; x < CellWidthPx * 2; x++)
+					{
+						var pixel = bitmap.GetPixel(x, y);
+						if (pixel.Red < 100 && pixel.Green < 100 && pixel.Blue < 100)
+							text++;
+						if (pixel.Red > 200 && pixel.Green < 60 && pixel.Blue < 60)
+							red++;
+					}
+				}
+
+				Assert.IsTrue(text > 0, "при печати текст должен быть поверх картинки");
+				Assert.IsTrue(red > 0, "картинка должна быть видна под текстом");
+			}
+		}
+
+		[TestMethod]
 		public void Pdf_Page_RendersOverflowText()
 		{
 			var auto = CreatePrintBuilder(TextOverflow.Auto);

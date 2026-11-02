@@ -14,6 +14,7 @@
 - [x] Skia-рендеринг: `TextRenderOptions`/`ImageRenderOptions`, `RenderText/RenderImage`, `MeasureText`, `GetImageSize`, `SaveClip/RestoreClip`.
 - [x] GDI-рендеринг: те же методы, пиксельные тесты `GdiOverflowRenderTests` (net48).
 - [x] Overlay-проход в `BaseDisplayPresenter`, клип по frozen-панели, seeds для прокрученного левого и верхнего края.
+- [x] Слои отрисовки: заливки → изображения → границы/текст; картинка всегда под текстом, но над заливкой; картинки по-прежнему блокируют переполнение текста.
 - [x] Печать/PDF: overlay в `BasePrintPresenter` с клипом по полосе/странице.
 - [x] PNG-экспорт: overlay в пределах полотна (переполнение обрезается, как решено).
 - [x] Excel: `wrapText=0` для `Overflow != Clip`.
@@ -23,7 +24,7 @@
 - [ ] Runtime-параметры для свойств изображения (`Image.SizeMode` и т.п.).
 - [ ] HTML-экспорт (вне v1).
 
-Тесты: `dotnet test Tests/Tests.csproj -f net10.0` — 183, `-f net48` — 174 (на момент написания).
+Тесты: `dotnet test Tests/Tests.csproj -f net10.0` — 190, `-f net48` — 178 (на момент написания).
 
 ---
 

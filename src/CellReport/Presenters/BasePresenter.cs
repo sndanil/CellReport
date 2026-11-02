@@ -70,6 +70,11 @@ namespace CellReport.Presenters
 		protected bool OverflowRenderingEnabled { get; set; }
 
 		/// <summary>
+		/// Изображения рисуются отдельным слоем до текста/остального контента.
+		/// </summary>
+		protected bool ImagesRenderedSeparately { get; set; }
+
+		/// <summary>
 		/// Клип текущей панели (frozen-квадранта) или страницы.
 		/// </summary>
 		protected Rectangle CurrentPaneRect { get; set; }
@@ -670,13 +675,10 @@ namespace CellReport.Presenters
 				var barCode = (BarCodeContent)content;
 				Renderer.RenderBarCode(context, cellRect, barCode, "Black", "Arial", 10f, FontStyle.Regular, barCode.Orientation);
 			}
-			else if (content is ImageContent imageContent)
+			else if (content is ImageContent)
 			{
-				if (TryQueueImageOverflow(cell, imageContent))
-					return;
-
-				var imageRect = Overflow.GetImageBaseRect(cell, imageContent.ColSpan, imageContent.RowSpan);
-				Renderer.RenderImage(context, imageRect, imageContent.GetImageData());
+				if (!ImagesRenderedSeparately)
+					DrawImageContent(context, cell, (ImageContent)content);
 			}
 			else if (content is ChartContent)
 			{
@@ -708,14 +710,7 @@ namespace CellReport.Presenters
 		private bool TryQueueOverflowContent(Cell cell, BaseContent content)
 		{
 			var text = content as TextBasedContent;
-			if (text != null)
-				return TryQueueTextOverflow(cell, text);
-
-			var image = content as ImageContent;
-			if (image != null)
-				return TryQueueImageOverflow(cell, image);
-
-			return false;
+			return text != null && TryQueueTextOverflow(cell, text);
 		}
 
 		private bool TryQueueTextOverflow(Cell cell, TextBasedContent content)
@@ -753,30 +748,65 @@ namespace CellReport.Presenters
 			return true;
 		}
 
-		private bool TryQueueImageOverflow(Cell cell, ImageContent content)
+		/// <summary>
+		/// Рисует изображения ячейки отдельным слоем (до текста и остального контента).
+		/// </summary>
+		protected void RenderCellImages(object context, Cell cell)
 		{
-			if (!OverflowRenderingEnabled || Renderer == null || !Renderer.SupportsOverflow || IsEditingCell(cell))
-				return false;
+			if (!ImagesRenderedSeparately || cell == null || cell.Content == null)
+				return;
 
-			if (content.SizeMode == ImageSizeMode.Stretch && !content.Overflow
-					&& content.ColSpan == 0 && content.RowSpan == 0)
-				return false;
+			var collection = cell.Content as CollectionContent;
+			if (collection != null)
+			{
+				foreach (var item in collection.GetContents())
+				{
+					var image = item as ImageContent;
+					if (image != null)
+						DrawImageContent(context, cell, image);
+				}
+				return;
+			}
 
-			var naturalSize = GetImageNaturalSize(content);
-			if (naturalSize.Width <= 0 || naturalSize.Height <= 0)
-				return false;
+			var single = cell.Content as ImageContent;
+			if (single != null)
+				DrawImageContent(context, cell, single);
+		}
 
-			var geometry = Overflow.ComputeImage(cell, content.SizeMode, content.Scale, content.Anchor, content.Overflow,
-				naturalSize, CurrentPaneRect, content.ColSpan, content.RowSpan);
-			if (geometry.Rect.Width < 1 || geometry.Rect.Height < 1
-					|| geometry.ClipRect.Width < 1 || geometry.ClipRect.Height < 1)
-				return false;
+		private void DrawImageContent(object context, Cell cell, ImageContent content)
+		{
+			var data = content.GetImageData();
+			if (data == null || data.Length == 0)
+				return;
 
-			var cellRect = GetInnerCellRect(cell);
-			var image = content;
-			var imageGeometry = geometry;
-			_overflowActions.Add(context => RenderImageOverflow(context, image, cellRect, imageGeometry));
-			return true;
+			var baseRect = Overflow.GetImageBaseRect(cell, content.ColSpan, content.RowSpan);
+			var needsLayout = content.SizeMode != ImageSizeMode.Stretch
+					|| content.Overflow
+					|| content.ColSpan > 0
+					|| content.RowSpan > 0;
+
+			if (needsLayout && OverflowRenderingEnabled && Renderer != null && Renderer.SupportsOverflow)
+			{
+				var naturalSize = GetImageNaturalSize(content);
+				if (naturalSize.Width > 0 && naturalSize.Height > 0)
+				{
+					var geometry = Overflow.ComputeImage(cell, content.SizeMode, content.Scale, content.Anchor,
+						content.Overflow, naturalSize, CurrentPaneRect, content.ColSpan, content.RowSpan);
+					if (geometry.Rect.Width >= 1 && geometry.Rect.Height >= 1
+							&& geometry.ClipRect.Width >= 1 && geometry.ClipRect.Height >= 1)
+					{
+						Renderer.RenderImage(context, new ImageRenderOptions
+						{
+							CellRect = GetInnerCellRect(cell),
+							Rect = geometry.Rect,
+							ClipRect = geometry.ClipRect
+						}, data);
+						return;
+					}
+				}
+			}
+
+			Renderer.RenderImage(context, baseRect, data);
 		}
 
 		private void RenderTextOverflow(object context, string text, TextContentStyle style, TextOverflowGeometry geometry)
@@ -791,18 +821,6 @@ namespace CellReport.Presenters
 
 			Renderer.RenderText(context, options, text, style.Color, style.HAlignment, style.VAlignment, style.Angle,
 				style.Font.Family, Scale * style.Font.Size, style.Font.Style, style.Direction);
-		}
-
-		private void RenderImageOverflow(object context, ImageContent content, Rectangle cellRect, ImageOverflowGeometry geometry)
-		{
-			var options = new ImageRenderOptions
-			{
-				CellRect = cellRect,
-				Rect = geometry.Rect,
-				ClipRect = geometry.ClipRect
-			};
-
-			Renderer.RenderImage(context, options, content.GetImageData());
 		}
 
 		private Size GetImageNaturalSize(ImageContent content)

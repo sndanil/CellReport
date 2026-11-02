@@ -20,6 +20,7 @@ namespace CellReport.Export.Image
 		{
 			Renderer = renderer;
 			OverflowRenderingEnabled = true;
+			ImagesRenderedSeparately = true;
 			DeviceDpiX = ImageDpi;
 			DeviceDpiY = ImageDpi;
 			CurrentUnit = ImageUnit;
@@ -89,10 +90,22 @@ namespace CellReport.Export.Image
 			alreadyPaintedCells.Clear();
 			for (int row = 0; row < Manager.RowsCount; row++)
 			{
-				var top = GetTopOffset(row);
 				for (int col = 0; col < Manager.ColumnsCount; col++)
 				{
-					var left = GetLeftOffset(col);
+					var cell = Manager.GetCell(row, col);
+					if ((cell != null) && !alreadyPaintedCells.ContainsKey(cell))
+					{
+						alreadyPaintedCells.Add(cell, true);
+						RenderCellImages(context, cell);
+					}
+				}
+			}
+
+			alreadyPaintedCells.Clear();
+			for (int row = 0; row < Manager.RowsCount; row++)
+			{
+				for (int col = 0; col < Manager.ColumnsCount; col++)
+				{
 					var cell = Manager.GetCell(row, col);
 					if ((cell != null) && !alreadyPaintedCells.ContainsKey(cell))
 					{

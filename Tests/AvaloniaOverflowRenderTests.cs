@@ -385,6 +385,84 @@ namespace CellReportTests
 			}
 		}
 
+		[TestMethod]
+		public void TextInNeighbourCell_DrawnOverSpanningImage()
+		{
+			var manager = new CellManager(1, 3);
+			for (var column = 0; column < 3; column++)
+				manager.SetColumnWidth(column, CellWidthMm);
+			manager.SetRowHeight(0, CellHeightMm);
+			manager.AddResource("img", CreateSolidPng(20, 20, SKColors.Red));
+
+			var imageCell = manager.CreateCell(0, 0);
+			imageCell.Content = new ImageContent(manager)
+			{
+				Uri = "RESOURCE://img",
+				SizeMode = ImageSizeMode.Stretch,
+				ColSpan = 1,
+				Overflow = true
+			};
+
+			var textCell = manager.CreateCell(0, 1);
+			textCell.Content = new TextContent(manager) { Text = "TEXT" };
+			manager.DisplaySettings.ShowCurrentRows = false;
+
+			using (var surface = Render(manager, 3))
+			{
+				Assert.IsTrue(CountTextPixels(surface, CellWidth + 1, CellWidth * 2) > 0,
+					"текст соседней ячейки должен быть поверх картинки");
+				Assert.IsTrue(CountRedPixels(surface, CellWidth + 1, CellWidth * 2) > 0,
+					"картинка при этом должна быть видна");
+			}
+		}
+
+		[TestMethod]
+		public void TextAndImageInSameCell_TextDrawnOverImage()
+		{
+			var manager = new CellManager(1, 3);
+			for (var column = 0; column < 3; column++)
+				manager.SetColumnWidth(column, CellWidthMm);
+			manager.SetRowHeight(0, CellHeightMm);
+			manager.AddResource("img", CreateSolidPng(20, 20, SKColors.Red));
+
+			var cell = manager.CreateCell(0, 0);
+			var collection = new CollectionContent(manager, 2);
+			collection.Add(new ImageContent(manager)
+			{
+				Uri = "RESOURCE://img",
+				SizeMode = ImageSizeMode.Stretch
+			});
+			collection.Add(new TextContent(manager) { Text = "TEXT" });
+			cell.Content = collection;
+			manager.DisplaySettings.ShowCurrentRows = false;
+
+			using (var surface = Render(manager, 3))
+			{
+				Assert.IsTrue(CountTextPixels(surface, 1, CellWidth) > 0, "текст должен быть поверх картинки в своей ячейке");
+				Assert.IsTrue(CountRedPixels(surface, 1, CellWidth) > 0, "картинка должна быть видна под текстом");
+			}
+		}
+
+		private static int CountRedPixels(SKSurface surface, int left, int right)
+		{
+			var count = 0;
+			using (var image = surface.Snapshot())
+			using (var pixels = image.PeekPixels())
+			{
+				for (var y = 0; y < CellHeight; y++)
+				{
+					for (var x = left; x < right; x++)
+					{
+						var pixel = pixels.GetPixelColor(x, y);
+						if (pixel.Red > 200 && pixel.Green < 60 && pixel.Blue < 60)
+							count++;
+					}
+				}
+			}
+
+			return count;
+		}
+
 		private sealed class TestApplication : Application
 		{
 		}

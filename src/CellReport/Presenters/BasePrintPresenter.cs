@@ -9,6 +9,7 @@ namespace CellReport.Presenters
 	{
 		private readonly EventHandler<DoCellsEventArgs> _emptyAction;
 		private readonly EventHandler<DoCellsEventArgs> _renderGridAction;
+		private readonly EventHandler<DoCellsEventArgs> _renderImagesAction;
 		private readonly EventHandler<DoCellsEventArgs> _renderCellAction;
 
 		protected class DoCellsEventArgs : EventArgs
@@ -26,6 +27,7 @@ namespace CellReport.Presenters
 				: base(manager)
 		{
 			OverflowRenderingEnabled = true;
+			ImagesRenderedSeparately = true;
 			_emptyAction = (sender, e) =>
 			{
 				if (e.Cell != null && !e.AlreadyPaintedCells.ContainsKey(e.Cell))
@@ -48,6 +50,14 @@ namespace CellReport.Presenters
 				{
 					e.AlreadyPaintedCells.Add(e.Cell, true);
 					RenderCell(e.Context, e.Cell);
+				}
+			};
+			_renderImagesAction = (sender, e) =>
+			{
+				if (e.Cell != null && !e.AlreadyPaintedCells.ContainsKey(e.Cell))
+				{
+					e.AlreadyPaintedCells.Add(e.Cell, true);
+					RenderCellImages(e.Context, e.Cell);
 				}
 			};
 		}
@@ -210,8 +220,15 @@ namespace CellReport.Presenters
 		{
 			var alreadyPaintedCells = new Dictionary<Cell, bool>();
 			var rightBottom = DoCellsRange(context, alreadyPaintedCells, bounds, renderGridAction);
-			alreadyPaintedCells.Clear();
+
 			CurrentPaneRect = bounds;
+			if (context != null)
+			{
+				alreadyPaintedCells.Clear();
+				DoCellsRange(context, alreadyPaintedCells, bounds, _renderImagesAction);
+			}
+
+			alreadyPaintedCells.Clear();
 			DoCellsRange(context, alreadyPaintedCells, bounds, renderCellAction);
 
 			if (context != null)
