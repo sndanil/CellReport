@@ -18,8 +18,11 @@ dotnet build CellReport.sln          # full solution (Windows; net48 needs .NET 
 dotnet test Tests/Tests.csproj       # MSTest suite (fast, no services needed; 175+ tests)
 ./pack.ps1                           # packs NuGet -> artifacts/packages (Release by default)
 ./pack.ps1 -Configuration Release -Version 1.0.0   # version override (sets Assembly/FileVersion too)
+./update-kayala.ps1                  # points the Kayala solution at the Directory.Build.props version
+./update-kayala.ps1 -Version 0.14.7 -DryRun        # preview Kayala csproj changes, write nothing
 ```
 
+- `pack-local.ps1` bumps the patch version, packs, refreshes the NuGet cache, then runs `update-kayala.ps1` (skip with `-SkipKayala`). `update-kayala.ps1` finds Kayala via `-KayalaRoot`, `$env:KAYALA_ROOT`, the sibling `Kayala-soft\Kayala`, or `D:\Projects\Kayala-soft\Kayala`; it exits quietly with `-IfPresent` when no checkout is found.
 - CI (`.github/workflows/nuget-pack.yml`) tests on Windows and Linux, builds the full solution on Windows, then packs packages.
 - Only 3 projects are packable: `CellReport`, `CellReport.WinForms`, `CellReport.Avalonia`. NuGet package ID is `KCellReport` (not `CellReport`).
 

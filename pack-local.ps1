@@ -14,6 +14,9 @@
     so a consuming solution (Kayala) can reference the new version immediately,
     even before the packages are published to nuget.org.
 
+    Finally, update-kayala.ps1 rewrites every KCellReport* PackageReference in the
+    Kayala solution (D:\Projects\Kayala-soft\Kayala by default) to the new version.
+
 .PARAMETER Configuration
     Build configuration. Release by default.
 
@@ -24,7 +27,16 @@
     Only bump the version and pack; do not touch the NuGet global-packages folder.
 
 .PARAMETER SkipPack
-    Only bump the version; do not pack or refresh the cache.
+    Only bump the version; do not pack or refresh the cache. Also skips the Kayala
+    update, since no packages are produced for it.
+
+.PARAMETER KayalaRoot
+    Kayala solution folder to point at the new version (the one with Kayala2.sln).
+    Defaults to the location update-kayala.ps1 detects: $env:KAYALA_ROOT, the sibling
+    Kayala-soft\Kayala checkout, then D:\Projects\Kayala-soft\Kayala.
+
+.PARAMETER SkipKayala
+    Do not touch the Kayala solution; only pack and refresh the NuGet cache.
 
 .EXAMPLE
     .\pack-local.ps1
@@ -37,6 +49,11 @@
 
 .EXAMPLE
     .\pack-local.ps1 -Configuration Debug -SkipCache
+
+.EXAMPLE
+    .\pack-local.ps1 -SkipKayala
+
+    Pack and refresh the NuGet cache, but leave the Kayala solution untouched.
 #>
 param(
     [ValidateSet('Debug', 'Release')]
@@ -46,7 +63,11 @@ param(
 
     [switch]$SkipCache,
 
-    [switch]$SkipPack
+    [switch]$SkipPack,
+
+    [string]$KayalaRoot = '',
+
+    [switch]$SkipKayala
 )
 
 $ErrorActionPreference = 'Stop'
@@ -179,6 +200,27 @@ if ($SkipCache) {
 }
 else {
     Update-GlobalPackageCache -Version $newVersion -PackagesPath $OutputPath
+}
+
+# ---------------------------------------------------------------------------
+# 4. Point Kayala at the new version
+# ---------------------------------------------------------------------------
+if ($SkipKayala) {
+    Write-Host 'Kayala update skipped (-SkipKayala).'
+}
+elseif ($SkipPack) {
+    Write-Host 'Kayala update skipped (-SkipPack: no packages were produced).'
+}
+else {
+    $kayalaArgs = @{
+        Version      = $newVersion
+        PackagesPath = $OutputPath
+        IfPresent    = [string]::IsNullOrWhiteSpace($KayalaRoot)
+    }
+    if (-not [string]::IsNullOrWhiteSpace($KayalaRoot)) {
+        $kayalaArgs['KayalaRoot'] = $KayalaRoot
+    }
+    & (Join-Path $Root 'update-kayala.ps1') @kayalaArgs
 }
 
 Write-Host ''
