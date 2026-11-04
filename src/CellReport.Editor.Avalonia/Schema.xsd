@@ -168,6 +168,10 @@
 		<xs:attribute name='Index' type='xs:int' default='0'/>
 		<xs:attribute name='ColSpan' type='xs:int' />
 		<xs:attribute name='RowSpan' type='xs:int' />
+		<xs:attribute name='Editable' type='xs:boolean' />
+		<xs:attribute name='EditParam' type='xs:string' />
+		<xs:attribute name='EditPlaceholder' type='xs:string' />
+		<xs:attribute name='EditHint' type='xs:string' />
 	</xs:complexType>
 
 	<xs:complexType name='CollectionContentType'>

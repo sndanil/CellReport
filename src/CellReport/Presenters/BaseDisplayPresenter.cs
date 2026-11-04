@@ -68,6 +68,7 @@ namespace CellReport.Presenters
 					case "ColumnsCount":
 					case "RowHeight":
 					case "ColumnWidth":
+					case "EditSettings":
 						Update();
 						break;
 				}
@@ -266,6 +267,7 @@ namespace CellReport.Presenters
 						{
 							RenderGrid(context, GetCellRect(cell));
 							RenderCellBackgroung(context, cell);
+							RenderEditHintsBackground(context, cell);
 						}
 					}
 					else
@@ -307,6 +309,7 @@ namespace CellReport.Presenters
 						if (_alreadyPaintedCells.Add(cell))
 						{
 							RenderCell(context, cell);
+							RenderEditHintsOverlay(context, cell);
 						}
 					}
 				}
@@ -544,8 +547,10 @@ namespace CellReport.Presenters
 
 		public void RaiseDblClick(object sender, EventArgs e, float x, float y)
 		{
-			DoAction(GetCellByDevicePoint(x, y, false), ActionType.MouseDblClick);
+			var location = GetCellByDevicePoint(x, y, false);
+			DoAction(location, ActionType.MouseDblClick);
 			OnDblClick(sender, e);
+			OnDblClick(sender, e, location);
 		}
 
 		public bool RaiseProcessKey(object sender, EventArgs e)
@@ -645,6 +650,58 @@ namespace CellReport.Presenters
 				Action(cell, content, type);
 		}
 
+		protected virtual void RenderEditHintsBackground(object context, Cell cell)
+		{
+			if (Renderer == null || cell == null || !cell.Editable)
+				return;
+
+			var settings = Manager.EditSettings;
+			if (settings.Mode == CellEditMode.None || !settings.ShowBackground || IsEditingCell(cell))
+				return;
+			if (string.IsNullOrEmpty(settings.BackgroundColor))
+				return;
+
+			Renderer.RenderFillRect(context, GetCellRect(cell), 0, new[] { settings.BackgroundColor });
+		}
+
+		protected virtual void RenderEditHintsOverlay(object context, Cell cell)
+		{
+			if (Renderer == null || cell == null || !cell.Editable)
+				return;
+
+			var settings = Manager.EditSettings;
+			if (settings.Mode == CellEditMode.None || IsEditingCell(cell))
+				return;
+
+			var rect = GetCellRect(cell);
+			if (settings.ShowFrame && !string.IsNullOrEmpty(settings.FrameColor))
+			{
+				var frame = new Rectangle(rect.X + 3, rect.Y + 3,
+					Math.Max(0f, rect.Width - 6), Math.Max(0f, rect.Height - 6));
+				Renderer.RenderRect(context, frame, settings.FrameColor, LineStyle.Dash, 1);
+			}
+
+			if (!settings.ShowPlaceholder || string.IsNullOrEmpty(settings.PlaceholderColor))
+				return;
+
+			var editor = Manager.CreateValueEditor(cell.Location);
+			if (editor == null || !editor.IsEmpty)
+				return;
+
+			var hint = editor.Hint;
+			if (string.IsNullOrEmpty(hint))
+				return;
+
+			var style = (cell.Content as TextBasedContent) == null
+				? null
+				: (cell.Content as TextBasedContent).GetActualStyle() as TextContentStyle;
+			var font = style == null ? TextBasedContent.DefaultStyle.Font : style.Font;
+			var rectForText = GetInnerCellRect(cell);
+			Renderer.RenderText(context, rectForText, hint, settings.PlaceholderColor,
+				HorizontalAlignment.Left, VerticalAlignment.Middle, 0,
+				font.Family, Scale * font.Size, font.Style, Direction.LeftToRight);
+		}
+
 		protected void RenderCurrentCell(object context, Rectangle bounds)
 		{
 			var rect = GetCellRect(CurrentCell);
@@ -694,6 +751,7 @@ namespace CellReport.Presenters
 
 		protected virtual void OnClick(object sender, EventArgs e) { }
 		protected virtual void OnDblClick(object sender, EventArgs e) { }
+		protected virtual void OnDblClick(object sender, EventArgs e, CellLocation location) { }
 		protected virtual bool OnProcessKey(object sender, EventArgs e) { return false; }
 
 		public event EventHandler ShowToolBarChanged;

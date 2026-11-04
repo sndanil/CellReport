@@ -546,6 +546,86 @@ namespace CellReport
 			}
 		}
 
+		/// <summary>
+		/// Устанавливает значение параметра и, если <paramref name="editable"/>,
+		/// помечает ячейки с этим параметром как заполняемые вручную.
+		/// </summary>
+		public void SetParameter(string paramName, object value, bool editable)
+		{
+			SetParameter(paramName, value);
+			if (!editable || string.IsNullOrEmpty(paramName))
+				return;
+
+			var marked = false;
+			foreach (var cell in _lastAddedCells)
+			{
+				if (!CellHasParam(cell, paramName))
+					continue;
+
+				cell.Editable = true;
+				cell.EditParam = paramName;
+				marked = true;
+			}
+
+			if (marked && Manager.EditSettings.Mode == CellEditMode.None)
+				Manager.EditSettings.Mode = CellEditMode.MarkedCells;
+		}
+
+		/// <summary>
+		/// Разрешает заполнение всех поддерживаемых ячеек документа.
+		/// </summary>
+		public void EnableCellEditing()
+		{
+			Manager.EditSettings.Mode = CellEditMode.AllCells;
+		}
+
+		/// <summary>
+		/// Помечает ячейки последней добавленной секции, содержащие указанные параметры,
+		/// и включает режим заполнения только помеченных ячеек.
+		/// </summary>
+		public void EnableCellEditing(params string[] paramNames)
+		{
+			if (paramNames == null || paramNames.Length == 0)
+			{
+				EnableCellEditing();
+				return;
+			}
+
+			foreach (var cell in _lastAddedCells)
+			{
+				var matched = false;
+				foreach (var name in paramNames)
+				{
+					if (string.IsNullOrEmpty(name) || !CellHasParam(cell, name))
+						continue;
+
+					cell.Editable = true;
+					cell.EditParam = name;
+					matched = true;
+				}
+
+				if (matched && Manager.EditSettings.Mode == CellEditMode.None)
+					Manager.EditSettings.Mode = CellEditMode.MarkedCells;
+			}
+		}
+
+		private static bool CellHasParam(Cell cell, string paramName)
+		{
+			if (cell == null || cell.Content == null)
+				return false;
+
+			foreach (var content in cell.GetContents())
+			{
+				foreach (var param in content.GetParams())
+				{
+					if (string.Equals(param.Name, paramName, StringComparison.Ordinal))
+						return true;
+				}
+			}
+
+			return false;
+		}
+
 		public void SetSectionObject(ISectionObject obj)
 		{
 			foreach (var cell in _lastAddedCells)

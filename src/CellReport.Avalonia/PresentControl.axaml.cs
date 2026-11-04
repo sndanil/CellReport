@@ -1,14 +1,17 @@
-﻿using CellReport.Avalonia.Services;
+using CellReport.Avalonia.Editing;
+using CellReport.Avalonia.Services;
 using CellReport.Avalonia.ViewModels;
 using CellReport.Core;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Material.Icons;
 using Material.Icons.Avalonia;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -35,6 +38,8 @@ namespace CellReport.Avalonia
 		private bool _updatingScrollBars;
 		private bool _invalidatePosted;
 		private readonly List<MenuItem> _printerMenuItems = new();
+		private readonly CellEditHistory _cellEditHistory = new();
+		private CellInlineEditor? _inlineEditor;
 
 		public PresentControl()
 		{
@@ -46,12 +51,142 @@ namespace CellReport.Avalonia
 			_vScrollBar = this.Find<ScrollBar>("vScrollBar");
 			_resizerCorner = this.Find<global::Avalonia.Controls.Border>("resizerCorner");
 			_printSplitButton = this.Find<SplitButton>("printSplitButton");
+
+			var inlineEditor = this.Find<TextBox>("inlineEditor");
+			if (inlineEditor != null)
+				_inlineEditor = new CellInlineEditor(this, inlineEditor);
+
 			ApplyContentInversion();
 
 			_hScrollBar.PropertyChanged += OnHorizontalScrollBarChanged;
 			_vScrollBar.PropertyChanged += OnVerticalScrollBarChanged;
+			_cellControl.AddHandler(KeyDownEvent, OnCellControlKeyDown, RoutingStrategies.Tunnel, handledEventsToo: true);
+			if (_cellControl.ContextMenu != null)
+				_cellControl.ContextMenu.Opening += OnCellContextMenuOpening;
 
 			DataContextChanged += OnPresentControlDataContextChanged;
+		}
+
+		public event EventHandler<CellEditEventArgs>? CellEdited;
+
+		public event EventHandler? CellEditStateChanged;
+
+		public bool IsCellEditing => _inlineEditor?.IsActive == true;
+
+		public string CellEditText
+		{
+			get => _inlineEditor?.EditorText ?? string.Empty;
+			set
+			{
+				if (_inlineEditor != null)
+					_inlineEditor.EditorText = value;
+			}
+		}
+
+		public bool CanUndoCellEdit => _cellEditHistory.CanUndo;
+
+		public bool CanRedoCellEdit => _cellEditHistory.CanRedo;
+
+		public bool BeginCellEdit(CellLocation location, string? initialText = null)
+		{
+			return _inlineEditor != null && _inlineEditor.Begin(location, initialText);
+		}
+
+		public void CommitCellEdit()
+		{
+			_inlineEditor?.Commit();
+		}
+
+		public void CancelCellEdit()
+		{
+			_inlineEditor?.Cancel();
+		}
+
+		public bool UndoCellEdit()
+		{
+			if (_presenter == null || !_cellEditHistory.CanUndo)
+				return false;
+
+			var location = _cellEditHistory.Undo(_presenter.Manager);
+			if (location.Equals(CellLocation.None))
+				return false;
+
+			_presenter.CurrentCell = location;
+			_presenter.Update();
+			CellEditStateChanged?.Invoke(this, EventArgs.Empty);
+			return true;
+		}
+
+		public bool RedoCellEdit()
+		{
+			if (_presenter == null || !_cellEditHistory.CanRedo)
+				return false;
+
+			var location = _cellEditHistory.Redo(_presenter.Manager);
+			if (location.Equals(CellLocation.None))
+				return false;
+
+			_presenter.CurrentCell = location;
+			_presenter.Update();
+			CellEditStateChanged?.Invoke(this, EventArgs.Empty);
+			return true;
+		}
+
+		public void ClearCellEditHistory()
+		{
+			_cellEditHistory.Clear();
+		}
+
+		internal void OnCellEdited(CellEditEventArgs e)
+		{
+			_cellEditHistory.Push(e.Before, e.After);
+			CellEdited?.Invoke(this, e);
+			CellEditStateChanged?.Invoke(this, EventArgs.Empty);
+		}
+
+		internal void FocusCells()
+		{
+			_cellControl?.Focus();
+		}
+
+		private void OnCellControlKeyDown(object? sender, KeyEventArgs e)
+		{
+			if (e.KeyModifiers != KeyModifiers.Control || IsCellEditing)
+				return;
+
+			if (_presenter == null || _presenter.Manager.IsDesignMode)
+				return;
+
+			if (e.Key == Key.Z && UndoCellEdit())
+				e.Handled = true;
+			else if (e.Key == Key.Y && RedoCellEdit())
+				e.Handled = true;
+		}
+
+		private void OnCellContextMenuOpening(object? sender, CancelEventArgs e)
+		{
+			var menu = _cellControl?.ContextMenu;
+			if (menu == null)
+				return;
+
+			var canEdit = _presenter != null
+				&& !_presenter.Manager.IsDesignMode
+				&& _presenter.Manager.IsCellEditable(_presenter.CurrentCell);
+
+			foreach (var item in menu.Items)
+			{
+				var menuItem = item as MenuItem;
+				if (menuItem != null && Equals(menuItem.Tag, "editCell"))
+					menuItem.IsEnabled = canEdit;
+			}
+		}
+
+		private void EditCellMenuItem_Click(object? sender, RoutedEventArgs e)
+		{
+			if (_presenter == null || _presenter.Manager.IsDesignMode)
+				return;
+
+			BeginCellEdit(_presenter.CurrentCell);
 		}
 
 		public new AvaloniaDisplayPresenter? Presenter => _presenter;
@@ -202,6 +337,8 @@ namespace CellReport.Avalonia
 			if (manager == null)
 				return;
 
+			_inlineEditor?.Cancel();
+			_cellEditHistory.Clear();
 			WatchManager(manager);
 
 			var designMode = _viewModel?.DesignMode == true;

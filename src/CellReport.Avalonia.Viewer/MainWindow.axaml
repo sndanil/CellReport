@@ -11,6 +11,10 @@
         Width="1024"
         Height="768">
 
+	<Window.KeyBindings>
+		<KeyBinding Gesture="Ctrl+S" Command="{Binding PresentControl.SaveCommand}" />
+	</Window.KeyBindings>
+
 	<local:PresentControl DataContext="{Binding PresentControl}" />
 
 </Window>

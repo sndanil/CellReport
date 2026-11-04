@@ -318,6 +318,21 @@
 					<TextBox Text="{Binding Inspector.MarkerForShow, UpdateSourceTrigger=LostFocus}" />
 					<TextBlock Text="Маркер сокрытия" />
 					<TextBox Text="{Binding Inspector.MarkerForHide, UpdateSourceTrigger=LostFocus}" />
+					<Separator Margin="0,4" />
+					<TextBlock Text="Заполнение в просмотрщике" FontWeight="SemiBold" />
+					<CheckBox IsChecked="{Binding Inspector.CellEditable}" Content="Разрешить заполнение" />
+					<TextBlock Text="Параметр" />
+					<TextBox Text="{Binding Inspector.CellEditParam, UpdateSourceTrigger=LostFocus}"
+					         IsEnabled="{Binding Inspector.CellEditable}"
+					         ToolTip.Tip="Имя параметра; пусто — определить автоматически" />
+					<TextBlock Text="Плейсхолдер" />
+					<TextBox Text="{Binding Inspector.CellEditPlaceholder, UpdateSourceTrigger=LostFocus}"
+					         IsEnabled="{Binding Inspector.CellEditable}"
+					         ToolTip.Tip="Показывается, пока значение пустое" />
+					<TextBlock Text="Подсказка" />
+					<TextBox Text="{Binding Inspector.CellEditHint, UpdateSourceTrigger=LostFocus}"
+					         IsEnabled="{Binding Inspector.CellEditable}"
+					         ToolTip.Tip="Тултип при наведении на заполняемую ячейку" />
 				</StackPanel>
 			</TabItem>
 		</TabControl>

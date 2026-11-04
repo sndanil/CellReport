@@ -1,8 +1,9 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Input.Platform;
 using Avalonia.Media.Imaging;
 using CellReport.Core;
+using CellReport.Core.Contents;
 using CellReport.Presenters;
 using CellReport.Presenters.Skia;
 using SkiaSharp;
@@ -106,6 +107,36 @@ namespace CellReport.Avalonia
 			}
 		}
 
+		protected override void OnDblClick(object sender, EventArgs e, CellLocation location)
+		{
+			if (_presentControl == null || Manager.IsDesignMode)
+				return;
+
+			if (!Manager.IsCurrectLocation(location))
+				return;
+
+			if (HasMouseDblClickAction(location))
+				return;
+
+			_presentControl.BeginCellEdit(location);
+		}
+
+		private bool HasMouseDblClickAction(CellLocation location)
+		{
+			var cell = Manager.GetCell(location);
+			if (cell == null)
+				return false;
+
+			foreach (var content in cell.GetContents())
+			{
+				var action = content as ActionContent;
+				if (action != null && (action.Type == ActionType.All || action.Type == ActionType.MouseDblClick))
+					return true;
+			}
+
+			return false;
+		}
+
 		protected override bool OnProcessKey(object sender, EventArgs e)
 		{
 			if (e is not KeyEventArgs args)
@@ -118,6 +149,11 @@ namespace CellReport.Avalonia
 			{
 				switch (key)
 				{
+					case Key.F2:
+						if (Manager.IsDesignMode)
+							return false;
+						_presentControl.BeginCellEdit(CurrentCell);
+						return true;
 					case Key.Up:
 						MoveCursorUp();
 						return true;
@@ -165,6 +201,33 @@ namespace CellReport.Avalonia
 			}
 
 			return false;
+		}
+
+		protected override void RenderEditHintsBackground(object context, Cell cell)
+		{
+			RenderHint(() => base.RenderEditHintsBackground(context, cell));
+		}
+
+		protected override void RenderEditHintsOverlay(object context, Cell cell)
+		{
+			RenderHint(() => base.RenderEditHintsOverlay(context, cell));
+		}
+
+		private void RenderHint(Action render)
+		{
+			var skiaRenderer = Renderer as SkiaReportRenderer;
+			var invert = skiaRenderer != null && skiaRenderer.InvertColors;
+			if (invert)
+				skiaRenderer.InvertColors = false;
+			try
+			{
+				render();
+			}
+			finally
+			{
+				if (invert)
+					skiaRenderer.InvertColors = true;
+			}
 		}
 
 		private void CopySelectionToClipboard()

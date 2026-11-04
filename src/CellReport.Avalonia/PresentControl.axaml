@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -35,6 +35,50 @@
 						<MenuFlyout Placement="BottomEdgeAlignedLeft" />
 					</SplitButton.Flyout>
 				</SplitButton>
+
+				<Border Classes="toolbar-separator" />
+
+				<DropDownButton Classes="toolbar-button"
+				                Name="cellEditModeButton"
+				                IsVisible="{Binding IsCellEditingVisible}"
+				                ToolTip.Tip="{Binding EditModeLabel}">
+					<StackPanel Orientation="Horizontal" Spacing="4">
+						<materialIcons:MaterialIcon Kind="PencilOutline" Classes="toolbar-icon icon-muted" />
+						<TextBlock Text="{Binding EditModeLabel}" VerticalAlignment="Center" />
+					</StackPanel>
+					<DropDownButton.Flyout>
+						<MenuFlyout Placement="BottomEdgeAlignedLeft">
+							<MenuItem Header="{Binding EditReadOnlyLabel}"
+							          ToggleType="Radio"
+							          GroupName="CellEditMode"
+							          IsChecked="{Binding IsReadOnlyMode, Mode=OneWay}"
+							          Command="{Binding SetReadOnlyModeCommand}" />
+							<MenuItem Header="{Binding EditMarkedLabel}"
+							          ToggleType="Radio"
+							          GroupName="CellEditMode"
+							          IsChecked="{Binding IsMarkedMode, Mode=OneWay}"
+							          Command="{Binding SetMarkedEditModeCommand}" />
+							<MenuItem Header="{Binding EditAllLabel}"
+							          ToggleType="Radio"
+							          GroupName="CellEditMode"
+							          IsChecked="{Binding IsAllMode, Mode=OneWay}"
+							          Command="{Binding SetAllEditModeCommand}" />
+							<Separator />
+							<MenuItem Header="{Binding EditFrameLabel}"
+							          ToggleType="CheckBox"
+							          IsChecked="{Binding ShowEditFrame, Mode=TwoWay}" />
+							<MenuItem Header="{Binding EditBackgroundLabel}"
+							          ToggleType="CheckBox"
+							          IsChecked="{Binding ShowEditBackground, Mode=TwoWay}" />
+							<MenuItem Header="{Binding EditPlaceholderLabel}"
+							          ToggleType="CheckBox"
+							          IsChecked="{Binding ShowEditPlaceholder, Mode=TwoWay}" />
+							<MenuItem Header="{Binding EditTooltipLabel}"
+							          ToggleType="CheckBox"
+							          IsChecked="{Binding ShowEditTooltip, Mode=TwoWay}" />
+						</MenuFlyout>
+					</DropDownButton.Flyout>
+				</DropDownButton>
 
 				<Border Classes="toolbar-separator" />
 
@@ -138,13 +182,23 @@
 				                         Grid.Row="1"
 				                         Width="30"
 				                         Name="rowsResizer" />
-				<local:CellControl Grid.Column="1"
-				                   Grid.Row="1"
-								   Grid.ColumnSpan="2"
-								   Grid.RowSpan="2"
-				                   Name="cellControl">
+				<Panel Grid.Column="1"
+				       Grid.Row="1"
+				       Grid.ColumnSpan="2"
+				       Grid.RowSpan="2"
+				       ClipToBounds="True">
+					<local:CellControl Name="cellControl">
 					<local:CellControl.ContextMenu>
 						<ContextMenu x:DataType="vm:PresentControlViewModel">
+							<MenuItem Tag="editCell"
+							          Header="{Binding EditCellLabel}"
+							          InputGesture="F2"
+							          Click="EditCellMenuItem_Click">
+								<MenuItem.Icon>
+									<materialIcons:MaterialIcon Kind="PencilOutline" />
+								</MenuItem.Icon>
+							</MenuItem>
+							<Separator />
 							<MenuItem Header="{Binding PrintLabel}" Command="{Binding PrintCommand}">
 								<MenuItem.Icon>
 									<materialIcons:MaterialIcon Kind="Printer" />
@@ -227,6 +281,17 @@
 						</ContextMenu>
 					</local:CellControl.ContextMenu>
 				</local:CellControl>
+					<TextBox Name="inlineEditor"
+					         IsVisible="False"
+					         HorizontalAlignment="Left"
+					         VerticalAlignment="Top"
+					         AcceptsReturn="True"
+					         TextWrapping="Wrap"
+					         Padding="2"
+					         BorderThickness="1"
+					         VerticalContentAlignment="Top"
+					         FontFamily="Consolas, Cascadia Mono, monospace" />
+				</Panel>
 				<ScrollBar Grid.Column="2"
 				           Grid.Row="1"
 				           Name="vScrollBar"

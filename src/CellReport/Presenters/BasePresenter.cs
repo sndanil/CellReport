@@ -859,7 +859,7 @@ namespace CellReport.Presenters
 			return text.Replace("\r\n", " ").Replace('\n', ' ').Replace('\r', ' ');
 		}
 
-		private bool IsEditingCell(Cell cell)
+		protected bool IsEditingCell(Cell cell)
 		{
 			return !EditingCell.Equals(CellLocation.None)
 					&& EditingCell.Row == cell.Location.Row

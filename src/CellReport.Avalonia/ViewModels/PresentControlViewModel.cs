@@ -1,4 +1,4 @@
-﻿using CellReport.Avalonia.Services;
+using CellReport.Avalonia.Services;
 using CellReport.Avalonia.Views;
 using CellReport.Core;
 using CellReport.Presenters;
@@ -52,6 +52,24 @@ namespace CellReport.Avalonia.ViewModels
 
 		public string ScaleLabel => ReportLocalization.Get("Report/Scale");
 
+		public string EditModeLabel => ReportLocalization.Get("Report/Edit/Mode");
+
+		public string EditReadOnlyLabel => ReportLocalization.Get("Report/Edit/ReadOnly");
+
+		public string EditMarkedLabel => ReportLocalization.Get("Report/Edit/Marked");
+
+		public string EditAllLabel => ReportLocalization.Get("Report/Edit/All");
+
+		public string EditFrameLabel => ReportLocalization.Get("Report/Edit/Frame");
+
+		public string EditBackgroundLabel => ReportLocalization.Get("Report/Edit/Background");
+
+		public string EditPlaceholderLabel => ReportLocalization.Get("Report/Edit/Placeholder");
+
+		public string EditTooltipLabel => ReportLocalization.Get("Report/Edit/Tooltip");
+
+		public string EditCellLabel => ReportLocalization.Get("Report/Edit/EditCell");
+
 		public string PrintLabel => ReportLocalization.Get("Report/Print");
 
 		public string CustomPrintLabel => ReportLocalization.Get("Report/CustomPrint");
@@ -91,12 +109,57 @@ namespace CellReport.Avalonia.ViewModels
 		[ObservableProperty]
 		private BookMarkItemViewModel? _selectedBookMark;
 
+		[ObservableProperty]
+		private CellEditMode _editMode;
+
+		[ObservableProperty]
+		private bool _showEditFrame = true;
+
+		[ObservableProperty]
+		private bool _showEditBackground;
+
+		[ObservableProperty]
+		private bool _showEditPlaceholder = true;
+
+		[ObservableProperty]
+		private bool _showEditTooltip = true;
+
+		[ObservableProperty]
+		private bool _isDirty;
+
+		private bool _showCellEditing = true;
+		private PresentControl? _presentControl;
+
+		public event Func<Task<bool>>? SaveRequested;
+
+		public bool ShowCellEditing
+		{
+			get => _showCellEditing;
+			set
+			{
+				if (_showCellEditing == value)
+					return;
+				_showCellEditing = value;
+				OnPropertyChanged(nameof(IsCellEditingVisible));
+			}
+		}
+
+		public bool IsReadOnlyMode => EditMode == CellEditMode.None;
+
+		public bool IsMarkedMode => EditMode == CellEditMode.MarkedCells;
+
+		public bool IsAllMode => EditMode == CellEditMode.AllCells;
+
+		public bool IsCellEditingVisible => !DesignMode && Manager != null && ShowCellEditing;
+
 		public bool DesignMode { get; private set; }
 
 		public void Load(CellManager manager, bool designMode = false)
 		{
 			DesignMode = designMode;
 			Manager = manager;
+			IsDirty = false;
+			OnPropertyChanged(nameof(IsCellEditingVisible));
 			LoadPrinters();
 		}
 
@@ -116,13 +179,36 @@ namespace CellReport.Avalonia.ViewModels
 			if (_presenter != null)
 				_presenter.ShowToolBarChanged -= OnPresenterShowToolBarChanged;
 
+			if (_presentControl != null)
+				_presentControl.CellEditStateChanged -= OnCellEditStateChanged;
+
 			_presenter = presenter;
 			_host = host;
 			_presenter.ShowToolBarChanged += OnPresenterShowToolBarChanged;
 
+			_presentControl = host as PresentControl;
+			if (_presentControl != null)
+				_presentControl.CellEditStateChanged += OnCellEditStateChanged;
+
 			LoadBookMarks();
 			SyncFromPresenter();
+			OnPropertyChanged(nameof(IsCellEditingVisible));
 			PresenterChanged?.Invoke(this, EventArgs.Empty);
+		}
+
+		public void MarkSaved()
+		{
+			IsDirty = false;
+		}
+
+		private void OnCellEditStateChanged(object? sender, EventArgs e)
+		{
+			IsDirty = true;
+		}
+
+		partial void OnManagerChanged(CellManager? value)
+		{
+			OnPropertyChanged(nameof(IsCellEditingVisible));
 		}
 
 		public void SyncFromPresenter()
@@ -137,6 +223,12 @@ namespace CellReport.Avalonia.ViewModels
 				ShowResizers = _presenter.ShowResizers;
 				ShowBookMarks = _presenter.ShowBookMarks;
 				ShowToolBar = _presenter.ShowToolBar;
+				var settings = _presenter.Manager.EditSettings;
+				EditMode = settings.Mode;
+				ShowEditFrame = settings.ShowFrame;
+				ShowEditBackground = settings.ShowBackground;
+				ShowEditPlaceholder = settings.ShowPlaceholder;
+				ShowEditTooltip = settings.ShowTooltip;
 				var scaleIndex = GetScaleIndex(_presenter.Scale);
 				if (scaleIndex >= 0)
 					SelectedScaleIndex = scaleIndex;
@@ -232,6 +324,51 @@ namespace CellReport.Avalonia.ViewModels
 			_presenter.CurrentCell = value.Location;
 		}
 
+		partial void OnEditModeChanged(CellEditMode value)
+		{
+			OnPropertyChanged(nameof(IsReadOnlyMode));
+			OnPropertyChanged(nameof(IsMarkedMode));
+			OnPropertyChanged(nameof(IsAllMode));
+
+			if (_syncing || _presenter == null)
+				return;
+
+			_presenter.Manager.EditSettings.Mode = value;
+			_presenter.Update();
+		}
+
+		partial void OnShowEditFrameChanged(bool value) => ApplyEditSetting(settings => settings.ShowFrame = value);
+		partial void OnShowEditBackgroundChanged(bool value) => ApplyEditSetting(settings => settings.ShowBackground = value);
+		partial void OnShowEditPlaceholderChanged(bool value) => ApplyEditSetting(settings => settings.ShowPlaceholder = value);
+		partial void OnShowEditTooltipChanged(bool value) => ApplyEditSetting(settings => settings.ShowTooltip = value);
+
+		private void ApplyEditSetting(Action<CellEditSettings> apply)
+		{
+			if (_syncing || _presenter == null)
+				return;
+
+			apply(_presenter.Manager.EditSettings);
+			_presenter.Update();
+		}
+
+		[RelayCommand]
+		private void SetReadOnlyMode()
+		{
+			EditMode = CellEditMode.None;
+		}
+
+		[RelayCommand]
+		private void SetMarkedEditMode()
+		{
+			EditMode = CellEditMode.MarkedCells;
+		}
+
+		[RelayCommand]
+		private void SetAllEditMode()
+		{
+			EditMode = CellEditMode.AllCells;
+		}
+
 		[RelayCommand]
 		private async Task ExportExcelAsync()
 		{
@@ -277,6 +414,14 @@ namespace CellReport.Avalonia.ViewModels
 		{
 			if (_presenter == null || _host == null)
 				return;
+
+			if (SaveRequested != null)
+			{
+				if (await SaveRequested())
+					MarkSaved();
+				RefreshSurface();
+				return;
+			}
 
 			await ReportExportService.SaveAsync(_host, _presenter);
 			RefreshSurface();

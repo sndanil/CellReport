@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<CellReportTemplate>
+  <Properties>
+    <DocumentName>Заполнение ячеек — демо</DocumentName>
+  </Properties>
+  <DisplaySettings FrozenColumns="0" FrozenRows="0" ShowGridLines="true" ShowResizers="false" Scale="1" />
+  <PrintSettings Landscape="false" AutoFitWidthPages="1" Scale="1">
+    <Margins Top="10" Left="10" Right="10" Bottom="10" />
+  </PrintSettings>
+  <Sections />
+  <BookMarks />
+  <Table DefaultRowHeight="8" DefaultColumnWidth="60" RowsCount="6" ColumnsCount="2">
+    <Column Width="60" />
+    <Column Width="60" />
+    <Row Height="10">
+      <Cell Index="0" ColSpan="1">
+        <TextContent>
+          <Text>Заполнение ячеек — демо</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="9">
+      <Cell Index="0">
+        <TextContent>
+          <Text>ФИО (параметр):</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="1" Editable="true" EditParam="ФИО" EditPlaceholder="Иванов И. И." EditHint="Введите фамилию и инициалы">
+        <TextContent>
+          <Param Name="ФИО" Target="Text" />
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="9">
+      <Cell Index="0">
+        <TextContent>
+          <Text>Плейсхолдер [Имя]:</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="1" Editable="true" EditPlaceholder="Введите имя">
+        <TextContent>
+          <Text>[Имя]</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="9">
+      <Cell Index="0">
+        <TextContent>
+          <Text>Литеральный текст:</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="1" Editable="true">
+        <TextContent>
+          <Text>Примечание</Text>
+        </TextContent>
+      </Cell>
+    </Row>
+    <Row Height="9">
+      <Cell Index="0">
+        <TextContent>
+          <Text>Сумма (число):</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="1" Editable="true">
+        <DecimalContent>
+          <Param Name="Сумма" Target="Value" Type="Decimal" Format="N2" />
+        </DecimalContent>
+      </Cell>
+    </Row>
+    <Row Height="9">
+      <Cell Index="0">
+        <TextContent>
+          <Text>Дата:</Text>
+        </TextContent>
+      </Cell>
+      <Cell Index="1" Editable="true">
+        <DateTimeContent>
+          <Param Name="Дата" Target="Value" Type="DateTime" Format="dd.MM.yyyy" />
+        </DateTimeContent>
+      </Cell>
+    </Row>
+  </Table>
+  <Styles />
+  <Expressions />
+</CellReportTemplate>
