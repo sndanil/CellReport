@@ -101,19 +101,10 @@ namespace CellReport.Core
 				if (!IsEditable)
 					return true;
 
+				// У чисел и дат уже есть отображаемое значение по умолчанию (0 / 1999),
+				// поэтому плейсхолдер для них не рисуем — только рамку.
 				if (_kind != CellEditValueKind.Text)
-				{
-					if (_param == null)
-						return true;
-					try
-					{
-						return _param.Value == null;
-					}
-					catch
-					{
-						return true;
-					}
-				}
+					return false;
 
 				string text;
 				TryGetText(out text);

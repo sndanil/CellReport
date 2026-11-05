@@ -85,6 +85,14 @@ namespace CellReport.Presenters
 		/// </summary>
 		public CellLocation EditingCell { get; set; } = CellLocation.None;
 
+		/// <summary>
+		/// Подсказки заполнения рисуются на инвертированном (тёмном) фоне.
+		/// </summary>
+		protected virtual bool UseInvertedEditHintColors
+		{
+			get { return false; }
+		}
+
 		protected OverflowLayout Overflow
 		{
 			get { return _overflowLayout ?? (_overflowLayout = new OverflowLayout(this)); }

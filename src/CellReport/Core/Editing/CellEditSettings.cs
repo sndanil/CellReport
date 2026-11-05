@@ -17,6 +17,9 @@ namespace CellReport.Core
 		private string _frameColor = "#FF43A047";
 		private string _backgroundColor = "#1A43A047";
 		private string _placeholderColor = "#FF9E9E9E";
+		private string _placeholderColorInverted = "#FFC8C8C8";
+		private string _frameColorInverted = "#FF81C784";
+		private string _backgroundColorInverted = "#2681C784";
 		private string _defaultPlaceholder = "Введите значение";
 		private string _tooltipFormat = "Можно заполнить: {0}";
 
@@ -113,6 +116,45 @@ namespace CellReport.Core
 					return;
 				_placeholderColor = value;
 				OnPropertyChanged("PlaceholderColor");
+			}
+		}
+
+		/// <summary>
+		/// Цвет плейсхолдера для инвертированного (тёмного) отчёта.
+		/// </summary>
+		public string PlaceholderColorInverted
+		{
+			get { return _placeholderColorInverted; }
+			set
+			{
+				if (_placeholderColorInverted == value)
+					return;
+				_placeholderColorInverted = value;
+				OnPropertyChanged("PlaceholderColorInverted");
+			}
+		}
+
+		public string FrameColorInverted
+		{
+			get { return _frameColorInverted; }
+			set
+			{
+				if (_frameColorInverted == value)
+					return;
+				_frameColorInverted = value;
+				OnPropertyChanged("FrameColorInverted");
+			}
+		}
+
+		public string BackgroundColorInverted
+		{
+			get { return _backgroundColorInverted; }
+			set
+			{
+				if (_backgroundColorInverted == value)
+					return;
+				_backgroundColorInverted = value;
+				OnPropertyChanged("BackgroundColorInverted");
 			}
 		}
 

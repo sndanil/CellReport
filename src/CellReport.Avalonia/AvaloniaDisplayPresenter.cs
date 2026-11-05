@@ -19,6 +19,7 @@ namespace CellReport.Avalonia
 		private readonly PresentControl _presentControl;
 		private readonly CellControl _cellControl;
 		private bool _replaceClipActive;
+		private bool _hintInverted;
 
 		public AvaloniaDisplayPresenter(CellManager manager, PresentControl presentControl, CellControl cellControl)
 				: base(manager)
@@ -218,10 +219,16 @@ namespace CellReport.Avalonia
 			RenderHint(() => base.RenderEditHintsOverlay(context, cell));
 		}
 
+		protected override bool UseInvertedEditHintColors
+		{
+			get { return _hintInverted; }
+		}
+
 		private void RenderHint(Action render)
 		{
 			var skiaRenderer = Renderer as SkiaReportRenderer;
 			var invert = skiaRenderer != null && skiaRenderer.InvertColors;
+			_hintInverted = invert;
 			if (invert)
 				skiaRenderer.InvertColors = false;
 			try
@@ -230,6 +237,7 @@ namespace CellReport.Avalonia
 			}
 			finally
 			{
+				_hintInverted = false;
 				if (invert)
 					skiaRenderer.InvertColors = true;
 			}

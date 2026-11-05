@@ -55,7 +55,7 @@ namespace CellReportTests
 			presenter.InvertColors = invert;
 
 			var surface = SKSurface.Create(new SKImageInfo(CellWidth, CellHeight));
-			surface.Canvas.Clear(SKColors.White);
+			surface.Canvas.Clear(invert ? SKColors.Black : SKColors.White);
 			presenter.Render(cellControl, surface.Canvas);
 			return surface;
 		}
@@ -104,6 +104,34 @@ namespace CellReportTests
 
 			using (var surface = Render(CreateManager(CellEditMode.None, "text", editable: true)))
 				Assert.AreEqual(0, CountGreenPixels(surface), "рамка нарисована в режиме только чтения");
+		}
+
+		private static int CountLightPixels(SKSurface surface, int min)
+		{
+			using var image = surface.Snapshot();
+			using var bitmap = SKBitmap.FromImage(image);
+			var count = 0;
+			for (var y = 0; y < bitmap.Height; y++)
+			{
+				for (var x = 0; x < bitmap.Width; x++)
+				{
+					var color = bitmap.GetPixel(x, y);
+					if (color.Red >= min && color.Green >= min && color.Blue >= min)
+						count++;
+				}
+			}
+
+			return count;
+		}
+
+		[TestMethod]
+		public void Placeholder_InInvertedMode_IsLight()
+		{
+			var manager = CreateManager(CellEditMode.MarkedCells, string.Empty, editable: true, placeholder: "Введите");
+			manager.EditSettings.ShowFrame = false;
+
+			using var surface = Render(manager, invert: true);
+			Assert.IsTrue(CountLightPixels(surface, 180) > 0, "плейсхолдер слишком тёмный на инвертированном фоне");
 		}
 
 		[TestMethod]

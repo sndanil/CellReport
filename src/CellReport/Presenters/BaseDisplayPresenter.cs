@@ -658,10 +658,11 @@ namespace CellReport.Presenters
 			var settings = Manager.EditSettings;
 			if (settings.Mode == CellEditMode.None || !settings.ShowBackground || IsEditingCell(cell))
 				return;
-			if (string.IsNullOrEmpty(settings.BackgroundColor))
+			var backgroundColor = GetHintColor(settings.BackgroundColor, settings.BackgroundColorInverted);
+			if (string.IsNullOrEmpty(backgroundColor))
 				return;
 
-			Renderer.RenderFillRect(context, GetCellRect(cell), 0, new[] { settings.BackgroundColor });
+			Renderer.RenderFillRect(context, GetCellRect(cell), 0, new[] { backgroundColor });
 		}
 
 		protected virtual void RenderEditHintsOverlay(object context, Cell cell)
@@ -674,14 +675,16 @@ namespace CellReport.Presenters
 				return;
 
 			var rect = GetCellRect(cell);
-			if (settings.ShowFrame && !string.IsNullOrEmpty(settings.FrameColor))
+			var frameColor = GetHintColor(settings.FrameColor, settings.FrameColorInverted);
+			if (settings.ShowFrame && !string.IsNullOrEmpty(frameColor))
 			{
 				var frame = new Rectangle(rect.X + 3, rect.Y + 3,
 					Math.Max(0f, rect.Width - 6), Math.Max(0f, rect.Height - 6));
-				Renderer.RenderRect(context, frame, settings.FrameColor, LineStyle.Dash, 1);
+				Renderer.RenderRect(context, frame, frameColor, LineStyle.Dash, 1);
 			}
 
-			if (!settings.ShowPlaceholder || string.IsNullOrEmpty(settings.PlaceholderColor))
+			var placeholderColor = GetHintColor(settings.PlaceholderColor, settings.PlaceholderColorInverted);
+			if (!settings.ShowPlaceholder || string.IsNullOrEmpty(placeholderColor))
 				return;
 
 			var editor = Manager.CreateValueEditor(cell.Location);
@@ -697,9 +700,16 @@ namespace CellReport.Presenters
 				: (cell.Content as TextBasedContent).GetActualStyle() as TextContentStyle;
 			var font = style == null ? TextBasedContent.DefaultStyle.Font : style.Font;
 			var rectForText = GetInnerCellRect(cell);
-			Renderer.RenderText(context, rectForText, hint, settings.PlaceholderColor,
+			Renderer.RenderText(context, rectForText, hint, placeholderColor,
 				HorizontalAlignment.Left, VerticalAlignment.Middle, 0,
 				font.Family, Scale * font.Size, font.Style, Direction.LeftToRight);
+		}
+
+		private string GetHintColor(string normal, string inverted)
+		{
+			if (UseInvertedEditHintColors && !string.IsNullOrEmpty(inverted))
+				return inverted;
+			return normal;
 		}
 
 		protected void RenderCurrentCell(object context, Rectangle bounds)

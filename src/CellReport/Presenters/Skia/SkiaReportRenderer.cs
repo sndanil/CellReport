@@ -341,6 +341,7 @@ namespace CellReport.Presenters.Skia
 				.FontSize(fontSize)
 				.FontItalic(fontStyle.HasFlag(FontStyle.Italic))
 				.FontWeight(fontStyle.HasFlag(FontStyle.Bold) ? (int)SKFontStyleWeight.Bold : (int)SKFontStyleWeight.Normal)
+				.TextColor(GetColor(color))
 				.Alignment(alignment);
 
 			rs.Add(text);
@@ -365,17 +366,7 @@ namespace CellReport.Presenters.Skia
 				paintOptions.Edging = SKFontEdging.Alias;
 			}
 
-			if (InvertColors)
-			{
-				using (var layerPaint = new SKPaint { ColorFilter = SkiaColorFilters.CreateInvert() })
-				{
-					dc.SaveLayer(textRect.ToRect(), layerPaint);
-					rs.Paint(dc, new SKPoint(textRect.X, y), paintOptions);
-					dc.Restore();
-				}
-			}
-			else
-				rs.Paint(dc, new SKPoint(textRect.X, y), paintOptions);
+			rs.Paint(dc, new SKPoint(textRect.X, y), paintOptions);
 
 			dc.Restore();
 		}
@@ -470,6 +461,7 @@ namespace CellReport.Presenters.Skia
 				.FontSize(fontSize)
 				.FontItalic(fontStyle.HasFlag(FontStyle.Italic))
 				.FontWeight(fontStyle.HasFlag(FontStyle.Bold) ? (int)SKFontStyleWeight.Bold : (int)SKFontStyleWeight.Normal)
+				.TextColor(GetColor(color))
 				.Alignment(alignment);
 
 			rs.Add(text);
@@ -503,17 +495,7 @@ namespace CellReport.Presenters.Skia
 				paintOptions.Edging = SKFontEdging.Alias;
 			}
 
-			if (InvertColors)
-			{
-				using (var layerPaint = new SKPaint { ColorFilter = SkiaColorFilters.CreateInvert() })
-				{
-					dc.SaveLayer(clip.ToRect(), layerPaint);
-					rs.Paint(dc, new SKPoint(layout.X, y), paintOptions);
-					dc.Restore();
-				}
-			}
-			else
-				rs.Paint(dc, new SKPoint(layout.X, y), paintOptions);
+			rs.Paint(dc, new SKPoint(layout.X, y), paintOptions);
 
 			dc.Restore();
 		}
