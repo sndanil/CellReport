@@ -118,6 +118,42 @@ public static class TemplateValidator
 			issues.Add(Warning("Выражения", "У выражения «" + expression.ID + "» не задано имя параметра"));
 	}
 
+	private static void ValidateCellEditing(List<TemplateIssue> issues, Cell cell)
+	{
+		if (!cell.Editable && string.IsNullOrEmpty(cell.EditParam))
+			return;
+
+		var hasSupportedContent = cell.Content == null;
+		var hasEditParam = false;
+		var computed = false;
+
+		foreach (var content in cell.GetContents())
+		{
+			if (content is TextContent || content is DecimalContent || content is DateTimeContent)
+				hasSupportedContent = true;
+
+			foreach (var param in content.GetParams())
+			{
+				if (string.IsNullOrEmpty(cell.EditParam) || !string.Equals(param.Name, cell.EditParam, StringComparison.Ordinal))
+					continue;
+
+				hasEditParam = true;
+				computed |= !string.IsNullOrEmpty(param.ExpressionID);
+			}
+		}
+
+		if (!hasSupportedContent)
+			issues.Add(Warning("Заполнение",
+				"Ячейка помечена заполняемой, но её содержимое не поддерживает ввод", cell.Location));
+		else if (cell.Content != null && !string.IsNullOrEmpty(cell.EditParam) && !hasEditParam)
+			issues.Add(Warning("Заполнение",
+				"Параметр «" + cell.EditParam + "» не найден в содержимом ячейки", cell.Location));
+
+		if (computed)
+			issues.Add(Warning("Заполнение",
+				"Параметр «" + cell.EditParam + "» вычисляется и не может быть заполнен вручную", cell.Location));
+	}
+
 	private static void ValidateCells(List<TemplateIssue> issues, CellManager manager)
 	{
 		var expressionIds = new HashSet<string>(
@@ -147,6 +183,8 @@ public static class TemplateValidator
 		HashSet<string> expressionIds)
 	{
 		var location = cell.Location;
+
+		ValidateCellEditing(issues, cell);
 
 		if (!string.IsNullOrEmpty(cell.StyleID) && manager.GetStyleByID<CellStyle>(cell.StyleID) == null)
 			issues.Add(Error("Стили", "Стиль ячейки «" + cell.StyleID + "» не найден", location));

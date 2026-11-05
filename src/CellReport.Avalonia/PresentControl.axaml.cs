@@ -56,6 +56,8 @@ namespace CellReport.Avalonia
 			if (inlineEditor != null)
 				_inlineEditor = new CellInlineEditor(this, inlineEditor);
 
+			SizeChanged += (_, _) => _inlineEditor?.OnSurfaceUpdated();
+
 			ApplyContentInversion();
 
 			_hScrollBar.PropertyChanged += OnHorizontalScrollBarChanged;
@@ -373,6 +375,8 @@ namespace CellReport.Avalonia
 		{
 			if (e.PropertyName is "ShowResizers" or "ShowDesignerResizers")
 				UpdateResizerVisibility();
+			else if (e.PropertyName == "Editable")
+				_viewModel?.SyncFromPresenter();
 		}
 
 		private void UpdateResizerVisibility()
@@ -420,6 +424,7 @@ namespace CellReport.Avalonia
 				return;
 
 			_viewModel?.SyncFromPresenter();
+			_inlineEditor?.OnSurfaceUpdated();
 			UpdateResizerVisibility();
 
 			_updatingScrollBars = true;

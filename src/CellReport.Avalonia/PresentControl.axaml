@@ -80,6 +80,12 @@
 					</DropDownButton.Flyout>
 				</DropDownButton>
 
+				<TextBlock Text="{Binding EditNoFieldsLabel}"
+				           IsVisible="{Binding ShowNoMarkedCellsHint}"
+				           Margin="4,0"
+				           VerticalAlignment="Center"
+				           Opacity="0.7" />
+
 				<Border Classes="toolbar-separator" />
 
 				<ToggleButton Classes="toolbar-button toolbar-icon-button"

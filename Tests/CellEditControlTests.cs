@@ -198,6 +198,11 @@ namespace CellReportTests
 			viewModel.SetMarkedEditModeCommand.Execute(null);
 			Assert.AreEqual(CellEditMode.MarkedCells, manager.EditSettings.Mode);
 			Assert.IsTrue(viewModel.IsMarkedMode);
+			Assert.IsTrue(viewModel.ShowNoMarkedCellsHint);
+
+			manager.SetCellEditable(new CellLocation { Row = 0, Column = 0 }, true);
+			viewModel.SyncFromPresenter();
+			Assert.IsFalse(viewModel.ShowNoMarkedCellsHint);
 
 			viewModel.SetAllEditModeCommand.Execute(null);
 			Assert.AreEqual(CellEditMode.AllCells, manager.EditSettings.Mode);
@@ -237,6 +242,59 @@ namespace CellReportTests
 			Assert.AreEqual(target.Location.Row, control.Presenter.CurrentCell.Row,
 				"actual=" + control.Presenter.CurrentCell.Row + "," + control.Presenter.CurrentCell.Column);
 			Assert.AreEqual(target.Location.Column, control.Presenter.CurrentCell.Column);
+			window.Close();
+		}
+
+		[TestMethod]
+		public void Editing_RepositionsOnScroll()
+		{
+			var manager = CreateManager(CellEditMode.MarkedCells);
+			manager.SetColumnWidth(0, 10);
+			manager.SetColumnWidth(1, 10);
+			manager.SetRowHeight(0, 6);
+			var cell = CreateTextCell(manager, 0, 1, "text", editable: true);
+
+			var control = new PresentControl { Width = 400, Height = 300 };
+			control.AttachManager(manager);
+			var window = new Window { Width = 400, Height = 300, Content = control };
+			window.Show();
+
+			Assert.IsTrue(control.BeginCellEdit(cell.Location));
+
+			var textBox = control.GetVisualDescendants().OfType<TextBox>()
+				.First(item => item.Name == "inlineEditor");
+			var before = textBox.Margin;
+
+			control.Presenter!.LeftColumn = 1;
+			control.Presenter.Update();
+
+			Assert.AreNotEqual(before, textBox.Margin);
+			window.Close();
+		}
+
+		[TestMethod]
+		public void TextInput_StartsEditingWithTypedText()
+		{
+			var manager = CreateManager(CellEditMode.MarkedCells);
+			var cell = CreateTextCell(manager, 0, 0, "old", editable: true);
+			var control = new PresentControl { Width = 400, Height = 300 };
+			control.AttachManager(manager);
+
+			var window = new Window { Width = 400, Height = 300, Content = control };
+			window.Show();
+
+			control.Presenter!.CurrentCell = cell.Location;
+			var cellControl = control.GetVisualDescendants().OfType<CellControl>().First();
+			cellControl.Focus();
+
+			window.KeyTextInput("A");
+
+			Assert.IsTrue(control.IsCellEditing);
+			Assert.AreEqual("A", control.CellEditText);
+
+			window.KeyTextInput("B");
+			Assert.AreEqual("AB", control.CellEditText);
+			window.Close();
 		}
 
 		private sealed class TestApplication : Application

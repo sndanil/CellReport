@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -88,9 +87,11 @@ namespace CellReport.Avalonia.Editing
 
 			_textBox.IsVisible = true;
 			_textBox.Focus();
-			_textBox.SelectAll();
+			if (initialText == null)
+				_textBox.SelectAll();
+			else
+				_textBox.CaretIndex = (_textBox.Text ?? string.Empty).Length;
 
-			presenter.PropertyChanged += OnPresenterPropertyChanged;
 			return true;
 		}
 
@@ -134,7 +135,6 @@ namespace CellReport.Avalonia.Editing
 				_active = false;
 				if (_presenter != null)
 				{
-					_presenter.PropertyChanged -= OnPresenterPropertyChanged;
 					_presenter.EditingCell = CellLocation.None;
 					_presenter.Update();
 				}
@@ -198,14 +198,9 @@ namespace CellReport.Avalonia.Editing
 			}
 		}
 
-		private void OnPresenterPropertyChanged(object? sender, PropertyChangedEventArgs e)
+		public void OnSurfaceUpdated()
 		{
-			if (!_active || _presenter == null)
-				return;
-
-			if (e.PropertyName is nameof(BasePresenter.LeftColumn)
-				or nameof(BasePresenter.TopRow)
-				or nameof(BasePresenter.Scale))
+			if (_active)
 				Reposition();
 		}
 

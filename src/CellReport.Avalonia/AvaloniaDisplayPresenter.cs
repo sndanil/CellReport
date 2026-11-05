@@ -107,6 +107,11 @@ namespace CellReport.Avalonia
 			}
 		}
 
+		public bool BeginCellEdit(CellLocation location, string? initialText = null)
+		{
+			return _presentControl != null && _presentControl.BeginCellEdit(location, initialText);
+		}
+
 		protected override void OnDblClick(object sender, EventArgs e, CellLocation location)
 		{
 			if (_presentControl == null || Manager.IsDesignMode)

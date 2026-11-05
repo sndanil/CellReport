@@ -70,6 +70,8 @@ namespace CellReport.Avalonia.ViewModels
 
 		public string EditCellLabel => ReportLocalization.Get("Report/Edit/EditCell");
 
+		public string EditNoFieldsLabel => ReportLocalization.Get("Report/Edit/NoFields");
+
 		public string PrintLabel => ReportLocalization.Get("Report/Print");
 
 		public string CustomPrintLabel => ReportLocalization.Get("Report/CustomPrint");
@@ -152,6 +154,10 @@ namespace CellReport.Avalonia.ViewModels
 
 		public bool IsCellEditingVisible => !DesignMode && Manager != null && ShowCellEditing;
 
+		public bool HasMarkedCells => Manager?.HasMarkedCells == true;
+
+		public bool ShowNoMarkedCellsHint => EditMode == CellEditMode.MarkedCells && !HasMarkedCells;
+
 		public bool DesignMode { get; private set; }
 
 		public void Load(CellManager manager, bool designMode = false)
@@ -160,6 +166,8 @@ namespace CellReport.Avalonia.ViewModels
 			Manager = manager;
 			IsDirty = false;
 			OnPropertyChanged(nameof(IsCellEditingVisible));
+			OnPropertyChanged(nameof(HasMarkedCells));
+			OnPropertyChanged(nameof(ShowNoMarkedCellsHint));
 			LoadPrinters();
 		}
 
@@ -193,6 +201,8 @@ namespace CellReport.Avalonia.ViewModels
 			LoadBookMarks();
 			SyncFromPresenter();
 			OnPropertyChanged(nameof(IsCellEditingVisible));
+			OnPropertyChanged(nameof(HasMarkedCells));
+			OnPropertyChanged(nameof(ShowNoMarkedCellsHint));
 			PresenterChanged?.Invoke(this, EventArgs.Empty);
 		}
 
@@ -209,6 +219,8 @@ namespace CellReport.Avalonia.ViewModels
 		partial void OnManagerChanged(CellManager? value)
 		{
 			OnPropertyChanged(nameof(IsCellEditingVisible));
+			OnPropertyChanged(nameof(HasMarkedCells));
+			OnPropertyChanged(nameof(ShowNoMarkedCellsHint));
 		}
 
 		public void SyncFromPresenter()
@@ -237,6 +249,9 @@ namespace CellReport.Avalonia.ViewModels
 			{
 				_syncing = false;
 			}
+
+			OnPropertyChanged(nameof(HasMarkedCells));
+			OnPropertyChanged(nameof(ShowNoMarkedCellsHint));
 		}
 
 		private void LoadBookMarks()
@@ -329,6 +344,7 @@ namespace CellReport.Avalonia.ViewModels
 			OnPropertyChanged(nameof(IsReadOnlyMode));
 			OnPropertyChanged(nameof(IsMarkedMode));
 			OnPropertyChanged(nameof(IsAllMode));
+			OnPropertyChanged(nameof(ShowNoMarkedCellsHint));
 
 			if (_syncing || _presenter == null)
 				return;

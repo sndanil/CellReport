@@ -45,13 +45,14 @@ namespace CellReportTests
 			return manager;
 		}
 
-		private static SKSurface Render(CellManager manager)
+		private static SKSurface Render(CellManager manager, bool invert = false)
 		{
 			var control = new PresentControl();
 			var cellControl = new CellControl { Width = CellWidth, Height = CellHeight };
 			cellControl.Measure(new global::Avalonia.Size(CellWidth, CellHeight));
 			cellControl.Arrange(new Rect(0, 0, CellWidth, CellHeight));
 			var presenter = new AvaloniaDisplayPresenter(manager, control, cellControl);
+			presenter.InvertColors = invert;
 
 			var surface = SKSurface.Create(new SKImageInfo(CellWidth, CellHeight));
 			surface.Canvas.Clear(SKColors.White);
@@ -103,6 +104,13 @@ namespace CellReportTests
 
 			using (var surface = Render(CreateManager(CellEditMode.None, "text", editable: true)))
 				Assert.AreEqual(0, CountGreenPixels(surface), "рамка нарисована в режиме только чтения");
+		}
+
+		[TestMethod]
+		public void MarkedCell_FrameIsNotInverted()
+		{
+			using var surface = Render(CreateManager(CellEditMode.MarkedCells, "text", editable: true), invert: true);
+			Assert.IsTrue(CountGreenPixels(surface) > 0, "рамка инвертирована");
 		}
 
 		[TestMethod]

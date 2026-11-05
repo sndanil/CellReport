@@ -623,6 +623,23 @@ namespace CellReport.Core
 		}
 
 		/// <summary>
+		/// Есть ли в документе хотя бы одна помеченная для заполнения ячейка.
+		/// </summary>
+		public bool HasMarkedCells
+		{
+			get
+			{
+				foreach (var cell in _originCells)
+				{
+					if (cell != null && cell.Editable)
+						return true;
+				}
+
+				return false;
+			}
+		}
+
+		/// <summary>
 		/// Runtime-настройки заполнения ячеек. Не сериализуются в шаблон.
 		/// </summary>
 		public CellEditSettings EditSettings

@@ -177,6 +177,24 @@ namespace CellReport.Avalonia
 			base.OnKeyDown(e);
 		}
 
+		protected override void OnTextInput(TextInputEventArgs e)
+		{
+			base.OnTextInput(e);
+
+			if (Presenter == null || string.IsNullOrEmpty(e.Text))
+				return;
+
+			var manager = Presenter.Manager;
+			if (manager == null || manager.IsDesignMode)
+				return;
+
+			if (!manager.IsCellEditable(Presenter.CurrentCell))
+				return;
+
+			if (Presenter.BeginCellEdit(Presenter.CurrentCell, e.Text))
+				e.Handled = true;
+		}
+
 		protected override void OnPointerPressed(PointerPressedEventArgs e)
 		{
 			base.OnPointerPressed(e);

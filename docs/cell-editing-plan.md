@@ -10,15 +10,16 @@
 - [x] Копирование пометок: `CreateCell(from)`, секции `AddSection`/`JoinSection`, копирование/вставка в редакторе.
 - [x] Резолвер значения: литеральный текст, `Param Target="Text"`, единственный `[Имя]`, `Param Target="Value"` у чисел/дат, пустая ячейка, `EditParam`; выражения — только чтение.
 - [x] Подсказки в `BaseDisplayPresenter`: пунктирная рамка, фон, плейсхолдер; тултип и курсор в `CellControl`; в печать/PNG/PDF не попадают.
-- [x] Инлайн-редактор `CellInlineEditor` в `PresentControl`: двойной клик, `F2`, `Enter`/`Tab`/`Shift+Tab`/`Esc`, потеря фокуса, прокрутка/масштаб, валидация, контекстное меню.
-- [x] Панель режима и подсказок в тулбаре `PresentControl`; `PresentControlViewModel` синхронизирует режим/подсказки с `CellManager.EditSettings`.
+- [x] Инлайн-редактор `CellInlineEditor` в `PresentControl`: двойной клик, набор печатного символа, `F2`, `Enter`/`Tab`/`Shift+Tab`/`Esc`, потеря фокуса, прокрутка/масштаб (репозиционирование через `PresentControl.Update`/`SizeChanged`), валидация, контекстное меню.
+- [x] Панель режима и подсказок в тулбаре `PresentControl`; `PresentControlViewModel` синхронизирует режим/подсказки с `CellManager.EditSettings`; при пустом наборе помеченных ячеек показывается «В шаблоне нет заполняемых ячеек».
+- [x] Валидатор шаблона предупреждает о пометке заполняемой ячейки без поддерживаемого содержимого/параметра и о вычисляемом параметре.
 - [x] Просмотрщик Avalonia: `IsDirty` и `*` в заголовке, `Ctrl+S`, сохранение копии `.tcr`/`.tcrp` через временный файл, подтверждение закрытия, undo/redo (`Ctrl+Z`/`Ctrl+Y`).
 - [x] Авторинг: инспектор «Ячейка» (чекбокс + параметр + плейсхолдер + подсказка), `Schema.xsd` в обоих редакторах.
-- [x] Тесты: `CellEditModelTests`, `CellEditValueTests`, `CellEditHistoryTests`, `CellEditControlTests`, `CellEditRenderTests` (headless); полный прогон `net10.0` — 240, `net48` — 214.
+- [x] Тесты: `CellEditModelTests`, `CellEditValueTests`, `CellEditHistoryTests`, `CellEditControlTests`, `CellEditRenderTests` (headless, включая тёмную тему, клик мимо overlay, репозиционирование при прокрутке); полный прогон `net10.0` — 243, `net48` — 214.
 - [ ] Ручная проверка на живом окне: реальный двойной клик, тултип, тёмная тема, 50–300 %, frozen-панели, IME.
 - [ ] Отдельный профиль заполнения (значения отдельно от шаблона) — вне v1.
 
-Тесты: `dotnet test Tests/Tests.csproj -f net10.0` — 240, `-f net48` — 214 (на момент написания). Сборка `dotnet build CellReport.sln` — без ошибок.
+Тесты: `dotnet test Tests/Tests.csproj -f net10.0` — 243, `-f net48` — 214 (на момент написания). Сборка `dotnet build CellReport.sln` — без ошибок.
 
 
 ## Зафиксированные решения (2026-11-03)
