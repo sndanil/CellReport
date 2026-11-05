@@ -11,31 +11,31 @@
 - [x] Резолвер значения: литеральный текст, `Param Target="Text"`, единственный `[Имя]`, `Param Target="Value"` у чисел/дат, пустая ячейка, `EditParam`; выражения — только чтение.
 - [x] Подсказки в `BaseDisplayPresenter`: пунктирная рамка, фон, плейсхолдер; тултип и курсор в `CellControl`; в печать/PNG/PDF не попадают.
 - [x] Инлайн-редактор `CellInlineEditor` в `PresentControl`: двойной клик, набор печатного символа, `F2`, `Enter`/`Tab`/`Shift+Tab`/`Esc`, потеря фокуса, прокрутка/масштаб (репозиционирование через `PresentControl.Update`/`SizeChanged`), валидация, контекстное меню.
-- [x] Панель режима и подсказок в тулбаре `PresentControl`; `PresentControlViewModel` синхронизирует режим/подсказки с `CellManager.EditSettings`; при пустом наборе помеченных ячеек показывается «В шаблоне нет заполняемых ячеек».
+- [x] Режим и вид подсказок — свойство шаблона (`<EditSettings>`); задаются только в редакторе для всего документа. В просмотрщике нет переключателей режима/подсказок; он использует сохранённые настройки.
 - [x] Валидатор шаблона предупреждает о пометке заполняемой ячейки без поддерживаемого содержимого/параметра и о вычисляемом параметре.
 - [x] Просмотрщик Avalonia: `IsDirty` и `*` в заголовке, `Ctrl+S`, сохранение копии `.tcr`/`.tcrp` через временный файл, undo/redo (`Ctrl+Z`/`Ctrl+Y`). Диалог подтверждения при закрытии **не показывается** (по требованию заказчика).
 - [x] Авторинг: инспектор «Ячейка» (чекбокс + параметр + плейсхолдер + подсказка), `Schema.xsd` в обоих редакторах.
 - [x] Тёмная тема: `SkiaReportRenderer.RenderText` теперь реально применяет `color` (раньше цвет игнорировался, текст рисовался чёрным и инвертировался слоем); для инвертированного отчёта добавлена отдельная палитра подсказок (`PlaceholderColorInverted`, `FrameColorInverted`, `BackgroundColorInverted`), плейсхолдер на чёрном фоне светлый. Для чисел/дат плейсхолдер не рисуется — только рамка (иначе накладывался на `0`/`1999`).
-- [x] Тесты: `CellEditModelTests`, `CellEditValueTests`, `CellEditHistoryTests`, `CellEditControlTests`, `CellEditRenderTests` (headless, включая тёмную тему, инвертированный плейсхолдер, клик мимо overlay, репозиционирование при прокрутке); полный прогон `net10.0` — 244, `net48` — 214.
+- [x] Тесты: `CellEditModelTests`, `CellEditValueTests`, `CellEditHistoryTests`, `CellEditControlTests`, `CellEditRenderTests` (headless, включая тёмную тему, инвертированный плейсхолдер, клик мимо overlay, репозиционирование при прокрутке) + round-trip `<EditSettings>`; полный прогон `net10.0` — 245, `net48` — 216.
 - [ ] Ручная проверка на живом окне: реальный двойной клик, тултип, тёмная тема, 50–300 %, frozen-панели, IME.
 - [ ] Отдельный профиль заполнения (значения отдельно от шаблона) — вне v1.
 
-Тесты: `dotnet test Tests/Tests.csproj -f net10.0` — 244, `-f net48` — 214 (на момент написания). Сборка `dotnet build CellReport.sln` — без ошибок.
+Тесты: `dotnet test Tests/Tests.csproj -f net10.0` — 245, `-f net48` — 216 (на момент написания). Сборка `dotnet build CellReport.sln` — без ошибок.
 
 
 ## Зафиксированные решения (2026-11-03)
 
-1. **По умолчанию — только чтение.** Режим заполнения не сохраняется в шаблоне и не включается автоматически. Пользователь/хост включает его явно.
-2. **Три режима:** `None` (только чтение, дефолт), `MarkedCells` (только помеченные ячейки), `AllCells` (любая поддерживаемая ячейка). Режим — runtime-состояние `CellManager`, в XML не пишется.
+1. **По умолчанию — только чтение.** Пока в шаблоне нет `<EditSettings>`, режим `None`; старые шаблоны открываются только для чтения.
+2. **Три режима:** `None` (только чтение), `MarkedCells` (только помеченные ячейки), `AllCells` (любая поддерживаемая ячейка). Режим — **свойство шаблона**, задаётся только в редакторе для всего документа («Настройки» → «Документ» → «Заполнение ячеек») и сохраняется в `<EditSettings Mode="...">`. В просмотрщике режим не переключается.
 3. **Пометка ячейки — данные шаблона.** На `<Cell>` появляются необязательные атрибуты `Editable`, `EditParam`, `EditPlaceholder`, `EditHint`. Старые шаблоны читаются без изменений; новые атрибуты старые версии игнорируют.
 4. **Редактируется значение, а не разметка.** Если текст ячейки приходит из параметра (`Param Target="Text"`) или содержит ровно один плейсхолдер `[Имя]`, ввод пишется в этот параметр, а разметка шаблона (`<Text>`/`[Имя]`) сохраняется. Литеральный текст (`<Text>Примечание</Text>`) редактируется как текст. Формулы/выражения (`Param.Expression != null`) — только чтение.
-5. **Подсказки:** по умолчанию — пунктирная рамка + плейсхолдер в пустой ячейке + тултип при наведении; фон — опция. Подсказки видны только в режиме заполнения, только у помеченных ячеек (в режиме `AllCells` — без визуального шума), и **никогда** не попадают в печать/PDF/Excel/PNG.
+5. **Подсказки:** рамка + плейсхолдер + тултип по умолчанию, фон — опция. Способ отображения — тоже **свойство шаблона** (`ShowFrame`/`ShowBackground`/`ShowPlaceholder`/`ShowTooltip` в `<EditSettings>`), задаётся в редакторе, сохраняется и используется просмотрщиком без переключателей. Подсказки видны только у помеченных ячеек (в `AllCells` — без визуального шума) и **никогда** не попадают в печать/PDF/Excel/PNG.
 6. **Инлайн-редактор — часть библиотеки `CellReport.Avalonia`**, а не только приложения-просмотрщика: встраиваем в `PresentControl`, чтобы функционал получили все хосты.
 7. **Двойной клик** — основной жест; `F2` — дубль; правый клик выделяет ячейку под курсором и даёт пункт «Заполнить…». Если у ячейки есть действие на двойной клик (`ActionContent` + `ActionType.MouseDblClick`), действие имеет приоритет (как сейчас), редактирование — через `F2`/меню.
 8. **Сохранение из просмотрщика** — это «сохранить копию» (диалог выбора файла, как сейчас). Исходный файл шаблона не перезаписывается молча. При закрытии диалог о несохранённых изменениях **не выводится**: окно закрывается сразу, несохранённые правки теряются (решение заказчика, 2026-11-05).
 9. **Undo/redo** — на уровне контрола, по снимкам ячеек (не всего шаблона), лимит 100 шагов.
-10. **Программный API** — два уровня: `CellManager` (для живого документа/хоста) и `ReportDocument` (при генерации отчёта): `SetParameter(..., editable: true)` и `EnableCellEditing(...)`.
-11. **v1 не трогает** инлайн-редактор конструктора (`DesignerView`) и старые просмотрщики; в конструкторе добавляется только авторинг пометок.
+10. **Программный API** — два уровня: `CellManager`/`ReportDocument` для формирования отчёта (`SetParameter(..., editable: true)`, `EnableCellEditing(...)`); эти вызовы меняют то же свойство шаблона до сохранения. В просмотрщике API для переключения режима не используется.
+11. **v1 не трогает** инлайн-редактор конструктора (`DesignerView`) и старые просмотрщики; в конструкторе добавляется авторинг пометок и документных настроек заполнения.
 
 ## 1. Цель и рамки
 
@@ -56,7 +56,7 @@
 - Отрисовка подсказок в `BaseDisplayPresenter` (экран), без влияния на печать/экспорт.
 - Инлайн-редактор в `PresentControl`: двойной клик, `F2`, `Enter`/`Tab`/`Esc`, потеря фокуса, прокрутка/масштаб, контекстное меню.
 - Тултип и курсор над заполняемой ячейкой.
-- Просмотрщик Avalonia: переключатель режима, подсказки, dirty-флаг, сохранение копии, undo/redo, локализация.
+- Просмотрщик Avalonia: подсказки из шаблона, dirty-флаг, сохранение копии, undo/redo, локализация; переключателей режима/подсказок нет.
 - Авторинг в редакторе Avalonia: свойства ячейки в инспекторе, схема XML, автодополнение.
 - Тесты: модель, сериализация, резолвер, рендер, контрол, регрессия.
 
@@ -102,9 +102,9 @@
 
 | Режим | Кто включает | Что редактируется | Что видно |
 |---|---|---|---|
-| `None` (дефолт) | всегда при загрузке | ничего | подсказок нет, двойной клик ничего не делает |
-| `MarkedCells` | пользователь в тулбаре или хост через API | только ячейки с `Cell.Editable == true` | рамка/фон/плейсхолдер у помеченных, тултип у помеченных |
-| `AllCells` | пользователь в тулбаре или хост через API | любая ячейка с поддерживаемым содержимым (текст/число/дата/пустая) | визуальные подсказки только у помеченных (чтобы не разрисовывать весь бланк), тултип/курсор — у любой редактируемой |
+| `None` (дефолт) | редактор, «Настройки» → «Документ»; в шаблоне нет `<EditSettings>` | ничего | подсказок нет, двойной клик ничего не делает |
+| `MarkedCells` | редактор, для всего документа (`Mode="MarkedCells"`) | только ячейки с `Cell.Editable == true` | рамка/фон/плейсхолдер у помеченных, тултип у помеченных |
+| `AllCells` | редактор, для всего документа (`Mode="AllCells"`) | любая ячейка с поддерживаемым содержимым (текст/число/дата/пустая) | визуальные подсказки только у помеченных (чтобы не разрисовывать весь бланк), тултип/курсор — у любой редактируемой |
 
 Правило доступа:
 
@@ -115,7 +115,7 @@ bool allowed = mode != None
     && !valueSlotIsComputed;
 ```
 
-`MarkedCells` без единой пометки = ничего не редактируется (это не ошибка: шаблон может быть обычным отчётом). В тулбаре в этом случае пункт остаётся доступным, но при включении показывается подсказка «В шаблоне нет заполняемых ячеек» (статус/тост) — опционально.
+`MarkedCells` без единой пометки = ничего не редактируется (это не ошибка: шаблон может быть обычным отчётом). В редакторе это видно по отсутствию подсказок; валидатор может предупредить.
 
 ### 3.2. Какие ячейки поддерживаются
 
@@ -234,7 +234,7 @@ namespace CellReport.Core
     [Serializable]
     public class CellEditSettings : NotifyPropertyChanged
     {
-        public CellEditMode Mode { get; set; }                 // runtime, не сериализуется
+        public CellEditMode Mode { get; set; }                 // сериализуется в <EditSettings Mode="..."/>
         public bool ShowFrame { get; set; } = true;            // пунктирная рамка
         public bool ShowBackground { get; set; }               // тонировка, по умолчанию выкл
         public bool ShowPlaceholder { get; set; } = true;      // текст в пустой ячейке
@@ -248,14 +248,14 @@ namespace CellReport.Core
 }
 ```
 
-Хранение: `[NonSerialized]` поле в `CellManager` + ленивое свойство `EditSettings`; изменения `Mode` поднимают `PropertyChanged("EditSettings")` у менеджера, презентер по нему делает `Update()`. В XML шаблона режим и цвета **не** пишутся (решение 2 и 5).
+Хранение: поле в `CellManager` (ленивое свойство `EditSettings`) + элемент `<EditSettings Mode="..." ShowFrame="..." ShowBackground="..." ShowPlaceholder="..." ShowTooltip="..."/>` в корне шаблона. `CellTemplate` пишет/читает его, `ReportDocument.CreateManager` клонирует настройки из шаблона. Изменения `Mode` поднимают `PropertyChanged("EditSettings")` у менеджера, презентер по нему делает `Update()`. Отсутствие элемента = `None` (старые шаблоны только для чтения).
 
 Цвета выбраны «тема-нейтральными» (средний зелёный, серый), чтобы читаться и на светлом, и на тёмном фоне. Дополнительно `AvaloniaDisplayPresenter` рисует подсказки при выключенной инверсии (как уже делает для текущей ячейки/выделения).
 
 ### 4.3. `CellManager`
 
 ```csharp
-public CellEditSettings EditSettings { get; }                 // лениво
+public CellEditSettings EditSettings { get; set; }            // лениво; setter — при загрузке шаблона
 
 public bool IsCellEditable(CellLocation location);            // режим + пометка + поддержка + не выражение
 public bool IsCellEditable(int row, int column);
@@ -301,7 +301,7 @@ doc.AddSection("Main");
 doc.SetParameter("Организация", org);                    // значение из данных
 doc.SetParameter("Комментарий", null, editable: true);    // поля нет — пусть заполнит пользователь
 doc.EnableCellEditing("Подпись", "Дата");                 // ещё два поля
-doc.Manager.EditSettings.Mode = CellEditMode.MarkedCells; // можно и через API, и в тулбаре
+doc.Manager.EditSettings.Mode = CellEditMode.MarkedCells; // свойство шаблона; сохранится в <EditSettings>
 
 var control = new PresentControl();
 control.AttachManager(doc.Manager);                       // режим уже включён
@@ -385,7 +385,7 @@ public sealed class CellSnapshot
 
 Визуальные подсказки (рамка/фон/плейсхолдер) рисуются **только у помеченных** ячеек (`cell.Editable`), даже в режиме `AllCells`. Тултип и курсор — у любой редактируемой (в `AllCells` это вся поддерживаемая сетка). Так «весь шаблон» не превращается в раскраску.
 
-Текст плейсхолдера: `Cell.EditPlaceholder` → имя слота (например, `ФИО`) → `EditSettings.DefaultPlaceholder` (локализованное «Введите значение»). Тултип: `Cell.EditHint` → `string.Format(TooltipFormat, placeholder)`. Строки задаёт хост (`PresentControl` при `AttachManager` подставляет локализованные значения, если они не заданы).
+Текст плейсхолдера: `Cell.EditPlaceholder` → имя слота (например, `ФИО`) → `EditSettings.DefaultPlaceholder` (локализованное «Введите значение»). Тултип: `Cell.EditHint` → `string.Format(TooltipFormat, placeholder)`. Значения по умолчанию заданы в `CellEditSettings`; хост может их переопределить.
 
 ### 5.2. Проходы рендеринга
 
@@ -534,35 +534,17 @@ public bool IsActive { get; }
 
 ## 7. Просмотрщик Avalonia
 
-### 7.1. Тулбар
+### 7.1. Без переключателей в просмотрщике
 
-В общий `PresentControl.axaml` (панель видна и редактору, но в редакторе `ShowToolBar = false`):
+В просмотрщике **нет** панели «Заполнение», чекбоксов подсказок и команд смены режима.
+`PresentControl` только читает `Manager.EditSettings` из загруженного шаблона:
 
-- `DropDownButton`/`SplitButton` «Заполнение» с `MenuFlyout` из трёх радио-пунктов: «Только чтение», «Только отмеченные ячейки», «Все ячейки».
-- Чекбоксы подсказок: «Рамка», «Фон», «Плейсхолдер», «Подсказка при наведении» (можно свернуть в подменю «Подсказки»).
-- Кнопки «Отменить ввод» / «Повторить ввод» (опционально, если не хочется полагаться только на `Ctrl+Z`).
+- `Mode` определяет, какие ячейки можно редактировать;
+- `ShowFrame`/`ShowBackground`/`ShowPlaceholder`/`ShowTooltip` определяют вид подсказок.
 
-ViewModel `PresentControlViewModel`:
-
-```csharp
-[ObservableProperty] private CellEditMode _editMode;
-[ObservableProperty] private bool _showEditFrame = true;
-[ObservableProperty] private bool _showEditBackground;
-[ObservableProperty] private bool _showEditPlaceholder = true;
-[ObservableProperty] private bool _showEditTooltip = true;
-
-public bool IsReadOnlyMode => EditMode == CellEditMode.None;
-public bool IsMarkedMode   => EditMode == CellEditMode.MarkedCells;
-public bool IsAllMode      => EditMode == CellEditMode.AllCells;
-public bool IsCellEditingVisible => !DesignMode && Manager != null;
-
-[RelayCommand] private void SetEditMode(CellEditMode mode);
-[RelayCommand] private void ToggleEditHints(...);
-```
-
-При смене режима: `Manager.EditSettings.Mode = mode; Presenter?.Update();`. `SyncFromPresenter()` читает режим/подсказки из `Manager.EditSettings` (хост мог включить режим программно).
-
-Скрыть панель для «чистых» хостов: styled-свойство `PresentControl.ShowCellEditing` (дефолт `true`); если `false`, панель/пункт меню не показываются.
+`PresentControlViewModel` хранит только `IsDirty`/`SaveRequested` и не имеет
+свойств режима/подсказок. Контекстное меню «Заполнить ячейку» остаётся — это
+действие над разрешённой ячейкой, а не переключение режима.
 
 ### 7.2. Dirty, сохранение, заголовок, закрытие
 
@@ -605,7 +587,19 @@ public bool IsCellEditingVisible => !DesignMode && Manager != null;
 
 ## 8. Авторинг в редакторе Avalonia
 
-### 8.1. Инспектор, вкладка «Ячейка»
+### 8.1. Настройки документа
+
+`DocumentSettingsView` (вкладка «Документ» окна «Настройки») содержит группу
+«Заполнение ячеек»:
+
+- `ComboBox` «Режим редактирования»: «Только чтение», «Только отмеченные ячейки», «Все ячейки»;
+- чекбоксы «Показывать рамку», «Показывать фон», «Показывать плейсхолдер», «Показывать подсказку при наведении».
+
+`DocumentSettingsViewModel` пишет их в `Manager.EditSettings` через
+`CommitDocumentChange` (undo/redo, dirty-флаг), читает при `Load`/`ApplyExternalChange`.
+Настройки сохраняются в `<EditSettings>` при сохранении шаблона и действуют на весь документ.
+
+### 8.2. Инспектор, вкладка «Ячейка»
 
 В `DesignerView.axaml` (314–322) добавить блок «Заполнение в просмотрщике»:
 
@@ -623,17 +617,17 @@ public bool IsCellEditingVisible => !DesignMode && Manager != null;
 
 Undo/redo: `CommitDocumentChange` уже пушит полный снимок шаблона в `TemplateHistory`, новые атрибуты попадут автоматически.
 
-### 8.2. Схема и код-редактор
+### 8.3. Схема и код-редактор
 
-- `src/CellReport.Editor.Avalonia/Schema.xsd` (`CellType`, 155–171): атрибуты `Editable` (`xs:boolean`), `EditParam`, `EditPlaceholder`, `EditHint` (`xs:string`).
-- `src/CellReport.Editor/Schema.xsd` (legacy WPF-редактор) — те же атрибуты, чтобы автодополнение не ругалось.
+- `src/CellReport.Editor.Avalonia/Schema.xsd`: атрибуты `Editable`/`EditParam`/`EditPlaceholder`/`EditHint` у `CellType` и элемент `EditSettings` у корня.
+- `src/CellReport.Editor/Schema.xsd` (legacy WPF-редактор) — то же, чтобы автодополнение не ругалось.
 - `XmlCodeEditor` читает XSD — отдельная правка не нужна; проверить автодополнение вручную.
 
-### 8.3. Валидатор и лента (опционально)
+### 8.4. Валидатор и лента (опционально)
 
 - `TemplateValidator`: предупреждать, если `Editable == true`, но в ячейке нет поддерживаемого контента/параметра (ошибка авторинга, а не загрузки).
 - Ribbon: кнопка-переключатель «Заполняемая ячейка» для текущего выделения (удобно, но не обязательно в v1; инспектора достаточно).
-- Предпросмотр подсказок в конструкторе — вне v1 (конструктор и так показывает разметку).
+- Предпросмотр подсказок в конструкторе: включается теми же `ShowFrame`/`ShowPlaceholder` из настроек документа.
 
 ## 9. Печать, экспорт, совместимость
 
@@ -644,7 +638,7 @@ Undo/redo: `CommitDocumentChange` уже пушит полный снимок ш
 | PNG (`ImageExporter`) | значения попадают, подсказок нет |
 | Excel | значения попадают, разметка `Editable` не экспортируется |
 | HTML | значения попадают, подсказок нет |
-| Сохранение `.tcr`/`.tcrp` | значения и пометки сохраняются; режим/цвета — нет |
+| Сохранение `.tcr`/`.tcrp` | значения, пометки и `<EditSettings>` (режим/флаги подсказок) сохраняются |
 | Старые версии | новые атрибуты игнорируются; поведение по умолчанию — только чтение |
 | `ReportDocument` | `AddSection` копирует пометки через `CreateCell(from)`; повторные секции получают свои копии |
 | `DesignModeScope.Suspend` | на экспорт не влияет: подсказки и так не рисуются в экспортёрах |
@@ -717,7 +711,7 @@ Undo/redo: `CommitDocumentChange` уже пушит полный снимок ш
 | 1. Модель | `CellEditMode`, `CellEditSettings`, флаги `Cell` + XML, `CellManager` API, `CellValueEditor`, снимки/история, `ReportDocument` API, копирование в секциях | 2–3 дня |
 | 2. Подсказки | Проходы в `BaseDisplayPresenter`, рамка/фон/плейсхолдер, тултип/курсор, тёмная тема, тесты рендера | 1.5–2 дня |
 | 3. Инлайн-редактор | `CellInlineEditor`, позиционирование/скролл/масштаб, клавиатура, валидация, контекстное меню, `Tab`-навигация, тесты контрола | 2–3 дня |
-| 4. Просмотрщик | Тулбар/режимы/подсказки, dirty/заголовок, сохранение копии, undo/redo, локализация | 1.5–2 дня |
+| 4. Просмотрщик | Dirty/заголовок, сохранение копии, undo/redo, локализация; режим и подсказки читаются из шаблона | 1.5–2 дня |
 | 5. Редактор | Инспектор «Ячейка», схема XSD (2), валидатор, (опц.) кнопка в ленте | 1–2 дня |
 | 6. Стабилизация | Регрессия, ручные прогоны (scale/frozen/темы/культуры), README/AGENTS, пример шаблона | 1–2 дня |
 
@@ -755,30 +749,33 @@ Undo/redo: `CommitDocumentChange` уже пушит полный снимок ш
 | Файл | Изменение |
 |---|---|
 | `src/CellReport/Core/Editing/CellEditMode.cs` | новый enum |
-| `src/CellReport/Core/Editing/CellEditSettings.cs` | новый класс настроек (режим, подсказки, цвета, тексты) |
+| `src/CellReport/Core/Editing/CellEditSettings.cs` | новый класс настроек + `Parse`/`Serialize`/`Clone` (`<EditSettings>`) |
 | `src/CellReport/Core/Editing/CellValueEditor.cs` | новый резолвер слота/валидатор |
 | `src/CellReport/Core/Editing/CellSnapshot.cs`, `CellEditHistory.cs` | новые: снимки и undo/redo |
 | `src/CellReport/Core/Cell.cs` | `Editable/EditParam/EditPlaceholder/EditHint`, Serialize/Parse, уведомления |
-| `src/CellReport/Core/CellManager.cs` | `EditSettings`, `IsCellEditable`, `SetCellEditable`, `SetEditableByParam`, `CreateValueEditor`, `GetCellEditHint`, `FindNextEditable`, копирование флагов в `CreateCell(from)` |
-| `src/CellReport/ReportDocument.cs` | `SetParameter(..., editable)`, `EnableCellEditing()`, `EnableCellEditing(params string[])` |
+| `src/CellReport/Core/CellManager.cs` | `EditSettings` (+setter), `IsCellEditable`, `SetCellEditable`, `SetEditableByParam`, `CreateValueEditor`, `GetCellEditHint`, `FindNextEditable`, копирование флагов в `CreateCell(from)` |
+| `src/CellReport/Core/CellTemplate.cs` | запись/чтение `<EditSettings>` |
+| `src/CellReport/ReportDocument.cs` | `SetParameter(..., editable)`, `EnableCellEditing()`, `EnableCellEditing(params string[])`, клонирование `EditSettings` |
 | `src/CellReport/Presenters/BaseDisplayPresenter.cs` | перегрузка `OnDblClick` с `CellLocation`, проходы подсказок, подписка на `EditSettings` |
 | `src/CellReport/Presenters/BasePresenter.cs` | (при необходимости) общий helper для рамки/плейсхолдера |
 | `src/CellReport/Presenters/BaseRenderer.cs` | без изменений (используем `RenderFillRect/RenderRect/RenderText`) |
 | `src/CellReport.Avalonia/Editing/CellInlineEditor.cs` | новый overlay-редактор: позиционирование, клавиши (`Enter`/`Tab`/`Esc`), валидация |
 | `src/CellReport.Avalonia/Editing/CellEditEventArgs.cs` | событие коммита (снимки «до/после») |
-| `src/CellReport.Avalonia/PresentControl.axaml` | панель с `TextBox`-редактором, панель режима, пункт меню «Заполнить» |
-| `src/CellReport.Avalonia/PresentControl.axaml.cs` | создание редактора, `BeginCellEdit/Commit/Cancel`, undo/redo, `CellEdited`, `ShowCellEditing`, инициализация локализованных текстов |
+| `src/CellReport.Avalonia/PresentControl.axaml` | панель с `TextBox`-редактором, пункт меню «Заполнить»; переключателей режима/подсказок нет |
+| `src/CellReport.Avalonia/PresentControl.axaml.cs` | создание редактора, `BeginCellEdit/Commit/Cancel`, undo/redo, `CellEdited` |
 | `src/CellReport.Avalonia/AvaloniaDisplayPresenter.cs` | `OnDblClick(location)`, `F2`, вызов `BeginCellEdit`, инверсия для подсказок |
 | `src/CellReport.Avalonia/CellControl.cs` | правый клик → `CurrentCell`; курсор `IBeam` и тултип над редактируемой ячейкой |
-| `src/CellReport.Avalonia/ViewModels/PresentControlViewModel.cs` | `EditMode`, флаги подсказок, `IsDirty`, `SaveRequested`, `MarkSaved`, `IsCellEditingVisible` |
+| `src/CellReport.Avalonia/ViewModels/PresentControlViewModel.cs` | `IsDirty`, `SaveRequested`, `MarkSaved`; режим/подсказки не переключаются |
 | `src/CellReport.Avalonia/Services/ReportExportService.cs` | helper сохранения шаблона (путь/тип, temp+move), защита от перезаписи по умолчанию |
 | `src/CellReport.Avalonia/Services/ReportLocalization.cs` | новые строки §7.4 |
 | `src/CellReport.Avalonia/Themes/CellReportControls.axaml` | стиль `TextBox.invalid` (рамка/подсветка) |
 | `src/CellReport.Avalonia.Viewer/ViewModels/MainWindowViewModel.cs` | путь/тип шаблона, `IsDirty`, заголовок, `SaveRequested`, открытие нового файла |
 | `src/CellReport.Avalonia.Viewer/MainWindow.axaml(.cs)` | `Ctrl+S`; диалог несохранённых правок удалён |
+| `src/CellReport.Editor.Avalonia/ViewModels/DocumentSettingsViewModel.cs` | режим заполнения и флаги подсказок документа |
+| `src/CellReport.Editor.Avalonia/Views/DocumentSettingsView.axaml` | группа «Заполнение ячеек» |
 | `src/CellReport.Editor.Avalonia/ViewModels/InspectorViewModel.cs` | свойства `CellEditable/CellEditParam/CellEditPlaceholder/CellEditHint`, `CommitDocumentChange`, перезагрузка |
 | `src/CellReport.Editor.Avalonia/Views/DesignerView.axaml` | блок «Заполнение в просмотрщике» во вкладке «Ячейка» |
-| `src/CellReport.Editor.Avalonia/Schema.xsd`, `src/CellReport.Editor/Schema.xsd` | атрибуты `Editable/EditParam/EditPlaceholder/EditHint` у `CellType` |
+| `src/CellReport.Editor.Avalonia/Schema.xsd`, `src/CellReport.Editor/Schema.xsd` | атрибуты `Editable/EditParam/EditPlaceholder/EditHint` у `CellType`, `EditSettings` у корня |
 | `src/CellReport.Editor.Avalonia/Services/TemplateValidator.cs` | (опц.) предупреждение о пометке без слота |
 | `Tests/CellEditModelTests.cs`, `CellEditValueTests.cs`, `CellEditHistoryTests.cs`, `CellEditRenderTests.cs`, `CellEditControlTests.cs` | новые тесты §11 |
 | `Tests/TemplateLoadTests.cs` | round-trip новых атрибутов, старый XML без них |
@@ -803,7 +800,7 @@ Undo/redo: `CommitDocumentChange` уже пушит полный снимок ш
 
 ## 17. Критерии готовности
 
-- [ ] По умолчанию просмотрщик полностью только для чтения; режим не сохраняется в шаблоне.
+- [ ] По умолчанию (нет `<EditSettings>`) просмотрщик полностью только для чтения; режим и подсказки задаются в шаблоне из редактора.
 - [ ] `MarkedCells` редактирует ровно помеченные ячейки; `AllCells` — все поддерживаемые; вычисляемые/неподдерживаемые — никогда.
 - [ ] Ввод текста в параметр не разрушает `Text`/`[...]`; литеральный текст редактируется как текст.
 - [ ] Числа/даты валидируются, ошибки не закрывают редактор и не портят модель.

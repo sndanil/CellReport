@@ -44,27 +44,7 @@ namespace CellReport.Avalonia.Viewer.ViewModels
 				return false;
 
 			LoadFromFile(filePath);
-			ApplyStartupEditMode(args);
 			return true;
-		}
-
-		private void ApplyStartupEditMode(string[] args)
-		{
-			if (args == null || PresentControl.Manager == null)
-				return;
-
-			foreach (var arg in args)
-			{
-				if (!arg.StartsWith("--edit=", StringComparison.OrdinalIgnoreCase))
-					continue;
-
-				var value = arg.Substring("--edit=".Length);
-				if (string.Equals(value, "all", StringComparison.OrdinalIgnoreCase))
-					PresentControl.Manager.EditSettings.Mode = CellEditMode.AllCells;
-				else if (string.Equals(value, "marked", StringComparison.OrdinalIgnoreCase))
-					PresentControl.Manager.EditSettings.Mode = CellEditMode.MarkedCells;
-				return;
-			}
 		}
 
 		public void LoadFromFile(string filePath)

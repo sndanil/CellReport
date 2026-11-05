@@ -654,6 +654,18 @@ namespace CellReport.Core
 
 				return _editSettings;
 			}
+			set
+			{
+				if (ReferenceEquals(_editSettings, value))
+					return;
+
+				if (_editSettings != null)
+					_editSettings.PropertyChanged -= OnEditSettingsChanged;
+
+				_editSettings = value ?? new CellEditSettings();
+				_editSettings.PropertyChanged += OnEditSettingsChanged;
+				OnPropertyChanged("EditSettings");
+			}
 		}
 
 		private void OnEditSettingsChanged(object sender, PropertyChangedEventArgs e)

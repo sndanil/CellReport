@@ -6,6 +6,7 @@
 				<xs:element name='Properties' type='PropertiesType' minOccurs='0' maxOccurs='1'/>
 				<xs:element name='ExportSettings' type='ExportSettingsType' minOccurs='0' maxOccurs='1'/>
 				<xs:element name='DisplaySettings' type='DisplaySettingsType' minOccurs='0' maxOccurs='1'/>
+				<xs:element name='EditSettings' type='EditSettingsType' minOccurs='0' maxOccurs='1'/>
 				<xs:element name='PrintSettings' type='PrintSettingsType' minOccurs='0' maxOccurs='1'/>
 				<xs:element name='BookmarkSettings' type='BookmarkSettingsType' minOccurs='0' maxOccurs='1'/>
 				<xs:element name='Sections' type='SectionsType' minOccurs='0' maxOccurs='1'/>
@@ -107,6 +108,14 @@
 		<xs:attribute name='GridColor' type='xs:string' />
 		<xs:attribute name='ShowCurrentRows' type='xs:boolean' default='false'/>
 		<xs:attribute name='Scale' type='xs:double' default='1'/>
+	</xs:complexType>
+
+	<xs:complexType name='EditSettingsType'>
+		<xs:attribute name='Mode' type='xs:string' default='None'/>
+		<xs:attribute name='ShowFrame' type='xs:boolean' default='true'/>
+		<xs:attribute name='ShowBackground' type='xs:boolean' default='false'/>
+		<xs:attribute name='ShowPlaceholder' type='xs:boolean' default='true'/>
+		<xs:attribute name='ShowTooltip' type='xs:boolean' default='true'/>
 	</xs:complexType>
 
 	<xs:complexType name='PrintSettingsType'>

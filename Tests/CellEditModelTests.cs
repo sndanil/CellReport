@@ -94,6 +94,50 @@ namespace CellReportTests
 		}
 
 		[TestMethod]
+		public void EditSettings_RoundTripsThroughPackage()
+		{
+			var manager = CreateManager();
+			var cell = CreateTextCell(manager, 0, 0, "text");
+			cell.Editable = true;
+			manager.EditSettings.Mode = CellEditMode.MarkedCells;
+			manager.EditSettings.ShowFrame = false;
+			manager.EditSettings.ShowBackground = true;
+			manager.EditSettings.ShowPlaceholder = false;
+			manager.EditSettings.ShowTooltip = false;
+
+			byte[] data;
+			using (var stream = new System.IO.MemoryStream())
+			{
+				new CellTemplate(manager).Save(stream, TemplateType.Package);
+				data = stream.ToArray();
+			}
+
+			var reloaded = new CellTemplate();
+			reloaded.Load(new System.IO.MemoryStream(data));
+			var settings = reloaded.Manager.EditSettings;
+
+			Assert.AreEqual(CellEditMode.MarkedCells, settings.Mode);
+			Assert.IsFalse(settings.ShowFrame);
+			Assert.IsTrue(settings.ShowBackground);
+			Assert.IsFalse(settings.ShowPlaceholder);
+			Assert.IsFalse(settings.ShowTooltip);
+		}
+
+		[TestMethod]
+		public void OldTemplateWithoutEditSettings_IsReadOnly()
+		{
+			var template = new CellTemplate();
+			template.LoadFromXml(
+				"<CellReportTemplate><Properties/><Table RowsCount=\"1\" ColumnsCount=\"1\">"
+				+ "<Row><Cell><TextContent><Text>hello</Text></TextContent></Cell></Row>"
+				+ "</Table></CellReportTemplate>");
+
+			Assert.AreEqual(CellEditMode.None, template.Manager.EditSettings.Mode);
+			Assert.IsTrue(template.Manager.EditSettings.ShowFrame);
+			Assert.IsTrue(template.Manager.EditSettings.ShowPlaceholder);
+		}
+
+		[TestMethod]
 		public void CellFlags_SerializeAndParse()
 		{
 			var manager = CreateManager();

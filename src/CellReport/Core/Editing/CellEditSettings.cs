@@ -1,4 +1,5 @@
 using System;
+using System.Xml.Linq;
 
 namespace CellReport.Core
 {
@@ -180,6 +181,71 @@ namespace CellReport.Core
 				_tooltipFormat = value;
 				OnPropertyChanged("TooltipFormat");
 			}
+		}
+
+		/// <summary>
+		/// Загружает настройки из шаблона; отсутствующий элемент означает «только чтение».
+		/// </summary>
+		internal static CellEditSettings Parse(XElement element)
+		{
+			var result = new CellEditSettings();
+			if (element == null)
+				return result;
+
+			var mode = element.Attribute("Mode");
+			if (mode != null)
+			{
+				CellEditMode parsed;
+				if (Enum.TryParse(mode.Value, true, out parsed) && Enum.IsDefined(typeof(CellEditMode), parsed))
+					result.Mode = parsed;
+			}
+
+			ReadBool(element, "ShowFrame", value => result.ShowFrame = value);
+			ReadBool(element, "ShowBackground", value => result.ShowBackground = value);
+			ReadBool(element, "ShowPlaceholder", value => result.ShowPlaceholder = value);
+			ReadBool(element, "ShowTooltip", value => result.ShowTooltip = value);
+			return result;
+		}
+
+		private static void ReadBool(XElement element, string name, Action<bool> apply)
+		{
+			var attribute = element.Attribute(name);
+			if (attribute == null)
+				return;
+
+			bool value;
+			if (bool.TryParse(attribute.Value, out value))
+				apply(value);
+		}
+
+		internal XElement Serialize()
+		{
+			return new XElement("EditSettings",
+				new XAttribute("Mode", Mode),
+				new XAttribute("ShowFrame", ShowFrame),
+				new XAttribute("ShowBackground", ShowBackground),
+				new XAttribute("ShowPlaceholder", ShowPlaceholder),
+				new XAttribute("ShowTooltip", ShowTooltip));
+		}
+
+		internal CellEditSettings Clone()
+		{
+			return new CellEditSettings
+			{
+				Mode = Mode,
+				ShowFrame = ShowFrame,
+				ShowBackground = ShowBackground,
+				ShowPlaceholder = ShowPlaceholder,
+				ShowTooltip = ShowTooltip,
+				FrameColor = FrameColor,
+				BackgroundColor = BackgroundColor,
+				PlaceholderColor = PlaceholderColor,
+				PlaceholderColorInverted = PlaceholderColorInverted,
+				FrameColorInverted = FrameColorInverted,
+				BackgroundColorInverted = BackgroundColorInverted,
+				DefaultPlaceholder = DefaultPlaceholder,
+				TooltipFormat = TooltipFormat
+			};
 		}
 	}
 }

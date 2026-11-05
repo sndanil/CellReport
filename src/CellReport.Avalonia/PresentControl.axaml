@@ -38,56 +38,6 @@
 
 				<Border Classes="toolbar-separator" />
 
-				<DropDownButton Classes="toolbar-button"
-				                Name="cellEditModeButton"
-				                IsVisible="{Binding IsCellEditingVisible}"
-				                ToolTip.Tip="{Binding EditModeLabel}">
-					<StackPanel Orientation="Horizontal" Spacing="4">
-						<materialIcons:MaterialIcon Kind="PencilOutline" Classes="toolbar-icon icon-muted" />
-						<TextBlock Text="{Binding EditModeLabel}" VerticalAlignment="Center" />
-					</StackPanel>
-					<DropDownButton.Flyout>
-						<MenuFlyout Placement="BottomEdgeAlignedLeft">
-							<MenuItem Header="{Binding EditReadOnlyLabel}"
-							          ToggleType="Radio"
-							          GroupName="CellEditMode"
-							          IsChecked="{Binding IsReadOnlyMode, Mode=OneWay}"
-							          Command="{Binding SetReadOnlyModeCommand}" />
-							<MenuItem Header="{Binding EditMarkedLabel}"
-							          ToggleType="Radio"
-							          GroupName="CellEditMode"
-							          IsChecked="{Binding IsMarkedMode, Mode=OneWay}"
-							          Command="{Binding SetMarkedEditModeCommand}" />
-							<MenuItem Header="{Binding EditAllLabel}"
-							          ToggleType="Radio"
-							          GroupName="CellEditMode"
-							          IsChecked="{Binding IsAllMode, Mode=OneWay}"
-							          Command="{Binding SetAllEditModeCommand}" />
-							<Separator />
-							<MenuItem Header="{Binding EditFrameLabel}"
-							          ToggleType="CheckBox"
-							          IsChecked="{Binding ShowEditFrame, Mode=TwoWay}" />
-							<MenuItem Header="{Binding EditBackgroundLabel}"
-							          ToggleType="CheckBox"
-							          IsChecked="{Binding ShowEditBackground, Mode=TwoWay}" />
-							<MenuItem Header="{Binding EditPlaceholderLabel}"
-							          ToggleType="CheckBox"
-							          IsChecked="{Binding ShowEditPlaceholder, Mode=TwoWay}" />
-							<MenuItem Header="{Binding EditTooltipLabel}"
-							          ToggleType="CheckBox"
-							          IsChecked="{Binding ShowEditTooltip, Mode=TwoWay}" />
-						</MenuFlyout>
-					</DropDownButton.Flyout>
-				</DropDownButton>
-
-				<TextBlock Text="{Binding EditNoFieldsLabel}"
-				           IsVisible="{Binding ShowNoMarkedCellsHint}"
-				           Margin="4,0"
-				           VerticalAlignment="Center"
-				           Opacity="0.7" />
-
-				<Border Classes="toolbar-separator" />
-
 				<ToggleButton Classes="toolbar-button toolbar-icon-button"
 				              IsChecked="{Binding ShowGridLines}"
 				              ToolTip.Tip="{Binding ShowGridLabel}">

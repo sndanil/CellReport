@@ -4,6 +4,7 @@
     <DocumentName>Заполнение ячеек — демо</DocumentName>
   </Properties>
   <DisplaySettings FrozenColumns="0" FrozenRows="0" ShowGridLines="true" ShowResizers="false" Scale="1" />
+  <EditSettings Mode="MarkedCells" ShowFrame="true" ShowBackground="false" ShowPlaceholder="true" ShowTooltip="true" />
   <PrintSettings Landscape="false" AutoFitWidthPages="1" Scale="1">
     <Margins Top="10" Left="10" Right="10" Bottom="10" />
   </PrintSettings>

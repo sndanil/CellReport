@@ -5,7 +5,6 @@ using Avalonia.Headless;
 using Avalonia.Input;
 using Avalonia.VisualTree;
 using CellReport.Avalonia;
-using CellReport.Avalonia.ViewModels;
 using CellReport.Core;
 using CellReport.Core.Contents;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -182,35 +181,6 @@ namespace CellReportTests
 				rect.Y + rect.Height / 2);
 
 			Assert.IsFalse(control.IsCellEditing);
-		}
-
-		[TestMethod]
-		public void ViewModel_Commands_SwitchManagerEditMode()
-		{
-			var manager = CreateManager(CellEditMode.None);
-			var control = new PresentControl();
-			var viewModel = new PresentControlViewModel { Manager = manager };
-			control.DataContext = viewModel;
-			control.AttachManager(manager);
-
-			Assert.IsTrue(viewModel.IsCellEditingVisible);
-
-			viewModel.SetMarkedEditModeCommand.Execute(null);
-			Assert.AreEqual(CellEditMode.MarkedCells, manager.EditSettings.Mode);
-			Assert.IsTrue(viewModel.IsMarkedMode);
-			Assert.IsTrue(viewModel.ShowNoMarkedCellsHint);
-
-			manager.SetCellEditable(new CellLocation { Row = 0, Column = 0 }, true);
-			viewModel.SyncFromPresenter();
-			Assert.IsFalse(viewModel.ShowNoMarkedCellsHint);
-
-			viewModel.SetAllEditModeCommand.Execute(null);
-			Assert.AreEqual(CellEditMode.AllCells, manager.EditSettings.Mode);
-			Assert.IsTrue(viewModel.IsAllMode);
-
-			viewModel.SetReadOnlyModeCommand.Execute(null);
-			Assert.AreEqual(CellEditMode.None, manager.EditSettings.Mode);
-			Assert.IsTrue(viewModel.IsReadOnlyMode);
 		}
 
 		[TestMethod]

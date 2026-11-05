@@ -652,7 +652,7 @@ namespace CellReport.Presenters
 
 		protected virtual void RenderEditHintsBackground(object context, Cell cell)
 		{
-			if (Renderer == null || cell == null || !cell.Editable)
+			if (Renderer == null || cell == null || !cell.Editable || Manager.IsDesignMode)
 				return;
 
 			var settings = Manager.EditSettings;
@@ -667,7 +667,7 @@ namespace CellReport.Presenters
 
 		protected virtual void RenderEditHintsOverlay(object context, Cell cell)
 		{
-			if (Renderer == null || cell == null || !cell.Editable)
+			if (Renderer == null || cell == null || !cell.Editable || Manager.IsDesignMode)
 				return;
 
 			var settings = Manager.EditSettings;

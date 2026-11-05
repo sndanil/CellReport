@@ -79,6 +79,7 @@ namespace CellReport
 			Manager = new CellManager(rowsCount, colsCount, _template.Manager.Properties.DefaultRowHeight, _template.Manager.Properties.DefaultColumn)
 			{
 				DisplaySettings = _template.Manager.DisplaySettings.Clone(),
+				EditSettings = _template.Manager.EditSettings.Clone(),
 				ExportSettings = _template.Manager.ExportSettings.Clone(),
 				TemplateDirectory = _template.Manager.TemplateDirectory,
 				UriDataLoaderOptions = _template.Manager.UriDataLoaderOptions.Clone()
