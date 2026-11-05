@@ -68,6 +68,7 @@ namespace CellReport.Presenters
 					case "ColumnsCount":
 					case "RowHeight":
 					case "ColumnWidth":
+					case "EditSettings":
 						Update();
 						break;
 				}
@@ -266,6 +267,7 @@ namespace CellReport.Presenters
 						{
 							RenderGrid(context, GetCellRect(cell));
 							RenderCellBackgroung(context, cell);
+							RenderEditHintsBackground(context, cell);
 						}
 					}
 					else
@@ -307,6 +309,7 @@ namespace CellReport.Presenters
 						if (_alreadyPaintedCells.Add(cell))
 						{
 							RenderCell(context, cell);
+							RenderEditHintsOverlay(context, cell);
 						}
 					}
 				}
@@ -544,8 +547,10 @@ namespace CellReport.Presenters
 
 		public void RaiseDblClick(object sender, EventArgs e, float x, float y)
 		{
-			DoAction(GetCellByDevicePoint(x, y, false), ActionType.MouseDblClick);
+			var location = GetCellByDevicePoint(x, y, false);
+			DoAction(location, ActionType.MouseDblClick);
 			OnDblClick(sender, e);
+			OnDblClick(sender, e, location);
 		}
 
 		public bool RaiseProcessKey(object sender, EventArgs e)
@@ -645,6 +650,68 @@ namespace CellReport.Presenters
 				Action(cell, content, type);
 		}
 
+		protected virtual void RenderEditHintsBackground(object context, Cell cell)
+		{
+			if (Renderer == null || cell == null || !cell.Editable || Manager.IsDesignMode)
+				return;
+
+			var settings = Manager.EditSettings;
+			if (settings.Mode == CellEditMode.None || !settings.ShowBackground || IsEditingCell(cell))
+				return;
+			var backgroundColor = GetHintColor(settings.BackgroundColor, settings.BackgroundColorInverted);
+			if (string.IsNullOrEmpty(backgroundColor))
+				return;
+
+			Renderer.RenderFillRect(context, GetCellRect(cell), 0, new[] { backgroundColor });
+		}
+
+		protected virtual void RenderEditHintsOverlay(object context, Cell cell)
+		{
+			if (Renderer == null || cell == null || !cell.Editable || Manager.IsDesignMode)
+				return;
+
+			var settings = Manager.EditSettings;
+			if (settings.Mode == CellEditMode.None || IsEditingCell(cell))
+				return;
+
+			var rect = GetCellRect(cell);
+			var frameColor = GetHintColor(settings.FrameColor, settings.FrameColorInverted);
+			if (settings.ShowFrame && !string.IsNullOrEmpty(frameColor))
+			{
+				var frame = new Rectangle(rect.X + 3, rect.Y + 3,
+					Math.Max(0f, rect.Width - 6), Math.Max(0f, rect.Height - 6));
+				Renderer.RenderRect(context, frame, frameColor, LineStyle.Dash, 1);
+			}
+
+			var placeholderColor = GetHintColor(settings.PlaceholderColor, settings.PlaceholderColorInverted);
+			if (!settings.ShowPlaceholder || string.IsNullOrEmpty(placeholderColor))
+				return;
+
+			var editor = Manager.CreateValueEditor(cell.Location);
+			if (editor == null || !editor.IsEmpty)
+				return;
+
+			var hint = editor.Hint;
+			if (string.IsNullOrEmpty(hint))
+				return;
+
+			var style = (cell.Content as TextBasedContent) == null
+				? null
+				: (cell.Content as TextBasedContent).GetActualStyle() as TextContentStyle;
+			var font = style == null ? TextBasedContent.DefaultStyle.Font : style.Font;
+			var rectForText = GetInnerCellRect(cell);
+			Renderer.RenderText(context, rectForText, hint, placeholderColor,
+				HorizontalAlignment.Left, VerticalAlignment.Middle, 0,
+				font.Family, Scale * font.Size, font.Style, Direction.LeftToRight);
+		}
+
+		private string GetHintColor(string normal, string inverted)
+		{
+			if (UseInvertedEditHintColors && !string.IsNullOrEmpty(inverted))
+				return inverted;
+			return normal;
+		}
+
 		protected void RenderCurrentCell(object context, Rectangle bounds)
 		{
 			var rect = GetCellRect(CurrentCell);
@@ -694,6 +761,7 @@ namespace CellReport.Presenters
 
 		protected virtual void OnClick(object sender, EventArgs e) { }
 		protected virtual void OnDblClick(object sender, EventArgs e) { }
+		protected virtual void OnDblClick(object sender, EventArgs e, CellLocation location) { }
 		protected virtual bool OnProcessKey(object sender, EventArgs e) { return false; }
 
 		public event EventHandler ShowToolBarChanged;

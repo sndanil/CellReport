@@ -252,6 +252,62 @@ document.SetParameter("Товар", "Кабель");
 а параметры изображения — в инспекторе «Параметры» при выбранном содержимом
 «Изображение».
 
+## Заполнение ячеек в просмотрщике
+
+Режим заполнения — **свойство шаблона**, а не настройка просмотрщика. По умолчанию
+(и для старых шаблонов без `<EditSettings>`) — **только чтение**. Режим задаётся
+в редакторе: «Настройки» → «Документ» → «Заполнение ячеек», и сохраняется в шаблоне:
+
+```xml
+<EditSettings Mode="MarkedCells"
+              ShowFrame="true" ShowBackground="false"
+              ShowPlaceholder="true" ShowTooltip="true" />
+```
+
+`Mode`: `None` (только чтение), `MarkedCells` (только помеченные ячейки),
+`AllCells` (все поддерживаемые ячейки). Остальные атрибуты управляют подсказками:
+рамка, фон, плейсхолдер, тултип. В просмотрщике эти настройки **не переключаются** —
+он только использует то, что записано в шаблоне.
+
+В шаблоне ячейку можно пометить атрибутами:
+
+```xml
+<Cell Editable="true" EditParam="ФИО" EditPlaceholder="Фамилия И. О." EditHint="Заполняется вручную">
+  <TextContent>
+    <Param Name="ФИО" Target="Text" />
+  </TextContent>
+</Cell>
+```
+
+`Editable` разрешает ввод, `EditParam` задаёт параметр-приёмник (если пусто —
+определяется автоматически), `EditPlaceholder` показывается в пустой ячейке,
+`EditHint` — тултип. Для литерального текста (`<Text>Примечание</Text>`)
+редактируется сам текст; для `[Имя]`/`Param Target="Text"` — значение параметра,
+разметка шаблона сохраняется. Вычисляемые параметры (`Sum`, `Now` и т.п.)
+не редактируются.
+
+Из кода, формирующего отчёт, режим тоже можно задать до сохранения шаблона:
+
+```csharp
+var report = new ReportDocument("invoice.tcr");
+report.AddSection("Main");
+report.SetParameter("Организация", org);
+report.SetParameter("Комментарий", null, editable: true); // ячейку заполнит пользователь
+report.EnableCellEditing("Дата", "Подпись");              // пометить поля по параметрам
+report.EnableCellEditing();                               // или весь документ
+
+var viewer = new PresentControl();
+viewer.AttachManager(report.Manager);
+```
+
+У `CellManager` есть низкоуровневый API: `EditSettings.Mode`
+(`None`/`MarkedCells`/`AllCells`), `IsCellEditable`, `SetCellEditable`,
+`SetEditableByParam`, `CreateValueEditor`, `FindNextEditable`. Значения,
+введённые пользователем, попадают в печать/PDF/Excel/PNG; подсказки
+(рамка/фон/плейсхолдер/тултип) — только на экране. В просмотрщике Avalonia
+поддерживаются `F2`, `Enter`, `Tab`, `Esc`, `Ctrl+Z`/`Ctrl+Y` и сохранение
+заполненной копии шаблона. Демо-шаблон — `Samples/cell-editing-demo.tcr`.
+
 ## Безопасность шаблонов
 
 Внешние `file://` и `http(s)://` ресурсы по умолчанию отключены. Для доверенного

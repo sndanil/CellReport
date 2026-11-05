@@ -85,6 +85,14 @@ namespace CellReport.Presenters
 		/// </summary>
 		public CellLocation EditingCell { get; set; } = CellLocation.None;
 
+		/// <summary>
+		/// Подсказки заполнения рисуются на инвертированном (тёмном) фоне.
+		/// </summary>
+		protected virtual bool UseInvertedEditHintColors
+		{
+			get { return false; }
+		}
+
 		protected OverflowLayout Overflow
 		{
 			get { return _overflowLayout ?? (_overflowLayout = new OverflowLayout(this)); }
@@ -859,7 +867,7 @@ namespace CellReport.Presenters
 			return text.Replace("\r\n", " ").Replace('\n', ' ').Replace('\r', ' ');
 		}
 
-		private bool IsEditingCell(Cell cell)
+		protected bool IsEditingCell(Cell cell)
 		{
 			return !EditingCell.Equals(CellLocation.None)
 					&& EditingCell.Row == cell.Location.Row

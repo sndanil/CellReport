@@ -41,6 +41,26 @@ namespace CellReport.Avalonia.Services
 			LocalizationManager.AddDefaultString("Report/Export/Error", "Невозможно сохранить файл. Возможно, файл занят другим приложением.");
 			LocalizationManager.AddDefaultString("Report/Export/OpenError", "Не удалось запустить приложение, ассоциированное с файлом.");
 
+			LocalizationManager.AddDefaultString("Report/Edit/Mode", "Заполнение");
+			LocalizationManager.AddDefaultString("Report/Edit/ReadOnly", "Только чтение");
+			LocalizationManager.AddDefaultString("Report/Edit/Marked", "Только отмеченные ячейки");
+			LocalizationManager.AddDefaultString("Report/Edit/All", "Все ячейки");
+			LocalizationManager.AddDefaultString("Report/Edit/Frame", "Рамка");
+			LocalizationManager.AddDefaultString("Report/Edit/Background", "Фон");
+			LocalizationManager.AddDefaultString("Report/Edit/Placeholder", "Плейсхолдер");
+			LocalizationManager.AddDefaultString("Report/Edit/Tooltip", "Подсказка при наведении");
+			LocalizationManager.AddDefaultString("Report/Edit/TooltipFormat", "Можно заполнить: {0}");
+			LocalizationManager.AddDefaultString("Report/Edit/DefaultPlaceholder", "Введите значение");
+			LocalizationManager.AddDefaultString("Report/Edit/EditCell", "Заполнить ячейку");
+			LocalizationManager.AddDefaultString("Report/Edit/InvalidNumber", "Введите число");
+			LocalizationManager.AddDefaultString("Report/Edit/InvalidDate", "Введите дату в формате ДД.ММ.ГГГГ");
+			LocalizationManager.AddDefaultString("Report/Edit/TooLong", "Слишком длинное значение");
+			LocalizationManager.AddDefaultString("Report/Edit/NotEditable", "Ячейка недоступна для заполнения");
+			LocalizationManager.AddDefaultString("Report/Edit/Computed", "Поле вычисляется и не может быть изменено");
+			LocalizationManager.AddDefaultString("Report/Edit/Undo", "Отменить ввод");
+			LocalizationManager.AddDefaultString("Report/Edit/Redo", "Повторить ввод");
+			LocalizationManager.AddDefaultString("Report/Edit/NoFields", "В шаблоне нет заполняемых ячеек");
+
 			LocalizationManager.AddDefaultString("Report/Print", "Печать");
 			LocalizationManager.AddDefaultString("Report/CustomPrint", "Выборочная печать");
 			LocalizationManager.AddDefaultString("Report/Preview", "Предварительный просмотр");

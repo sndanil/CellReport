@@ -1,4 +1,4 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
+<?xml version='1.0' encoding='utf-8'?>
 <xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'>
 	<xs:element name='CellReportTemplate'>
 		<xs:complexType>
@@ -6,6 +6,7 @@
 				<xs:element name='Properties' type='PropertiesType' minOccurs='0' maxOccurs='1'/>
 				<xs:element name='ExportSettings' type='ExportSettingsType' minOccurs='0' maxOccurs='1'/>
 				<xs:element name='DisplaySettings' type='DisplaySettingsType' minOccurs='0' maxOccurs='1'/>
+				<xs:element name='EditSettings' type='EditSettingsType' minOccurs='0' maxOccurs='1'/>
 				<xs:element name='PrintSettings' type='PrintSettingsType' minOccurs='0' maxOccurs='1'/>
 				<xs:element name='Sections' type='SectionsType' minOccurs='0' maxOccurs='1'/>
 				<xs:element name='BookMarks' type='BookMarksType' minOccurs='0' maxOccurs='1'/>
@@ -53,6 +54,14 @@
 	<xs:complexType name='CellLocationType'>
 		<xs:attribute name='Row' type='xs:int' default='0'/>
 		<xs:attribute name='Column' type='xs:int' default='0'/>
+	</xs:complexType>
+
+	<xs:complexType name='EditSettingsType'>
+		<xs:attribute name='Mode' type='xs:string' default='None'/>
+		<xs:attribute name='ShowFrame' type='xs:boolean' default='true'/>
+		<xs:attribute name='ShowBackground' type='xs:boolean' default='false'/>
+		<xs:attribute name='ShowPlaceholder' type='xs:boolean' default='true'/>
+		<xs:attribute name='ShowTooltip' type='xs:boolean' default='true'/>
 	</xs:complexType>
 
 	<xs:complexType name='DisplaySettingsType'>
@@ -127,6 +136,10 @@
 		<xs:attribute name='Index' type='xs:int' default='0'/>
 		<xs:attribute name='ColSpan' type='xs:int' />
 		<xs:attribute name='RowSpan' type='xs:int' />
+		<xs:attribute name='Editable' type='xs:boolean' />
+		<xs:attribute name='EditParam' type='xs:string' />
+		<xs:attribute name='EditPlaceholder' type='xs:string' />
+		<xs:attribute name='EditHint' type='xs:string' />
 	</xs:complexType>
 
 	<xs:complexType name='CollectionContentType'>

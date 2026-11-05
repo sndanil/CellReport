@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:CellReport.Editor.Avalonia.ViewModels"
              x:Class="CellReport.Editor.Avalonia.Views.DocumentSettingsView"
@@ -32,6 +32,24 @@
 				<TextBlock Grid.Row="8" VerticalAlignment="Center" Text="Культура локализации" />
 				<TextBox Grid.Row="8" Grid.Column="1" Margin="0,2" Text="{Binding Settings.DefaultCulture, UpdateSourceTrigger=LostFocus}" />
 			</Grid>
+
+			<TextBlock FontWeight="SemiBold" Text="Заполнение ячеек" />
+			<Grid ColumnDefinitions="260,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+				<TextBlock VerticalAlignment="Center" Text="Режим редактирования" />
+				<ComboBox Grid.Column="1" HorizontalAlignment="Left" MinWidth="260" SelectedIndex="{Binding Settings.CellEditModeIndex, Mode=TwoWay}">
+					<ComboBoxItem Content="Только чтение" />
+					<ComboBoxItem Content="Только отмеченные ячейки" />
+					<ComboBoxItem Content="Все ячейки" />
+				</ComboBox>
+				<CheckBox Grid.Row="1" Grid.Column="1" Content="Показывать рамку" IsChecked="{Binding Settings.ShowEditFrame}" />
+				<CheckBox Grid.Row="2" Grid.Column="1" Content="Показывать фон" IsChecked="{Binding Settings.ShowEditBackground}" />
+				<CheckBox Grid.Row="3" Grid.Column="1" Content="Показывать плейсхолдер" IsChecked="{Binding Settings.ShowEditPlaceholder}" />
+				<CheckBox Grid.Row="4" Grid.Column="1" Content="Показывать подсказку при наведении" IsChecked="{Binding Settings.ShowEditTooltip}" />
+			</Grid>
+			<TextBlock FontSize="11"
+			           Opacity="0.7"
+			           TextWrapping="Wrap"
+			           Text="Настройка действует на весь документ и сохраняется в шаблоне. В просмотрщике режим и подсказки не переключаются." />
 
 			<Grid ColumnDefinitions="*,Auto">
 				<TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="Строки локализации" />

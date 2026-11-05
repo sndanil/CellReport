@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using CellReport.Core.Expressions;
@@ -12,6 +13,9 @@ namespace CellReport.Core
 	public class CellManager : NotifyPropertyChanged
 	{
 		public bool IsDesignMode { get; set; }
+
+		[NonSerialized]
+		private CellEditSettings _editSettings;
 
 		private Column[] _columns;
 		private float[] _rows;
@@ -618,6 +622,276 @@ namespace CellReport.Core
 			get { return _actualColumnsCount; }
 		}
 
+		/// <summary>
+		/// Есть ли в документе хотя бы одна помеченная для заполнения ячейка.
+		/// </summary>
+		public bool HasMarkedCells
+		{
+			get
+			{
+				foreach (var cell in _originCells)
+				{
+					if (cell != null && cell.Editable)
+						return true;
+				}
+
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Runtime-настройки заполнения ячеек. Не сериализуются в шаблон.
+		/// </summary>
+		public CellEditSettings EditSettings
+		{
+			get
+			{
+				if (_editSettings == null)
+				{
+					_editSettings = new CellEditSettings();
+					_editSettings.PropertyChanged += OnEditSettingsChanged;
+				}
+
+				return _editSettings;
+			}
+			set
+			{
+				if (ReferenceEquals(_editSettings, value))
+					return;
+
+				if (_editSettings != null)
+					_editSettings.PropertyChanged -= OnEditSettingsChanged;
+
+				_editSettings = value ?? new CellEditSettings();
+				_editSettings.PropertyChanged += OnEditSettingsChanged;
+				OnPropertyChanged("EditSettings");
+			}
+		}
+
+		private void OnEditSettingsChanged(object sender, PropertyChangedEventArgs e)
+		{
+			OnPropertyChanged("EditSettings");
+		}
+
+		/// <summary>
+		/// Причина, по которой ячейку нельзя заполнять, или <see cref="CellEditError.None"/>.
+		/// </summary>
+		public CellEditError GetCellEditError(CellLocation location)
+		{
+			var editor = CellValueEditor.Create(this, location);
+			return editor == null ? CellEditError.NotEditable : editor.Error;
+		}
+
+		public bool IsCellEditable(CellLocation location)
+		{
+			return GetCellEditError(location) == CellEditError.None;
+		}
+
+		public bool IsCellEditable(int row, int column)
+		{
+			return IsCellEditable(new CellLocation { Row = row, Column = column });
+		}
+
+		/// <summary>
+		/// Создаёт редактор значения или null, если ячейка недоступна для заполнения.
+		/// </summary>
+		public CellValueEditor CreateValueEditor(CellLocation location)
+		{
+			var editor = CellValueEditor.Create(this, location);
+			return editor != null && editor.IsEditable ? editor : null;
+		}
+
+		public string GetCellEditHint(CellLocation location)
+		{
+			var editor = CellValueEditor.Create(this, location);
+			return editor != null && editor.IsEditable ? editor.Hint : null;
+		}
+
+		public string GetCellEditTooltip(CellLocation location)
+		{
+			var editor = CellValueEditor.Create(this, location);
+			return editor != null && editor.IsEditable ? editor.Tooltip : null;
+		}
+
+		public void SetCellEditable(CellLocation location, bool editable)
+		{
+			if (!IsCurrectLocation(location))
+				return;
+
+			var cell = GetCell(location);
+			if (cell == null)
+			{
+				if (!editable)
+					return;
+
+				cell = CreateCell(location);
+			}
+
+			if (cell != null)
+				cell.Editable = editable;
+		}
+
+		public void SetCellEditable(int row, int column, bool editable)
+		{
+			SetCellEditable(new CellLocation { Row = row, Column = column }, editable);
+		}
+
+		public int SetEditableByParam(string paramName, bool editable)
+		{
+			return SetEditableByParam(paramName, editable, false);
+		}
+
+		/// <summary>
+		/// Помечает все ячейки, у которых есть параметр с указанным именем.
+		/// Возвращает количество затронутых ячеек.
+		/// </summary>
+		public int SetEditableByParam(string paramName, bool editable, bool enableMarkedMode)
+		{
+			if (string.IsNullOrEmpty(paramName))
+				return 0;
+
+			var count = 0;
+			foreach (var cell in _originCells)
+			{
+				if (cell == null || !CellHasParam(cell, paramName))
+					continue;
+
+				cell.Editable = editable;
+				if (editable && string.IsNullOrEmpty(cell.EditParam))
+					cell.EditParam = paramName;
+				count++;
+			}
+
+			if (editable && enableMarkedMode && EditSettings.Mode == CellEditMode.None)
+				EditSettings.Mode = CellEditMode.MarkedCells;
+
+			return count;
+		}
+
+		private static bool CellHasParam(Cell cell, string paramName)
+		{
+			if (cell.Content == null)
+				return false;
+
+			foreach (var content in cell.GetContents())
+			{
+				foreach (var param in content.GetParams())
+				{
+					if (string.Equals(param.Name, paramName, StringComparison.Ordinal))
+						return true;
+				}
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Следующая/предыдущая заполняемая ячейка для Tab/Shift+Tab.
+		/// </summary>
+		public CellLocation FindNextEditable(CellLocation from, bool forward)
+		{
+			if (EditSettings.Mode == CellEditMode.None)
+				return CellLocation.None;
+
+			if (!IsCurrectLocation(from))
+				return CellLocation.None;
+
+			if (EditSettings.Mode == CellEditMode.MarkedCells)
+				return FindNextMarked(from, forward);
+
+			return FindNextInAllMode(from, forward);
+		}
+
+		private CellLocation FindNextMarked(CellLocation from, bool forward)
+		{
+			var result = CellLocation.None;
+			foreach (var cell in _originCells)
+			{
+				if (cell == null || !cell.Editable)
+					continue;
+
+				var location = cell.Location;
+				if (location.Row == from.Row && location.Column == from.Column)
+					continue;
+
+				if (!IsAfter(location, from, forward))
+					continue;
+
+				if (!IsCellEditable(location))
+					continue;
+
+				if (result.Row < 0 || IsBefore(location, result, forward))
+					result = location;
+			}
+
+			return result;
+		}
+
+		private CellLocation FindNextInAllMode(CellLocation from, bool forward)
+		{
+			var row = from.Row;
+			var column = from.Column + (forward ? 1 : -1);
+			const int maxSteps = 20000;
+
+			for (var step = 0; step < maxSteps; step++)
+			{
+				if (forward)
+				{
+					if (column >= ColumnsCount)
+					{
+						column = 0;
+						row++;
+					}
+
+					if (row >= RowsCount)
+						return CellLocation.None;
+				}
+				else
+				{
+					if (column < 0)
+					{
+						column = ColumnsCount - 1;
+						row--;
+					}
+
+					if (row < 0)
+						return CellLocation.None;
+				}
+
+				var location = new CellLocation { Row = row, Column = column };
+				if (IsCellEditable(location))
+					return location;
+
+				column += forward ? 1 : -1;
+			}
+
+			return CellLocation.None;
+		}
+
+		private static bool IsAfter(CellLocation location, CellLocation from, bool forward)
+		{
+			if (forward)
+			{
+				return location.Row > from.Row
+					|| (location.Row == from.Row && location.Column > from.Column);
+			}
+
+			return location.Row < from.Row
+				|| (location.Row == from.Row && location.Column < from.Column);
+		}
+
+		private static bool IsBefore(CellLocation location, CellLocation other, bool forward)
+		{
+			if (forward)
+			{
+				return location.Row < other.Row
+					|| (location.Row == other.Row && location.Column < other.Column);
+			}
+
+			return location.Row > other.Row
+				|| (location.Row == other.Row && location.Column > other.Column);
+		}
+
 		private void ResizeIfNeed(int row, int column)
 		{
 			if (row >= RowsCount)
@@ -867,6 +1141,10 @@ namespace CellReport.Core
 			var cell = CreateCell(row, column);
 			cell.Style = from.Style;
 			cell.Span = span;
+			cell.Editable = from.Editable;
+			cell.EditParam = from.EditParam;
+			cell.EditPlaceholder = from.EditPlaceholder;
+			cell.EditHint = from.EditHint;
 			if (from.Content != null)
 				cell.Content = from.Content.Clone(this);
 

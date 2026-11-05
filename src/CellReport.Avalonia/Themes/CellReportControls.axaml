@@ -25,6 +25,11 @@
 		<Setter Property="HorizontalAlignment" Value="Stretch" />
 	</Style>
 
+	<Style Selector="TextBox.invalid">
+		<Setter Property="BorderBrush" Value="#FFD32F2F" />
+		<Setter Property="BorderThickness" Value="2" />
+	</Style>
+
 	<Style Selector="ComboBox">
 		<Setter Property="FontSize" Value="12" />
 		<Setter Property="MinHeight" Value="24" />

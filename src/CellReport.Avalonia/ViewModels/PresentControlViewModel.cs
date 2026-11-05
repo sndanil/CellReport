@@ -1,4 +1,4 @@
-﻿using CellReport.Avalonia.Services;
+using CellReport.Avalonia.Services;
 using CellReport.Avalonia.Views;
 using CellReport.Core;
 using CellReport.Presenters;
@@ -52,6 +52,8 @@ namespace CellReport.Avalonia.ViewModels
 
 		public string ScaleLabel => ReportLocalization.Get("Report/Scale");
 
+		public string EditCellLabel => ReportLocalization.Get("Report/Edit/EditCell");
+
 		public string PrintLabel => ReportLocalization.Get("Report/Print");
 
 		public string CustomPrintLabel => ReportLocalization.Get("Report/CustomPrint");
@@ -91,12 +93,20 @@ namespace CellReport.Avalonia.ViewModels
 		[ObservableProperty]
 		private BookMarkItemViewModel? _selectedBookMark;
 
+		[ObservableProperty]
+		private bool _isDirty;
+
+		private PresentControl? _presentControl;
+
+		public event Func<Task<bool>>? SaveRequested;
+
 		public bool DesignMode { get; private set; }
 
 		public void Load(CellManager manager, bool designMode = false)
 		{
 			DesignMode = designMode;
 			Manager = manager;
+			IsDirty = false;
 			LoadPrinters();
 		}
 
@@ -116,13 +126,30 @@ namespace CellReport.Avalonia.ViewModels
 			if (_presenter != null)
 				_presenter.ShowToolBarChanged -= OnPresenterShowToolBarChanged;
 
+			if (_presentControl != null)
+				_presentControl.CellEditStateChanged -= OnCellEditStateChanged;
+
 			_presenter = presenter;
 			_host = host;
 			_presenter.ShowToolBarChanged += OnPresenterShowToolBarChanged;
 
+			_presentControl = host as PresentControl;
+			if (_presentControl != null)
+				_presentControl.CellEditStateChanged += OnCellEditStateChanged;
+
 			LoadBookMarks();
 			SyncFromPresenter();
 			PresenterChanged?.Invoke(this, EventArgs.Empty);
+		}
+
+		public void MarkSaved()
+		{
+			IsDirty = false;
+		}
+
+		private void OnCellEditStateChanged(object? sender, EventArgs e)
+		{
+			IsDirty = true;
 		}
 
 		public void SyncFromPresenter()
@@ -277,6 +304,14 @@ namespace CellReport.Avalonia.ViewModels
 		{
 			if (_presenter == null || _host == null)
 				return;
+
+			if (SaveRequested != null)
+			{
+				if (await SaveRequested())
+					MarkSaved();
+				RefreshSurface();
+				return;
+			}
 
 			await ReportExportService.SaveAsync(_host, _presenter);
 			RefreshSurface();

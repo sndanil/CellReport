@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 using CellReport.Avalonia.Viewer.ViewModels;
 using System;
 
@@ -13,7 +12,7 @@ namespace CellReport.Avalonia.Viewer
 			Opened += OnMainWindowOpened;
 		}
 
-		private async void OnMainWindowOpened(object sender, EventArgs e)
+		private async void OnMainWindowOpened(object? sender, EventArgs e)
 		{
 			if (DataContext is not MainWindowViewModel viewModel)
 				return;

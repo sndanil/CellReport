@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
@@ -35,6 +35,7 @@ namespace CellReport.Avalonia
 		private bool _middleButtonPanActive;
 		private global::Avalonia.Point _middleButtonLastPosition;
 		private AvaloniaDisplayPresenter? _presenter;
+		private CellLocation _lastEditHintCell = CellLocation.None;
 
 		public AvaloniaDisplayPresenter? Presenter
 		{
@@ -42,6 +43,9 @@ namespace CellReport.Avalonia
 			set
 			{
 			_presenter = value;
+			_lastEditHintCell = CellLocation.None;
+			Cursor = Cursor.Default;
+			ToolTip.SetTip(this, null);
 			ApplyInversionToPresenter();
 			InvalidateVisual();
 		}
@@ -173,6 +177,24 @@ namespace CellReport.Avalonia
 			base.OnKeyDown(e);
 		}
 
+		protected override void OnTextInput(TextInputEventArgs e)
+		{
+			base.OnTextInput(e);
+
+			if (Presenter == null || string.IsNullOrEmpty(e.Text))
+				return;
+
+			var manager = Presenter.Manager;
+			if (manager == null || manager.IsDesignMode)
+				return;
+
+			if (!manager.IsCellEditable(Presenter.CurrentCell))
+				return;
+
+			if (Presenter.BeginCellEdit(Presenter.CurrentCell, e.Text))
+				e.Handled = true;
+		}
+
 		protected override void OnPointerPressed(PointerPressedEventArgs e)
 		{
 			base.OnPointerPressed(e);
@@ -202,6 +224,16 @@ namespace CellReport.Avalonia
 				BeginMultiTouchGesture();
 				e.Pointer.Capture(this);
 				e.Handled = true;
+				return;
+			}
+
+			if (point.Properties.IsRightButtonPressed)
+			{
+				Focus();
+				var rightLocation = Presenter.GetCellByDevicePoint(
+					Convert.ToSingle(position.X), Convert.ToSingle(position.Y), false);
+				if (rightLocation.Row >= 0 && rightLocation.Column >= 0)
+					Presenter.CurrentCell = rightLocation;
 				return;
 			}
 
@@ -313,7 +345,11 @@ namespace CellReport.Avalonia
 			}
 
 			if (!Presenter.IsSelectionMode || e.GetCurrentPoint(this).Properties.IsLeftButtonPressed != true)
+			{
+				if (!_middleButtonPanActive && !_multiTouchGestureActive && !Presenter.IsSelectionMode)
+					UpdateEditHint(position);
 				return;
+			}
 
 			_lastPointerPosition = position;
 			Presenter.EndSelection = Presenter.GetCellByDevicePoint(
@@ -407,6 +443,39 @@ namespace CellReport.Avalonia
 			Presenter.IsSelectionMode = false;
 			_lastPointerPosition = null;
 			_autoScrollTimer.Stop();
+		}
+
+		private void UpdateEditHint(global::Avalonia.Point position)
+		{
+			if (Presenter == null)
+				return;
+
+			var manager = Presenter.Manager;
+			if (manager == null || manager.IsDesignMode || manager.EditSettings.Mode == CellEditMode.None)
+			{
+				if (!_lastEditHintCell.Equals(CellLocation.None))
+				{
+					_lastEditHintCell = CellLocation.None;
+					Cursor = Cursor.Default;
+					ToolTip.SetTip(this, null);
+				}
+
+				return;
+			}
+
+			var location = Presenter.GetCellByDevicePoint(
+				Convert.ToSingle(position.X), Convert.ToSingle(position.Y), false);
+
+			if (location.Equals(_lastEditHintCell))
+				return;
+
+			_lastEditHintCell = location;
+			var editable = location.Row >= 0 && location.Column >= 0 && manager.IsCellEditable(location);
+			Cursor = editable ? new Cursor(StandardCursorType.Ibeam) : Cursor.Default;
+			var hint = editable && manager.EditSettings.ShowTooltip
+				? manager.GetCellEditTooltip(location)
+				: null;
+			ToolTip.SetTip(this, hint);
 		}
 
 		private static double GetDistance(global::Avalonia.Point a, global::Avalonia.Point b)

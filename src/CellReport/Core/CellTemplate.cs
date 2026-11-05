@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -95,6 +95,7 @@ namespace CellReport.Core
 				Manager.Properties.Serialize(),
 				Manager.ExportSettings.Serialize(),
 				Manager.DisplaySettings.Serialize(),
+				Manager.EditSettings.Serialize(),
 				Manager.PrintSettings.Serialize(),
 				Manager.BookmarkSettings.Serialize(),
 				GetSections(),
@@ -372,6 +373,7 @@ namespace CellReport.Core
 			_manager.PrintSettings = PrintSettings.Parse(_manager, templElement.Element("PrintSettings"));
 			_manager.ExportSettings = ExportSettings.Parse(templElement.Element("ExportSettings"));
 			_manager.DisplaySettings = DisplaySettings.Parse(templElement.Element("DisplaySettings"));
+			_manager.EditSettings = CellEditSettings.Parse(templElement.Element("EditSettings"));
 			_manager.BookmarkSettings = BookmarkSettings.Parse(templElement.Element("BookmarkSettings"));
 
 		}

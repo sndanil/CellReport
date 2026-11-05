@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using CellReport.Core.Contents;
 using System.Xml.Linq;
@@ -25,6 +25,10 @@ namespace CellReport.Core
 		// ReSharper disable once InconsistentNaming
 		private string _styleID;
 		private BaseContent _content;
+		private bool _editable;
+		private string _editParam;
+		private string _editPlaceholder;
+		private string _editHint;
 
 		internal void SetManager(CellManager manager)
 		{
@@ -127,6 +131,66 @@ namespace CellReport.Core
 			}
 		}
 
+		/// <summary>
+		/// Разрешено ли заполнять ячейку вручную в просмотрщике.
+		/// </summary>
+		public bool Editable
+		{
+			get => _editable;
+			set
+			{
+				if (_editable == value)
+					return;
+				_editable = value;
+				OnPropertyChanged("Editable");
+			}
+		}
+
+		/// <summary>
+		/// Имя параметра, в который пишется ручной ввод. Пусто — определить автоматически.
+		/// </summary>
+		public string EditParam
+		{
+			get => _editParam;
+			set
+			{
+				if (_editParam == value)
+					return;
+				_editParam = value;
+				OnPropertyChanged("EditParam");
+			}
+		}
+
+		/// <summary>
+		/// Текст-плейсхолдер для пустой заполняемой ячейки.
+		/// </summary>
+		public string EditPlaceholder
+		{
+			get => _editPlaceholder;
+			set
+			{
+				if (_editPlaceholder == value)
+					return;
+				_editPlaceholder = value;
+				OnPropertyChanged("EditPlaceholder");
+			}
+		}
+
+		/// <summary>
+		/// Подсказка (тултип) для заполняемой ячейки.
+		/// </summary>
+		public string EditHint
+		{
+			get => _editHint;
+			set
+			{
+				if (_editHint == value)
+					return;
+				_editHint = value;
+				OnPropertyChanged("EditHint");
+			}
+		}
+
 		public IEnumerable<BaseContent> GetContents()
 		{
 			if (Content != null)
@@ -157,6 +221,14 @@ namespace CellReport.Core
 				cellElement.Add(Content.Serialize());
 			if (!string.IsNullOrEmpty(Style.ID))
 				cellElement.Add(new XAttribute("Style", Style.ID));
+			if (Editable)
+				cellElement.Add(new XAttribute("Editable", true));
+			if (!string.IsNullOrEmpty(EditParam))
+				cellElement.Add(new XAttribute("EditParam", EditParam));
+			if (!string.IsNullOrEmpty(EditPlaceholder))
+				cellElement.Add(new XAttribute("EditPlaceholder", EditPlaceholder));
+			if (!string.IsNullOrEmpty(EditHint))
+				cellElement.Add(new XAttribute("EditHint", EditHint));
 			return cellElement;
 		}
 
@@ -166,6 +238,7 @@ namespace CellReport.Core
 			if (element.Attribute("Style") != null)
 				cell.Style = manager.GetStyleByID<CellStyle>(element.Attribute("Style")?.Value);
 			cell.SpanInternal = Parse(element);
+			ParseEditAttributes(cell, element);
 			return cell;
 		}
 
@@ -177,8 +250,26 @@ namespace CellReport.Core
 			if (element.Attribute("Style") != null)
 				cell.Style = manager.GetStyleByID<CellStyle>(element.Attribute("Style")?.Value);
 			cell.Span = Parse(element);
+			ParseEditAttributes(cell, element);
 			col += (cell.Span.ColSpan + 1);
 			return cell;
+		}
+
+		private static void ParseEditAttributes(Cell cell, XElement element)
+		{
+			if (element.Attribute("Editable") != null)
+			{
+				bool editable;
+				if (bool.TryParse(element.Attribute("Editable").Value, out editable))
+					cell.Editable = editable;
+			}
+
+			if (element.Attribute("EditParam") != null)
+				cell.EditParam = element.Attribute("EditParam").Value;
+			if (element.Attribute("EditPlaceholder") != null)
+				cell.EditPlaceholder = element.Attribute("EditPlaceholder").Value;
+			if (element.Attribute("EditHint") != null)
+				cell.EditHint = element.Attribute("EditHint").Value;
 		}
 
 		private static CellSpan Parse(XElement element)

@@ -119,6 +119,21 @@ public partial class DocumentSettingsViewModel : ObservableObject
 	[ObservableProperty]
 	private string _gridColor = string.Empty;
 
+	[ObservableProperty]
+	private int _cellEditModeIndex;
+
+	[ObservableProperty]
+	private bool _showEditFrame = true;
+
+	[ObservableProperty]
+	private bool _showEditBackground;
+
+	[ObservableProperty]
+	private bool _showEditPlaceholder = true;
+
+	[ObservableProperty]
+	private bool _showEditTooltip = true;
+
 	public void Load(CellManager? manager)
 	{
 		_manager = manager;
@@ -134,6 +149,7 @@ public partial class DocumentSettingsViewModel : ObservableObject
 			ReadProperties(manager);
 			ReadPrint(manager);
 			ReadDisplay(manager);
+			ReadEditSettings(manager);
 		}
 		finally
 		{
@@ -155,6 +171,8 @@ public partial class DocumentSettingsViewModel : ObservableObject
 				ReadPrint(_manager);
 			else if (sender is Properties or ExportSettings || propertyName is "Properties" or "ExportSettings" or "DocumentName")
 				ReadProperties(_manager);
+			else if (sender is CellEditSettings || propertyName is "EditSettings")
+				ReadEditSettings(_manager);
 		}
 		finally
 		{
@@ -194,6 +212,11 @@ public partial class DocumentSettingsViewModel : ObservableObject
 		ShowDesignerResizers = false;
 		ShowCurrentRows = false;
 		GridColor = string.Empty;
+		CellEditModeIndex = 0;
+		ShowEditFrame = true;
+		ShowEditBackground = false;
+		ShowEditPlaceholder = true;
+		ShowEditTooltip = true;
 		HeaderFixedRows.Clear();
 		FooterFixedRows.Clear();
 		Strings.Clear();
@@ -245,6 +268,16 @@ public partial class DocumentSettingsViewModel : ObservableObject
 		ShowDesignerResizers = display.ShowDesignerResizers;
 		ShowCurrentRows = display.ShowCurrentRows;
 		GridColor = display.GridColor ?? string.Empty;
+	}
+
+	private void ReadEditSettings(CellManager manager)
+	{
+		var settings = manager.EditSettings;
+		CellEditModeIndex = (int)settings.Mode;
+		ShowEditFrame = settings.ShowFrame;
+		ShowEditBackground = settings.ShowBackground;
+		ShowEditPlaceholder = settings.ShowPlaceholder;
+		ShowEditTooltip = settings.ShowTooltip;
 	}
 
 	private void Write(Action change)
@@ -473,6 +506,32 @@ public partial class DocumentSettingsViewModel : ObservableObject
 			return;
 
 		Write(() => assign(_manager.DisplaySettings));
+	}
+
+	partial void OnCellEditModeIndexChanged(int value)
+	{
+		if (_loading || _manager == null || value < 0 || value > 2)
+			return;
+		if ((int)_manager.EditSettings.Mode == value)
+			return;
+
+		Write(() => _manager.EditSettings.Mode = (CellEditMode)value);
+	}
+
+	partial void OnShowEditFrameChanged(bool value) => WriteEditSetting(settings => settings.ShowFrame == value, settings => settings.ShowFrame = value);
+
+	partial void OnShowEditBackgroundChanged(bool value) => WriteEditSetting(settings => settings.ShowBackground == value, settings => settings.ShowBackground = value);
+
+	partial void OnShowEditPlaceholderChanged(bool value) => WriteEditSetting(settings => settings.ShowPlaceholder == value, settings => settings.ShowPlaceholder = value);
+
+	partial void OnShowEditTooltipChanged(bool value) => WriteEditSetting(settings => settings.ShowTooltip == value, settings => settings.ShowTooltip = value);
+
+	private void WriteEditSetting(Func<CellEditSettings, bool> unchanged, Action<CellEditSettings> assign)
+	{
+		if (_loading || _manager == null || unchanged(_manager.EditSettings))
+			return;
+
+		Write(() => assign(_manager.EditSettings));
 	}
 
 	[RelayCommand]

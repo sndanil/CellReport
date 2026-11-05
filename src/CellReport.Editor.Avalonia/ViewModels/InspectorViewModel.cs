@@ -287,6 +287,18 @@ public partial class InspectorViewModel : ObservableObject
 	[ObservableProperty]
 	private string _markerForHide = string.Empty;
 
+	[ObservableProperty]
+	private bool _cellEditable;
+
+	[ObservableProperty]
+	private string _cellEditParam = string.Empty;
+
+	[ObservableProperty]
+	private string _cellEditPlaceholder = string.Empty;
+
+	[ObservableProperty]
+	private string _cellEditHint = string.Empty;
+
 	public void RefreshCommands() => NotifyCommands();
 
 	public void ReloadDocument()
@@ -347,6 +359,7 @@ public partial class InspectorViewModel : ObservableObject
 		{
 			ReloadContents();
 			ReloadMarkers();
+			ReloadCellEditing();
 			ReloadStyles();
 			NotifyCommands();
 		}
@@ -449,6 +462,34 @@ public partial class InspectorViewModel : ObservableObject
 			AutoHeight = manager.IsAutoFitRow(location.Row);
 			MarkerForShow = manager.GetColumnMarkerForShow(location.Column) ?? string.Empty;
 			MarkerForHide = manager.GetColumnMarkerForHide(location.Column) ?? string.Empty;
+		}
+		finally
+		{
+			EndSync();
+		}
+	}
+
+	private void ReloadCellEditing()
+	{
+		var manager = _owner.Manager;
+		var presenter = _owner.Presenter;
+		BeginSync();
+		try
+		{
+			if (manager == null || presenter == null || !CanEdit())
+			{
+				CellEditable = false;
+				CellEditParam = string.Empty;
+				CellEditPlaceholder = string.Empty;
+				CellEditHint = string.Empty;
+				return;
+			}
+
+			var cell = manager.GetCell(presenter.CurrentCell);
+			CellEditable = cell != null && cell.Editable;
+			CellEditParam = cell?.EditParam ?? string.Empty;
+			CellEditPlaceholder = cell?.EditPlaceholder ?? string.Empty;
+			CellEditHint = cell?.EditHint ?? string.Empty;
 		}
 		finally
 		{
@@ -1010,6 +1051,72 @@ public partial class InspectorViewModel : ObservableObject
 
 		_owner.CommitDocumentChange(() =>
 			manager.SetColumnMarkerForHide(column, string.IsNullOrEmpty(value) ? null! : value));
+	}
+
+	partial void OnCellEditableChanged(bool value)
+	{
+		var manager = _owner.Manager;
+		var presenter = _owner.Presenter;
+		if (IsSyncing || manager == null || presenter == null || !CanEdit())
+			return;
+
+		var location = presenter.CurrentCell;
+		var cell = manager.GetCell(location);
+		if (cell == null && !value)
+			return;
+		if (cell != null && cell.Editable == value)
+			return;
+
+		_owner.CommitDocumentChange(() =>
+		{
+			var target = manager.GetCell(location) ?? manager.CreateCell(location);
+			if (target == null)
+				return;
+
+			target.Editable = value;
+			if (value)
+				return;
+
+			target.EditParam = null;
+			target.EditPlaceholder = null;
+			target.EditHint = null;
+		});
+
+		ReloadCellEditing();
+	}
+
+	partial void OnCellEditParamChanged(string value)
+	{
+		SetCellEditText(value, (cell, text) => cell.EditParam = text, cell => cell.EditParam);
+	}
+
+	partial void OnCellEditPlaceholderChanged(string value)
+	{
+		SetCellEditText(value, (cell, text) => cell.EditPlaceholder = text, cell => cell.EditPlaceholder);
+	}
+
+	partial void OnCellEditHintChanged(string value)
+	{
+		SetCellEditText(value, (cell, text) => cell.EditHint = text, cell => cell.EditHint);
+	}
+
+	private void SetCellEditText(string value, Action<Cell, string?> apply, Func<Cell, string?> read)
+	{
+		var manager = _owner.Manager;
+		var presenter = _owner.Presenter;
+		if (IsSyncing || manager == null || presenter == null || !CanEdit())
+			return;
+
+		var location = presenter.CurrentCell;
+		var cell = manager.GetCell(location);
+		if (cell == null)
+			return;
+
+		var next = string.IsNullOrEmpty(value) ? null : value;
+		if (string.Equals(read(cell) ?? string.Empty, next ?? string.Empty))
+			return;
+
+		_owner.CommitDocumentChange(() => apply(cell, next));
 	}
 
 	[RelayCommand(CanExecute = nameof(CanEdit))]
