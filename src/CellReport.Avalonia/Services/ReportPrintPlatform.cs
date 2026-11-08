@@ -1,3 +1,4 @@
+using CellReport.Core;
 using System;
 using System.Runtime.InteropServices;
 
@@ -10,15 +11,24 @@ namespace CellReport.Avalonia.Services
 			if (presenter == null)
 				return;
 
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+			{
+				CupsPrinterService.Print(presenter, printerName, fromPage, toPage);
+				return;
+			}
+
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
-				WindowsPrintHelper.Print(presenter, useCustom, printerName, fromPage, toPage);
+				if (presenter.Manager.PrintSettings.PrintEngine == PrintEngine.Gdi)
+					GdiPrintHelper.Print(presenter, useCustom, printerName, fromPage, toPage);
+				else
+					WindowsPrintHelper.Print(presenter, useCustom, printerName, fromPage, toPage);
 				return;
 			}
 
 			throw new PlatformNotSupportedException(ReportLocalization.Get("Report/Print/NotSupported"));
 		}
 
-		public static bool IsPrintingSupported => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+		public static bool IsPrintingSupported => PrinterService.IsPrintingSupported;
 	}
 }

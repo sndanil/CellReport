@@ -28,12 +28,12 @@ namespace CellReport.Avalonia.ViewModels
 			CurrentPage = presenter.PageCount > 0 ? 1 : 0;
 			_autoFitWidth = presenter.Manager.PrintSettings.AutoFitWidthPages > 0;
 
-			foreach (var printer in WindowsPrinterService.GetInstalledPrinters())
+			foreach (var printer in PrinterService.GetInstalledPrinters())
 				Printers.Add(printer);
 
 			var selected = !string.IsNullOrWhiteSpace(printerName) && Printers.Contains(printerName)
 				? printerName
-				: WindowsPrinterService.GetDefaultPrinter();
+				: PrinterService.GetDefaultPrinter();
 			if (!string.IsNullOrEmpty(selected) && !Printers.Contains(selected))
 				Printers.Insert(0, selected);
 			else if (Printers.Count > 0 && string.IsNullOrEmpty(selected))
@@ -42,7 +42,7 @@ namespace CellReport.Avalonia.ViewModels
 			SelectedPrinter = selected;
 			_builtForPrinter = selected;
 			_applyPrinter = true;
-			ShowPaper(WindowsPrinterService.GetPageSize(selected, presenter.Manager.PrintSettings.Landscape));
+			ShowPaper(PrinterService.GetPageSize(selected, presenter.Manager.PrintSettings.Landscape));
 			UpdatePageImage();
 		}
 
@@ -94,7 +94,26 @@ namespace CellReport.Avalonia.ViewModels
 			OnPropertyChanged(nameof(CanGoNext));
 		}
 
-		partial void OnSelectedZoomIndexChanged(int value) => ApplyZoom();
+		partial void OnSelectedZoomIndexChanged(int value)
+		{
+			OnPropertyChanged(nameof(IsAutoZoom));
+			ApplyZoom();
+		}
+
+		public bool IsAutoZoom => SelectedZoomIndex == 0;
+
+		public void FitToViewport(double viewportWidth, double viewportHeight)
+		{
+			if (!IsAutoZoom || PageImage == null)
+				return;
+
+			var width = PageImage.PixelSize.Width;
+			var height = PageImage.PixelSize.Height;
+			if (width < 1 || height < 1 || viewportWidth < 1 || viewportHeight < 1)
+				return;
+
+			ZoomScale = Math.Min(viewportWidth / width, viewportHeight / height);
+		}
 
 		partial void OnSelectedPrinterChanged(string? value)
 		{
@@ -113,10 +132,7 @@ namespace CellReport.Avalonia.ViewModels
 		private void ApplyZoom()
 		{
 			if (SelectedZoomIndex == 0)
-			{
-				ZoomScale = 1.0;
 				return;
-			}
 
 			var text = ZoomOptions[SelectedZoomIndex].TrimEnd('%');
 			if (double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var percent))
@@ -155,11 +171,11 @@ namespace CellReport.Avalonia.ViewModels
 		private void RebuildPages()
 		{
 			var landscape = _presenter.Manager.PrintSettings.Landscape;
-			var pageSize = WindowsPrinterService.GetPageSize(SelectedPrinter, landscape);
+			var pageSize = PrinterService.GetPageSize(SelectedPrinter, landscape);
 			_builtForPrinter = SelectedPrinter;
 			ShowPaper(pageSize);
 			var margins = _presenter.Manager.PrintSettings.Margins ?? new Margins(0);
-			_presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm, 96f, margins);
+			_presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm, pageSize.Dpi, margins);
 			TotalPages = Math.Max(1, _presenter.PageCount);
 			if (CurrentPage > TotalPages)
 				CurrentPage = TotalPages;

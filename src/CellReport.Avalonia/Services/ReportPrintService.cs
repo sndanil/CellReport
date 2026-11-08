@@ -19,9 +19,9 @@ namespace CellReport.Avalonia
 			var presenter = new AvaloniaPrintPresenter(manager);
 			// Лист целиком, поля отчёта внутри. Иначе белая страница — это уже
 			// область без полей, и форма выглядит крупнее, чем на бумаге.
-			var pageSize = WindowsPrinterService.GetPageSize(printerName, manager.PrintSettings.Landscape);
+			var pageSize = PrinterService.GetPageSize(printerName, manager.PrintSettings.Landscape);
 			var margins = manager.PrintSettings.Margins ?? new Margins(0);
-			presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm, 96f, margins);
+			presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm, pageSize.Dpi, margins);
 
 			var preview = new PrintPreviewWindow(presenter, printerName);
 			await preview.ShowDialog(window);
@@ -45,10 +45,10 @@ namespace CellReport.Avalonia
 				var presenter = new AvaloniaPrintPresenter(manager);
 				if (custom)
 				{
-					var pageSize = WindowsPrinterService.GetContentPageSize(printerName, manager);
+					var pageSize = PrinterService.GetContentPageSize(printerName, manager);
 					// Для диалога нужен только счётчик страниц; печать затем
-					// перестраивается в разрешении выбранного принтера.
-					presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm, 96f, new Margins(0));
+					// перестраивается выбранным способом.
+					presenter.BuildPages(pageSize.WidthMm, pageSize.HeightMm, pageSize.Dpi, new Margins(0));
 					var window = TopLevel.GetTopLevel(host) as Window;
 					if (window == null)
 						return;

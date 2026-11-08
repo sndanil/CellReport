@@ -6,7 +6,7 @@
 	<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
 		<StackPanel Margin="16" Spacing="12" MaxWidth="980" HorizontalAlignment="Left">
 			<TextBlock FontWeight="SemiBold" Text="Страница" />
-			<Grid ColumnDefinitions="260,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+			<Grid ColumnDefinitions="260,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8">
 				<CheckBox Grid.ColumnSpan="2" Content="Альбомная ориентация" IsChecked="{Binding Settings.Landscape}" />
 				<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Копии" />
 				<TextBox Grid.Row="1" Grid.Column="1" Margin="0,2" Text="{Binding Settings.CopiesText, UpdateSourceTrigger=LostFocus}" />
@@ -22,6 +22,10 @@
 				<TextBox Grid.Row="6" Grid.Column="1" Margin="0,2" Text="{Binding Settings.MarginTopText, UpdateSourceTrigger=LostFocus}" />
 				<TextBlock Grid.Row="7" VerticalAlignment="Center" Text="Поле снизу, мм" />
 				<TextBox Grid.Row="7" Grid.Column="1" Margin="0,2" Text="{Binding Settings.MarginBottomText, UpdateSourceTrigger=LostFocus}" />
+				<TextBlock Grid.Row="8" VerticalAlignment="Center" Text="Способ печати" />
+				<ComboBox Grid.Row="8" Grid.Column="1" Margin="0,2" HorizontalAlignment="Stretch"
+				          ItemsSource="{Binding Settings.PrintEngineOptions}"
+				          SelectedIndex="{Binding Settings.PrintEngineIndex}" />
 			</Grid>
 
 			<Grid ColumnDefinitions="*,Auto">

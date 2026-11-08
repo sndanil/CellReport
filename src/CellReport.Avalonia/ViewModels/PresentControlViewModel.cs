@@ -114,10 +114,10 @@ namespace CellReport.Avalonia.ViewModels
 		{
             Printers.Clear();
 
-            foreach (var printer in WindowsPrinterService.GetInstalledPrinters())
+            foreach (var printer in PrinterService.GetInstalledPrinters())
                 Printers.Add(printer);
 
-			SelectedPrinter = WindowsPrinterService.GetDefaultPrinter()
+			SelectedPrinter = PrinterService.GetDefaultPrinter()
 				?? (Printers.Count > 0 ? Printers[0] : null);
 		}
 

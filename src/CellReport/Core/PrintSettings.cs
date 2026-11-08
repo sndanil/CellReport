@@ -199,6 +199,7 @@ namespace CellReport.Core
 		private short _copies = 1;
 		private int _autoFitWidthPages = 1;
 		private float _scale = 1;
+		private PrintEngine _printEngine = PrintEngine.Gdi;
 		private Margins _margins = null;
 		private IList<Pager> _headers = null;
 		private IList<Pager> _footers = null;
@@ -264,6 +265,23 @@ namespace CellReport.Core
 			}
 		}
 
+		/// <summary>
+		/// Предпочтительный способ печати в Avalonia на Windows.
+		/// В старых шаблонах атрибута нет: это GDI+.
+		/// </summary>
+		public PrintEngine PrintEngine
+		{
+			get { return _printEngine; }
+			set
+			{
+				if (_printEngine != value)
+				{
+					_printEngine = value;
+					OnPropertyChanged("PrintEngine");
+				}
+			}
+		}
+
 		public Margins Margins
 		{
 			get { return _margins; }
@@ -317,6 +335,7 @@ namespace CellReport.Core
 				Landscape = Landscape,
 				Margins = Margins,
 				Scale = Scale,
+				PrintEngine = PrintEngine,
 				Footers = Footers.Select(f => f.Clone(manager)).ToList(),
 				Headers = Headers.Select(f => f.Clone(manager)).ToList()
 			};
@@ -336,6 +355,12 @@ namespace CellReport.Core
 					result.Scale = float.Parse(element.Attribute("Scale").Value, CultureInfo.InvariantCulture);
 				if (element.Attribute("AutoFitWidthPages") != null)
 					result.AutoFitWidthPages = int.Parse(element.Attribute("AutoFitWidthPages").Value, CultureInfo.InvariantCulture);
+				if (element.Attribute("PrintEngine") != null)
+				{
+					PrintEngine engine;
+					if (Enum.TryParse(element.Attribute("PrintEngine").Value, true, out engine))
+						result.PrintEngine = engine;
+				}
 				if (element.Element("Margins") != null)
 				{
 					var marginsElement = element.Element("Margins");
@@ -378,6 +403,7 @@ namespace CellReport.Core
 					Copies > 1 ? null : new XAttribute("Copies", Copies),
 					new XAttribute("AutoFitWidthPages", AutoFitWidthPages),
 					new XAttribute("Scale", Scale.ToString(CultureInfo.InvariantCulture)),
+					_printEngine == PrintEngine.Gdi ? null : new XAttribute("PrintEngine", _printEngine.ToString()),
 					new XElement("Margins",
 								 new XAttribute("Top", Margins.Top.ToString(CultureInfo.InvariantCulture)),
 								 new XAttribute("Left", Margins.Left.ToString(CultureInfo.InvariantCulture)),

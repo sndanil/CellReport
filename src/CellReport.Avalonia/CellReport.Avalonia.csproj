@@ -20,10 +20,16 @@
     <PackageReference Include="Topten.RichTextKit" Version="0.4.167" />
     <PackageReference Include="ZXing.Net" Version="0.16.10" />
     <PackageReference Include="ZXing.Net.Bindings.SkiaSharp" Version="0.16.21" />
+    <PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" Version="0.16.13" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CellReport\CellReport.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\CellReport.WinForms\Presenters\WinForms\GdiPlusRenderer.cs" Link="Services\GdiPlusRenderer.cs" />
+    <InternalsVisibleTo Include="Tests" />
   </ItemGroup>
 
 </Project>

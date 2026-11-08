@@ -115,10 +115,8 @@ namespace CellReport.Avalonia.Services
 
 			/// <summary>
 			/// Сколько текущих единиц Graphics приходится на одну сотую дюйма.
-			/// В обычном процессе это 1. В DPI-aware приложении (масштаб Windows
-			/// 175% и т.п.) MarginBounds уменьшен в 96/dpi раз, хотя бумага
-			/// в PaperSize по-прежнему в сотых дюйма. Без поправки страница
-			/// строится меньше листа и потом растягивается на всю бумагу.
+			/// У проверенных драйверов PageBounds и PaperSize в одном масштабе, и коэффициент равен 1.
+			/// Если драйвер отдаст PageBounds в других единицах, размер страницы всё равно сойдётся с бумагой.
 			/// </summary>
 			private static float GraphicsUnitsPerHundredthInch(PrintPageEventArgs e)
 			{
@@ -153,9 +151,7 @@ namespace CellReport.Avalonia.Services
 				_unitsPerHundredth = units;
 				var widthMm = Math.Max(1f, _drawable.Width / units * 25.4f / 100f);
 				var heightMm = Math.Max(1f, _drawable.Height / units * 25.4f / 100f);
-				var dpi = Math.Max(e.Graphics!.DpiX, e.Graphics.DpiY);
-				if (dpi <= 0)
-					dpi = 96f;
+				var dpi = PrintDeviceMap.CapRasterDpi(Math.Max(e.Graphics!.DpiX, e.Graphics.DpiY));
 
 				// Поля уже вычтены из MarginBounds, поэтому построителю
 				// передаются нулевые поля.
@@ -207,12 +203,19 @@ namespace CellReport.Avalonia.Services
 				return;
 			}
 
-			var dpiX = graphics.DpiX;
-			var dpiY = graphics.DpiY;
-			var x = (int)Math.Round(drawable.X / unitsPerHundredth * dpiX / 100f);
-			var y = (int)Math.Round(drawable.Y / unitsPerHundredth * dpiY / 100f);
-			var width = (int)Math.Round(drawable.Width / unitsPerHundredth * dpiX / 100f);
-			var height = (int)Math.Round(drawable.Height / unitsPerHundredth * dpiY / 100f);
+			int x, y, width, height;
+			PrintDeviceMap.ToDevicePixels(
+				drawable.X,
+				drawable.Y,
+				drawable.Width,
+				drawable.Height,
+				unitsPerHundredth,
+				graphics.DpiX,
+				graphics.DpiY,
+				out x,
+				out y,
+				out width,
+				out height);
 			if (width < 1 || height < 1)
 				return;
 
@@ -226,6 +229,7 @@ namespace CellReport.Avalonia.Services
 				memory = CreateCompatibleDC(dest);
 				previous = SelectObject(memory, hBitmap);
 				SetStretchBltMode(dest, 4);
+				SetBrushOrgEx(dest, 0, 0, IntPtr.Zero);
 				StretchBlt(dest, x, y, width, height, memory, 0, 0, bitmap.Width, bitmap.Height, 0x00CC0020);
 			}
 			finally
@@ -249,6 +253,9 @@ namespace CellReport.Avalonia.Services
 
 		[DllImport("gdi32.dll")]
 		private static extern int SetStretchBltMode(IntPtr hdc, int mode);
+
+		[DllImport("gdi32.dll")]
+		private static extern bool SetBrushOrgEx(IntPtr hdc, int x, int y, IntPtr previous);
 
 		[DllImport("gdi32.dll")]
 		private static extern IntPtr CreateCompatibleDC(IntPtr hdc);

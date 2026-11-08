@@ -16,6 +16,8 @@ public partial class DocumentSettingsViewModel : ObservableObject
 	private bool _loading;
 	private bool _writing;
 
+	public string[] PrintEngineOptions { get; } = { "GDI+", "Skia" };
+
 	public DocumentSettingsViewModel(MainWindowViewModel owner)
 	{
 		_owner = owner;
@@ -76,6 +78,9 @@ public partial class DocumentSettingsViewModel : ObservableObject
 
 	[ObservableProperty]
 	private string _autoFitWidthPagesText = string.Empty;
+
+	[ObservableProperty]
+	private int _printEngineIndex;
 
 	[ObservableProperty]
 	private string _marginLeftText = string.Empty;
@@ -198,6 +203,7 @@ public partial class DocumentSettingsViewModel : ObservableObject
 		CopiesText = string.Empty;
 		PrintScaleText = string.Empty;
 		AutoFitWidthPagesText = string.Empty;
+		PrintEngineIndex = 0;
 		MarginLeftText = string.Empty;
 		MarginRightText = string.Empty;
 		MarginTopText = string.Empty;
@@ -246,6 +252,7 @@ public partial class DocumentSettingsViewModel : ObservableObject
 		CopiesText = print.Copies.ToString(CultureInfo.CurrentCulture);
 		PrintScaleText = Format(print.Scale);
 		AutoFitWidthPagesText = print.AutoFitWidthPages.ToString(CultureInfo.CurrentCulture);
+		PrintEngineIndex = print.PrintEngine == PrintEngine.Skia ? 1 : 0;
 		var margins = print.Margins ?? new Margins(0);
 		MarginLeftText = Format(margins.Left);
 		MarginRightText = Format(margins.Right);
@@ -421,6 +428,18 @@ public partial class DocumentSettingsViewModel : ObservableObject
 			return;
 
 		Write(() => _manager.PrintSettings.Scale = scale);
+	}
+
+	partial void OnPrintEngineIndexChanged(int value)
+	{
+		if (_loading || _manager == null)
+			return;
+
+		var engine = value == 1 ? PrintEngine.Skia : PrintEngine.Gdi;
+		if (_manager.PrintSettings.PrintEngine == engine)
+			return;
+
+		Write(() => _manager.PrintSettings.PrintEngine = engine);
 	}
 
 	partial void OnAutoFitWidthPagesTextChanged(string value)

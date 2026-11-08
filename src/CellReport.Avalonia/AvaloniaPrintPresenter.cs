@@ -54,27 +54,37 @@ namespace CellReport.Avalonia
 			using (DesignModeScope.Suspend(Manager))
 			{
 				_pageImages.Clear();
-
-				if (Renderer is SkiaReportRenderer skiaRenderer)
-				{
-					skiaRenderer.Dpi = dpi;
-					skiaRenderer.TextAntialias = dpi <= 96f;
-				}
-
-				Func<Rectangle, string, string, float, FontStyle, Size> getTextSize =
-					(rect, text, family, size, style) => AvaloniaRenderer.GetTextSize(rect, text, family, size, style, dpi);
-
-				var builder = new PrintPageImageBuilder(
-					Manager,
-					Renderer,
-					getTextSize,
-					pageWidthMm,
-					pageHeightMm,
-					margins,
-					dpi);
+				var builder = CreateBuilder(pageWidthMm, pageHeightMm, dpi, margins);
 				builder.BuildPages();
 				_pageImages.AddRange(builder.Pages);
 			}
+		}
+
+		public void ExportPdf(System.IO.Stream stream, float pageWidthMm, float pageHeightMm, float dpi, Margins? margins)
+		{
+			using (DesignModeScope.Suspend(Manager))
+				CreateBuilder(pageWidthMm, pageHeightMm, dpi, margins).ExportVectorPdf(stream);
+		}
+
+		private PrintPageImageBuilder CreateBuilder(float pageWidthMm, float pageHeightMm, float dpi, Margins? margins)
+		{
+			if (Renderer is SkiaReportRenderer skiaRenderer)
+			{
+				skiaRenderer.Dpi = dpi;
+				skiaRenderer.TextAntialias = dpi <= 96f;
+			}
+
+			Func<Rectangle, string, string, float, FontStyle, Size> getTextSize =
+				(rect, text, family, size, style) => AvaloniaRenderer.GetTextSize(rect, text, family, size, style, dpi);
+
+			return new PrintPageImageBuilder(
+				Manager,
+				Renderer,
+				getTextSize,
+				pageWidthMm,
+				pageHeightMm,
+				margins,
+				dpi);
 		}
 
 		protected override void OnPrint(bool useCustom, string? printerName = null)

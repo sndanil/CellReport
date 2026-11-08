@@ -66,7 +66,8 @@ namespace CellReport.Avalonia.Services
 			LocalizationManager.AddDefaultString("Report/Preview", "Предварительный просмотр");
 			LocalizationManager.AddDefaultString("Report/PageSettings", "Параметры страницы");
 			LocalizationManager.AddDefaultString("Report/AutoFitPage", "Автоширина по странице");
-			LocalizationManager.AddDefaultString("Report/Print/NotSupported", "Печать поддерживается только в Windows.");
+			LocalizationManager.AddDefaultString("Report/Print/NotSupported", "Печать на этой системе не поддерживается.");
+			LocalizationManager.AddDefaultString("Report/Print/CupsMissing", "Не удалось обратиться к CUPS. Проверьте, что установлены lp и lpstat.");
 			LocalizationManager.AddDefaultString("Report/Print/Printer", "Принтер");
 			LocalizationManager.AddDefaultString("Report/Preview/Paper", "{0} · {1} × {2} мм");
 			LocalizationManager.AddDefaultString("Report/Preview/CustomPaper", "Произвольная");

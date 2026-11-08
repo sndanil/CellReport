@@ -14,12 +14,12 @@ namespace CellReport.Avalonia.ViewModels
 			ToPage = totalPages;
 			Copies = defaultCopies;
 
-			foreach (var printer in WindowsPrinterService.GetInstalledPrinters())
+			foreach (var printer in PrinterService.GetInstalledPrinters())
 				Printers.Add(printer);
 
 			SelectedPrinter = !string.IsNullOrWhiteSpace(printerName) && Printers.Contains(printerName)
 				? printerName
-				: WindowsPrinterService.GetDefaultPrinter();
+				: PrinterService.GetDefaultPrinter();
 			if (!string.IsNullOrEmpty(SelectedPrinter) && !Printers.Contains(SelectedPrinter))
 				Printers.Insert(0, SelectedPrinter);
 			else if (Printers.Count > 0 && string.IsNullOrEmpty(SelectedPrinter))
