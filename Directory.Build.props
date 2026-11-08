@@ -11,7 +11,7 @@
 
     <!-- NuGet defaults (override in packable projects) -->
     <IsPackable>false</IsPackable>
-    <Version Condition="'$(Version)' == ''">0.14.7</Version>
+    <Version Condition="'$(Version)' == ''">0.14.8</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/sndanil/CellReport</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
